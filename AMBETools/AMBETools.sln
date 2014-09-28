@@ -1,0 +1,74 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual C++ Express 2008
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DVToolReader", "DVToolReader\DVToolReader.vcproj", "{415003E0-04C2-4757-B47B-D1465C3FE461}"
+	ProjectSection(ProjectDependencies) = postProject
+		{EF9E87F7-40A0-4916-AB29-00F9A4526A7B} = {EF9E87F7-40A0-4916-AB29-00F9A4526A7B}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Common", "Common\Common.vcproj", "{EF9E87F7-40A0-4916-AB29-00F9A4526A7B}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DVToolWriter", "DVToolWriter\DVToolWriter.vcproj", "{034377C2-0DA9-4D11-B882-D8B8F120B663}"
+	ProjectSection(ProjectDependencies) = postProject
+		{EF9E87F7-40A0-4916-AB29-00F9A4526A7B} = {EF9E87F7-40A0-4916-AB29-00F9A4526A7B}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "wav2ambe", "wav2ambe\wav2ambe.vcproj", "{18684994-D6B0-40EF-A9BE-C148EF2BD5EC}"
+	ProjectSection(ProjectDependencies) = postProject
+		{EF9E87F7-40A0-4916-AB29-00F9A4526A7B} = {EF9E87F7-40A0-4916-AB29-00F9A4526A7B}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "wav2dvtool", "wav2dvtool\wav2dvtool.vcproj", "{34B0F1FA-82D0-4A8A-BCE3-8EE54A5C44A1}"
+	ProjectSection(ProjectDependencies) = postProject
+		{EF9E87F7-40A0-4916-AB29-00F9A4526A7B} = {EF9E87F7-40A0-4916-AB29-00F9A4526A7B}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ambe2wav", "ambe2wav\ambe2wav.vcproj", "{8C55A75D-7BE1-4DCE-82D9-DEB44D8A369B}"
+	ProjectSection(ProjectDependencies) = postProject
+		{EF9E87F7-40A0-4916-AB29-00F9A4526A7B} = {EF9E87F7-40A0-4916-AB29-00F9A4526A7B}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "dvtool2wav", "dvtool2wav\dvtool2wav.vcproj", "{1633EFC4-CEB7-455A-8587-10FE7ABB33AB}"
+	ProjectSection(ProjectDependencies) = postProject
+		{EF9E87F7-40A0-4916-AB29-00F9A4526A7B} = {EF9E87F7-40A0-4916-AB29-00F9A4526A7B}
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{415003E0-04C2-4757-B47B-D1465C3FE461}.Debug|Win32.ActiveCfg = Debug|Win32
+		{415003E0-04C2-4757-B47B-D1465C3FE461}.Debug|Win32.Build.0 = Debug|Win32
+		{415003E0-04C2-4757-B47B-D1465C3FE461}.Release|Win32.ActiveCfg = Release|Win32
+		{415003E0-04C2-4757-B47B-D1465C3FE461}.Release|Win32.Build.0 = Release|Win32
+		{EF9E87F7-40A0-4916-AB29-00F9A4526A7B}.Debug|Win32.ActiveCfg = Debug|Win32
+		{EF9E87F7-40A0-4916-AB29-00F9A4526A7B}.Debug|Win32.Build.0 = Debug|Win32
+		{EF9E87F7-40A0-4916-AB29-00F9A4526A7B}.Release|Win32.ActiveCfg = Release|Win32
+		{EF9E87F7-40A0-4916-AB29-00F9A4526A7B}.Release|Win32.Build.0 = Release|Win32
+		{034377C2-0DA9-4D11-B882-D8B8F120B663}.Debug|Win32.ActiveCfg = Debug|Win32
+		{034377C2-0DA9-4D11-B882-D8B8F120B663}.Debug|Win32.Build.0 = Debug|Win32
+		{034377C2-0DA9-4D11-B882-D8B8F120B663}.Release|Win32.ActiveCfg = Release|Win32
+		{034377C2-0DA9-4D11-B882-D8B8F120B663}.Release|Win32.Build.0 = Release|Win32
+		{18684994-D6B0-40EF-A9BE-C148EF2BD5EC}.Debug|Win32.ActiveCfg = Debug|Win32
+		{18684994-D6B0-40EF-A9BE-C148EF2BD5EC}.Debug|Win32.Build.0 = Debug|Win32
+		{18684994-D6B0-40EF-A9BE-C148EF2BD5EC}.Release|Win32.ActiveCfg = Release|Win32
+		{18684994-D6B0-40EF-A9BE-C148EF2BD5EC}.Release|Win32.Build.0 = Release|Win32
+		{34B0F1FA-82D0-4A8A-BCE3-8EE54A5C44A1}.Debug|Win32.ActiveCfg = Debug|Win32
+		{34B0F1FA-82D0-4A8A-BCE3-8EE54A5C44A1}.Debug|Win32.Build.0 = Debug|Win32
+		{34B0F1FA-82D0-4A8A-BCE3-8EE54A5C44A1}.Release|Win32.ActiveCfg = Release|Win32
+		{34B0F1FA-82D0-4A8A-BCE3-8EE54A5C44A1}.Release|Win32.Build.0 = Release|Win32
+		{8C55A75D-7BE1-4DCE-82D9-DEB44D8A369B}.Debug|Win32.ActiveCfg = Debug|Win32
+		{8C55A75D-7BE1-4DCE-82D9-DEB44D8A369B}.Debug|Win32.Build.0 = Debug|Win32
+		{8C55A75D-7BE1-4DCE-82D9-DEB44D8A369B}.Release|Win32.ActiveCfg = Release|Win32
+		{8C55A75D-7BE1-4DCE-82D9-DEB44D8A369B}.Release|Win32.Build.0 = Release|Win32
+		{1633EFC4-CEB7-455A-8587-10FE7ABB33AB}.Debug|Win32.ActiveCfg = Debug|Win32
+		{1633EFC4-CEB7-455A-8587-10FE7ABB33AB}.Debug|Win32.Build.0 = Debug|Win32
+		{1633EFC4-CEB7-455A-8587-10FE7ABB33AB}.Release|Win32.ActiveCfg = Release|Win32
+		{1633EFC4-CEB7-455A-8587-10FE7ABB33AB}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
