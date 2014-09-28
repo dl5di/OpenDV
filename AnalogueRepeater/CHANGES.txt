@@ -1,0 +1,22 @@
+Analogue Repeater - 20140303
+============================
+
+20130702
+--------
+
+Added daemon info to the logs.
+Split from the main Repeater package.
+Removed the URI USB support.
+
+20130704
+--------
+
+Added basic AX.25 receiving.
+
+20140303
+--------
+
+Added optional delay before sending the opening callsign.
+Add exception catching.
+Added APRS transmission with the beacon.
+Fixed bug in WAV file reading under Linux.
