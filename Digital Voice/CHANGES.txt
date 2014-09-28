@@ -1,0 +1,316 @@
+Digital Voice - 20130219
+========================
+
+20090319
+--------
+First released version, much is untested but the main transmit and receive
+functions appear to be present and correct. With this version the Repeater is
+not built by default (and it wouldn't compile anyway!)
+
+20090326
+--------
+The end bleep in DStarClient won't sound if the Code or Callsign Squelch is not
+open.
+Upgraded to wxWidgets 2.8.10.
+Removed the D-Star Repeater project, for now.
+Removed option to use a network connected DV-Dongle, it doesn't work!
+Swapped RPT1 and RPT2, a big oops!
+Allow use of no Dongle for monitoring.
+Display the BER for the radio header.
+Added Linux support, but untested.
+
+20090331
+--------
+In a Debug build, the transmitted GMSK is always written to a WAV file.
+The drop down lists of Your, RPT1, and RPT2 callsigns are persistent.
+Transmit now correctly sends what it should do in the header.
+More Linux support.
+
+20090412
+--------
+Added icons to the programs.
+Changed the GMSK demodulator.
+More validation for the UR/RPT1/RPT2 callsigns on transmit.
+
+20090604
+--------
+Changed serial I/O to be overlapping, it should now be better on slower
+PCs. (Windows only)
+
+20090617
+--------
+Updated the Linux support and changed the name of the directories and the
+executable files so that the Linux support is easier.
+
+20091027
+--------
+
+Use the new GMSK modulator from the D-Star Repeater project.
+Allow for use of Windows COM ports greater than 10.
+
+20091030
+--------
+
+Use the new GMSK demodulator from the D-Star Repeater project.
+Fixed a serious transmit bug regarding RPT1 and RPT2.
+
+20100331
+--------
+
+Moved the log files to the users home directory.
+Moved the saved .dvtool files to the users home directory.
+Optimised GMSK demodulator added from the D-Star Repeater project.
+Added the DExtra Client.
+Removed the squelch options from the DStarClient.
+New way to handle the DV-Dongle, all programs need it to be plugged in and 
+configured to operate now.
+Not generally released.
+
+20100401
+--------
+
+Fixes for Linux building and running, but not finished yet.
+Lock out the transmit button when busy in the DExtra Client.
+Remember the last Reflector and Band setting for the DExtra Client.
+
+20100405
+--------
+
+Renamed Band to Module in DExtraClient.
+Use a special hosts file to configure the reflector/gateway to host name.
+Disconnect in DExtraClient really does disconnect now!
+
+20100411
+--------
+
+Allow configuration of the end bleep for all programs.
+Added XRF002 to the supplied DExtra_Hosts.txt file.
+Moved the DExtra_Hosts.txt file to /usr/local/etc under Linux.
+
+20100603
+--------
+
+Fixed bugs in Slow Data transmission, UDP and the DExtraClient end marker.
+
+20100701
+--------
+
+Beginnings of radio control for the DExtra Client.
+Rebuilt transmit in the D-Star Client.
+
+20100708
+--------
+
+Fixed the output of transmit audio when going to receive in the D-Star Client.
+Better handling of configuration errors on application startup.
+
+20100719
+--------
+
+The bleeper is now closer to the authentic Icom sound.
+Allow for the use of the URI USB and the K8055 for controlling the transmitter 
+in the D-Star Client, and an external transmit input.
+Allow for the use of an external radio with the DExtra Client to create a Hot 
+Point.
+
+20100720
+--------
+
+Fix to the DVTool files.
+Fix GUI preferences for DExtra Client.
+
+20100721
+--------
+
+Changes to the handling of the controllers, now the external transmit input for 
+D-Star Client is optional.
+
+20100729
+--------
+
+Chnaged internal timings so that audio isn't lost on transmit.
+Changed callsign handling in D-Star Client.
+Changes for Mac OS X.
+
+20100824
+--------
+
+Added extra FTDI support to identify the serial ports that a Dongle will be on.
+Not generally released.
+
+20100831
+--------
+
+Fixed problem when a DVAP Dongle is plugged in.
+Not generally released.
+
+20100921
+--------
+
+First version of the GMSK Client.
+
+20100922
+--------
+
+Fixed bug in the GUI regarding <unused> entries.
+Timing changes for the GMSK Client.
+
+20100924
+--------
+
+Put the end of transmission into the GMSK Client.
+Use Fred PA4YBR's modem support library for GMSK Modems.
+
+20101016
+--------
+
+Allow use of shared libraries on Linux.
+Fixed a bug in the transmitted header of the GMSK Client.
+
+20101026
+--------
+
+Hopefully fixed the receive issue on the GMSK Client.
+
+20101030
+--------
+
+Clean up the GMSK Client.
+Added one-touch reply to the D-Star and GMSK Clients.
+
+20101103
+--------
+
+More changes to the GMSK Client now that I have a Dutch*Star based modem.
+The GMSK Client can now build on an AMD64 Linux machine.
+
+20101107
+--------
+
+RPT1 and RPT2 values of DIRECT map on to <unused> when using One-Touch Reply.
+
+20110103
+--------
+
+Changed to wxWidgets 2.8.11 from 2.8.10.
+Added i386 Linux support for the GMSK Client.
+Added the XRF019, XRF026, XRF027, XRF044, and XRF055 reflectors.
+
+20110116
+--------
+
+Swap RPT1 and RPT2 on transmit for the GMSK Client.
+
+20110120
+--------
+
+Added XRF000 for the DExtra Client.
+DExtra upgrade added.
+
+20110220
+--------
+
+Added XRF020 to the DExtra Client.
+Fixed config bug in the DExtra Client.
+Allow for a startup reflector and module to be set.
+
+20110506
+--------
+
+Added XRF021, XRF031, and XRF033.
+Updated host name of XRF013.
+Upgraded to wxWidgets 2.8.12.
+Allow outgoing DExtra links to have random ports.
+
+20111108
+--------
+
+Updated the DExtra hosts file to the latest.
+Fixed one touch reply in the clients.
+
+20120122
+--------
+
+Updated the DExtra_Hosts.txt file to the latest.
+Added the DVAPClient for the DVAP.
+Added the DVRPTRClient for the DV-RPTR modem.
+Allow for compilation and running of the progras under Linux.
+Removed the need for the FTDI drivers under Windows.
+
+20120319
+--------
+
+Updated the DExtra_Hosts.txt file to the latest.
+Updated the DVAP and DV-RPTR modem drivers.
+Added the DCS Client for the DCS reflectors.
+
+20120330
+--------
+
+Updated to the latest DCS and DExtra hosts files.
+Fixed startup reflector in the DCS Client.
+Better error recovery for the DV-Dongle.
+
+20120403
+--------
+
+Sort the UR, RPT1, and RPT2 callsign lists in the GUI.
+
+20120826
+--------
+
+Updated to Visual Studio 2010 on Windows.
+Updated DCS and DExtra hosts files.
+Renamed the D-Star Client to the Sound Card Client.
+Remove requirement for using NATools.
+Updated to the latest DCS protocol.
+Swapped the RPT1 and RPT2 values in the radio clients.
+Increased the default TX delay in the DV-RPTR Client to 150ms from 30ms.
+Upgraded to libusb-1.0 on Linux.
+
+20120826a
+---------
+
+Reverted to Visual C++ 2008 on Windows.
+
+20120901
+--------
+
+Allow up to module E for linking.
+Added Windows LibUSB support to the GMSK Client.
+
+20120925
+--------
+
+Added XRF018 and XRF250.
+Updated the DCS protocol.
+Include the SVN revision number in the log file.
+Added support for the 70cms DVAP.
+Added support for the XDVRPTR modem firmware.
+
+20130131
+--------
+
+Use the DVAP to validate its own frequency.
+Added DCS016, DCS017, DCS018, DCS019, and DCS020.
+Update the DExtra hosts file to the latest version.
+Upgrade the DCS protocol to the latest version.
+
+20130203
+--------
+
+Remove the Offset parameter in the DVAP Client.
+
+20130219
+--------
+
+Updated XRF008s and XRF123s IP addresses.
+Fixed GMSK modem space reporting.
+Added DCS021.
+Added XRF333.
+
+201304xx
+--------
+
+Added XRF038 and XRF851.
+Updated XRF003s IP address.

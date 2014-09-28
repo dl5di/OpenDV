@@ -1,0 +1,401 @@
+Digital Voice - 20130219
+========================
+
+The package currently consists of six programs, DCS Client, DExtra Client,
+SoundCardClient, DVAPClient, DVRPTRClient, DVToolReader, and GMSKClient. These all
+allow different combinations of hardware, along with a DV-Dongle to access either
+the DCS or DExtra reflector system, or on-air D-Star systems.
+
+
+DCSClient
+------------
+
+The purpose of this program is to access reflectors and repeaters connected to 
+the DCS system. a sound card for headphones/microphone (I use a USB headset 
+from Logitech), and access to a DV-Dongle.
+
+Firstly you will need to set your preferences. Go into Edit->Preferences and
+choose each tab in turn, many will need to be entered before you can begin.
+Note that after changing a number of these entries, you will need to restart the
+program for the changes to take effect.
+
+You will need to set the Callsign, this change takes effect immediately. The 
+Sound Card are the devices that will be used for your microphone and speakers to 
+actually speak to other people.
+
+The DV-Dongle must be connected to a USB port. To use a DV-Dongle, simply set 
+the Device to the COM port on which the Dongle is connected, if set to "<none>" 
+then no DV-Dongle is assumed and the program will not operate. On Linux systems 
+the DV-Dongle will usually appear on one of the /dev/ttyUSBX devices.
+
+The Message is up to twenty characters that will be placed into the Slow Data
+field and will be displayed on the radio of the other station. This setting
+takes effect immediately.
+
+The Bleep setting controls whether an end bleep occurs at the end of receiving a 
+D-Star transmission. The default is on, and it mimics the sound of the bleep 
+made by Icom D-Star radios, however it can also be annoying so it can be 
+switched off. This setting takes effect immediately.
+
+Optionally a startup reflector and module may be set. Setting the reflector to 
+None disables this, if set, then the client will attempt to link to the selected 
+reflector and module a few seconds after the software starts up.
+
+The Controller sets hardware device used to control an optional transceiver to 
+create a Hot Point. This may set to None when no radio is connected or if the 
+radio uses VOX, or a serial port, a URI USB, or a Velleman K8055. The Audio 
+Delay can be set to ensure that the received audio matches the squelch input. 
+The PTT inversion setting is for interfacing to radios that have the opposite 
+sense, the same goes for the Squelch inversion setting which does the same for 
+the squelch input.
+
+Function                              Velleman  URI USB   Serial Port
+Radio Squelch                         Input 1   8         DSR or CTS
+Transmitter PTT                       Output 1  1         DTR and RTS
+
+On the File menu is an option to Record data. The recording option ensures that 
+all received DCS "transmissions" are recorded to .dvtool files for playing 
+back later with DVToolReader (see below). Recording does not stop the decoding 
+of the DCS signals in real-time.
+
+The main section of the screen is involved with connecting to thr remote DCS 
+reflector repeater, and currently the list of ones available is held in the 
+DCS_Hosts.txt file. The required system is selected in the list box and the 
+Connect button is pressed, hopefully after a short while a message will appear 
+saying "Connected to DCS001 H" or similar. The module choice is from A to Z.
+
+Note that it will probably necessary to open up your router and/or firewall to 
+enable the program to run reliably. DCS uses UDP port 30051 and this may need 
+to be set up as a virtual server or however its termed within your router.
+
+Below these settings are the Transmit button which as the name suggests, puts 
+the program onto transmit, and sets the PTT if it is set. At the same time, an
+indicator appears on the screen to show that you are on transmit.
+
+When a valid signal is being received, a Busy signal will be displayed, which
+could be very useful if some form of Squelch is being used.
+
+Below these settings is the Current section. This is where information about the
+current and previously heard DCS stations is show. The top section contains
+more information.
+
+Finally there is a list box showing a history of all the stations heard since
+the program was started. It shows a cut-down version of the information above
+it.
+
+When running, the program logs some information into the DCSClient.log file 
+in the users home directory.
+
+The list of available reflectors and gateways is controlled by the 
+DCS_Hosts.txt file which can either found in either the home directory of the 
+current user, or in another location. This location is "/usr/local/etc" on 
+Linux and the programs running directory, probably "C:\Program Files\Digital 
+Voice" under Windows. The file in the home directory takes precedence. The 
+installed example file lists the publicly known reflectors, the format is 
+described within the example file.
+
+
+DExtraClient
+------------
+
+The purpose of this program is to access reflectors and repeaters connected to 
+the DExtra system. a sound card for headphones/microphone (I use a USB headset 
+from Logitech), and access to a DV-Dongle.
+
+Firstly you will need to set your preferences. Go into Edit->Preferences and
+choose each tab in turn, many will need to be entered before you can begin.
+Note that after changing a number of these entries, you will need to restart the
+program for the changes to take effect.
+
+You will need to set the Callsign, this change takes effect immediately. The 
+Sound Card are the devices that will be used for your microphone and speakers to 
+actually speak to other people.
+
+The DV-Dongle must be connected to a USB port. To use a DV-Dongle, simply set 
+the Device to the COM port on which the Dongle is connected, if set to "<none>" 
+then no DV-Dongle is assumed and the program will not operate. On Linux systems 
+the DV-Dongle will usually appear on one of the /dev/ttyUSBX devices.
+
+The Message is up to twenty characters that will be placed into the Slow Data
+field and will be displayed on the radio of the other station. This setting
+takes effect immediately.
+
+The Bleep setting controls whether an end bleep occurs at the end of receiving a 
+D-Star transmission. The default is on, and it mimics the sound of the bleep 
+made by Icom D-Star radios, however it can also be annoying so it can be 
+switched off. This setting takes effect immediately.
+
+Optionally a startup reflector and module may be set. Setting the reflector to 
+None disables this, if set, then the client will attempt to link to the selected 
+reflector and module a few seconds after the software starts up.
+
+The Controller sets hardware device used to control an optional transceiver to 
+create a Hot Point. This may set to None when no radio is connected or if the 
+radio uses VOX, or a serial port, a URI USB, or a Velleman K8055. The Audio 
+Delay can be set to ensure that the received audio matches the squelch input. 
+The PTT inversion setting is for interfacing to radios that have the opposite 
+sense, the same goes for the Squelch inversion setting which does the same for 
+the squelch input.
+
+Function                              Velleman  URI USB   Serial Port
+Radio Squelch                         Input 1   8         DSR or CTS
+Transmitter PTT                       Output 1  1         DTR and RTS
+
+On the File menu is an option to Record data. The recording option ensures that 
+all received DExtra "transmissions" are recorded to .dvtool files for playing 
+back later with DVToolReader (see below). Recording does not stop the decoding 
+of the DExtra signals in real-time.
+
+The main section of the screen is involved with connecting to thr remote DExtra 
+reflector repeater, and currently the list of ones available is held in the 
+DExtra_Hosts.txt file. The required system is selected in the list box and the 
+Connect button is pressed, hopefully after a short while a message will appear 
+saying "Connected to XRF001" or similar. The module choice is one of A, B, or C 
+and these can be changed without having to disconnect and connect again.
+
+Note that it will probably necessary to open up your router and/or firewall to 
+enable the program to run reliably. DExtra uses UDP port 30001 and this may need 
+to be set up as a virtual server or however its termed within your router.
+
+Below these settings are the Transmit button which as the name suggests, puts 
+the program onto transmit, and sets the PTT if it is set. At the same time, an
+indicator appears on the screen to show that you are on transmit.
+
+When a valid signal is being received, a Busy signal will be displayed, which
+could be very useful if some form of Squelch is being used.
+
+Below these settings is the Current section. This is where information about the
+current and previously heard DExtra stations is show. The top section contains
+more information.
+
+Finally there is a list box showing a history of all the stations heard since
+the program was started. It shows a cut-down version of the information above
+it.
+
+When running, the program logs some information into the DExtraClient.log file 
+in the users home directory.
+
+The list of available reflectors and gateways is controlled by the 
+DExtra_Hosts.txt file which can either found in either the home directory of the 
+current user, or in another location. This location is "/usr/local/etc" on 
+Linux and the programs running directory, probably "C:\Program Files\Digital 
+Voice" under Windows. The file in the home directory takes precedence. The 
+installed example file lists the publicly known reflectors, the format is 
+described within the example file.
+
+
+DVToolReader
+------------
+
+This program takes .dvtool files as created by either SoundCardClient, DExtraClient, 
+GMSKClient, DVAPClient, DVRPTRClient, or DVTOOL and plays them. It is a
+relatively simple program, which essentially allows for the replay or previously
+logged transmissions. Before it can be used, the program needs to be configured,
+to do this go into Edit->Preferences and fill in values the Sound Card, which is
+where the decoded audio will be played,  and for the location of the DV-Dongle.
+
+The DV-Dongle must be connected to a USB port. To use a DV-Dongle, simply set 
+the Device to the COM port on which the Dongle is connected, if set to "<none>" 
+then no DV-Dongle is assumed and the program will not operate. On Linux systems 
+the DV-Dongle will usually appear on one of the /dev/ttyUSBX devices.
+
+The Bleep setting controls whether an end bleep occurs at the end of receiving a 
+D-Star transmission. The default is on, and it mimics the sound of the bleep 
+made by Icom D-Star radios, however it can also be annoying so it can be 
+switched off.
+
+When making changes to the Sound Card or DV Dongle, you must restart the program
+before your changes take effect.
+
+Much of the information on the screen is the same as that show by SoundCardClient
+(see above) and for more information, see the entry for that program.
+
+When running, the program logs some information into the DVToolReader.log file
+in the users home directory.
+
+
+The Rest of the Software
+------------------------
+
+The other programs in the software, SoundCardClient, DVAPClient, DVRPTRClient, and
+GMSKClient, are all similar in their operation. Each allows a PC with a DV-Dongle
+and a microphone/speaker and a suitable modem to access D-Star over the radio.
+All of the programs (bar the DVAPClient) require the modem to be connected to a
+9600Bd capable radio in order to operate.
+
+Because all of these programs are so similar, the common parts are covered here
+before sections detailing the differences between the programs.
+
+Firstly you will need to set your preferences. Go into Edit->Preferences and
+choose each tab in turn, many will need to be entered before you can begin.
+Note that after changing a number of these entries, you will need to restart the
+program for the changes to take effect.
+
+You will need to set the Callsign, only the first field needs to be entered,
+this change takes effect immediately. The Sound Card is the device that
+will be used for your microphone and speakers to actually speak to other people.
+
+The DV-Dongle must be connected to a USB port. To use a DV-Dongle, simply set 
+the Device to the COM port on which the Dongle is connected, if set to "<none>" 
+then no DV-Dongle is assumed and the program will not operate. On Linux systems 
+the DV-Dongle will usually appear on one of the /dev/ttyUSBX devices.
+
+The Message is up to twenty characters that will be placed into the Slow Data
+field and will be displayed on the radio of the other station. This setting
+takes effect immediately.
+
+The Bleep setting controls whether an end bleep occurs at the end of receiving a 
+D-Star transmission. The default is on, and it mimics the sound of the bleep 
+made by Icom D-Star radios, however it can also be annoying so it can be 
+switched off. This setting takes effect immediately.
+
+On the File menu ia an option for Recording. The recording option ensures that 
+all received D-Star transmissions are recorded to .dvtool files for playing back
+later with DVToolReader (see below). Recording does not stop the decoding of
+D-Star signals in real-time.
+
+On the main screen can be seen some boxes that may have data entered into them.
+Your is the remote stations callsign, or more commonly just "CQCQCQ" which is 
+the default setting. RPT1 and RPT2 are used to access your local D-Star repeater 
+and the values will need to be found seperately, for simplex work these should 
+be set to "<unused>", the default setting. Values previously used are stored for 
+easy access, these will appear in the drop down list once that callsign has been 
+used for transmission at least once.
+
+Below these settings are the Transmit button which as the name suggests, puts 
+the program onto transmit, and sets the PTT if it is set. At the same time, an
+indicator appears on the screen to show that you are on transmit.
+
+The One-Touch Reply is usually used when responding to a station coming through 
+a repeater. It takes the received header values of the transmitting station and 
+places them into local callsign boxes to make replying to the station easier. 
+Subsequent transmissions from the client will have the correct values to 
+guarantee that the remote station will receive your transmission.
+
+When a valid signal is being received, a Busy signal will be displayed, which
+could be very useful if some form of Squelch is being used.
+
+Below these settings is the heard section. This is where information about the
+current and previously heard D-Star stations is show. The top section contains
+more information, for example the Flags section which contains information about
+the D-Star header flags in hexadecimal.
+
+Finally there is a list box showing a history of all the stations heard since
+the program was started. It shows a cut-down version of the information above
+it, but should still be useful for all that.
+
+
+DVAPClient
+----------
+
+The purpose of this program is to emulate a D-Star capable radio. To this end it
+requires a DVAP, a sound card for headphones/microphone, and access to a DV-Dongle.
+With these items, you should be ready to go.
+
+The DVAP sets the DVAP modem and radio combination. The available settings are:
+
+Band: This is which type of DVAP you have, the 2m or 70cms version.
+Port: This will be a COM port under Windows or a /dev/ttyUSBx port under Linux.
+Frequency: This is the transmit and receive frequency in Hertz.
+Power: The output power in dBm with the maximum being 10 dBm (10 mW).
+Squelch: The receive level at which the squelch will trigger.
+
+When running, the program logs some information into the DVAPClient.log file in
+the users home directory.
+
+
+DVRPTRClient
+------------
+
+The purpose of this program is to emulate a D-Star capable radio. To this end it
+requires access to a 9600Bd capable radio, connected to a DV-RPTR Modem, a sound 
+card for headphones/microphone, and access to a DV-Dongle. With these items, you
+should be ready to go.
+
+The Modem sets the DV-RPTR Modem. There are many settings here, although only
+four may need changing to get operational. Firstly the version needs to be set
+correctly, Version 1 is the old formware with versions similar to 1.10e while
+Version 2 refers to the new xdvrptr firmware that first became available in
+September 2012. Secondly the port needs to be set, on Windows the modem will
+appear as a standard COM port, but on Linux it will appear under the device
+name of /dev/ACMx where x is a number.
+
+The RX and TX Inversion allow for inversion within the radio is occuring on
+receive and transmit respectively. With the version 2 driver, automatic detection
+of the need for RX Inversion is built-in and so this entry is unavailable. With
+the version 1 driver if you are unable to receive any stations then changing the
+RX Inversion may be what is needed, conversely if you are unable to talk to any
+stations, try changine the TX Inversion setting.
+
+The Channel setting does not need to be changed, and only applies to the version 1
+driver anyway. The Mod Level alters the amplitude of the audio generated by the
+modem and will directly affect the transmitted deviation of the signal. The TX
+Delay is only alterable with the version 1 driver and may need adjusting to match
+your transmitter.
+
+When running, the program logs some information into the DVRPTRClient.log file in
+the users home directory.
+
+
+GMSKClient
+----------
+
+The purpose of this program is to emulate a D-Star capable radio. To this end it
+requires access to a 9600Bd capable radio, connected to a GMSK Modem, a sound 
+card for headphones/microphone, and access to a DV-Dongle. With these items, you
+should be ready to go.
+
+The Modem sets the GMSK Modem. There is one setting under Linux, the hardware
+address. Under Windows there is the choice of the driver type as well as the
+address, the types available are WinUSB and LibUsb. Although WinUSB is preferred
+under Windows, LibUsb is included to support the original Satoshi drivers. The
+default address is 0x300 for both types of driver, and will probably not need
+changing most of the time.
+
+When running, the program logs some information into the GMSKClient.log file in
+the users home directory.
+
+
+SoundCardClient
+---------------
+
+The purpose of this program is to emulate a D-Star capable radio. To this end it
+requires access to a 9600Bd capable radio, connected to a sound card, a second
+sound card for headphones/microphone (I use a USB headset from Logitech), access
+to a DV-Dongle, and optionally a serial port for PTT control. With these items, 
+you should be ready to go.
+
+The Radio Sound Card is the sound card that will be connected to your radio to
+allow the GMSK signals to be passed in and out of the program. This will go to
+your 9600Bd modem port on your radio, otherwise you'll need a soldering iron!
+
+GMSK Inversion is for cases when the polarity of the GMSK is inverted by your
+radio. Leave these as unchecked initially, and only set them if you have
+problems, check with a local D-Star user to see where the problem lies. These
+settings take effect immediately.
+
+The Controller sets hardware device used to control the transmitter. This may 
+set to None for testing, or when the radio has VOX, or a serial port, a URI USB, 
+or a Velleman K8055. A PTT Delay can be set here to ensure that the transmitter 
+operates at exactly the same time that the D-Star audio is present. If a delay 
+is set then the PTT is delayed with respect to the audio. The PTT inversion 
+setting is for interfacing to radios that have the opposite sense. There is also 
+a transmit input for manual control of the transmitter, in addition to the 
+button on the screen.
+
+The assignments of the different pins are:
+
+Function                              Velleman  URI USB   Serial Port
+Manual Transmit                       Input 1   8         DSR or CTS
+Transmitter PTT                       Output 1  1         DTR and RTS
+
+On the File menu are the options to Open and for Recording. The Open option is
+used for playing previously recorded files of GMSK data which are used instead
+of the sound card for the duration of the file. These files must be mono WAV
+files with a sample rate of 48kHz. The recording option ensures that all
+received D-Star transmissions are recorded to .dvtool files for playing back
+later with DVToolReader (see below). Recording does not stop the decoding of
+D-Star signals in real-time.
+
+When running, the program logs some information into the SoundCardClient.log file in
+the users home directory.
