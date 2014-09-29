@@ -1,0 +1,181 @@
+;
+; DUTCH*Star	A series of projects to implement a series of devices and
+;		software tools for use with the D-Star protocol as used in
+;		the Amateur Radio world.
+;
+;		Installer file (INF) for the DUTCH*Star series of USB GMSK
+;		adapter boards using the Microsoft WinUSB Driver Framework.
+;
+; Version:	@(#)GMSK.INF	1.0.3	2009/12/09
+;
+; Author:	Fred N. van Kempen, <fred.van.kempen@microwalt.nl>
+;
+;		Copyright 2009 MicroWalt Corporation
+;		All Rights Reserved.
+;
+;		This  program  or  documentation  contains  proprietary
+;		confidential information and trade secrets of MicroWalt
+;		Corporation.  Reverse  engineering of  object  code  is
+;		prohibited.  Use of copyright  notice is  precautionary
+;		and does not imply publication.  Any  unauthorized use,
+;		reproduction  or transfer  of this program  is strictly
+;		prohibited.
+;
+;		RESTRICTED RIGHTS NOTICE
+;
+;		Use, duplication, or disclosure  by the U.S. Government
+;		is subject to restrictions as set  forth in subdivision
+;		(b)(3)(ii) of the Rights in Technical Data and Computer
+;		Software clause at 252.227-7013.
+;
+;		MicroWalt Corporation
+;		P O BOX 8
+;		1400AA, BUSSUM, NH
+;		THE NETHERLANDS
+;		PH:  +31 (35) 7503090
+;		FAX: +31 (35) 7503091
+;
+[Version]
+Signature   = "$Windows NT$"
+Class       = GMSKDeviceClass
+ClassGUID   = {FEFBC710-4131-4212-B140-6CEC9AF7B35D}
+Provider    = %ProviderName%
+DriverVer   = 12/09/2009,1.0.3
+CatalogFile = gmsk.cat
+
+; Since our device is not a standard USB device, we
+; need to define a new class for the device.
+[ClassInstall32]
+Addreg = GMSKClassReg
+
+[GMSKClassReg]
+HKR,,,0,"GMSK Devices"
+HKR,,Icon,,"-20"
+
+; List the manufactuer, and the models supported.
+[Manufacturer]
+%ProviderName% = GMSK,NTx86,NTamd64,NTia64
+
+[GMSK.NTx86]
+"GMSK Modem 300" = GMSK_Install,USB\VID_04D8&PID_0300
+"GMSK Modem 301" = GMSK_Install,USB\VID_04D8&PID_0301
+"GMSK Modem 302" = GMSK_Install,USB\VID_04D8&PID_0302
+"GMSK Modem 303" = GMSK_Install,USB\VID_04D8&PID_0303
+"GMSK Modem 304" = GMSK_Install,USB\VID_04D8&PID_0304
+"GMSK Modem 305" = GMSK_Install,USB\VID_04D8&PID_0305
+"GMSK Modem 306" = GMSK_Install,USB\VID_04D8&PID_0306
+"GMSK Modem 307" = GMSK_Install,USB\VID_04D8&PID_0307
+"GMSK Modem 308" = GMSK_Install,USB\VID_04D8&PID_0308
+"GMSK Modem 309" = GMSK_Install,USB\VID_04D8&PID_0309
+"GMSK Modem 310" = GMSK_Install,USB\VID_04D8&PID_0310
+
+[GMSK.NTamd64]
+"GMSK Modem 300 (AMD64)" = GMSK_Install,USB\VID_04D8&PID_0300
+"GMSK Modem 301 (AMD64)" = GMSK_Install,USB\VID_04D8&PID_0301
+"GMSK Modem 302 (AMD64)" = GMSK_Install,USB\VID_04D8&PID_0302
+"GMSK Modem 303 (AMD64)" = GMSK_Install,USB\VID_04D8&PID_0303
+"GMSK Modem 304 (AMD64)" = GMSK_Install,USB\VID_04D8&PID_0304
+"GMSK Modem 305 (AMD64)" = GMSK_Install,USB\VID_04D8&PID_0305
+"GMSK Modem 306 (AMD64)" = GMSK_Install,USB\VID_04D8&PID_0306
+"GMSK Modem 307 (AMD64)" = GMSK_Install,USB\VID_04D8&PID_0307
+"GMSK Modem 308 (AMD64)" = GMSK_Install,USB\VID_04D8&PID_0308
+"GMSK Modem 309 (AMD64)" = GMSK_Install,USB\VID_04D8&PID_0309
+"GMSK Modem 310 (AMD64)" = GMSK_Install,USB\VID_04D8&PID_0310
+
+[GMSK.NTia64]
+"GMSK Modem 300 (IA64)" = GMSK_Install,USB\VID_04D8&PID_0300
+"GMSK Modem 301 (IA64)" = GMSK_Install,USB\VID_04D8&PID_0301
+"GMSK Modem 302 (IA64)" = GMSK_Install,USB\VID_04D8&PID_0302
+"GMSK Modem 303 (IA64)" = GMSK_Install,USB\VID_04D8&PID_0303
+"GMSK Modem 304 (IA64)" = GMSK_Install,USB\VID_04D8&PID_0304
+"GMSK Modem 305 (IA64)" = GMSK_Install,USB\VID_04D8&PID_0305
+"GMSK Modem 306 (IA64)" = GMSK_Install,USB\VID_04D8&PID_0306
+"GMSK Modem 307 (IA64)" = GMSK_Install,USB\VID_04D8&PID_0307
+"GMSK Modem 308 (IA64)" = GMSK_Install,USB\VID_04D8&PID_0308
+"GMSK Modem 309 (IA64)" = GMSK_Install,USB\VID_04D8&PID_0309
+"GMSK Modem 310 (IA64)" = GMSK_Install,USB\VID_04D8&PID_0310
+
+; =================== Installation ===================
+[GMSK_Install]
+Include = winusb.inf
+Needs   = WINUSB.NT
+
+[GMSK_Install.Services]
+Include    = winusb.inf
+AddService = WinUSB,0x00000002,WinUSB_ServiceInstall
+
+[GMSK_Install.Wdf]
+KmdfService      = WINUSB, WinUsb_Install
+UmdfServiceOrder = WINUSB
+
+[GMSK_Install.HW]
+AddReg = GMSK_Install_AddReg
+
+[GMSK_Install_AddReg]
+HKR,,DeviceInterfaceGUIDs,0x10000,"{136C76EF-3F4E-4030-A7E3-E1003EF0A715}"
+
+[GMSK_Install.CoInstallers]
+AddReg    = CoInstallers_AddReg
+CopyFiles = CoInstallers_CopyFiles
+
+[WinUSB_ServiceInstall]
+DisplayName   = "WinUSB Devices"
+ServiceType   = 1
+StartType     = 3
+ErrorControl  = 1
+ServiceBinary = %12%\WinUSB.sys
+
+[WinUSB_Install]
+KmdfLibraryVersion = 1.7
+
+[CoInstallers_AddReg]
+HKR,,CoInstallers32,0x00010000,"WinUSBCoInstaller.dll","WdfCoInstaller01007.dll,WdfCoInstaller"
+
+[CoInstallers_CopyFiles]
+WinUSBCoInstaller.dll
+WdfCoInstaller01007.dll
+;WUDFUpdate_01007.dll
+
+[DestinationDirs]
+CoInstallers_CopyFiles = 11
+
+; Select the Source Media.
+[SourceDisksNames.x86]
+1 = %DISK_NAME%,,,\i386
+
+[SourceDisksNames.amd64]
+2 = %DISK_NAME%,,,\amd64
+
+[SourceDisksNames.ia64]
+3 = %DISK_NAME%,,,\ia64
+
+[SourceDisksFiles.x86]
+WinUSBCoInstaller.dll   = 1
+WdfCoInstaller01007.dll = 1
+WUDFUpdate_01007.dll    = 1
+
+[SourceDisksFiles.amd64]
+WinUSBCoInstaller.dll   = 2
+WdfCoInstaller01007.dll = 2
+WUDFUpdate_01007.dll    = 2
+
+[SourceDisksFiles.ia64]
+WinUSBCoInstaller.dll   = 3
+WdfCoInstaller01007.dll = 3
+WUDFUpdate_01007.dll    = 3
+
+; Copy Files section
+[_CopyFiles_sys]
+winusb.sys
+
+; Destination Directories
+[DestinationDirs]
+DefaultDestDir = 12 ; %SystemRoot%\System32\DRIVERS
+_CopyFiles_sys = 12
+
+; Strings
+[Strings]
+ProviderName = "MicroWalt Corporation"
+DISK_NAME    = "DUTCH*Star GMSK Install Disk"
+
+; End of GMSK.INF.
