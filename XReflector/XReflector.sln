@@ -1,0 +1,29 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual C++ Express 2008
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "XReflector", "XReflector\XReflector.vcproj", "{A53D4B27-29B2-44B0-9739-47517CC4289E}"
+	ProjectSection(ProjectDependencies) = postProject
+		{E793CB8E-2AC9-431A-BBFC-3F52537BB3CF} = {E793CB8E-2AC9-431A-BBFC-3F52537BB3CF}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Common", "Common\Common.vcproj", "{E793CB8E-2AC9-431A-BBFC-3F52537BB3CF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A53D4B27-29B2-44B0-9739-47517CC4289E}.Debug|Win32.ActiveCfg = Debug|Win32
+		{A53D4B27-29B2-44B0-9739-47517CC4289E}.Debug|Win32.Build.0 = Debug|Win32
+		{A53D4B27-29B2-44B0-9739-47517CC4289E}.Release|Win32.ActiveCfg = Release|Win32
+		{A53D4B27-29B2-44B0-9739-47517CC4289E}.Release|Win32.Build.0 = Release|Win32
+		{E793CB8E-2AC9-431A-BBFC-3F52537BB3CF}.Debug|Win32.ActiveCfg = Debug|Win32
+		{E793CB8E-2AC9-431A-BBFC-3F52537BB3CF}.Debug|Win32.Build.0 = Debug|Win32
+		{E793CB8E-2AC9-431A-BBFC-3F52537BB3CF}.Release|Win32.ActiveCfg = Release|Win32
+		{E793CB8E-2AC9-431A-BBFC-3F52537BB3CF}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

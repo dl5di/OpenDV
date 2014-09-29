@@ -1,0 +1,27 @@
+# DCS_Hosts.txt
+#
+# The format of this file is the name of the reflector followed by its
+# IP address.
+#
+
+DCS001	dcs001.xreflector.net
+DCS002	dcs002.xreflector.net
+DCS003	dcs003.xreflector.net
+DCS004	dcs004.xreflector.net
+DCS005	dcs005.xreflector.net
+DCS006	dcs006.xreflector.net
+DCS007	dcs007.xreflector.net
+DCS008	dcs008.xreflector.net
+DCS009	dcs009.xreflector.net
+DCS010	dcs010.xreflector.net
+DCS011	dcs011.xreflector.net
+DCS012	dcs012.xreflector.net
+DCS013	dcs013.xreflector.net
+DCS014	dcs014.xreflector.net
+DCS015	dcs015.xreflector.net
+DCS016	dcs016.xreflector.net
+DCS017	dcs017.xreflector.net
+DCS018	dcs018.xreflector.net
+DCS019	dcs019.xreflector.net
+DCS020	dcs020.xreflector.net
+DCS021	dcs021.xreflector.net
