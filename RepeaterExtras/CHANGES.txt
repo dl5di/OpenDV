@@ -1,0 +1,15 @@
+Repeater Extras - 20130702
+==========================
+
+20130702
+--------
+
+Split the DCSGateway, DExtraGateway, and ParrotController from the Repeater package.
+
+201310xx
+--------
+
+Added XRF121, XRF444, XRF858, and XRFWDX.
+Added DCS023, DCS024, DCS025, and DCS044.
+Updated XRF012, XRF119, XRF901, XRF333, and XRFWDXs IP address.
+Catch exceptions and other C++ changes in the D-Star Repeater.
