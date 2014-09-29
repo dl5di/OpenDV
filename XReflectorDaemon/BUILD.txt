@@ -1,0 +1,58 @@
+ircDDB Gateway - 20130131
+=========================
+
+Windows
+-------
+
+To use the Repeater control software you will first need to build the latest
+version of wxWidgets (http://www.wxwidgets.org), the version I used was 2.8.12,
+I also installed it in the default location which is C:\wxWidgets-2.8.12.
+
+For compiling I use Visual C++ 2008 Express Edition downloaded from Microsoft
+for free. I recommend that you use the same.
+
+To build wxWidgets, you simply need to open Visual Studio 2008 using the File ->
+Open -> Projects/Solutions and load the wx_dll.dsw file to be found in
+wxWidgets-2.8.12\build\msw directory and then go into Batch Build and select the
+DLL Unicode Debug and DLL Uncode Release entries for every one, this take a 
+little time! Then build them.
+
+The path names for things like wxWidgets are embedded within the Solution and 
+Project preferences, and will need changing if anything other than these default 
+locations are used. The first pass through the compiler will no doubt tell you 
+all that you need to know if there are problems.
+
+Once you have built the executables, you will need to copy 
+wxbase28u_vc_custom.dll, wxmsw28u_adv_vc_custom.dll, and 
+wxmsw28u_core_vc_custom.dll to the same directory as your newly built 
+executables in order for it to run. If you are running in debug mode then the 
+required wxWidgets files have the names xxx28ud_xxxx instead. These can be found 
+in the wxWidgets-2.8.12\lib\vc_dll directory.
+
+It is also probable that you'll need to install a copy of the latest Visual C++
+run-time libraries from Microsoft, if you are not running the Repeater software
+on the same machine as the development/compilation was done on. To do this you
+need to copy and run the Vcredist_x86.exe file which is found at
+<http://www.microsoft.com/en-gb/download/details.aspx?id=5582>
+
+Linux
+-----
+
+You need to ensure that wxGTK and PortAudio are already installed on your
+machine, under Ubuntu these are available from the standard repositories, the
+version of wxWidgets is adequate. However you should get the latest version of 
+PortAudio from its home and build it from scratch.
+
+To install them from scratch, you need to get wxGTK from 
+<http://www.wxwidgets.org>. If you do a "make install" on both then they'll be 
+installed in the right places and nothing more needs to be done.
+
+The top level Makefile includes platform specific settings from the file 
+"settings.mk". The default file is for x86 Linux systems. Samples for other
+platforms are provided by other developers, copy a required version to
+"settings.mk" when needed.
+
+To actually build the software, type "make" in the same directory as this file
+and all should build without errors, there may be a warning or two though. Once
+compiled, do "make install" and the executables should be copied to 
+/usr/local/bin and the support files to /usr/local/etc.

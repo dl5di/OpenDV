@@ -1,0 +1,13 @@
+XReflector 20130213
+=========================
+
+2013-02-13
+Added XReflector back as an independent project.
+Added Separate Remote Control program for use with XReflector.
+
+2013-02-15
+Added DExtraClient code for use as DExtraBridge for Analogue to Digital bridges. No revisions to that code have been made yet.
+
+2013-02-23
+Updated Version.h VENDOR_NAME entry to reflect "change of ownership" of XReflector code
+Added XRF_Link_Hosts.txt for XReflector Linking; this is different from the DEXTRA_LINK function used with STARnet Digital.
