@@ -16,6 +16,9 @@
  *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
+//	ALSA Version by John Wiseman G8BPQ - initially for PI
+
+
 #ifndef	DummyRepeaterThread_H
 #define	DummyRepeaterThread_H
 
@@ -47,6 +50,7 @@ public:
 	virtual ~CDummyRepeaterThread();
 
 	virtual void callback(const wxFloat32* input, wxFloat32* output, unsigned int nSamples, int id);
+	virtual void callback();
 	virtual void encodeCallback(const unsigned char* ambe, unsigned int length);
 	virtual void decodeCallback(const wxFloat32* audio, unsigned int length);
 

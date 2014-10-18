@@ -16,6 +16,9 @@
  *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
+//	ALSA Version by John Wiseman G8BPQ - initially for PI
+
+
 #include "DummyRepeaterThread.h"
 #include "DummyRepeaterApp.h"
 #include "DStarDefines.h"
@@ -331,7 +334,9 @@ void CDummyRepeaterThread::receive()
 				unsigned char buffer[DV_FRAME_LENGTH_BYTES];
 				::memcpy(buffer, NULL_FRAME_DATA_BYTES, DV_FRAME_LENGTH_BYTES);
 				processFrame(buffer, m_networkSeqNo);
-
+//				printf("Missed Network Frame %d\n", m_networkSeqNo);
+				if (hangCount == 0)
+					hangCount = 30U;		// Hangup if we dont get one for 30 frames
 				m_clockCount = 0U;
 			}
 		}
@@ -346,6 +351,7 @@ void CDummyRepeaterThread::receive()
 		if (hangCount > 0U) {
 			hangCount--;
 			if (hangCount == 0U) {
+				m_protocol->reset();			// or ID doesn't get reset
 				m_dongle->setIdle();
 				resetReceiver();
 			}
@@ -532,6 +538,7 @@ bool CDummyRepeaterThread::processFrame(const unsigned char* buffer, unsigned ch
 	return false;
 }
 
+
 void CDummyRepeaterThread::callback(const wxFloat32* input, wxFloat32* output, unsigned int nSamples, int)
 {
 	::memset(output, 0x00, nSamples * sizeof(wxFloat32));
@@ -542,7 +549,10 @@ void CDummyRepeaterThread::callback(const wxFloat32* input, wxFloat32* output, u
 	if (m_transmit != CLIENT_RECEIVE)
 		m_dongle->writeEncode(input, nSamples);
 
-	m_decodeAudio.getData(output, nSamples);
+	int ret = m_decodeAudio.getData(output, nSamples);
+
+	if (ret && ret != 960)
+		printf("decodeAudio.getData returned %d\n", ret);
 
 	m_poll.clock();
 	m_watchdog.clock();
@@ -556,6 +566,50 @@ void CDummyRepeaterThread::callback(const wxFloat32* input, wxFloat32* output, u
 #endif
 		m_poll.reset();
 	}
+}
+
+// Overloaded version for ALSA interface. No params - just called every few mS
+
+void CDummyRepeaterThread::callback()
+{
+	// In ALSA mode, the SoundCardReaderWriter calls this severy fe milliseconds. The callback does all the 
+	//	trannsfers to and from the card
+
+	int Count = 0;
+	wxFloat32 Input[DSTAR_AUDIO_BLOCK_SIZE  * 100], Output[DSTAR_AUDIO_BLOCK_SIZE  * 100];
+
+	if (m_stopped)
+		return;
+
+	Count = m_soundcard->getfromcard(Input, DSTAR_AUDIO_BLOCK_SIZE  * 100); // only returns with 960 samples
+
+	if (m_transmit != CLIENT_RECEIVE)
+		if (Count)
+			m_dongle->writeEncode(Input, Count);
+
+	Count = m_decodeAudio.getData(Output, 960);
+
+	if (Count)
+	{
+		if (Count != 960)
+			printf("Avail From Network %d\n", Count);
+		m_soundcard->sendtocard(Output, Count);
+		m_watchdog.clock();
+	}
+
+	m_poll.clock();
+
+	// Send the network poll if needed and restart the timer
+	if (m_poll.hasExpired()) {
+#if defined(__WINDOWS__)
+		m_protocol->writePoll(wxT("win_dummy-") + VERSION);
+#else
+		m_protocol->writePoll(wxT("linux_dummy-") + VERSION);
+#endif
+		m_poll.reset();
+	}
+
+	return;
 }
 
 void CDummyRepeaterThread::resetReceiver()

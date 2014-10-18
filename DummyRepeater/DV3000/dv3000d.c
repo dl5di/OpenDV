@@ -45,7 +45,7 @@ void delay(unsigned int delay);
 #endif
 
 #define	DV3000_TTY		"/dev/ttyAMA0"
-#define	DV3000_VERSION		"2014-05-19"
+#define	DV3000_VERSION		"2014-04-23"
 
 #define	AMBE3000_HEADER_LEN	4U
 #define	AMBE3000_START_BYTE	0x61U
