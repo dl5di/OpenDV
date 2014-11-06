@@ -1,0 +1,8 @@
+#!/bin/sh
+#
+# dummy script to run registration server without gateway
+#
+while [ 1 ] 
+do
+    sleep 60
+done

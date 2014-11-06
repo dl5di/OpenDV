@@ -1,0 +1,227 @@
+
+filename of menu file:  /usr/share/xreflector_conf.#.menu
+filename of help file:  /usr/share/xreflector_conf.#.hlp
+
+where # is:
+
+   0   English (UK) 
+   1   Deutsch 
+
+PLEASE DO NOT TOUCH /usr/share/xreflector_conf.0.menu and /usr/share/xreflector_conf.0.hlp
+
+This files will be updated automatically by the YUM package!
+
+--------------------------------------------------------------------------------------------------
+
+invalid_ip:
+invalid_ip:
+invalid_ip:ERROR !  Invalid IP-address !
+invalid_ip:
+
+reset_allowed: 
+reset_allowed:Press '-' to reset value to default
+reset_allowed: 
+
+request_input: 
+request_input:Reset not possible, required value!"
+request_input: 
+
+reset_value: 
+reset_value:value was set to default.
+reset_value: 
+
+basic_setup: 
+basic_setup: 
+basic_setup: 
+basic_setup:********************************************************************************
+basic_setup: 
+basic_setup:*** XReflector basic setup 
+basic_setup: 
+basic_setup:********************************************************************************
+basic_setup: 
+
+callsign: 
+callsign:Enter the base callsign of your reflector (max 7 digits). 
+callsign: 
+callsign: Example: 'XRF023' 
+callsign: 
+
+dplus_setup: 
+dplus_setup: 
+dplus_setup: 
+dplus_setup:********************************************************************************
+dplus_setup: 
+dplus_setup:*** DPlus reflector network setup 
+dplus_setup: 
+dplus_setup:********************************************************************************
+
+dplusEnabled: 
+dplusEnabled: 0    DISABLE DPlus service  
+dplusEnabled: 1    ENABLE  DPlus service  
+dplusEnabled: 
+dplusEnabled: -    RESET to default
+dplusEnabled: <CR> Keep old value
+dplusEnabled: 
+
+
+remoteEnabled: 
+remoteEnabled: Configuration of the remote control software which is part of the XReflector 
+remoteEnabled: software package (Linux: 'remotecontrol'/Windows: 'remotecontrol.exe')
+remoteEnabled: 
+remoteEnabled: 0    DISABLE Remote control port  
+remoteEnabled: 1    ENABLE Remote control port  
+remoteEnabled: 
+remoteEnabled: -    RESET to default
+remoteEnabled: <CR> Keep old value
+remoteEnabled: 
+
+remotePassword: 
+remotePassword:Enter password needed to access the remote control port  
+remotePassword: 
+
+remotePort: 
+remotePort:Enter portnumber for remote control port (UDP-port)  
+
+language: 
+language:Select the menu language for the configuration tool
+language: 
+language:  0   English (UK) 
+language:  1   Deutsch 
+language: 
+language: -    RESET to default
+language: <CR> Keep old value
+language: 
+
+logEnabled: 
+logEnabled: 0    DISABLE Logging  
+logEnabled: 1    ENABLE  Logging 
+logEnabled: 
+logEnabled: -    RESET to default
+logEnabled: <CR> Keep old value
+logEnabled: 
+logEnabled:(Note: Logging is needed for local dashboard software)  
+logEnabled: 
+
+nolog:
+nolog: Switch logging of XReflector on/off
+nolog:
+nolog: 0  NOLOG DISABLED    (logging is on)
+nolog: 1  NOLOG ENDABLED    (logging is off)
+nolog:
+nolog: Note: Growing logfiles may need a lot of disk space.
+nolog: Logging may be necessary for add-on software like dashboards
+nolog:
+
+logpath:
+logpath: Enter the directory where logfiles are created.
+logpath: This directory needs to exist and have write permissions!!
+logpath: The path needs to be set even when logging was switched off
+logpath: because it is also used for statusfiles.
+logpath: It is save to keep the default path like it was installed automatically.
+logpath:
+
+logdir:
+logdir: Enter the directory where logfiles are created.
+logdir: The path needs to be set even when logging was switched off
+logdir: because it is also used for statusfiles.
+logdir: It is save to keep the default path like it was installed automatically.
+logdir:
+
+log_path:
+log_path: The logdir for xreflector will be changed:
+
+dashboard_path:
+dashboard_path: The dashboard configuration will be changed:
+
+header:--------------------------------------------------------------------------------
+header: 
+header: Configuration script for XReflector from Jonathan Naylor, G4KLX 
+header: Copyright (C) 2012   Hans-J. Barthen, DL5DI (dl5di@gmx.de) 
+header: 
+header:--------------------------------------------------------------------------------
+
+copyright:-------------------------------------------------------------------------------- 
+copyright: 
+copyright: Configuration script for XReflector from Jonathan Naylor, G4KLX 
+copyright: Copyright (C) 2012-2013 Hans-J. Barthen, DL5DI (dl5di@gmx.de) 
+copyright: Basic components from xreflectorconfig (C) 2011 Michael Dirska, DL1BFF
+copyright: 
+copyright: This program is free software: you can redistribute it and/or modify 
+copyright: it under the terms of the GNU General Public License as published by 
+copyright: the Free Software Foundation, either version 2 of the License, or 
+copyright: (at your option) any later version. 
+copyright: 
+copyright: This program is distributed in the hope that it will be useful, 
+copyright: but WITHOUT ANY WARRANTY; without even the implied warranty of 
+copyright: MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the 
+copyright: GNU General Public License for more details. 
+copyright: 
+copyright: You should have received a copy of the GNU General Public License 
+copyright: along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+copyright: 
+copyright:-------------------------------------------------------------------------------- 
+copyright: 
+copyright: Press <ENTER> to return to the menu.
+copyright: 
+
+
+mainmenu: 
+mainmenu:Main menu
+mainmenu: 
+mainmenu:--------------------------------------------------------------------------------
+mainmenu:Configure your system:
+mainmenu: 1    Language         (set language of announcements and script menues)
+mainmenu: 2    Initial setup    (will run through 3-14, parts can be skipped) 
+mainmenu: 3    Logging          (log on/off, logdir) 
+mainmenu: 10   Overview         (show current settings) 
+mainmenu:--------------------------------------------------------------------------------
+mainmenu:Configure the autostart system:
+mainmenu: XReflector:     20) ON       21) OFF
+mainmenu:--------------------------------------------------------------------------------
+mainmenu:Start and stop manually:
+mainmenu: XReflector:     30) Start    31) Stop    32) Restart (load new config)
+mainmenu:--------------------------------------------------------------------------------
+mainmenu:80    Backup          (create a backup of the configuration file)
+mainmenu: 
+mainmenu:90    Help 
+mainmenu:91    Copyright
+mainmenu:99    Quit 
+mainmenu: 
+
+final: 
+final:The XReflector has been configured! 
+final: 
+	     
+scr_act: 
+scr_act:** activate xreflector startup script 
+scr_act: 
+
+src_err: 
+src_err:ERROR: no startup script found 
+src_err: 
+
+scr_deact: 
+scr_deact:** deactivate xreflector startup script 
+scr_deact: 
+
+scr_start: 
+scr_start:** start xreflector 
+scr_start: 
+
+scr_stop: 
+scr_stop:** stop xreflector
+scr_stop:
+
+scr_restart: 
+scr_restart:** restart xreflector
+scr_restart: 
+
+nofunc: 
+nofunc:not yet implemented 
+nofunc: 
+
+bye: 
+bye:bye
+bye: 
+bye:   73 
+bye: 

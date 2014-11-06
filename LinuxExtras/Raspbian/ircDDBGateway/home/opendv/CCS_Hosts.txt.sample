@@ -1,0 +1,9 @@
+# CCS_Hosts.txt
+# This is a sample, the address is only available in the closed amprnet!
+#
+# The format of this file is the name of the CCS server followed by its IP address.
+# An 'L' at the end defines the address as 'local' and prevents an update from the network.
+#
+CCS001	44.142.200.136	L
+CCS002	44.142.200.137	L
+CCS004	44.142.200.139	L

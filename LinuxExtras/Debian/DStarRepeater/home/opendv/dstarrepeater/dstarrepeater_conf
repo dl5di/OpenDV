@@ -1,0 +1,5 @@
+BACKUPPATH=/var/backups
+LOGPATH=/var/log/opendv
+CFGPATH=/home/opendv/dstarrepeater
+DATAPATH=/home/opendv/dstarrepeater/data
+DEFVALUES=/home/opendv/dstarrepeater/dstarrepeater.default

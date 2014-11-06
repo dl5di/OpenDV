@@ -1,0 +1,799 @@
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+CHANGES / RESOLVED ISSUES:
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+TITLE: dstarrepeater config directory changed
+FOUND: 2014-01-31
+REPORTED: VK5ZEA Michael
+SOLVED: 2014-02-23
+COMMIT: 2014-02-23
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+TITLE: dstarrepeater_conf added
+FOUND: 2014-01-18
+REPORTED: DL5DI
+SOLVED: 2014-02-18
+COMMIT: 2014-02-18
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+TITLE: dummyrepeater package added
+FOUND: 2014-01-30
+REPORTED: DL5DI
+SOLVED: 2014-02-02
+COMMIT: 2014-02-02
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+TITLE: bugfix in dashboard script fixed
+FOUND: 2013-10-07
+REPORTED: N1JMM
+SOLVED: 2013-10-11
+COMMIT: 2013-10-11
+
+- fixes in HTML code of the dashboard's php-script
+- cleanups
+- all platforms moved to the same code
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+TITLE: dstarrepeater package added
+FOUND: 2013-08-31
+REPORTED: DL5DI
+SOLVED: 2013-09-01
+COMMIT: 2013-09-01
+
+- packaging scripts changed, dstarrepeater moved to own package.
+ToDo: - web-based configuration tool
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+TITLE: Fix repeater_conf
+FOUND: 2013-08-17
+REPORTED: DM8BS
+SOLVED: 2013-09-01
+COMMIT: 2013-09-01
+
+- loop on repeater_conf, several fields have to be entered twice
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+TITLE: Update of Documentation
+FOUND: 2013-07-21
+REPORTED: DL5DI
+SOLVED: 2013-07-29
+COMMIT: 2013-07-29
+
+- Documentation for Repeater updated, URL for initial repository changed
+- Documentation for AnalogueRepeater added
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+TITLE: Update of Startup-Scripts
+FOUND: 2013-07-21
+REPORTED: DL5DI
+SOLVED: 2013-07-26
+COMMIT: 2013-07-27
+
+The former Debian startscipts won't work on multi-repeater systems:
+- The option "start-stop-daemon --status" recommended by somebody a few months ago, is no standard and not available on all Debian 6/7 platforms.
+A replacement for the "--status" option was copied from other standard Debian scripts.
+
+- The PID-file is created with wrong PID (thread based) when using "--make-pidfile". This is useless and creates issues with the watchdog feature.
+The PID-File is now generated with ps->grep in an own function.
+
+The ntp-option is now in comment for Debian, but still active for Raspbian.
+This feature is only necessary to overcome the panic threshold on systems which do not have a hardware clock.
+The package builder will activate it for armel and armhf, but not for i386 and amd64.
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+TITLE: Split repeater package
+FOUND: 2013-06-25
+REPORTED: DL5DI
+SOLVED: 2013-07-02
+COMMIT: 2013-07-02
+
+- packaging scripts changed for splitted packages:
+-- Repeater
+-- AnalogueRepeater
+-- RepeaterExtras
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+TITLE: Option to remove repeater modules
+FOUND: 2013-03-10
+REPORTED: DL5DI
+SOLVED: 2013-04-07
+COMMIT: 2013-04-07
+
+ircddbgw_conf / repeater_conf:
+- add option to remove repeater modules
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+TITLE: CCS and ircDDB status in dashboard
+FOUND: 2013-03-12
+REPORTED: DL5DI
+SOLVED: 2013-03-12
+COMMIT: 2013-03-12
+
+- status ccsEnabled / ircddbEnabled added to dashboard
+-------------------------------------------------------------------------------------------------------------------------------------
+
+TITLE: CCS table in dashboard
+FOUND: 2013-03-01
+REPORTED: DL5DI
+SOLVED: 2013-03-01
+COMMIT: 2013-03-01
+
+- table with CCS connects added to dashboard
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+TITLE: xreflector config files
+FOUND: 2013-02-21
+REPORTED: DL5DI
+SOLVED: 2013-02-23
+COMMIT: 2013-02-23
+
+- CCS host settings added to configuration programs
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+TITLE: xreflector config files
+FOUND: 2013-02-21
+REPORTED: DL5DI
+SOLVED: 2013-02-21
+COMMIT: 2013-02-21
+
+- names of config files changes
+- dummy files for 1st package test added
+- CCS enable/disable added to configuration programs
+- more languages added (Espanal, Norsk, Portugues)
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+TITLE: xreflector branch added
+FOUND: 2013-02-15
+REPORTED: DL5DI
+SOLVED: 2013-02-15
+COMMIT: 2013-02-15
+
+- scripts and settings need to be adjusted
+- configuration program needs to be developed
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+TITLE: conversion script added
+FOUND: 2013-02-11
+REPORTED: DL5DI
+SOLVED: 2013-02-10
+COMMIT: 2013-02-10
+
+/usr/bin/convert_defaults.sh
+script added to easily convert /etc/default/repeater_* to correct format
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+TITLE: fix repeater startup issues
+FOUND: 2013-02-07
+REPORTED: DL5DI
+SOLVED: 2013-02-10
+COMMIT: 2013-02-10
+
+- autostart of repeater modules failed - fixed
+- repeater modules started more than once - fixed
+root cause were failures in /etc/default/repeater_*
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+TITLE: Fix permissions
+FOUND: 2013-02-08
+REPORTED: DL5DI
+SOLVED: 2013-02-09
+COMMIT: 2013-02-09
+
+- the configuration programs ircddbgw_conf and repeater_conf now fix permissions on exit (option 99)
+- permission issues are created by running the programs direct from a root shell WHICH IS NOT RECOMMENDED!!
+
+PLEASE check the manuals for a correct way to start the software! 
+A start from "root" may block writing to important status and log files!
+This feature allows to fix the problem manually, not to prevent it.
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+TITLE: Debian armhf packages
+FOUND: 2013-01-22
+REPORTED: ON4TOP
+SOLVED: 2013-02-02
+COMMIT: 2013-02-02
+
+- Debian armhf packages for Hackberry & Co added
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+TITLE: Documentation
+FOUND: 2013-01-22:
+SOLVED: 2013-01-23
+
+- Documentation of all packages updated
+- Raspbian armhf repository information added
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+TITLE: Add GPIO activation to repeater_conf
+FOUND: 2013-01-22
+REPORTED: DL5DI
+SOLVED: 2013-02-03
+COMMIT: 2013-02-03
+- Raspberry Pi's GPIO settings added to configuration tool
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+TITLE: Fix in startscripts
+FOUND: 2013-01-28
+REPORTED: Andrew M1DNS
+PRIORITY: normal
+SOLVED: 2013-01-28
+COMMIT: 2013-01-29
+
+- pathname of daemon missing, binary check did not work
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+TITLE: ircDDB enabling optional
+REPORTED: DL5DI
+PRIORITY: normal
+SOLVED: 2013-01-25
+COMMIT: 2013-01-25
+
+- ircDDBGateway can now be run without ircDDB network connect
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+TITLE: Repository server lists updated
+REPORTED: DL5DI
+PRIORITY: normal
+SOLVED: 2013-01-23
+COMMIT: 2013-01-24
+
+- directory structure of server soft.mgw.ch changed
+- server raspbian.nh6z.net added for Raspbian packages
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+TITLE: Error in postinst during installation
+FOUND: 2012-08-10
+REPORTED: several
+VERIFIED: 2013-01-23
+PRIORITY: normal
+SOLVED: 2013-01-23
+COMMIT: 2013-01-24
+
+- postinstall script could not create symlink to timeserver configuration file
+- script now checks if timeserver has been configured and configfile exists
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+TITLE: Raspbian armel package added
+REPORTED: DL5DI
+VERIFIED: 2013-01-23
+PRIORITY: normal
+SOLVED: 2013-01-23
+COMMIT: 2013-01-24
+
+- makefile includes added
+- scripts adjusted
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+TITLE: Debian amd64 package added
+REPORTED: DL5DI
+VERIFIED: 2013-01-22
+PRIORITY: normal
+SOLVED: 2013-01-22
+COMMIT: 2013-01-22
+
+- makefile includes added
+- scripts adjusted
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+TITLE: Dashboard update DD-Mode
+REPORTED: DL5DI
+VERIFIED: 2012-10-23
+PRIORITY: normal
+SOLVED: 2012-10-23
+COMMIT: 2012-10-23
+
+- dashboard update for DD-mode repeaters
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+TITLE: Reporting per Repeater Module
+REPORTED: DL5DI
+VERIFIED: 2012-10-02
+PRIORITY: normal
+SOLVED: 2012-10-02
+COMMIT: 2012-10-02
+
+- status and software reporting changed from gateway to repeater based
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+TITLE: Swedish language missing
+FOUND: 2012-09-29
+REPORTED: SM0TSC
+VERIFIED: 2012-09-29
+PRIORITY: normal
+SOLVED: 2012-09-29
+COMMIT: 2012-09-29
+
+- menus and language index extended to cover Swedish language in Timeserver
+- typo in ircddbgateway install script: DSM was not stopped
+- bugfix logging: reset to default logdir
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+TITLE: Startup slow when DD_mode_dhcp is set to "yes" ?
+FOUND: 2012-09-10
+REPORTED: ON4TOP
+VERIFIED: 2012-09-29
+PRIORITY: standard
+SOLVED: 2012-09-29
+COMMIT: 2012-09-29
+
+issue only appeared when "reload" was selected, not on start and stop. 
+
+${IRCDDBGATEWAY_DDENABLED} is set to "no" by default.
+${IRCDDBGATEWAY_DDDHCP} is set to "yes" by default, but only used if ${IRCDDBGATEWAY_DDENABLED} = "yes".
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+TITLE: UHF version of DVAP
+FOUND: 2012-09-24
+REPORTED: DL5DI
+VERIFIED: 2012-09-24
+PRIORITY: low
+SOLVED: 2012-09-24
+COMMIT: 2012-09-24
+
+frequency setting for UHF version of DVAP the modem implemented
+settings to run GMSK/DVAP as non-root
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+TITLE: bug in repeater_conf (command line options)
+FOUND: 2012-09-23
+REPORTED: DL5DI
+VERIFIED: 2012-09-23
+PRIORITY: high
+SOLVED: 2012-09-23
+COMMIT: 2012-09-23
+
+bug in setting command line options
+audio logging moved to logging function
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+TITLE: bug in repeater_conf (command line options)
+FOUND: 2012-09-20
+REPORTED: DL5DI
+VERIFIED: 2012-09-20
+PRIORITY: low
+SOLVED: 2012-09-21
+COMMIT: 2012-09-22
+
+New function to read and set command line options, bugfix, audiopath option added.
+Manual module setting checked for value 1-4.
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+TITLE: documentation ircDDBGateway Debian package
+FOUND: 2012-09-07
+REPORTED: DL5DI
+VERIFIED: 2012-09-07
+PRIORITY: low
+SOLVED: 2012-09-18
+COMMIT: not part of SVN
+
+Documentation for ircDDBGateway package for Debian ARM/i386
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+TITLE: backup for repo server
+FOUND: 2012-09-13
+REPORTED: DL5DI
+VERIFIED: 2012-09-13
+PRIORITY: standard
+SOLVED: 2012-09-16
+COMMIT: 2012-09-16
+
+- 2nd and 3rd repo server set up
+- addresse added to /etc/apt/sources.list.d/opendv.list
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+TITLE: logging configuration in ircddbgw_conf
+FOUND: 2012-09-13
+REPORTED: DL5DI
+VERIFIED: 2012-09-13
+PRIORITY: standard
+SOLVED: 2012-09-15
+COMMIT: 2012-09-16
+
+configuration option to change logdir added to ircddbgw_conf
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+TITLE: configuration optin DVRPTR v2
+FOUND: 2012-09-15
+REPORTED: DL5DI
+VERIFIED: 2012-09-15
+PRIORITY: standard
+SOLVED: 2012-09-15
+COMMIT: 2012-09-15
+
+add configuration option for DVRPTR modem V2 to repeater_conf
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+TITLE: language index error in config-tools
+FOUND: 2012-09-12
+REPORTED: F0DEI
+VERIFIED: 2012-09-12
+PRIORITY: standard
+SOLVED: 2012-09-14
+COMMIT: 2012-09-14
+
+- menu files corrected
+- index converted from ircddbgateway to repeater
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+TITLE: DD-mode documentation update
+FOUND: 2012-09-13
+REPORTED: ON4TOP/DL5DI
+VERIFIED: 2012-09-13
+PRIORITY: low
+SOLVED: 2012-09-13
+COMMIT: not part of the SVN
+
+DD-mode documentation updated to show actual scripts
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Release status: 
+
+ircddbgateway_20120908-1_arm
+ircddbgateway_20120908-2_i386
+
+repeater_20120907-3_armel
+repeater_20120907-6_i386
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+TITLE: ntp / ntpdate handling costs time, not needed on i386
+FOUND: 2012-09-10
+REPORTED: ON4TOP
+VERIFIED: 2012-09-10
+PRIORITY: low
+SOLVED: 2012-09-11
+COMMIT: not part of the SVN
+
+Packager removes ntp/ntpdate commands from startup files for i386.
+
+Solution:
+i386 version does not set time by ntpdate, which requires ntp to be stopped before and restarted after,
+This procedure is only used for ARM systems which usually have no hardware clock.
+
+##########################################################################################################################################################
+
+Release status: 
+
+ircddbgateway_20120908-1_arm
+ircddbgateway_20120908-1_i386
+
+repeater_20120907-3_armel
+repeater_20120907-5_i386
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+TITLE: permission issue ttyACM device
+FOUND: 2012-09-07
+REPORTED: F0DEI / Toufik
+VERIFIED: 2012-09-07
+PRIORITY: standard
+SOLVED: 2012-09-10
+COMMIT: not part of the SVN
+
+Description:
+> > > On my RPI I have an error in the log
+> > >
+> > > Cannot open device - /dev/ttyACM0
+
+solution with /etc/udev/rules.d/ did not work properly
+
+John K7VE and Tom ON4TOP recommend:
+
+> usermod -G dialout opendv
+
+It works, implemented after account creation in repeater preinst script.
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+TITLE: configuration starts automatically after package upgrade
+FOUND: 2012-09-07
+REPORTED: DL5DI
+VERIFIED: 2012-09-07
+PRIORITY: standard
+SOLVED: 2012-09-10
+COMMIT: not part of the SVN
+
+Description:
+configuration starts automatically after package upgrade. 
+It should only do it after first installation.
+This needs manual input and prevents auto upgrade capability.
+
+Change needed!
+The preinst script of dh_make needs to be adjusted.
+
+Behaviour of apt and YUM/rpm is different at that place, "install" is install for YUM and does not include "upgrade".
+For apt every upgrade is an installation.
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+TITLE: confusing version numbers
+FOUND: 2012-09-07
+REPORTED: ON4TOP
+VERIFIED: 2012-09-07
+PRIORITY: low
+SOLVED: 2012-09-09
+COMMIT: 2012-09-09
+
+version numbers reported on ircDDB are confusing when packages may be build from non released SVN code.
+- the package then shows the date of the SVN status
+- the binary shows the last release like in the source code.
+  (like in xxxxDef.h of repeaters and Version.f of ircddbgateway)
+
+
+- Marking the binary version with "-SVN" plus adding the package release breaks the code! (string gets too long)
+- It is not planned to release packages from unreleased code. 
+
+The issue appeared just during the first tests with unreleased code.
+
+Solution:
+- dl5di: package build script will no longer allow to modify version number different from Version.h
+- g4klx: SVN release will be compiled to the code and shown in logfile to make support easier
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+TITLE: provide Debian/i386 version
+FOUND: 2012-09-07
+REPORTED: DL5DI
+VERIFIED: 2012-09-07
+PRIORITY: low
+SOLVED: 2012-09-08
+COMMIT: 2012-09-08 (mk-File, rest not part of the SVN)
+
+
+Debian/i386 packages are ready for first tests.
+Package builder scripts need to be modified to split i386 from ARM packages 
+and upload it correct to the repo server.
+PGP-signing needs to be adjusted to create different signed lists.
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+TITLE: usage of chkconfig in Debian packages
+FOUND: 2012-09-05
+REPORTED: ON4TOP
+VERIFIED: 2012-09-05
+PRIORITY: low
+SOLVED: 2012-09-09
+COMMIT: not part of SVN
+
+Description:
+chkconfig is no standard Debian package
+
+Solution:
+add "chkconfig" to dependencies or use "update_rc.d"
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+TITLE: wrong path for configfile used by repeater
+FOUND: 2012-09-05
+REPORTED: ON4TOP
+VERIFIED: 2012-09-07
+PRIORITY: high
+SOLVED: 2012-09-07
+COMMIT: not part of SVN
+
+Description:
+repeater uses wrong path for configfile
+
+Solution:
+dh_make/quilt patches
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+TITLE: repeater_conf fails
+FOUND: 2012-09-04
+REPORTED: ON4TOP
+VERIFIED: 2012-09-04
+PRIORITY: high
+SOLVED: 2012-09-04
+COMMIT: 2012-09-04
+
+Description:
+
+/usr/bin/repeater_conf: line 2357: [: AUTO: integer expression expected
+
+
+A comparision with "-ne" (not equal) instead of "!=" (not equal) in line 2357.
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+TITLE: opendvdata installed to wrong directory
+FOUND: 2012-09-04
+REPORTED: ON4TOP
+VERIFIED: 2012-09-04
+PRIORITY: high
+SOLVED: 2012-09-05
+COMMIT: not part of SVN
+
+Description:
+- the new package opendvdata with common AMBE-files and hostlists is installed to /data directory instead of /home/opendv/data
+- DATADIR in the makefile can not be changed to "DATADIR=$(DESTDIR)/home/opendv/data" like usual for staged installation,
+  it would break the application, $DATADIR is compiled to the application.
+
+Solution:
+dh_make script changed
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+TITLE: Repeater crashes with Segmentation fault
+FOUND: 2012-09-03
+REPORTED: ON4TOP
+VERIFIED: 2012-09-04
+PRIORITY: very high
+SOLVED: 2012-09-07
+COMMIT: not part of SVN
+
+Description:
+Repeater crashes with Sementation fault abt. 60 seconds after thread started:
+
+strace -u debian -tt -o /tmp/strace1 "/usr/bin/dvrptrrepeaterd -logdir=/var/log/opendv 1"
+
+0
+23:26:46.706486 clone(child_stack=0x431dede8, flags=CLONE_VM|CLONE_FS|CLONE_FILES|CLONE_SIGHAND|CLONE_THREAD|CLONE_SYSVSEM|CLONE_SETTLS|CLONE_PARENT_SETTID|CLONE_CHILD_CLEARTID, parent_tidptr=0x431df318, tls=0x431df770, child_tidptr=0x431df318) = 9842
+23:26:46.707602 
+futex(0x431df318, FUTEX_WAIT, 9842, NULL <unfinished ...>
+23:27:49.099797 
++++ killed by SIGSEGV +++
+
+
+
+Issue could be tracked down to a format error in the version reporting when following the forked thread:
+
+strace -f -u debian -tt -o /tmp/strace1 "/usr/bin/dvrptrrepeaterd -logdir=/var/log/opendv 1"
+
+[pid 23277] select(6, [5], NULL, NULL, {0, 0}) = 0 (Timeout)
+[pid 23277] nanosleep({0, 5000000},  <unfinished ...>
+[pid 23274] sendto(4, "DSRP\nlinux_dvrptr-20120901 dpkg:"..., 56, 0, {sa_family=AF_INET, sin_port=htons(20010), sin_addr=inet_addr("127.0.0.1")}, 16) = 56
+[pid 23274] --- SIGSEGV (Segmentation fault) @ 0 (0) ---
+Process 23274 detached
+[pid 23278] +++ killed by SIGSEGV +++
+[pid 23277] +++ killed by SIGSEGV +++
+
+
+The version string "... dpkg: ... " created from the packaging script by quilt is a copy from the gateway version and too long for the repeater !!!
+We do not report package revision from repeater modules!
+Stupid copy&paste issue.
+Really very very stupid!!!
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+TITLE: ircddbgw_conf does not accept callsign
+FOUND: 2012-09-03
+REPORTED: ON4TOP
+VERIFIED: 2012-09-04
+PRIORITY: very high
+SOLVED: 2012-09-04
+Commit: 2012-09-04
+
+Description:
+
+callsign [] > ON0DXK
+
+callsign [] >  ( keeps asking for callsign )
+
+Solution:
+It was a result of a wrong pathname.
+The program could not read the file with the default values and the current configfile.
+It did not appear on systems where the configfile exist at that place from former tests.
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+TITLE: ircddbgw_conf claims "locale" issue
+FOUND: 2012-09-03
+REPORTED: ON4TOP
+VERIFIED: 2012-09-04
+PRIORITY: standard
+SOLVED: 2012-09-04
+Commit: 2012-09-04
+
+Description:
+
+perl: warning: Setting locale failed.
+
+perl: warning: Please check that your locale settings:
+        LANGUAGE = (unset),
+        LC_ALL = (unset),
+        LANG = "0"
+    are supported and installed on your system.
+perl: warning: Falling back to the standard locale ("C").
+
+
+Solution:
+Remove LOCALE setting from the configuration programs for ircddbgw_conf, repeater_conf
+and from ircddbgateway.sh start script.
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+TITLE: Syntax errors in scripts
+FOUND: 2012-09-01
+REPORTED: ON4TOP
+VERIFIED: 2012-09-02
+PRIORITY: high
+SOLVED: 2012-09-02
+COMMIT: 2012-09-02
+
+changes on some pathnames of configfiles (taken from YUM version)
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+TITLE: conflicts with shared AMBE files and hostlists
+FOUND: 2012-08-28
+REPORTED: DL5DI
+VERIFIED: 2012-08-29
+PRIORITY: high
+SOLVED: 2012-08-29
+COMMIT: not part of SVN
+
+Description:
+repeater and ircddbgateway uninstall and reinstall each other's AMBE files/hostlists during updates.
+This leads to confusing messages and delays.
+"Replaces" not really dos what I expected.
+
+Solution:
+Get AMBE-files and hostlists to separate package "opendvdata" like used in YUM packages.
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+TITLE: Syntax errors in scripts
+FOUND: 2012-08-28
+REPORTED: ON4TOP/DL5DI
+VERIFIED: 2012-08-28
+PRIORITY: high
+SOLVED: 2012-08-28
+COMMIT: 2012-08-28
+
+Some scripts still use /bin/sh which is /bin/dash on Debian Wheezy
+"dash" is too limited, does not know regular expressions and can not be used for the scripts
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+TITLE: Installation of repeater package fails
+FOUND: 2012-08-26
+REPORTED: ON4TOP
+VERIFIED: 2012-08-26
+PRIORITY: high
+SOLVED: 2012-08-16
+COMMIT: 2012-08-26
+
+Installation of repeater package failed.
+startscripts return non-zero when run from pre-install script (which is standard).
+return values need to be ignored when run during pre-install.
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------

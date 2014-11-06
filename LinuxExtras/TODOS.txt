@@ -1,0 +1,58 @@
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+TODOs
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+2013-11-21
+- install the dashboard to an existing path structure (apache or lighttpd (VK4TUX) or nanohttpd or tinyhttpd) 
+
+2013-06-25
+- web-based configuration tool for new repeater software
+
+2013-03-12
+all Debian StartScripts:
+- improve ntp handling (DL1BFF)
+-- make ntpdate setting configurable, only set time when required
+2013-01-31
+Reported by: several
+adjust ntpd parameters for arm Devices (ignore panic threshold on Raspberry Pi))
+(... ntpd is not really part of the ircDDBGateway/repeater packages ...)
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+2013-03-11
+- describe remote repeater configuration
+- add chart which shows connections and ports
+2013-02-21
+Update of documentation required:
+- CCS features
+- dashboard sample configuration
+- XReflector
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+2013-03-10
+ircddbgw_conf / repeater_conf:
+- add option to configure remote repeater modules
+- add option to configure non-daemon repeater modules (dummyrepeater) 
+ 
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+2013-02-21
+XReflector:
+- configuration program for XReflector
+- finetuning of new xreflector packages
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+2013-01-28
+Reported by Dennis, N5VRP
+provide Icons for ircDDBGateway, Repeater modules and configuration programs
+(set LOCALE properly and use root/non-root in Debian systems where necessary)
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+2013-01-25:
+dashboard has to be changed or switched off when ircDDB is disabled.
+Most of current data are fetched from ircddb.net and no longer available without connectivity.
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------

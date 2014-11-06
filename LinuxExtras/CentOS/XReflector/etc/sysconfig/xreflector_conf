@@ -1,0 +1,9 @@
+BACKUPPATH=/etc
+LOGPATH=/var/log/dstar
+CFGPATH=/etc
+DEFVALUES=/etc/default/xreflector
+DATAPATH=/usr/share/xreflector_conf
+OPENDVDATA=/usr/local/etc
+XREFLECTORCONFIG=/etc/xreflector
+DASHBOARDCFG=/var/www/html/xreflectorlocal.php
+XRFCFGCONFIG=/etc/xreflector_conf

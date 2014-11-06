@@ -1,0 +1,2776 @@
+#!/bin/bash
+#
+# Configure script for G4KLX Repeater
+#
+# Copyright (C) 2012-2014   Hans-J. Barthen, DL5DI (dl5di@gmx.de)
+# Basic components from ircddbconfig (C) 2011 Michael Dirska, DL1BFF
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+# 2012-03-17 dl5di    initial version for ircddbgatway
+# 2012-07-08 dl5di    initial version for repeater
+# 2012-07-10 dl5di    soundmodem configuration with alsa tools integrated
+# 2012-07-11 dl5di    bugfixes, cleanups, first beta release
+# 2012-08-22 dl5di    change dstarrepeater->soundcardrepeater
+# 2012-08-26 dl5di    check if started by root, needed to modify default settings for start script
+# 2012-09-01 dl5di    create direcotry if LOGPATH does not exist
+# 2012-09-14 dl5di    language setting corrected (ircddbgateway uses different indexes)
+# 2012-09-15 dl5di    modemVersion added
+# 2012-09-21 dl5di    bugfix, new command line option of repeater added
+# 2012-09-23 dl5di    bugfix, commandline options were overwritten from template
+# 2012-09-24 dl5di    added frequency configuration for UHF-version of DVAP
+# 2012-09-29 dl5di    bugfix, reset if logdir
+# 2012-12-22 dl5di    ethernet configuration for dvrptrepeater V2
+# 2013-01-22 dl5di    cleanups
+# 2013-03-06 dl5di    bugfix request_selection/request_value
+# 2013-03-15 dl5di    allow new OZ callsign format
+# 2014-02-16 dl5di    dtmfBlanking and errorReply added
+#
+# Todo / known issues:
+# - full implementation of soundmodem configuration and Vellemann board
+# - hex-input of DVAP address
+# - flexibility to be used on other Linux distributions
+# - cleanups
+# - implement sanity check for config file 
+#   (find/eliminate dupes)
+#
+rev="20140216"
+
+if [ $UID -ne 0 ]; then
+	echo
+	echo "ERROR:  This script must be run as the root user!"
+	echo "        Please use 'su' or log in as root and try again."
+	echo
+	exit 1
+fi
+#
+# usage:
+# 	./repeater_conf <module> [modemtype]
+# example:
+# 	./repeater_conf 1 2
+#
+# Startparameter:
+# 1: repeater module 1-4
+# 2: hardware type (optional / not necessary to modify existing entry):
+#	1 soundcardrepeater
+#	2 dvrptrrepeater
+#	3 gmskrepeater
+#	4 dvapnode
+#
+# repeater_conf is usually called out of ircddbgw_conf
+#
+#----------------------------------------------------------------------------
+
+function write_value(){
+
+#
+# 3 parameters: filename parametername value
+# sample call: write_value /etc/ircddbgateway $var $gwcall
+# returns: 0=error, 1=ok, 2=no change
+#
+
+	RETVAL=0
+
+	if [ $# != 3 ]; then
+		echo "    not enough params $#" >> $LOG
+		return $RETVAL
+	fi
+
+	echo " - ($3) -> $1($2)" >> $LOG
+
+	if [ ! -f "$1" ]; then
+		echo "   $1 does not exist" >> $LOG
+		return $RETVAL
+	fi
+
+	if grep -q "^[[:space:]]*${2}[[:space:]]*=[[:space:]]*[[:graph:]][[:print:]]*" "$1"; then
+		if grep -q "^[[:space:]]*${2}[[:space:]]*=[[:space:]]*${3}[[:space:]]*$" "$1"; then
+			echo "   $1 already has ${2} set to ${3}, no change" >> $LOG
+			RETVAL=2
+		else
+			echo -e ",s|^[[:space:]]*${2}[[:space:]]*=[[:space:]]*[[:graph:]][[:print:]]*|${2}=${3}|\nwq" | ed -s "$1"
+			echo "   setting ${2}=${3} in file ${1}" >> $LOG
+			RETVAL=1
+		fi
+	elif grep -q "^[[:space:]]*${2}[[:space:]]*=$" "$1"; then
+		echo "   setting ${2}=${3} to file $1" >> $LOG
+		echo -e ",s|^[[:space:]]*${2}=$|${2}=${3}|\nwq" | ed -s "$1"
+		RETVAL=1
+	else
+		echo "   adding ${2}=${3} to file $1" >> $LOG
+		echo "${2}=${3}" >> "$1"
+		RETVAL=1
+	fi
+
+	echo ""
+	if [ $RETVAL -gt 0 ]; then
+		echo "OK (${3})"
+	else
+		echo "ERROR (${3}) "
+	fi
+	echo ""
+	return $RETVAL
+}
+
+function read_default(){
+#
+# read default value from /etc/defaults/<hwtype>_conf
+# parameter: parametername
+# returns 0=error 1=OK 2=no defaultvalue
+# value in globale variable 'DEFAULT'
+#
+  RETVAL=0
+  unset DEFAULT
+    
+  if [ $# != 1 ]; then
+    return $RETVAL
+  fi
+
+  echo " - $DEFVALUES $1" >> $LOG
+
+  if [ ! -f $DEFVALUES ]; then
+    echo "   $DEFVALUES does not exists" >> $LOG
+    return $RETVAL
+  fi
+
+  if ! grep -q "^[[:space:]]*${1}[[:space:]]*=[[:space:]]*[[:graph:]][[:print:]]*" "$DEFVALUES"; then
+    if grep -q "^[[:space:]]*${1}[[:space:]]*=" "$DEFVALUES"; then
+   	echo "   property $1 from $DEFVALUES has empty value" >> $LOG
+	DEFAULT=""
+	RETVAL=2
+    else
+	echo "   $DEFVALUES does not contain $1 property" >> $LOG
+    fi
+    return $RETVAL
+  fi
+
+  DEFAULT=` gawk '
+   /^[[:space:]]*'"$1"'[[:space:]]*=[[:space:]]*[[:graph:]][[:print:]]*/ {
+     match( $0, "^[[:space:]]*'"$1"'[[:space:]]*=[[:space:]]*([[:graph:]][[:print:]]*)", a)
+     print a[1]
+     exit
+   } ' < "$DEFVALUES" `
+
+  if [ "x$DEFAULT" = "x" ]; then
+    echo "   could not read property $1 from file $DEFVALUES" >> $LOG
+    DEFAULT=""
+    return 2
+  fi
+  echo "   default is: $DEFAULT" >> $LOG
+
+  return 1
+}
+
+
+function read_value(){
+#
+# read value from file
+# 2 parameter1: filenamename parametername
+# returns 0=error 1=OK
+# value in globale variable 'DEFAULT'
+#
+  RETVAL=0
+  unset INPUT
+    
+  if [ $# != 2 ]; then
+    return $RETVAL
+  fi
+
+  echo " - $1($2)" >> $LOG
+
+  if [ ! -f "$1" ]; then
+    echo "   $1 does not exists" >> $LOG
+    return $RETVAL
+  fi
+
+  if ! grep -q "^[[:space:]]*${2}[[:space:]]*=[[:space:]]*[[:graph:]][[:print:]]*" "$1"; then
+    echo "   $1 does not contain $2 property" >> $LOG
+    return $RETVAL
+  fi
+
+  VALUE=` gawk '
+   /^[[:space:]]*'"$2"'[[:space:]]*=[[:space:]]*[[:graph:]][[:print:]]*/ {
+     match( $0, "^[[:space:]]*'"$2"'[[:space:]]*=[[:space:]]*([[:graph:]][[:print:]]*)", a)
+     print a[1]
+     exit
+   } ' < "$1" `
+
+  if [ "x$VALUE" = "x" ]; then
+    echo "   could not read property $2 from file $1" >> $LOG
+    return $RETVAL
+  fi
+  return 1
+}
+
+
+function request_input(){
+#
+# request input string from user
+# 4-5 parameters: prompt minlength maxlength require [default]
+# returns answer in global variable INPUT
+# require: 0=no/1=yes/2=yes but reset allowed
+# returns 0=error, 1=ok, 2= oldvalue, 3=reset 
+#
+  RETVAL=0
+  unset INPUT
+    
+  if [ $# != 4 -a $# != 5 ]; then
+    return $RETVAL
+  fi
+
+  echo " - input request $1 $2 $3 $4 $5" >> $LOG
+
+  while [ ${#INPUT} -lt $2 ]; do
+    if [ "$4" = 0 -o "$4" = 2 ]; then
+	print_text "reset_allowed"
+    fi
+    read -r -e -n $3 -p "$1 [$5] > " INPUT
+    RETVAL=1
+    if [ -z "$INPUT" ]; then
+	RETVAL=2
+	INPUT=$5
+	if [ -z "$INPUT" -a  "$4" -eq 0 ]; then
+	    break
+	fi	
+    fi
+    if [ "$INPUT" == "-" ]; then
+	if [ "$4" = 0 -o "$4" = 2 ]; then
+	    RETVAL=3
+	    break
+	else
+#	    print_text "request_input"
+	    INPUT=""
+	fi
+    fi
+  done
+  return $RETVAL
+}
+
+function request_value(){
+#
+# request numeric value from user
+# 4-5 parameters: prompt minvalue maxvalue require [default]
+# returns answer in global variable INPUT
+# require: 0=no/1=yes/2=yes but reset allowed
+# returns 0=error, 1=ok, 2=oldvalue, 3=reset 
+# returns value in global variable INPUT
+#
+  RETVAL=0
+  let INPUT=$2-1
+    
+  if [ $# != 4 -a $# != 5 ]; then
+    echo "ERROR request_value"
+    echo "ERROR request_value number of parameters" >> $LOG
+    return $RETVAL
+  fi
+
+  echo " - value request $1 $2 $3 $4 $5" >> $LOG
+
+  while [[ "${INPUT}" -lt "$2" ]] || [[ "${INPUT}" -gt "$3" ]]; do
+    if [ "$4" = 0 -o "$4" = 2 ]; then
+	print_text "reset_allowed"
+    fi
+    read -r -e -p "$1 [$5] > " INPUT
+    RETVAL=1
+    if [ -z "$INPUT" ]; then
+	RETVAL=2
+	INPUT=$5
+	if [ -z "$INPUT" -a  "$4" -eq 0 ]; then
+	    break
+	fi	
+    fi
+    if [ "$INPUT" == "-" ]; then
+	if [ "$4" = 0 -o "$4" = 2 ]; then
+	    RETVAL=3
+	    break
+	else
+#	    print_text "request_value"
+	    INPUT=""
+	fi
+    fi
+  done
+  return $RETVAL
+}
+
+
+function request_callsign(){
+#
+# request callsign from user and validate
+# 3-4 parameters: prompt format require [default]
+# returns answer in global variable INPUT
+# require: 0=yes/1=no
+# format:
+#   0=callsign,no id,not formatted to 8 digits 
+#   1=callsign,no id,formatted to 8 digits
+#   2=callsign with id
+#   3=starnet callsign
+#   4=starnet logoff callsign
+#
+# returns 0=error, 1=ok, 2=oldvalue, 3=reset 
+#
+  RETVAL=0
+  unset INPUT
+    
+  if [ $# != 3 -a $# != 4 ]; then
+    return $RETVAL
+  fi
+  echo " - callsign request $1 $2 $3 \'$4\'" >> $LOG
+
+  while [ $RETVAL -eq 0 ]; do
+    read -r -e -n 8 -p "$1 [$4] > " INPUT
+    echo ""
+    if [ -z "$INPUT" ]; then
+	INPUT="$4"
+	RETVAL=2
+	if [ -z "$INPUT" -a $3 = 0 ]; then
+	    return $RETVAL
+	fi
+    fi
+    if [ "$INPUT" == "-" ]; then
+	if [ "$3" -eq 0 ]; then
+	    RETVAL=3
+	    break
+	else
+	    print_text "request_input"
+	    unset INPUT
+	fi
+    fi
+    INPUT=$(echo "$INPUT" | tr "[[:lower:]]" "[[:upper:]]")
+    if [ "$2" -gt 2 ]; then    
+	if [ ${#INPUT} -ge 6 ]; then
+	    pattern=$(echo "$INPUT" | sed "s!STN!!g" | tr "[[:alpha:]]" "A" | tr "[[:digit:]]" "N")
+	    pattern=$(printf "%-5.5s" "$pattern") 
+	    if [ "$pattern" = "NNN A" ]; then
+		RETVAL=1
+	    elif [ "$2" -eq 3 -a "$pattern" = "NNN  " ]; then
+		RETVAL=1
+	    fi
+	fi    
+    elif [ "$2" -eq 2 ]; then
+	pattern=$(echo "$INPUT" | cut -c -8 | tr "[[:alpha:]]" "A" | tr "[[:digit:]]" "N")
+	case "$pattern" in
+	    "ANA    A")
+		RETVAL=1
+		;;
+	    "ANAA   A")
+		RETVAL=1
+		;;
+	    "ANAAA  A")
+		RETVAL=1
+		;;
+	    "AANA   A")
+		RETVAL=1
+		;;
+	    "AANAA  A")
+		RETVAL=1
+		;;
+	    "AANAAA A")
+		RETVAL=1
+		;;
+	    "NANA   A")
+		RETVAL=1
+		;;
+	    "NANAA  A")
+		RETVAL=1
+		;;
+	    "NANAAA A")
+		RETVAL=1
+		;;
+	    "ANNA   A")
+		RETVAL=1
+		;;
+	    "ANNAA  A")
+		RETVAL=1
+		;;
+	    "ANNAAA A")
+		RETVAL=1
+		;;
+	    "AANNAA A")
+		RETVAL=1
+		;;
+    	    *)
+		RETVAL=0
+		;;
+	esac
+    else
+	pattern=$(echo "$INPUT" | cut -c -7 | tr -d "[[:space:]]" | tr "[[:alpha:]]" "A" | tr "[[:digit:]]" "N" )
+	case $pattern in
+	    "ANA")
+		RETVAL=1
+		;;
+	    "ANAA")
+		RETVAL=1
+		;;
+	    "ANAAA")
+		RETVAL=1
+		;;
+	    "AANA")
+		RETVAL=1
+		;;
+	    "AANAA")
+		RETVAL=1
+		;;
+	    "AANAAA")
+		RETVAL=1
+		;;
+	    "NANA")
+		RETVAL=1
+		;;
+	    "NANAA")
+		RETVAL=1
+		;;
+	    "NANAAA")
+		RETVAL=1
+		;;
+	    "ANNA")
+		RETVAL=1
+		;;
+	    "ANNAA")
+		RETVAL=1
+		;;
+	    "ANNAAA")
+		RETVAL=1
+		;;
+    	    *)
+		RETVAL=0
+		;;
+	esac
+    fi
+    if [ "$RETVAL" -eq 1 ]; then
+	case $2 in
+	    0)
+		;;
+	    [1-3])
+		INPUT=$(printf "%-8.8s" "$INPUT")
+		;;
+	    4)
+		;;
+	    *)
+		if [ ${#INPUT} -ne 8 ]; then
+		    unset INPUT
+		    RETVAL=0
+		fi
+		;;
+	esac
+    fi
+  done
+  return $RETVAL
+}
+
+
+function request_selection(){
+#
+# request selection from user
+# 3 parameters: prompt defaultvalue [oldvalue]
+# returns 0=No, 1=Yes, 2=oldvalue, 3=error
+# value in $RETVAL
+#
+  unset INPUT
+  if [ $# != 2 -a $# != 3 ]; then
+    return 3
+  fi
+  echo " - request_selection $1 $2 $3" >> $LOG
+  read -r -e -n 1 -p "$1 [$3] > " INPUT
+  if [ -z "$INPUT" ]; then
+    RETVAL=$3
+  else
+    case $INPUT in
+	[Yy1])
+	    RETVAL=1
+	    ;;
+	[Nn0])
+	    RETVAL=0
+	    ;;
+	[Rr-])
+	    RETVAL=$2
+	    ;;
+	*)
+	    RETVAL=$3
+	    ;;
+    esac    
+  fi
+  echo ""
+  return $RETVAL
+}
+
+
+function select_item(){
+#
+# 3 parameters: prompt max [oldvalue]
+# returns 0=error 1=OK 2=oldvalue, 3=reset
+# selection on global variable SELECT
+#
+  unset INPUT
+  unset SELECT
+  RETVAL=0
+  if [ $# != 2 -a $# != 3 ]; then
+    return 0
+  fi
+  echo " - select_item $1 $2 $3" >> $LOG
+  while [ true ]; do
+    read -r -e -n 2 -p "$1 [$3] > " INPUT
+    if [ -z "$INPUT" ]; then
+	RETVAL=2
+	SELECT=$3
+	break
+    elif [ "$INPUT" == "-" ]; then
+	RETVAL=3
+	break
+    elif [ $INPUT -le $2 ]; then
+	RETVAL=1
+	SELECT=$INPUT
+	break
+    fi
+  done
+  echo "- selected: $RETVAL/$SELECT" >> $LOG
+  return $RETVAL
+}
+
+
+function valid_ip(){
+#
+# return: 0=OK, 1=error
+#
+    local  ip=$1
+    local  stat=1
+
+    echo " - valid_ip $1" >> $LOG
+        if [[ $ip =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$ ]]; then
+	OIFS=$IFS
+	IFS='.'
+	ip=($ip)
+	IFS=$OIFS
+	[[ ${ip[0]} -le 255 && ${ip[1]} -le 255 && ${ip[2]} -le 255 && ${ip[3]} -le 255 ]]
+	stat=$?
+    fi
+
+    if [ $stat != 0 ]; then
+	print_text "invalid_ip"
+    fi
+    echo " - valid_ip stat $stat" >> $LOG
+    return $stat
+}
+
+
+function valid_port(){
+#
+# return: 0=OK, 1=error
+#
+    local  port=$1
+    local  stat=1
+
+    echo " - valid_port $1" >> $LOG
+    if [[ $port =~ ^[0-9]{4,5}$ ]]; then
+	if [ $port -ge 1024 -a $port -lt 65535 ]; then
+	    stat=0
+	fi 
+    fi
+
+    if [ $stat != 0 ]; then
+	print_text "invalid_port"
+    fi
+    echo " - valid_port stat $stat" >> $LOG
+    return $stat
+}
+
+
+function reset_value(){
+#
+# reset_value to default
+# 1 parameter: parametername
+#
+  RETVAL=0
+    
+  if [ $# != 1 ]; then
+    return $RETVAL
+  fi
+
+  echo " - reset $1" >> $LOG
+
+  read_default $1 
+  if [ $? -ge 1 ]; then
+    write_value $REPEATERCONFIG $1 "$DEFAULT"
+    if [ $? = 1 ]; then
+	echo -n "($1='$DEFAULT') "
+	print_text "reset_value"
+	RETVAL=1
+    fi
+  fi
+  echo ""
+  return $REVAL
+}
+
+
+function print_text(){
+#
+# 1 parameter: textlabel
+# returns: 0=OK, 1=ERROR
+#
+  RETVAL=0
+    
+  if [ $# != 1 ]; then
+    return $RETVAL
+  fi
+
+  echo " - text $1" >> $LOG
+
+  if [ ! -f "$MENUFILE" ]; then
+    echo "FATAL ERROR!! helpfile $HELPFILE does not exists"
+    echo "FATAL ERROR!! helpfile $HELPFILE does not exists" >> $LOG
+    exit
+  fi
+  grep "^$1:" $MENUFILE | sed "s!$1:!!g"
+}
+
+
+function set_language(){
+#
+#language=1
+#
+    var="language"
+    Dat=`date +%Y%m%d%H%M`
+    echo "$Dat: $var" >> $LOG
+    read_default $var
+    read_value $REPEATERCONFIG $var
+    if [ "$?" = 0 ]; then
+	read_value $IRCDDBGWCONFIG $var
+	if [ "$?" = 0 ]; then
+    	    VALUE=$DEFAULT
+	else
+#	    convert different language index from ircddbgateway
+	    case $VALUE in
+		6)
+		    VALUE=9
+		    ;;
+		7)
+		    VALUE=6
+		    ;;
+		8)
+		    VALUE=7
+		    ;;
+		9-10)
+		    VALUE=8
+		    ;;
+		11)
+		    VALUE=10
+		    ;;
+		*)
+		    ;;
+	    esac	
+	fi
+    fi
+    print_text $var 
+    select_item $var 11 "$VALUE"
+    RET=$?
+    case $RET in
+	1)
+	    VALUE="$SELECT"
+	    ;;
+	2)
+#	    VALUE="$VALUE"
+	    ;;
+	3)
+	    VALUE="$DEFAULT"
+	    ;;
+	*)
+	    ;;
+    esac
+
+    write_value $REPEATERCONFIG $var "$VALUE"
+    HELPFILE="$DATAPATH/repeater_conf.$VALUE.hlp"
+    if [ ! -f "$HELPFILE" ]; then
+	HELPFILE="$DATAPATH/repeater_conf.0.hlp"
+    fi
+
+    MENUFILE="$DATAPATH/repeater_conf.$VALUE.menu"
+    if [ ! -f "$MENUFILE" ]; then
+	MENUFILE="$DATAPATH/repeater_conf.0.menu"
+    fi
+}
+
+#################### general configuration  ################################################
+
+function basic_setup(){
+
+    print_text basic_setup 
+    
+# 				
+# first choice for default values is always an exiting own configfile
+# 2nd and 3rd choice - if no better available:
+#
+# callsign=				from ircDDBGateway
+# callsign=DB0LJ  B
+#
+    var="callsign"
+    Dat=`date +%Y%m%d%H%M`
+    DEFAULT=""
+    echo "$Dat: $var" >> $LOG
+    read_value $REPEATERCONFIG $var
+    if [ "$?" = 0 ]; then
+	read_value $IRCDDBGWCONFIG "gatewayCallsign"
+	if [ "$?" = 0 ]; then
+	    VALUE=$DEFAULT
+	else
+	    repeaterCall="$VALUE"
+	    read_value $IRCDDBGWCONFIG "repeaterBand${MODULE}"
+	    if [ "$?" -eq 0 ]; then
+		VALUE=""
+	    else
+		VALUE="$(printf "%-7.7s" "$repeaterCall")${VALUE}"		
+	    fi
+	fi
+    fi
+    print_text $var
+    request_callsign $var 2 1 "$VALUE"
+    if [ "$?" -eq 1 ]; then
+	write_value $REPEATERCONFIG $var "$INPUT"
+    fi
+#
+# gateway=				from ircDDBGateway
+# gateway=DB0LJ  G
+#
+    var="gateway"
+    Dat=`date +%Y%m%d%H%M`
+    DEFAULT=""
+    echo "$Dat: $var" >> $LOG
+    read_value $REPEATERCONFIG $var
+    if [ "$?" = 0 ]; then
+	read_value $IRCDDBGWCONFIG "gatewayCallsign"
+	if [ "$?" = 0 ]; then
+	    VALUE=$DEFAULT
+	fi
+    fi
+    print_text $var 
+    request_callsign $var 1 1 "$VALUE"
+    if [ "$?" -eq 1 ]; then
+	write_value $REPEATERCONFIG $var "$(printf "%-7.7s" "$INPUT")G"
+    fi
+#    
+# mode=0
+#
+#  /0=old value
+# 0/1=duplex
+# 1/2=simplex
+# 2/3=gateway
+# 3/4=tx only
+# 4/5=rx only
+# 5/6=tx and rx
+#
+    var="mode"
+    Dat=`date +%Y%m%d%H%M`
+    echo "$Dat: $var" >> $LOG
+    read_default $var
+    read_value $REPEATERCONFIG $var
+    if [ "$?" = 0 ]; then
+	VALUE=$DEFAULT
+    fi
+    print_text $var 
+    select_item $var 6 "$VALUE"
+    RET=$?	
+    case $RET in
+	1)
+	    write_value $REPEATERCONFIG $var "$SELECT"
+	    ;;
+	2)
+	    write_value $REPEATERCONFIG $var "$VALUE"
+	    ;;
+	3)
+	    write_value $REPEATERCONFIG $var "$DEFAULT"
+	    ;;
+	*)
+	    ;;
+    esac
+#
+# ack=1
+#
+#  /0=old value
+# 0/1=off
+# 1/2=BER
+# 2/3=status
+#
+    var="ack"
+    Dat=`date +%Y%m%d%H%M`
+    echo "$Dat: $var" >> $LOG
+    read_default $var
+    read_value $REPEATERCONFIG $var
+    if [ "$?" = 0 ]; then
+	VALUE=$DEFAULT
+    fi
+    print_text $var 
+    select_item $var 3 "$VALUE"
+    RET=$?
+    case $RET in
+	1)
+	    write_value $REPEATERCONFIG $var "$SELECT"
+	    ;;
+	2)
+	    write_value $REPEATERCONFIG $var "$VALUE"
+	    ;;
+	3)
+	    write_value $REPEATERCONFIG $var "$DEFAULT"
+	    ;;
+	*)
+	    ;;
+    esac
+#
+# restriction=0
+# 0=off / 1=on
+#
+    var="restriction"
+    Dat=`date +%Y%m%d%H%M`
+    echo "$Dat: $var" >> $LOG
+    read_default $var
+    read_value $REPEATERCONFIG $var
+    if [ "$?" = 0 ]; then
+	VALUE=$DEFAULT
+    fi
+    print_text $var 
+    request_selection $var "$DEFAULT" "$VALUE"
+    INPUT=$?
+    case $INPUT in
+	[0-1])
+    	    write_value $REPEATERCONFIG $var "$INPUT"
+	    ;;
+	2)   
+	    write_value $REPEATERCONFIG $var "$VALUE"
+	    ;;
+	*)
+    	    reset_value $var
+	    ;;
+    esac
+
+#
+# rpt1Validation=1
+# 0=off / 1=on
+#
+    var="rpt1Validation"
+    Dat=`date +%Y%m%d%H%M`
+    echo "$Dat: $var" >> $LOG
+    read_default $var
+    read_value $REPEATERCONFIG $var
+    if [ "$?" = 0 ]; then
+		VALUE=$DEFAULT
+    fi
+    print_text $var 
+    request_selection $var "$DEFAULT" "$VALUE"
+    INPUT=$?
+    case $INPUT in
+	[0-1])
+    	    write_value $REPEATERCONFIG $var "$INPUT"
+	    ;;
+	2)   
+	    write_value $REPEATERCONFIG $var "$VALUE"
+	    ;;
+	*)
+    	    reset_value $var
+	    ;;
+    esac
+
+	#
+# dtmfBlanking=1
+#
+    var="dtmfBlanking"
+    Dat=`date +%Y%m%d%H%M`
+    echo "$Dat: $var" >> $LOG
+    read_default $var
+    read_value $REPEATERCONFIG $var
+    if [ "$?" = 0 ]; then
+		VALUE=$DEFAULT
+    fi
+    print_text $var 
+    request_selection $var "$DEFAULT" "$VALUE"
+    INPUT=$?
+    case $INPUT in
+	[0-1])
+        write_value $REPEATERCONFIG $var "$INPUT"
+	    ;;
+	2)   
+	    write_value $REPEATERCONFIG $var "$VALUE"
+	    ;;
+	*)
+        reset_value $var
+	    ;;
+    esac
+	
+#
+# errorReply=1
+#	
+    var="errorReply"
+    Dat=`date +%Y%m%d%H%M`
+    echo "$Dat: $var" >> $LOG
+    read_default $var
+    read_value $REPEATERCONFIG $var
+    if [ "$?" = 0 ]; then
+		VALUE=$DEFAULT
+    fi
+    print_text $var 
+    request_selection $var "$DEFAULT" "$VALUE"
+    INPUT=$?
+    case $INPUT in
+	[0-1])
+        write_value $REPEATERCONFIG $var "$INPUT"
+	    ;;
+	2)   
+	    write_value $REPEATERCONFIG $var "$VALUE"
+	    ;;
+	*)
+        reset_value $var
+	    ;;
+    esac
+
+#
+# gatewayAddress=127.0.0.1		from ircDDBGateway
+#
+    var="gatewayAddress"
+    Dat=`date +%Y%m%d%H%M`
+    echo "$Dat: $var" >> $LOG
+    read_default $var
+    read_value $REPEATERCONFIG $var
+    if [ "$?" = 0 ]; then
+	read_value $IRCDDBGWCONFIG "hbAddress"
+	if [ "$?" = 0 ]; then
+    	    VALUE=$DEFAULT
+	fi
+    fi
+    VALID=1
+    while [ "$VALID" != 0 ]; do
+	print_text $var 
+	request_input $var 7 15 2 "$VALUE"
+	if [ "$?" = 3 ]; then
+	    VALID=0
+	    INPUT=$DEFAULT
+	else
+	    valid_ip $INPUT
+	    VALID=$?
+	fi
+    done
+    write_value $REPEATERCONFIG $var "$INPUT"
+
+#
+# gatewayPort=20010			from ircDDBGateway
+#
+    var="gatewayPort"
+    Dat=`date +%Y%m%d%H%M`
+    echo "$Dat: $var" >> $LOG
+    read_default $var
+    read_value $REPEATERCONFIG $var
+    if [ "$?" = 0 ]; then
+	read_value $IRCDDBGWCONFIG "hbPort"
+	if [ "$?" = 0 ]; then
+    	    VALUE=$DEFAULT
+	fi
+    fi
+    VALID=1
+    while [ "$VALID" != 0 ]; do
+	print_text $var 
+	request_input $var 3 5 2 "$VALUE"
+	if [ "$?" = 3 ]; then
+	    VALID=0
+	    INPUT=$DEFAULT
+	else
+	    valid_port $INPUT
+	    VALID=$?
+	fi
+    done
+    write_value $REPEATERCONFIG $var "$INPUT"
+
+#
+# localAddress=127.0.0.1		from ircDDBGateway
+#
+    var="localAddress"
+    Dat=`date +%Y%m%d%H%M`
+    echo "$Dat: $var" >> $LOG
+    read_default $var
+    read_value $REPEATERCONFIG $var
+    if [ "$?" = 0 ]; then
+	read_value $IRCDDBGWCONFIG "repeaterAddress${MODULE}"
+	if [ "$?" = 0 ]; then
+    	    VALUE=$DEFAULT
+	fi
+    fi
+    VALID=1
+    while [ "$VALID" != 0 ]; do
+	print_text $var 
+	request_input $var 7 15 2 "$VALUE"
+	if [ "$?" = 3 ]; then
+	    VALID=0
+	    INPUT=$DEFAULT
+	else
+	    valid_ip $INPUT
+	    VALID=$?
+	fi
+    done
+    write_value $REPEATERCONFIG $var "$INPUT"
+
+#
+# localPort=				from ircDDBGateway
+# localPort=20011
+#
+    var="localPort"
+    Dat=`date +%Y%m%d%H%M`
+    echo "$Dat: $var" >> $LOG
+    read_default $var
+    read_value $REPEATERCONFIG $var
+    if [ "$?" = 0 ]; then
+	read_value $IRCDDBGWCONFIG repeaterPort${MODULE}
+	if [ "$?" = 0 ]; then
+    	    VALUE=$DEFAULT
+	fi
+    fi
+    VALID=1
+    while [ "$VALID" != 0 ]; do
+	print_text "repeaterPort" 
+	request_input $var 3 5 2 "$VALUE"
+	if [ "$?" = 3 ]; then
+	    VALID=0
+	    INPUT=$DEFAULT
+	else
+	    valid_port $INPUT
+	    VALID=$?
+	fi
+    done
+    write_value $REPEATERCONFIG $var "$INPUT"
+
+#
+# timeout=180
+# (0-300)
+#
+    var="timeout"
+    Dat=`date +%Y%m%d%H%M`
+    echo "$Dat: $var" >> $LOG
+    read_default $var
+    read_value $REPEATERCONFIG $var
+    if [ "$?" = 0 ]; then
+    	VALUE=$DEFAULT
+    fi
+    print_text $var 
+    request_value $var 0 300 2 "$VALUE"
+    RET="$?"
+    case $RET in
+	1)
+	    VALUE=$INPUT
+	    ;;
+	2)
+#	    VALUE=$VALUE	
+	    ;;
+	3)
+	    VALUE=$DEFAULT
+	    ;;
+	*)
+	    echo "ERROR"
+	    echo "ERROR $var" >> $LOG
+	    break
+	    ;;
+    esac
+    write_value $REPEATERCONFIG $var "$VALUE"
+
+#
+# ackTime=500
+# (100-2000ms)
+#
+    var="ackTime"
+    Dat=`date +%Y%m%d%H%M`
+    echo "$Dat: $var" >> $LOG
+    read_default $var
+    read_value $REPEATERCONFIG $var
+    if [ "$?" = 0 ]; then
+    	VALUE=$DEFAULT
+    fi
+    print_text $var 
+    request_value $var 100 2000 2 "$VALUE"
+    RET="$?"
+    case $RET in
+	1)
+	    VALUE=$INPUT
+	    ;;
+	2)
+#	    VALUE=$VALUE	
+	    ;;
+	3)
+	    VALUE=$DEFAULT
+	    ;;
+	*)
+	    echo "ERROR"
+	    echo "ERROR $var" >> $LOG
+	    break
+	    ;;
+    esac
+    write_value $REPEATERCONFIG $var "$VALUE"
+
+#
+# beaconTime=600
+# (0-1800sec)
+#
+    var="beaconTime"
+    Dat=`date +%Y%m%d%H%M`
+    echo "$Dat: $var" >> $LOG
+    read_default $var
+    read_value $REPEATERCONFIG $var
+    if [ "$?" = 0 ]; then
+    	VALUE=$DEFAULT
+    fi
+    print_text $var 
+    request_value $var 0 1800 2 "$VALUE"
+    RET="$?"
+    case $RET in
+	1)
+	    VALUE=$INPUT
+	    ;;
+	2)
+#	    VALUE=$VALUE	
+	    ;;
+	3)
+	    VALUE=$DEFAULT
+	    ;;
+	*)
+	    echo "ERROR"
+	    echo "ERROR $var" >> $LOG
+	    break
+	    ;;
+    esac
+    write_value $REPEATERCONFIG $var "$VALUE"
+
+#
+#beaconText=
+#
+    var="beaconText"
+    Dat=`date +%Y%m%d%H%M`
+    echo "$Dat: $var" >> $LOG
+    read_default $var
+    read_value $REPEATERCONFIG $var
+    if [ "$?" = 0 ]; then
+    	VALUE="$DEFAULT"
+    fi
+    print_text $var 
+    request_input $var 1 20 0 "$VALUE"
+    if [ "$?" = 3 ]; then
+	INPUT="$DEFAULT"
+    fi
+    write_value $REPEATERCONFIG $var "$INPUT"
+
+#
+# beaconVoice=0
+#
+    var="beaconVoice"
+    Dat=`date +%Y%m%d%H%M`
+    echo "$Dat: $var" >> $LOG
+    read_default $var
+    read_value $REPEATERCONFIG $var
+    if [ "$?" = 0 ]; then
+	VALUE=$DEFAULT
+    fi
+    print_text $var 
+    request_selection $var "$DEFAULT" "$VALUE"
+    INPUT=$?
+    case $INPUT in
+	[0-1])
+    	    write_value $REPEATERCONFIG $var "$INPUT"
+	    ;;
+	2)   
+	    write_value $REPEATERCONFIG $var "$VALUE"
+	    ;;
+	*)
+    	    reset_value $var
+	    ;;
+    esac
+
+
+#####
+
+    return
+}
+
+#################### hardware specific configuration  ################################################
+
+function hwtype1(){
+## HWTYPE=1
+## SoundCardRepeater
+## former name: DSTARREPEATER
+
+#
+#readDevice=HDA Intel: ALC662 rev1 Analog (hw:0,0)	??? maybe everything
+#readDevice=default
+#
+## arecord -l | grep -v "^ " | grep -v "^*"
+#card 0: Intel [HDA Intel], device 0: ALC662 rev1 Analog [ALC662 rev1 Analog]
+#card 1: default [USB PnP Sound Device          ], device 0: USB Audio [USB Audio]
+#
+# config entries:
+#->"HDA Intel: ALC662 rev1 Analog (hw:0,0)
+#-> default
+#
+    var="readDevice"
+    Dat=`date +%Y%m%d%H%M`
+    echo "$Dat: $var" >> $LOG
+        read_default $var
+    read_value $REPEATERCONFIG $var
+    if [ "$?" = 0 ]; then
+    	VALUE="$DEFAULT"
+    fi
+    print_text $var 
+
+    if [ -e /usr/bin/arecord ]; then
+	array1=$(arecord -l | grep "card" | cut -d "[" -f 2 | cut -d "]" -f 1 | tr '\n' ';')
+	array2=$(arecord -l | grep "card" | cut -d "[" -f 3 | cut -d "]" -f 1 | tr '\n' ';')
+	array3=$(arecord -l | grep "card" | cut -d ":" -f 1 | cut -d " " -f 2 | tr '\n' ';')
+	array4=$(arecord -l | grep "card" | cut -d "," -f 2 | cut -d ":" -f 1 | cut -d " " -f 3 | tr '\n' ';')
+
+	RET=0
+	i=1
+	while [ $RET -eq 0 ]; do
+	    str1=$(echo "$array1" | cut -d ";" -f $i)
+	    str2=$(echo "$array2" | cut -d ";" -f $i)
+	    str3=$(echo "$array3" | cut -d ";" -f $i)
+	    str4=$(echo "$array4" | cut -d ";" -f $i)
+	    if [ -z "$str1" ]; then
+		RET=1
+	    else
+		echo "$i:  \"$str1: $str2 (hw:$str3,$str4)\""
+		let i=$i+1
+	    fi
+	done
+    else
+	print_text "alsa_req"
+	echo "   without alsa" >> $LOG
+    fi
+    echo "$i:  \"default\""
+    echo " "
+
+    request_value $var 1 "$i" 2 ""
+    RET="$?"
+    case $RET in
+	1)
+	    if [ "$i" -eq "$INPUT" ]; then
+		echo "OK (\"default\")"
+		INPUT="default"
+	    else
+		str1=$(echo "$array1" | cut -d ";" -f $INPUT)
+		str2=$(echo "$array2" | cut -d ";" -f $INPUT)
+		str3=$(echo "$array3" | cut -d ";" -f $INPUT)
+		str4=$(echo "$array4" | cut -d ";" -f $INPUT)
+		VALUE=$(echo "$str1: $str2 (hw:$str3,$str4)")
+	    fi
+	    ;;
+	2)
+#	    VALUE=$VALUE	
+	    ;;
+	3)
+	    VALUE="default"
+	    ;;
+	*)
+	    echo "ERROR"
+	    echo "ERROR $var" >> $LOG
+	    break
+	    ;;
+    esac
+    write_value $REPEATERCONFIG $var "$VALUE"
+
+#
+#writeDevice=HDA Intel: ALC662 rev1 Analog (hw:0,0)
+#writeDevice=default
+#
+##aplay -l | grep -v "^ " | grep -v "^*"
+#card 0: Intel [HDA Intel], device 0: ALC662 rev1 Analog [ALC662 rev1 Analog]
+#card 0: Intel [HDA Intel], device 1: ALC662 rev1 Digital [ALC662 rev1 Digital]
+#card 1: default [USB PnP Sound Device          ], device 0: USB Audio [USB Audio]
+#
+# config entries:
+#->"HDA Intel: ALC662 rev1 Analog (hw:0,0)
+#->"HDA Intel: ALC662 rev1 Digital (hw:0,1)
+#-> default
+#
+    var="writeDevice"
+    Dat=`date +%Y%m%d%H%M`
+    echo "$Dat: $var" >> $LOG
+    read_default $var
+    read_value $REPEATERCONFIG $var
+    if [ "$?" = 0 ]; then
+    	VALUE="$DEFAULT"
+    fi
+
+    print_text $var 
+
+    if [ -e /usr/bin/aplay ]; then
+	array1=$(aplay -l | grep "card" | cut -d "[" -f 2 | cut -d "]" -f 1 | tr '\n' ';')
+	array2=$(aplay -l | grep "card" | cut -d "[" -f 3 | cut -d "]" -f 1 | tr '\n' ';')
+	array3=$(aplay -l | grep "card" | cut -d ":" -f 1 | cut -d " " -f 2 | tr '\n' ';')
+	array4=$(aplay -l | grep "card" | cut -d "," -f 2 | cut -d ":" -f 1 | cut -d " " -f 3 | tr '\n' ';')
+
+	RET=0
+	i=1
+	while [ $RET -eq 0 ]; do
+	    str1=$(echo "$array1" | cut -d ";" -f $i)
+	    str2=$(echo "$array2" | cut -d ";" -f $i)
+	    str3=$(echo "$array3" | cut -d ";" -f $i)
+	    str4=$(echo "$array4" | cut -d ";" -f $i)
+	    if [ -z "$str1" ]; then
+		RET=1
+	    else
+		echo "$i:  \"$str1: $str2 (hw:$str3,$str4)\""
+		let i=$i+1
+	    fi
+	done
+    else
+	print_text "alsa_req"
+	echo "   without alsa" >> $LOG
+    fi
+    echo "$i:  \"default\""
+    echo " "
+
+    request_value $var 1 "$i" 2 ""
+    RET="$?"
+    case $RET in
+	1)
+	    if [ "$i" -eq "$INPUT" ]; then
+		echo "OK (\"default\")"
+		INPUT="default"
+	    else
+		str1=$(echo "$array1" | cut -d ";" -f $INPUT)
+		str2=$(echo "$array2" | cut -d ";" -f $INPUT)
+		str3=$(echo "$array3" | cut -d ";" -f $INPUT)
+		str4=$(echo "$array4" | cut -d ";" -f $INPUT)
+		VALUE=$(echo "$str1: $str2 (hw:$str3,$str4)")
+	    fi
+	    ;;
+	2)
+#	    VALUE=$VALUE	
+	    ;;
+	3)
+	    VALUE="default"
+	    ;;
+	*)
+	    echo "ERROR"
+	    echo "ERROR $var" >> $LOG
+	    break
+	    ;;
+    esac
+    write_value $REPEATERCONFIG $var "$VALUE"
+
+#
+# rxLevel=0.9000
+# 0-100% (0.0000-1.0000)
+#
+    var="rxLevel"
+    Dat=`date +%Y%m%d%H%M`
+    echo "$Dat: $var" >> $LOG
+    read_default $var
+    read_value $REPEATERCONFIG $var
+    if [ "$?" = 0 ]; then
+    	VALUE=$DEFAULT
+    fi
+    VALUE=`echo "scale=0; 100*$VALUE" | bc`
+    print_text $var
+    request_value $var 0 100 2 $(echo "($VALUE+0.5)/1" | bc)
+    RET="$?"
+    case $RET in
+	1)
+	    VALUE=`echo "scale=3; $INPUT/100" | bc`
+	    ;;
+	2)
+	    VALUE=`echo "scale=3; $VALUE/100" | bc`
+	    ;;
+	3)
+	    VALUE=$DEFAULT
+	    ;;
+	*)
+	    echo "ERROR $RET"
+	    echo "ERROR $RET $var" >> $LOG
+	    break
+	    ;;
+    esac
+    write_value $REPEATERCONFIG $var $(printf "%8.4f" "$VALUE")
+
+
+#
+# txLevel=0.8500
+# 0-100% (0.0000-1.0000)
+#
+    var="txLevel"
+    Dat=`date +%Y%m%d%H%M`
+    echo "$Dat: $var" >> $LOG
+    read_default $var
+    read_value $REPEATERCONFIG $var
+    if [ "$?" = 0 ]; then
+    	VALUE=$DEFAULT
+    fi
+    VALUE=`echo "scale=0; 100*$VALUE" | bc`
+    print_text $var 
+    request_value $var 0 100 2 $(echo "($VALUE+0.5)/1" | bc)
+    RET="$?"
+    case $RET in
+	1)
+	    VALUE=`echo "scale=3; $INPUT/100" | bc`
+	    ;;
+	2)
+	    VALUE=`echo "scale=3; $VALUE/100" | bc`
+	    ;;
+	3)
+	    VALUE=$DEFAULT
+	    ;;
+	*)
+	    echo "ERROR $RET"
+	    echo "ERROR $RET $var" >> $LOG
+	    break
+	    ;;
+    esac
+    write_value $REPEATERCONFIG $var $(printf "%8.4f" "$VALUE")
+
+#
+# squelchMode=2
+# 0: normal
+# 1: inverted
+# 2: open
+#
+
+#
+# squelchLevel=0.4000
+# 0-100% (0.0000-1.0000)
+#
+    var="squelchLevel"
+    Dat=`date +%Y%m%d%H%M`
+    echo "$Dat: $var" >> $LOG
+    read_default $var
+    read_value $REPEATERCONFIG $var
+    if [ "$?" = 0 ]; then
+    	VALUE=$DEFAULT
+    fi
+    VALUE=`echo "scale=3; 100*$VALUE" | bc`
+    print_text $var 
+    request_value $var 0 100 2 $(echo "($VALUE+0.5)/1" | bc)
+    RET="$?"
+    case $RET in
+	1)
+	    VALUE=`echo "scale=3; $INPUT/100" | bc`
+	    ;;
+	2)
+	    VALUE=`echo "scale=3; $VALUE/100" | bc`
+	    ;;
+	3)
+	    VALUE=$DEFAULT
+	    ;;
+	*)
+	    echo "ERROR $RET"
+	    echo "ERROR $RET $var" >> $LOG
+	    break
+	    ;;
+    esac
+    write_value $REPEATERCONFIG $var $(printf "%8.4f" "$VALUE")
+
+#
+# rxInvert=1
+#
+    var="rxInvert"
+    Dat=`date +%Y%m%d%H%M`
+    echo "$Dat: $var" >> $LOG
+    read_default $var
+    read_value $REPEATERCONFIG $var
+    if [ "$?" = 0 ]; then
+	VALUE=$DEFAULT
+    fi
+    print_text $var 
+    request_selection $var "$DEFAULT" "$VALUE"
+    INPUT=$?
+    case $INPUT in
+	[0-1])
+    	    write_value $REPEATERCONFIG $var "$INPUT"
+	    ;;
+	2)   
+	    write_value $REPEATERCONFIG $var "$VALUE"
+	    ;;
+	*)
+    	    reset_value $var
+	    ;;
+    esac
+
+#
+# txInvert=0
+#
+    var="txInvert"
+    Dat=`date +%Y%m%d%H%M`
+    echo "$Dat: $var" >> $LOG
+    read_default $var
+    read_value $REPEATERCONFIG $var
+    if [ "$?" = 0 ]; then
+	VALUE=$DEFAULT
+    fi
+    print_text $var 
+    request_selection $var "$DEFAULT" "$VALUE"
+    INPUT=$?
+    case $INPUT in
+	[0-1])
+    	    write_value $REPEATERCONFIG $var "$INPUT"
+	    ;;
+	2)   
+	    write_value $REPEATERCONFIG $var "$VALUE"
+	    ;;
+	*)
+    	    reset_value $var
+	    ;;
+    esac
+
+#
+# hangTime
+# (0-3000ms)
+#
+    var="hangTime"
+    Dat=`date +%Y%m%d%H%M`
+    echo "$Dat: $var" >> $LOG
+    read_default $var
+    read_value $REPEATERCONFIG $var
+    if [ "$?" = 0 ]; then
+    	VALUE=$DEFAULT
+    fi
+    print_text $var 
+    request_value $var 0 3000 2 "$VALUE"
+    RET="$?"
+    case $RET in
+	1)
+	    VALUE=$INPUT
+	    ;;
+	2)
+#	    VALUE=$VALUE	
+	    ;;
+	3)
+	    VALUE=$DEFAULT
+	    ;;
+	*)
+	    echo "ERROR"
+	    echo "ERROR $var" >> $LOG
+	    break
+	    ;;
+    esac
+    write_value $REPEATERCONFIG $var "$VALUE"
+
+#
+# interfaceType=Velleman K8055 - 1
+# 1: Velleman K8055 - 1 ... Velleman K8055 - 3
+# 2: URI USB - 1 ...  URI USB - 6
+# 3: Serial - /dev/ttyS0 ... Serial - /dev/ttyS4
+# 4: /dev/ttyUSB0 ... /dev/ttyUSB4
+#
+    var="interfaceType"
+    Dat=`date +%Y%m%d%H%M`
+    echo "$Dat: $var" >> $LOG
+    read_value $REPEATERCONFIG $var
+    if [ "$?" = 0 ]; then
+    	VALUE="3"
+    fi
+    echo "$VALUE" | grep -q "Velleman" && TYPE=1
+    echo "$VALUE" | grep -q "URI USB" && TYPE=2
+    echo "$VALUE" | grep -q "/dev/ttyS" && TYPE=3
+    echo "$VALUE" | grep -q "/dev/ttyUSB" && TYPE=4
+    
+    print_text $var 
+    select_item $var 4 "$TYPE"
+    RET=$?
+    case $RET in
+	1)
+	    TYPE="$SELECT"
+	    ;;
+	2)
+#	    TYPE="$TYPE"
+	    ;;
+	3)
+	    TYPE="3"
+	    ;;
+	*)
+	    ;;
+    esac
+
+    case $TYPE in
+	1)
+	    print_text "iface_vel"
+	    VALUE=$(echo "$VALUE" | sed "s!Velleman K8055 - !!g")
+	    select_item $var 3 "$VALUE"
+	    RET=$?
+	    case $RET in
+	        1)
+		    VALUE="$SELECT"
+		    ;;
+		2)
+#		    VALUE="$VALUE"
+		    ;;
+		3)
+		    VALUE=1
+		    ;;
+		*)
+		    ;;
+	    esac
+	    write_value $REPEATERCONFIG $var "Velleman K8055 - ${VALUE}"
+	    ;;
+	2)
+	    print_text "iface_uri"
+	    VALUE=$(echo "$VALUE" | sed "s!URI USB - !!g")
+	    select_item $var 6 "$VALUE"
+	    RET=$?
+	    case $RET in
+		1)
+		    VALUE="$SELECT"
+		    ;;
+		2)
+#		    VALUE="$VALUE"
+		    ;;
+		3)
+		    VALUE=1
+		    ;;
+		*)
+		    ;;
+	    esac
+	    write_value $REPEATERCONFIG $var "URI USB - ${VALUE}"
+	    ;;
+	3)
+	    print_text "iface_ser"
+	    ls /dev/ttyS*
+	    VALUE=$(echo "$VALUE" | sed "s!/dev/ttyS!!g")
+	    select_item $var 4 "$VALUE"
+	    RET=$?
+	    case $RET in
+		1)
+		    VALUE="$SELECT"
+		    ;;
+		2)
+#		    VALUE="$VALUE"
+		    ;;
+		3)
+		    VALUE=1
+		    ;;
+		*)
+		    ;;
+	    esac
+	    write_value $REPEATERCONFIG $var "/dev/ttyS${VALUE}"
+	    ;;
+	4)
+	    print_text "iface_usb"
+	    ls /dev/ttyUSB*
+	    VALUE=$(echo "$VALUE" | sed "s!/dev/ttyUSB!!g")
+	    select_item $var 4 "$VALUE"
+	    RET=$?
+	    case $RET in
+		1)
+		    VALUE="$SELECT"
+		    ;;
+		2)
+#		    VALUE="$VALUE"
+		    ;;
+		3)
+		    VALUE=1
+		    ;;
+		*)
+		    ;;
+	    esac
+	    write_value $REPEATERCONFIG $var "/dev/ttyUSB${VALUE}"
+	    ;;
+	*)
+	    write_value $REPEATERCONFIG $var "$DEFAULT"
+	    ;;
+    esac
+#
+# interfaceConfig=1
+# (1-3)
+#
+    var="interfaceConfig"
+    Dat=`date +%Y%m%d%H%M`
+    echo "$Dat: $var" >> $LOG
+    read_default $var
+    read_value $REPEATERCONFIG $var
+    if [ "$?" = 0 ]; then
+    	VALUE=$DEFAULT
+    fi
+    print_text $var 
+    request_value $var 1 3 2 "$VALUE"
+    RET="$?"
+    case $RET in
+	1)
+	    VALUE=$INPUT
+	    ;;
+	2)
+#	    VALUE=$VALUE	
+	    ;;
+	3)
+	    VALUE=$DEFAULT
+	    ;;
+	*)
+	    echo "ERROR"
+	    echo "ERROR $var" >> $LOG
+	    break
+	    ;;
+    esac
+    write_value $REPEATERCONFIG $var "$VALUE"
+
+#
+# pttDelay=9
+# -500ms ... NONE ... +500ms in steps of 20ms
+# (-25 ... +25)
+
+#
+# pttInvert=0
+#
+    var="pttInvert"
+    Dat=`date +%Y%m%d%H%M`
+    echo "$Dat: $var" >> $LOG
+    read_default $var
+    read_value $REPEATERCONFIG $var
+    if [ "$?" = 0 ]; then
+	VALUE=$DEFAULT
+    fi
+    print_text $var 
+    request_value $var 0 1 2 "$VALUE"
+    RET="$?"
+    case $RET in
+	1)
+	    VALUE=$INPUT
+	    ;;
+	2)
+#	    VALUE=$VALUE
+	    ;;
+	3)
+	    VALUE=$DEFAULT
+	    ;;
+	*)
+	    echo "ERROR"
+	    echo "ERROR $var" >> $LOG
+	    break
+	    ;;
+    esac
+    write_value $REPEATERCONFIG $var "$VALUE"
+    return 1
+}
+
+function hwtype2(){
+## HWTYPE=2
+## DVRPTR
+
+# cleanup for old parameter
+    sed -i 's!modemPort=/dev/ttyACM!modemUSBPort=/dev/ttyACM!g' $REPEATERCONFIG
+#
+# modemVersion=1
+# (1-2)
+#
+    var="modemVersion"
+    Dat=`date +%Y%m%d%H%M`
+    echo "$Dat: $var" >> $LOG
+    read_default $var
+    read_value $REPEATERCONFIG $var
+    if [ "$?" = 0 ]; then
+	VALUE=$DEFAULT
+    fi
+    print_text $var 
+    request_value $var 1 2 2 "$VALUE"
+    RET="$?"
+    case $RET in
+	1)
+	    VALUE=$INPUT
+	    ;;
+	2)
+#	    VALUE=$VALUE
+	    ;;
+	3)
+	    VALUE=$DEFAULT
+	    ;;
+	*)
+	    echo "ERROR"
+	    echo "ERROR $var" >> $LOG
+	    break
+	    ;;
+    esac
+
+    write_value $REPEATERCONFIG $var "$VALUE"
+    modemVersion=$INPUT
+
+    if [ $modemVersion = 1 ]; then
+	modemConnection=0
+	write_value $REPEATERCONFIG "modemConnection" $modemConnection 
+    else
+#
+# if modemVersion=2 ask if to configure network or USB
+# modemConnection=0
+# 0 = USB
+# 1 = Network
+#
+	var="modemConnection"
+	Dat=`date +%Y%m%d%H%M`
+	echo "$Dat: $var" >> $LOG
+	read_default $var
+        read_value $REPEATERCONFIG $var
+	if [ "$?" = 0 ]; then
+	    VALUE=$DEFAULT
+        fi
+	print_text $var 
+	request_value $var 0 1 2 "$VALUE"
+	RET="$?"
+	case $RET in
+	    1)
+		VALUE=$INPUT
+	        ;;
+	    2)
+#	    	VALUE=$VALUE
+		;;
+	    3)
+		VALUE=$DEFAULT
+		;;
+	    *)
+		echo "ERROR"
+		echo "ERROR $var" >> $LOG
+		break
+		;;
+	esac
+	write_value $REPEATERCONFIG $var "$VALUE"
+	modemConnection=$INPUT
+    fi
+
+    if [ $modemConnection = 0 ]; then
+#
+# modemUSBPort=/dev/ttyACM0
+# 0:/dev/ttyACM0 ... 9:/dev/ttyACM9
+#
+	var="modemUSBPort"
+	Dat=`date +%Y%m%d%H%M`
+	echo "$Dat: $var" >> $LOG
+    	read_default $var
+	DEFAULT=$(echo "$DEFAULT" | sed "s!/dev/ttyACM!!g")
+    	read_value $REPEATERCONFIG $var
+	if [ "$?" = 0 ]; then
+    	    VALUE="$DEFAULT"
+	fi
+    	VALUE=$(echo "$VALUE" | sed "s!/dev/ttyACM!!g")
+	print_text $var 
+    	ls /dev/ttyACM*
+	request_value $var 0 9 1 "$VALUE"
+    	RET="$?"
+	case $RET in
+	    1)
+		VALUE=$INPUT
+		;;
+	    2)
+#	    	   VALUE=$VALUE	
+		;;
+	    3)
+		VALUE=$DEFAULT
+		;;
+	    *)
+		echo "ERROR"
+		echo "ERROR $var" >> $LOG
+		break
+		;;
+	esac
+	write_value $REPEATERCONFIG $var "/dev/ttyACM${VALUE}"
+    else
+#
+# modemAddress=192.168.42.241
+#
+	var="modemAddress"
+	Dat=`date +%Y%m%d%H%M`
+	echo "$Dat: $var" >> $LOG
+	read_default "modemIPAddress"
+	read_value $REPEATERCONFIG $var
+	if [ "$?" = 0 ]; then
+    	    VALUE=$DEFAULT
+	fi
+	VALID=1
+	while [ "$VALID" != 0 ]; do
+	    print_text "modemIPAddress" 
+	    request_input $var 7 15 2 "$VALUE"
+	    if [ "$?" = 3 ]; then
+		VALID=0
+		INPUT=$DEFAULT
+	    else
+		valid_ip $INPUT
+		VALID=$?
+	    fi
+	done
+	write_value $REPEATERCONFIG $var "$INPUT"
+
+#
+# modemPort=23
+#
+	var="modemPort"
+	Dat=`date +%Y%m%d%H%M`
+	echo "$Dat: $var" >> $LOG
+	read_default $var
+	read_value $REPEATERCONFIG $var
+	if [ "$?" = 0 ]; then
+    	    VALUE=$DEFAULT
+	fi
+	VALID=1
+	while [ "$VALID" != 0 ]; do
+	    print_text $var 
+	    request_input $var 2 5 2 "$VALUE"
+	    if [ "$?" = 3 ]; then
+		VALID=0
+		INPUT=$DEFAULT
+	    else
+		if [ $INPUT -lt 65535 ]; then
+		    VALID=0
+		fi
+	    fi
+	done
+	write_value $REPEATERCONFIG $var "$INPUT"
+    fi
+
+#
+# modemRXInvert=0
+# (0-1)
+#
+    var="modemRXInvert"
+    Dat=`date +%Y%m%d%H%M`
+    echo "$Dat: $var" >> $LOG
+    read_default $var
+    read_value $REPEATERCONFIG $var
+    if [ "$?" = 0 ]; then
+	VALUE=$DEFAULT
+    fi
+    print_text $var 
+    request_selection $var "$DEFAULT" "$VALUE"
+    INPUT=$?
+    case $INPUT in
+	[0-1])
+    	    write_value $REPEATERCONFIG $var "$INPUT"
+	    ;;
+	2)   
+	    write_value $REPEATERCONFIG $var "$VALUE"
+	    ;;
+	*)
+    	    reset_value $var
+	    ;;
+    esac
+
+#
+# modemTXInvert=1
+# (0-1)
+#
+    var="modemTXInvert"
+    Dat=`date +%Y%m%d%H%M`
+    echo "$Dat: $var" >> $LOG
+    read_default $var
+    read_value $REPEATERCONFIG $var
+    if [ "$?" = 0 ]; then
+	VALUE=$DEFAULT
+    fi
+    print_text $var 
+    request_selection $var "$DEFAULT" "$VALUE"
+    INPUT=$?
+    case $INPUT in
+	[0-1])
+    	    write_value $REPEATERCONFIG $var "$INPUT"
+	    ;;
+	2)   
+	    write_value $REPEATERCONFIG $var "$VALUE"
+	    ;;
+	*)
+    	    reset_value $var
+	    ;;
+    esac
+
+#
+# modemChannel=0
+# (0-1)
+#
+    var="modemChannel"
+    Dat=`date +%Y%m%d%H%M`
+    echo "$Dat: $var" >> $LOG
+    read_default $var
+    read_value $REPEATERCONFIG $var
+    if [ "$?" = 0 ]; then
+	VALUE=$DEFAULT
+    fi
+    print_text $var 
+    request_value $var 0 1 2 "$VALUE"
+    RET="$?"
+    case $RET in
+	1)
+	    VALUE=$INPUT
+	    ;;
+	2)
+#	    VALUE=$VALUE	
+	    ;;
+	3)
+	    VALUE=$DEFAULT
+	    ;;
+	*)
+	    echo "ERROR"
+	    echo "ERROR $var" >> $LOG
+	    break
+	    ;;
+    esac
+    write_value $REPEATERCONFIG $var "$VALUE"
+#
+# modemModLevel=15
+# (1-100%)
+#
+    var="modemModLevel"
+    Dat=`date +%Y%m%d%H%M`
+    echo "$Dat: $var" >> $LOG
+    read_default $var
+    read_value $REPEATERCONFIG $var
+    if [ "$?" = 0 ]; then
+    	VALUE=$DEFAULT
+    fi
+    print_text $var 
+    request_value $var 0 100 2 "$VALUE"
+    RET="$?"
+    case $RET in
+	1)
+	    VALUE=$INPUT
+	    ;;
+	2)
+#	    VALUE=$VALUE	
+	    ;;
+	3)
+	    VALUE=$DEFAULT
+	    ;;
+	*)
+	    echo "ERROR"
+	    echo "ERROR $var" >> $LOG
+	    break
+	    ;;
+    esac
+    write_value $REPEATERCONFIG $var "$VALUE"
+
+#
+# modemTXDelay=100
+# (0-500ms)
+#
+    var="modemTXDelay"
+    Dat=`date +%Y%m%d%H%M`
+    echo "$Dat: $var" >> $LOG
+    read_default $var
+    read_value $REPEATERCONFIG $var
+    if [ "$?" = 0 ]; then
+    	VALUE=$DEFAULT
+    fi
+    print_text $var 
+    request_value $var 0 500 2 "$VALUE"
+    RET="$?"
+    case $RET in
+	1)
+	    VALUE=$INPUT
+	    ;;
+	2)
+#	    VALUE=$VALUE	
+	    ;;
+	3)
+	    VALUE=$DEFAULT
+	    ;;
+	*)
+	    echo "ERROR"
+	    echo "ERROR $var" >> $LOG
+	    break
+	    ;;
+    esac
+    write_value $REPEATERCONFIG $var "$VALUE"
+    return
+}
+
+function hwtype3(){
+## HWTYPE=3
+## GMSK
+
+#
+# modemAddress=768
+# (300h ... 31Fh = 768 - 799)
+#
+    var="modemAddress"
+    Dat=`date +%Y%m%d%H%M`
+    echo "$Dat: $var" >> $LOG
+    read_default $var
+    read_value $REPEATERCONFIG $var
+    if [ "$?" = 0 ]; then
+    	VALUE=$DEFAULT
+    fi
+    print_text $var 
+    request_value $var 768 799 2 "$VALUE"
+    RET="$?"
+    case $RET in
+	1)
+	    VALUE=$INPUT
+	    ;;
+	2)
+#	    VALUE=$VALUE	
+	    ;;
+	3)
+	    VALUE=$DEFAULT
+	    ;;
+	*)
+	    echo "ERROR"
+	    echo "ERROR $var" >> $LOG
+	    break
+	    ;;
+    esac
+    write_value $REPEATERCONFIG $var "$VALUE"
+
+    return
+}
+
+
+function hwtype4(){
+## HWTYPE=4
+## DVAP
+
+#
+# dvapPort=/dev/ttyUSB0
+# 1:/dev/ttyUSB0
+# 2:/dev/ttyUSB1
+# 3:/dev/ttyUSB2
+# 4:/dev/ttyUSB3
+# 5:/dev/ttyUSB4
+#
+    var="dvapPort"
+    Dat=`date +%Y%m%d%H%M`
+    echo "$Dat: $var" >> $LOG
+    read_default $var
+    DEFAULT=$(echo "$DEFAULT" | sed "s!/dev/ttyUSB!!g")
+    read_value $REPEATERCONFIG $var
+    if [ "$?" = 0 ]; then
+    	VALUE="$DEFAULT"
+    fi
+    VALUE=$(echo "$VALUE" | sed "s!/dev/ttyUSB!!g")
+    print_text $var 
+    ls /dev/ttyUSB*
+    request_value $var 0 4 1 "$VALUE"
+    RET="$?"
+    case $RET in
+	1)
+	    VALUE=$INPUT
+	    ;;
+	2)
+#	    VALUE=$VALUE	
+	    ;;
+	3)
+	    VALUE=$DEFAULT
+	    ;;
+	*)
+	    echo "ERROR"
+	    echo "ERROR $var" >> $LOG
+	    break
+	    ;;
+    esac
+    write_value $REPEATERCONFIG $var "/dev/ttyUSB${VALUE}"
+
+#
+# dvapFrequency=145500000
+# 2m:   144000000-148000000Hz
+# 70cm: 420000000-450000000Hz
+#
+    var="dvapFrequency"
+    Dat=`date +%Y%m%d%H%M`
+    echo "$Dat: $var" >> $LOG
+    read_default $var
+    read_value $REPEATERCONFIG $var
+    if [ "$?" = 0 ]; then
+    	VALUE=$DEFAULT
+    fi
+    print_text $var 
+    request_value $var 144000000 450000000 2 "$VALUE"
+    RET="$?"
+    case $RET in
+	1)
+	    VALUE=$INPUT
+	    ;;
+	2)
+#	    VALUE=$VALUE	
+	    ;;
+	3)
+	    VALUE=$DEFAULT
+	    ;;
+	*)
+	    echo "ERROR"
+	    echo "ERROR $var" >> $LOG
+	    break
+	    ;;
+    esac
+    write_value $REPEATERCONFIG $var "$VALUE"
+
+#
+# dvapPower=10
+# (-12dBm ... +10dBm)
+#
+    var="dvapPower"
+    Dat=`date +%Y%m%d%H%M`
+    echo "$Dat: $var" >> $LOG
+    read_default $var
+    read_value $REPEATERCONFIG $var
+    if [ "$?" = 0 ]; then
+    	VALUE=$DEFAULT
+    fi
+    print_text $var 
+    request_value $var "-12" 10 2 "$VALUE"
+    RET="$?"
+    case $RET in
+	1)
+	    VALUE=$INPUT
+	    ;;
+	2)
+#	    VALUE=$VALUE	
+	    ;;
+	3)
+	    VALUE=$DEFAULT
+	    ;;
+	*)
+	    echo "ERROR"
+	    echo "ERROR $var" >> $LOG
+	    break
+	    ;;
+    esac
+    write_value $REPEATERCONFIG $var "$VALUE"
+
+#
+# dvapSquelch=-100
+# (-128dBm ... -45dBm)
+#
+    var="dvapSquelch"
+    Dat=`date +%Y%m%d%H%M`
+    echo "$Dat: $var" >> $LOG
+    read_default $var
+    read_value $REPEATERCONFIG $var
+    if [ "$?" = 0 ]; then
+    	VALUE=$DEFAULT
+    fi
+    print_text $var 
+    request_value $var "-128" "-45" 2 "$VALUE"
+    RET="$?"
+    case $RET in
+	1)
+	    VALUE=$INPUT
+	    ;;
+	2)
+#	    VALUE=$VALUE	
+	    ;;
+	3)
+	    VALUE=$DEFAULT
+	    ;;
+	*)
+	    echo "ERROR"
+	    echo "ERROR $var" >> $LOG
+	    break
+	    ;;
+    esac
+    write_value $REPEATERCONFIG $var "$VALUE"
+
+#
+# dvapOffset=0
+# (-2000Hz ... +2000Hz)
+#
+    var="dvapOffset"
+    Dat=`date +%Y%m%d%H%M`
+    echo "$Dat: $var" >> $LOG
+    read_default $var
+    read_value $REPEATERCONFIG $var
+    if [ "$?" = 0 ]; then
+    	VALUE=$DEFAULT
+    fi
+    print_text $var 
+    request_value $var "-2000" 2000 2 "$VALUE"
+    RET="$?"
+    case $RET in
+	1)
+	    VALUE=$INPUT
+	    ;;
+	2)
+#	    VALUE=$VALUE	
+	    ;;
+	3)
+    	    VALUE=$DEFAULT
+	    ;;
+	*)
+	    echo "ERROR"
+	    echo "ERROR $var" >> $LOG
+	    break
+	    ;;
+    esac
+    write_value $REPEATERCONFIG $var "$VALUE"
+    return
+}
+
+function overview(){
+    cat $REPEATERCONFIG | more
+    read $tmp -p "<ENTER>"
+    return 1
+}
+
+function modulesetup(){
+    print_text "module_setup"
+
+    var="sel_module"
+    Dat=`date +%Y%m%d%H%M`
+    echo "$Dat: $var" >> $LOG
+    read_value $REPEATERCONFIG $var
+    if [ "$?" = 0 ]; then
+	unset VALUE
+    fi
+    MODULE=0
+    while [ "$MODULE" -eq "0" ]; do
+	print_text $var 
+	select_item $var 4 "$VALUE"
+	RET=$?
+    
+	case $RET in
+	    1)
+		MODULE=$SELECT
+		;;
+	    2)
+		MODULE=$VALUE
+		;;
+	    3)
+		MODULE=0
+		;;
+	    *)
+		;;
+	esac
+    done
+    echo "OK ($MODULE)"
+    echo " "
+    return $RET
+}
+
+function hwsetup(){
+    print_text "hw_setup"
+    var="sel_hwtype"
+    Dat=`date +%Y%m%d%H%M`
+    echo "$Dat: $var" >> $LOG
+    read_value $CFG "hwtype_${MODULE}"
+    if [ "$?" = 0 ]; then
+	unset VALUE
+    fi
+    OLDVALUE=$VALUE
+    print_text $var
+    select_item $var 4 "$VALUE"
+    RET=$?
+    case $RET in
+	1)
+	    HWTYPE=$SELECT
+	    ;;
+	2)
+	    HWTYPE=$VALUE
+	    ;;
+	3)
+	    HWTYPE=0
+	    ;;
+	*)
+	    ;;
+    esac
+
+    readconfig2
+
+    if [ "$HWTYPE" != "$OLDVALUE" ]; then
+	hwtype${HWTYPE}
+	write_value $CFG hwtype_${MODULE} "$HWTYPE"
+	cat /etc/sysconfig/${hwname[$HWTYPE]} | grep "^DAEMON_PATH" | sed "s/DAEMON/REPEATER/" > /etc/sysconfig/repeater_$MODULE
+	cat /etc/sysconfig/${hwname[$HWTYPE]} | grep "^DAEMON_USER" | sed "s/DAEMON/REPEATER/" >> /etc/sysconfig/repeater_$MODULE
+        cat /etc/sysconfig/${hwname[$HWTYPE]} | grep "^DAEMON_OPTIONS" | sed "s/DAEMON/REPEATER/" | sed "s/\"$/ $MODULE\"/" >> /etc/sysconfig/repeater_$MODULE
+	echo "OK ($HWTYPE)"
+    else
+	echo "OK"
+    fi
+
+    echo " "
+    return $RET
+}
+
+function logging(){
+
+#
+# command line options for logging / logdir / audiodir
+#
+    var="nolog"
+    Dat=`date +%Y%m%d%H%M`
+    echo "$Dat: $var" >> $LOG
+
+    REPEATER_OPTIONS=$(grep "^REPEATER_OPTIONS" /etc/sysconfig/repeater_$MODULE)
+    print_text $var 
+
+    options=( ${REPEATER_OPTIONS//-/ } )
+    i=0
+    NOLOG=0
+    while [ ! -z "${options[$i]}" ]; do
+
+	case "${options[$i]}" in
+	    logdir)
+	        let i+=1
+		LOGDIR=${options[$i]}
+		;;
+	    audiodir)
+	        let i+=1
+		AUDIODIR=${options[$i]}
+		;;
+	    nolog)
+		NOLOG=1
+		;;
+	    daemon)
+		;;
+	    *)
+		;;
+	esac
+	let i+=1
+    done
+
+    NEW_ARGS="-daemon"
+    request_selection $var "1" "$NOLOG"
+    if [ "$?" != 0 ]; then
+    	NEW_ARGS="$NEW_ARGS -nolog"
+    fi
+    
+    var="logdir"
+    Dat=`date +%Y%m%d%H%M`
+    echo "$Dat: $var" >> $LOG
+    print_text $var 
+    echo $LOGDIR
+    request_input $var 3 80 2 "$LOGDIR"
+    if [ "$?" = 3 ]; then
+        INPUT="/var/log/opendv"
+    fi
+    if [ ! -z "$INPUT" ]; then
+	NEW_ARGS="$NEW_ARGS -logdir $INPUT"
+    fi
+    
+    var="audiodir"
+    Dat=`date +%Y%m%d%H%M`
+    echo "$Dat: $var" >> $LOG
+    print_text $var 
+    echo $AUDIODIR
+    request_input $var 3 80 0 "$AUDIODIR"
+    if [ ! -z "$AUDIODIR" ]; then
+	NEW_ARGS="$NEW_ARGS -audiodir $INPUT"
+    fi
+
+    NEW_ARGS="REPEATER_OPTIONS=\"$NEW_ARGS $MODULE\""
+    echo "OK!"
+    print_text "cmd_options"
+    echo "$REPEATER_OPTIONS -> $NEW_ARGS"
+    sed -i "s|$REPEATER_OPTIONS|$NEW_ARGS|g" /etc/sysconfig/repeater_$MODULE
+
+#
+# audio logging
+#logging=0
+#
+    var="logging"
+    Dat=`date +%Y%m%d%H%M`
+    echo "$Dat: $var" >> $LOG
+    read_default $var
+    read_value $REPEATERCONFIG $var
+    if [ "$?" = 0 ]; then
+	VALUE=$DEFAULT
+    fi
+    print_text $var 
+    request_selection $var "$DEFAULT" "$VALUE"
+    INPUT=$?
+    case $INPUT in
+	[0-1])
+    	    write_value $REPEATERCONFIG $var "$INPUT"
+	    ;;
+	2)   
+	    write_value $REPEATERCONFIG $var "$VALUE"
+	    ;;
+	*)
+    	    reset_value $var
+	    ;;
+    esac
+}
+
+setup_main(){
+    INP=0
+    while [ "$INP" -ne 99 ]; do
+	echo ""
+	echo "repeater_conf $rev" 
+	echo "(C) 2012 Hans-J. Barthen, DL5DI (dl5di@gmx.de)"
+	echo ""
+	echo "Repeater: ${MODULE}"
+	echo "Hardware: ${hwname[$HWTYPE]}"
+	print_text "mainmenu" 
+	select_item "(0-99)" 99 0
+	if [ $? -ne 1 ]; then
+	    continue
+	fi
+	Dat=`date +%Y%m%d%H%M`
+#´
+	case "$SELECT" in
+	    1) set_language
+		;;
+	    2)
+		basic_setup
+		hwsetup
+		print_text "final"
+		;;
+	    3)
+		basic_setup
+		;;
+	    4)
+		logging
+		;;
+	    5)
+		hwsetup
+		;;
+	    10)
+		overview
+		;;
+	    20)
+		if [ -f /etc/init.d/repeater_$MODULE ]; then
+		    print_text "scr_act"
+		    /sbin/chkconfig --add repeater_$MODULE
+		else
+		    print_text "scr_err" 
+		fi
+		echo "$Dat scr_act" >> $LOG
+		;;
+	    21)
+		if [ -f /etc/init.d/repeater_$MODULE ]; then
+		    print_text "scr_deact" 
+		    /sbin/chkconfig --del repeater_$MODULE
+		else
+		    print_text "scr_err" 
+		fi
+		echo "$Dat scr_deact" >> $LOG
+		;;
+	    30)
+		if [ -f /etc/init.d/repeater_$MODULE ]; then
+		    print_text "scr_start" 
+		    /etc/init.d/repeater_$MODULE start
+		else
+		    echo ""
+		    echo "ERROR: no startup script found"
+		    echo ""
+		fi
+		echo "$Dat scr_start" >> $LOG
+		;;
+	    31)
+		if [ -f /etc/init.d/repeater_$MODULE ]; then
+		    print_text "scr_stop" 
+		    /etc/init.d/repeater_$MODULE stop
+		else
+		    print_text "scr_err" 
+		fi
+		echo "$Dat scr_stop" >> $LOG
+		;;
+	    32)
+		if [ -f /etc/init.d/repeater_$MODULE ]; then
+		    print_text "scr_restart" 
+		    /etc/init.d/repeater_$MODULE restart
+		else
+		    print_text "scr_err" 
+		fi
+		echo "$Dat scr_restart" >> $LOG
+		;;
+	    80)
+		cp -p $REPEATERCONFIG $REPEATERCONFIG.$Dat
+		echo ""
+		echo "Backup: $REPEATERCONFIG.$Dat"
+		echo "$Dat backup" >> $LOG
+		;;
+
+	    81) yum update repeater
+		;;
+	    
+	    90)
+		echo ""
+		cat $HELPFILE
+		read dummy
+		echo "$Dat help" >> $LOG
+		;;
+	    91)
+		echo ""
+		print_text "copyright"
+		read dummy
+		echo "$Dat copyright" >> $LOG
+		;;
+	    99)
+		print_text "bye" 
+		echo "$Dat ----- bye - exit programm -----" >> $LOG
+		return 1
+		;;
+	    *)
+		;;	
+	esac
+    done
+
+    return 0
+
+}
+
+readconfig(){
+    CONFIGFILE="/etc/sysconfig/repeater_conf"
+
+    if [ -f $CONFIGFILE ]; then
+	read_value $CONFIGFILE "LOGPATH"
+	LOG=$VALUE/repeater_conf-$Dat.log
+	Dat=`date +%Y%m%d%H%M`
+	echo "----- $Dat Program start ($rev)------" >> $LOG
+	if [ ! -d "$VALUE" ]; then
+	    mkdir -p "$VALUE"
+	    echo "Created log directory $VALUE"
+	    echo "Created log directory $VALUE >> $LOG"
+	fi
+	echo "logging to $LOG"
+
+	read_value $CONFIGFILE "CFGPATH"
+	CFG=$VALUE/repeater_conf.conf
+	touch $CFG
+
+	read_value $CONFIGFILE "DEFVALUES"
+	DEFVALUES=$VALUE
+	echo "Defaultvalues: $DEFVALUES"
+
+	read_value $CONFIGFILE "DATAPATH"
+	DATAPATH=$VALUE
+    else
+	echo "FATAL ERROR!! Configfile $CONFIGFILE not found"
+	echo "FATAL ERROR!! Configfile $CONFIGFILE not found" >> $LOG
+	echo " "
+	exit
+    fi
+    return
+}
+
+readconfig2(){
+    read_value $CONFIGFILE "REPEATERCONFIG_${HWTYPE}"
+    REPEATERCONFIG="${VALUE}_${MODULE}"
+    echo "Select Repeaterconfig: $REPEATERCONFIG"
+    touch $REPEATERCONFIG
+}
+
+#################### MAIN ##########################
+
+export LC_NUMERIC="en_US.UTF-8" > /dev/null
+Dat=`date +%Y%m%d%H%M`
+
+echo ""
+echo "repeater_conf $rev" 
+echo "(C)Hans-J. Barthen, dl5di 2012"
+echo ""
+
+LOG=/dev/null
+
+# Optional parameter 2:
+#	1 soundcardrepeater
+#	2 dvrptrrepeater
+#	3 gmskrepeater
+#	4 dvapnode
+
+hwname=("none" "soundcardrepeater" "dvrptrrepeater" "gmskrepeater" "dvapnode")
+MODULE=0
+AUTO=1
+
+filename=$0
+case ${filename##*/} in
+	"soundcardrepeater_conf")
+		HWTYPE=1
+		;;
+	"dvrptrrepeater_conf")
+		HWTYPE=2
+		;;
+	"gmskrepeater_conf")
+		HWTYPE=3
+		;;
+	"dvapnode_conf")
+		HWTYPE=4
+		;;
+	*)
+		HWTYPE=0
+		;;
+esac
+
+if [ $# -gt 1 ]; then
+    MODULE=$1
+    if [ $2 != "AUTO" ]; then
+	HWTYPE=$2
+	AUTO=0
+    fi
+elif [ $# -eq 1 ]; then
+    MODULE=$1
+    AUTO=0
+fi
+
+if [ $MODULE -gt 4 ]; then
+    MODULE=0
+fi
+
+if [ $HWTYPE -gt 4 ]; then
+    HWTYPE=0
+fi
+
+readconfig
+
+LANG=0
+RET=0
+
+if [[ $MODULE -gt 0 ]] && [[ $HWTYPE -eq 0 ]]; then
+    read_value $CFG hwtype_${MODULE}
+    if [ $? = 1 ]; then
+	HWTYPE=$VALUE
+    fi
+fi
+
+if [[ $MODULE -gt 0 ]] && [[ $HWTYPE -gt 0 ]]; then
+    read_value $CONFIGFILE "REPEATERCONFIG_${HWTYPE}"
+    REPEATERCONFIG="${VALUE}_${MODULE}"
+#    echo "Repeaterconfig: $REPEATERCONFIG"
+    if [ -f $REPEATERCONFIG ]; then
+	read_value $REPEATERCONFIG "language"
+	RET=$?
+    fi
+fi
+
+if [ "$RET" = 0 ]; then
+    IRCDDBCONFIG="/etc/sysconfig/ircddbgw_conf"
+    if [ -f $IRCDDBCONFIG ]; then
+	read_value $IRCDDBCONFIG "IRCDDBGWCONFIG"
+	if [ "$?" = 0 ]; then
+	    LANG = 0
+	else
+	    IRCDDBGWCONFIG=$VALUE
+	    read_value $IRCDDBGWCONFIG "language"
+	    if [ "$?" = 0 ]; then
+		LANG=0
+	    else
+		LANG=$VALUE
+	    fi
+	fi
+    fi
+else
+    LANG=$VALUE
+fi
+
+HELPFILE="$DATAPATH/repeater_conf.$LANG.hlp"
+if [ ! -f "$HELPFILE" ]; then
+    HELPFILE="$DATAPATH/repeater_conf.0.hlp"
+#    echo "H-File: $HELPFILE"
+fi
+
+MENUFILE="$DATAPATH/repeater_conf.$LANG.menu"
+if [ ! -f "$MENUFILE" ]; then
+    MENUFILE="$DATAPATH/repeater_conf.0.menu"
+#    echo "M-File: $MENUFILE"
+fi
+
+if [ "$MODULE" = 0 ]; then
+    echo "No module set"
+    modulesetup
+    AUTO=0
+fi
+
+if [[ $HWTYPE -gt 4 ]] || [[ $HWTYPE -eq 0 ]]; then
+    HWTYPE=0
+    hwsetup
+    AUTO=0
+fi
+
+readconfig2
+
+if [ $AUTO -eq 0 ]; then
+    print_text "header"
+    setup_main
+else
+    basic_setup
+    hwtype${HWTYPE}
+fi
+
+exit

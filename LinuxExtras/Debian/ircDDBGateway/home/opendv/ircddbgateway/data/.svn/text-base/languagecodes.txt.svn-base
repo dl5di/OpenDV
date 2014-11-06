@@ -1,0 +1,23 @@
+
+filename of menu file:  /usr/share/ircddb_conf.#.menu
+filename of help file:  /usr/share/ircddb_conf.#.hlp
+
+where # is:
+
+   0   English (UK) 
+   1   Deutsch 
+   2   Dansk 
+   3   Italiano 
+   4   Francais 
+   5   Espanol 
+   6   Svenska 
+   7   Polski 
+   8   English (US) 
+   9   Nederlands (NL) 
+  10   Nederland (BE) 
+
+
+PLEASE DO NOT TOUCH /usr/share/ircddb_conf.0.menu and /usr/share/ircddb_conf.0.hlp
+
+This files will be updated automatically by the YUM package!
+

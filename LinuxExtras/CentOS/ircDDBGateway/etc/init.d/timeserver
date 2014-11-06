@@ -1,0 +1,87 @@
+#!/bin/bash
+#
+# Timeserver startup script
+# John Hays (K7VE) - john@hays.org
+# Hans-J. Barthen (DL5DI) - dl5di@gmx.de
+#
+# chkconfig: 2345 99 01
+# description: Starts the G4KLX Timeserver
+# config: /etc/sysconfig/timeserver
+#
+
+if [ $UID -ne 0 ]; then
+	echo
+	     echo "ERROR:  This script must be run as the root user!"
+	     echo "        Please use 'su' or log in as root and try again."
+	     echo
+	     exit 1
+ fi
+
+me=timeserver
+
+# Source function library.
+. /etc/rc.d/init.d/functions
+
+# Source networking configuration.
+[ -r /etc/sysconfig/network ] && . /etc/sysconfig/network
+
+# Check that networking is up.
+[ "${NETWORKING}" = "no" ] && exit 1
+
+# Source the timeserver configuration
+[ -f /etc/sysconfig/$me ] && . /etc/sysconfig/$me
+
+dostart() {
+
+    echo -n "Starting $me:"
+    daemon $DAEMON_PATH $DAEMON_OPTIONS 
+    RETVAL=$?
+    [ $RETVAL -eq 0 ] && touch /var/lock/subsys/$me
+    # create a watchdog entry to the crontab
+    echo "*/10 * * * * root ps aux | grep $DAEMON_PATH | grep -vq grep || /etc/init.d/$me start" > /etc/cron.d/$me
+    echo
+}
+
+dostop() {
+    
+    echo -n "Stopping $me "
+    killproc $DAEMON_PATH
+    RETVAL=$?
+    [ $RETVAL -eq 0 ] && rm -f /var/lock/subsys/$me
+    echo
+    # remove watchdog entry from crontab
+    rm -f /etc/cron.d/$me
+                
+}
+
+dorestart() {
+    dostop
+    dostart
+}	
+
+# See how we were called.
+case "$1" in
+    start)
+	dostart
+	;;
+    stop)
+	dostop
+	;;
+    restart)
+	dorestart
+	;;
+    status)
+	status $DAEMON_PATH
+	;;
+    *)
+	echo -e $"\nUsage: \n\t$0 {option}"
+	echo -e "\n\tOptions:\n"
+	echo -e "\trestart       - restarts $me\n"
+	echo -e "\tstart         - starts $me\n"
+	echo -e "\tstatus        - display status\n"
+	echo -e "\tstop          - stops $me\n"
+	echo -e "\n"
+	exit 1
+esac
+
+exit $RETVAL

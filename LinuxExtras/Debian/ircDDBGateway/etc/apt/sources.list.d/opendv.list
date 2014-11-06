@@ -1,0 +1,7 @@
+## /etc/apt/sources.list.d/opendv.list
+## uncomment the following line only if your gateway has access to the amprnet/hamnet 44/8
+#deb http://44.225.73.2/pub/dl5di-soft/repositories/debian experimental main
+## set the following lines in comment if your gateway should not use the internet, the amprnet/hamnet 44/8 only
+deb ftp://141.75.245.226:8021/debian/ experimental main
+deb http://repo1.ham-digital.net/debian/ experimental main
+deb http://debian.nh6z.net/ experimental main

@@ -1,0 +1,950 @@
+
+filename of menu file:  /usr/share/dstarrepeater_conf.#.menu
+filename of help file:  /usr/share/dstarrepeater_conf.#.hlp
+
+where # is:
+
+   0   English (UK) 
+   1   Deutsch 
+   2   Dansk 
+   3   Italiano 
+   4   Francais 
+   5   Espanol 
+   6   Svenska 
+   7   Polski 
+   8   English (US) 
+   9   Nederlands (NL) 
+  10   Nederland (BE) 
+
+
+PLEASE DO NOT TOUCH /usr/share/dstarrepeater_conf.0.menu and /usr/share/dstarrepeater_conf.0.hlp
+
+This files will be updated autotically by the YUM package!
+
+--------------------------------------------------------------------------------------------------
+
+invalid_ip:
+invalid_ip:
+invalid_ip:ERROR !  Invalid IP-address !
+
+invalid_port:
+invalid_port:
+invalid_port:ERROR !  Invalid portnumber ! (1024-65535)
+
+invalid_freq:
+invalid_freq:
+invalid_freq:ERROR !  Invalid frequency ! (out of range [MHz]!)
+
+reset_allowed:Press '-' to reset value to default
+reset_allowed: 
+
+request_input: 
+request_input:Reset not possible, required value!
+request_input: 
+
+reset_value: 
+reset_value:value was set to default.
+reset_value: 
+
+band_in_use:ERROR !  Band already in use !
+
+invalid_band:ERROR !  Invalid band letter !
+
+mainmenu: 
+mainmenu:Main menu
+mainmenu: 
+mainmenu:--------------------------------------------------------------------------------
+mainmenu:Configure your system:
+mainmenu: 
+mainmenu: 1    Language         (set language of announcements and script menues)
+mainmenu: 2    Complete setup   (will run through 3-9, parts can be skipped) 
+mainmenu: 3    Basic setup      (common settings for repeater modules) 
+mainmenu: 4    Network Settings
+mainmenu: 5    Timer Settings
+mainmenu: 6    Announcements Settings
+mainmenu: 7    Beacon Settings
+mainmenu: 8    Modem Settings
+mainmenu: 9    Controller Setup
+mainmenu:10    Logging          (log mode and log path)
+mainmenu:11    Overview         (show current config file)
+mainmenu:--------------------------------------------------------------------------------
+mainmenu:Configure the autostart system:
+mainmenu: 
+mainmenu: Repeatermodule:  20) ON       21) OFF
+mainmenu:--------------------------------------------------------------------------------
+mainmenu:Start and stop manually:
+mainmenu: 
+mainmenu: Repeatermodule:  30) Start    31) Stop    32) Restart (load new config)
+mainmenu:--------------------------------------------------------------------------------
+mainmenu:80    Backup          (create a backup of the configuration file)
+mainmenu: 
+mainmenu:90    Help 
+mainmenu:91    Copyright
+mainmenu:99    Quit 
+mainmenu: 
+
+
+basic_setup: 
+basic_setup: 
+basic_setup:********************************************************************************
+basic_setup: 
+basic_setup:*** G4KLX D-Star Repeater BASIC / CALLSIGN setup 
+basic_setup: 
+basic_setup:********************************************************************************
+basic_setup: 
+
+callsign: 
+callsign:Enter the callsign of your repeater (max 7 digits) and module ID at 8th position.
+callsign:(for example: "DB0LJ  B") 
+callsign: 
+
+gateway: 
+gateway:Enter the base callsign of your gateway (max 7 digits). 
+gateway: 
+
+mode:
+mode:Mode-Setting:
+mode:
+mode: 0  duplex (default)
+mode: 1  simplex
+mode: 2  gateway
+mode: 3  tx only
+mode: 4  rx only
+mode: 5  tx and rx
+mode: 
+mode: -    RESET to default
+mode:
+
+ack:
+ack:Ack-Setting
+ack:
+ack: 0  off
+ack: 1  BER
+ack: 2  status
+ack:
+                
+restriction:
+restriction:Restriction-Setting
+restriction:
+restriction: 0=off
+restriction: 1=on
+restriction:
+
+rpt1Validation:
+rpt1Validation:Repeater1-Validation (default = 1)
+rpt1Validation:
+rpt1Validation: 0=OFF
+rpt1Validation: 1=ON
+rpt1Validation:
+
+dtmfBlanking:
+dtmfBlanking:DTMF Blanking
+dtmfBlanking:
+dtmfBlanking: 0=off
+dtmfBlanking: 1=on
+dtmfBlanking:
+
+errorReply:
+errorReply:Error Reply
+errorReply:
+errorReply: 0=off
+errorReply: 1=on
+errorReply:
+
+network_setup: 
+network_setup: 
+network_setup:********************************************************************************
+network_setup: 
+network_setup:*** G4KLX D-Star Repeater NETWORK setup 
+network_setup: 
+network_setup:********************************************************************************
+network_setup: 
+
+gatewayAddress: 
+gatewayAddress:Enter the IP address of the hbPort. 
+gatewayAddress:This is the IP of this gateway where the repeater software will connect. 
+gatewayAddress:If gateway and repeater software are running on the same PC it will be 127.0.0.1 
+gatewayAddress: 
+     
+gatewayPort: 
+gatewayPort:Enter the portnumber of the gateway.
+gatewayPort:This is the UDP port where the gateway listens for voice streams from repeaters. 
+gatewayPort:The portnumber must be unique. 20010 is a good choice.
+gatewayPort: 
+
+localAddress: 
+localAddress:Enter the IP address of this repeater module 
+localAddress:This is the IP address where the repeater listens for the gateway. 
+localAddress:If gateway and repeater are running on the same PC it will be 127.0.0.1 
+localAddress: 
+
+localPort: 
+localPort:Enter the Port number of this repeater module
+localPort:This is the UDP port where the repeater module listens for the gateway. 
+localPort:The portnumber must be unique. 
+localPort:It is secure to keep the default values. 
+localPort: 
+
+timer_setup: 
+timer_setup:********************************************************************************
+timer_setup: 
+timer_setup:*** G4KLX D-Star Repeater TIMER setup 
+timer_setup: 
+timer_setup:********************************************************************************
+timer_setup: 
+    
+timeout:
+timeout:Timeout
+timeout:
+timeout: (0 .. 300) [s]
+timeout:
+
+ackTime:
+ackTime:Ack-Time:
+ackTime:
+ackTime: (100 .. 2000) [ms]
+ackTime:
+
+
+modem_setup: 
+modem_setup:********************************************************************************
+modem_setup: 
+modem_setup:*** G4KLX D-Star Repeater MODEM setup 
+modem_setup: 
+modem_setup:********************************************************************************
+modem_setup: 
+
+modemType:
+modemType:Select Repeater Type:
+modemType:
+modemType: 1  DVAP
+modemType: 2  DVMega
+modemType: 3  DV-Rptr V1
+modemType: 4  DV-Rptr V2
+modemType: 5  DV3
+modemType: 6  GMSK
+modemType: 7  SoundCard
+modemType: 8  Split
+modemType:
+
+announcement_setup: 
+announcement_setup:********************************************************************************
+announcement_setup: 
+announcement_setup:*** G4KLX D-Star Repeater ANNOUNCEMENT setup 
+announcement_setup: 
+announcement_setup:********************************************************************************
+announcement_setup: 
+
+beacon_setup: 
+beacon_setup:********************************************************************************
+beacon_setup: 
+beacon_setup:*** G4KLX D-Star Repeater BEACON setup 
+beacon_setup: 
+beacon_setup:********************************************************************************
+beacon_setup: 
+
+beaconTime:
+beaconTime:Beacon-Time:
+beaconTime:
+beaconTime: (0 .. 1800) [s]
+beaconTime:
+beaconTime: -  RESET to default
+beaconTime: <CR> Keep old value
+beaconTime:
+
+beaconText:
+beaconText:Enter a beacon text of max. 20 characters
+beaconText:ASCII ONLY! NO SPECIAL LOCAL CHARACTERS !!
+beaconText:
+
+beaconVoice:
+beaconVoice:Should callsign beacon be send in voice
+beaconVoice:
+beaconVoice:  0   NO 
+beaconVoice:  1   YES 
+beaconVoice:
+
+
+controller_setup: 
+controller_setup:********************************************************************************
+controller_setup: 
+controller_setup:*** G4KLX D-Star Repeater CONTROLLER setup 
+controller_setup: 
+controller_setup:********************************************************************************
+controller_setup: 
+
+controllerType:
+controllerType:Enter type of controller 
+controllerType:
+controllerType: 1:  Velleman K8055 - *
+controllerType: 2:  URI USB - *
+controllerType: 3:  Serial - /dev/ttyS*
+controllerType: 4:  /dev/ttyUSB*
+controllerType: 5:  Raspberry Pi GPIOs
+controllerType:
+controllerType:The following interfaces are currently available on your system:
+controllerType:
+
+iface_vel:
+iface_vel:Index of Velleman K8055 interface (1-3)
+iface_vel:
+iface_vel: 1:  Velleman K8055 - 1
+iface_vel: 2:  Velleman K8055 - 2
+iface_vel: 3:  Velleman K8055 - 3
+iface_vel:
+
+iface_uri:
+iface_uri:Index of URI interface (1-6)
+iface_uri:
+iface_uri: 1:  URI USB - 1
+iface_uri: 2:  URI USB - 2
+iface_uri: 3:  URI USB - 3
+iface_uri: 4:  URI USB - 4
+iface_uri: 5:  URI USB - 5
+iface_uri: 6:  URI USB - 6
+iface_uri:
+
+iface_ser:
+iface_ser:Index of serial interface (0-4)
+iface_ser:
+iface_ser: 0:  Serial - /dev/ttyS0
+iface_ser: 1:  Serial - /dev/ttyS1
+iface_ser: 2:  Serial - /dev/ttyS2
+iface_ser: 3:  Serial - /dev/ttyS3
+iface_ser: 4:  Serial - /dev/ttyS4
+iface_ser:
+iface_ser:The following interfaces are currently available on your system:
+iface_ser:
+
+iface_usb:
+iface_usb:Index of USB interface (0-4)
+iface_usb:
+iface_usb: 0:  /dev/ttyUSB0
+iface_usb: 1:  /dev/ttyUSB1
+iface_usb: 2:  /dev/ttyUSB2
+iface_usb: 1:  /dev/ttyUSB3
+iface_usb: 2:  /dev/ttyUSB4
+iface_usb: 
+iface_usb:The following interfaces are currently available on your system:
+iface_usb:
+
+iface_rpi_gpio:
+iface_rpi_gpio:The Raspberry Pi's GPIOs will be enabled
+iface_rpi_gpio:
+ 
+iface_rpi_nogpio:
+iface_rpi_nogpio:The Raspberry Pi's GPIOs are not supported by your system.
+iface_rpi_nogpio:You need to run Raspbian with bcm2835 support.
+iface_rpi_nogpio:
+
+interfaceConfig:
+interfaceConfig:Interface Configuration Profile
+interfaceConfig:
+interfaceConfig: interfaceConfig
+interfaceConfig: (1 .. 3)
+interfaceConfig:
+
+
+----------------------- SoundCard ---------------------------------------------------------------------------
+
+soundCardRXDevice:
+soundCardRXDevice:Soundmodem Input Devicename
+soundCardRXDevice:
+
+soundCardTXDevice:
+soundCardTXDevice:Soundmodem Output Devicename
+soundCardTXDevice:
+
+soundCardRXLevel:
+soundCardRXLevel:Receive-Level
+soundCardRXLevel:
+soundCardRXLevel: (0 .. 100) [%]
+soundCardRXLevel:
+
+soundCardTXLevel:
+soundCardTXLevel:Transmit-Level
+soundCardTXLevel:
+soundCardTXLevel: (0 .. 100) [%]
+soundCardTXLevel:
+
+soundCardsquelchmode:
+soundCardSquelchmode:Squelch-Mode
+soundCardSquelchmode:
+soundCardSquelchmode: 0: normal
+soundCardSquelchmode: 1: inverted
+soundCardSquelchmode: 2: open
+soundCardSquelchmode:
+
+soundCardSquelchLevel:
+soundCardSquelchLevel:Squelch-Level
+soundCardSquelchLevel: (0 .. 100) [%]
+soundCardSquelchLevel:
+
+
+soundCardRXInvert:
+soundCardRXInvert:SoundCard RX-Invert
+soundCardRXInvert:
+soundCardRXInvert: 0=OFF
+soundCardRXInvert: 1=ON
+soundCardRXInvert:
+
+soundCardTXInvert:
+soundCardTXInvert:SoundCard TX-Invert
+soundCardTXInvert:
+soundCardTXInvert: 0=OFF
+soundCardTXInvert: 1=ON
+soundCardTXInvert:
+
+soundCardChannel:
+soundCardChannel:SoundCard Channel
+soundCardChannel: (0-1)
+soundCardChannel: 
+
+soundCardModLevel:
+soundCardModLevel:SoundCard Modulation Level
+soundCardModLevel: (0-100) [%]
+soundCardModLevel:
+
+soundCardHangTime:
+soundCardHangTime:SoundCard HangTime (TX-Delay)
+soundCardHangTime: (0-500) [ms]
+soundCardHangTime:
+
+alsa_req:
+alsa_req:The "alsa-utils" package is required to find sound devices.
+also_req:Currently only "default" can be found.
+alsa_req:(yum -y install alsa-driver alsa-lib alsa-utils)
+alsa_req:
+
+
+----------------------DVRPTR V1----------------------------------------------------------------------------
+
+dvrptr1Port:Enter the index of the USB-Port address (0-9)
+dvrptr1Port:
+dvrptr1Port: 0:  /dev/ttyACM0
+dvrptr1Port: 1:  /dev/ttyACM1
+dvrptr1Port:     ..
+dvrptr1Port: 9:  /dev/ttyACM9
+dvrptr1Port:
+dvrptr1Port:The following modem ports are currently available on your system:
+dvrptr1Port:
+
+dvrptr1RXInvert:
+dvrptr1RXInvert:DV-RPTR V1 Modem RX-Invert
+dvrptr1RXInvert:
+dvrptr1RXInvert: 0=OFF
+dvrptr1RXInvert: 1=ON
+dvrptr1RXInvert:
+
+dvrptr1TXInvert:
+dvrptr1TXInvert:DV-RPTR V1 Modem TX-Invert
+dvrptr1TXInvert:
+dvrptr1TXInvert: 0=OFF
+dvrptr1TXInvert: 1=ON
+dvrptr1TXInvert:
+
+dvrptr1Channel:
+dvrptr1Channel:DV-RPTR V1 Modem Channel
+dvrptr1Channel: (0-1)
+dvrptr1Channel: 
+
+dvrptr1ModLevel:
+dvrptr1ModLevel:DV-RPTR V1 Modem Modulation Level
+dvrptr1ModLevel: (0-100) [%]
+dvrptr1ModLevel:
+
+dvrptr1TXDelay:
+dvrptr1TXDelay:DV-RPTR V1 TX-Delay
+dvrptr1TXDelay: (0-500) [ms]
+dvrptr1TXDelay:
+
+----------------------DVRPTR V2----------------------------------------------------------------------------
+
+dvrptr2Connection:
+dvrptr2Connection: DV-RPTR V2 modem connection
+dvrptr2Connection:
+dvrptr2Connection: 0 = USB
+dvrptr2Connection: 1 = Ethernet
+dvrptr2Connection:
+
+dvrptr2USBPort:
+dvrptr2USBPort:Enter the index of the USB-Port address (0-9)
+dvrptr2USBPort:
+dvrptr2USBPort: 0:  /dev/ttyACM0
+dvrptr2USBPort: 1:  /dev/ttyACM1
+dvrptr2USBPort:     ..
+dvrptr2USBPort: 9:  /dev/ttyACM9
+dvrptr2USBPort:
+dvrptr2USBPort:The following modem ports are currently available on your system:
+dvrptr2USBPort:
+
+dvrptr2Address:
+dvrptr2Address: Enter the IP-Address of the DV-RPTR V2 Modem
+dvrptr2Address:
+
+dvrptr2Port:
+dvrptr2Port: Enter the TCP-Port used by the DV-RPTR V2 Modem
+dvrptr2Port: (1-65535, default 23 / telnet)
+dvrptr2Port: 
+
+dvrptr2TXInvert:
+dvrptr2TXInvert:Modem TX-Invert
+dvrptr2TXInvert:
+dvrptr2TXInvert: 0=OFF
+dvrptr2TXInvert: 1=ON
+dvrptr2TXInvert:
+
+dvrptr2ModLevel:
+dvrptr2ModLevel:Modem Modulation Level
+dvrptr2ModLevel: (0-100) [%]
+dvrptr2ModLevel:
+
+dvrptr2TXDelay:
+dvrptr2TXDelay:Modem TX-Delay
+dvrptr2TXDelay: (0-500) [ms]
+dvrptr2TXDelay:
+
+----------------------DV3----------------------------------------------------------------------------
+
+dvrptr3Connection:
+dvrptr3Connection: DV3 modem connection
+dvrptr3Connection:
+dvrptr3Connection: 0 = USB
+dvrptr3Connection: 1 = Ethernet
+dvrptr3Connection:
+
+dvrptr3USBPort:
+dvrptr3USBPort:Enter the index of the USB-Port address (0-9)
+dvrptr3USBPort:
+dvrptr3USBPort: 0:  /dev/ttyACM0
+dvrptr3USBPort: 1:  /dev/ttyACM1
+dvrptr3USBPort:     ..
+dvrptr3USBPort: 9:  /dev/ttyACM9
+dvrptr3USBPort:
+dvrptr3USBPort:The following modem ports are currently available on your system:
+dvrptr3USBPort:
+
+dvrptr3Address:
+dvrptr3Address: Enter the IP-Address of the DV3 Modem
+dvrptr3Address:
+
+dvrptr3Port:
+dvrptr3Port: Enter the TCP-Port used by the DV3 Modem
+dvrptr3Port: (1-65535, default 23 / telnet)
+dvrptr3Port: 
+
+dvrptr3TXInvert:
+dvrptr3TXInvert:Modem TX-Invert
+dvrptr3TXInvert:
+dvrptr3TXInvert: 0=OFF
+dvrptr3TXInvert: 1=ON
+dvrptr3TXInvert:
+
+dvrptr3ModLevel:
+dvrptr3ModLevel:Modem Modulation Level
+dvrptr3ModLevel: (0-100) [%]
+dvrptr3ModLevel:
+
+dvrptr3TXDelay:
+dvrptr3TXDelay:Modem TX-Delay
+dvrptr3TXDelay: (0-500) [ms]
+dvrptr3TXDelay:
+
+------------------------GMSK--------------------------------------------------------------------------
+
+gmskAddress:
+gmskAddress:Modem Address
+gmskAddress: (300-31F) [hex]
+gmskAddress: enter decimal value (768-799) !
+gmskAddress:
+
+------------------------DVAP--------------------------------------------------------------------------
+
+dvapPort:
+dvapPort:Enter the index of the dvaPort (0-4)
+dvapPort:
+dvapPort: 0  /dev/ttyUSB0
+dvapPort: 1  /dev/ttyUSB1
+dvapPort: 2  /dev/ttyUSB2
+dvapPort: 3  /dev/ttyUSB3
+dvapPort: 4  /dev/ttyUSB4
+dvapPort:
+dvapPort:The following interfaces are currently available on your system:
+dvapPort:
+
+dvapFrequency:
+dvapFrequency:DVAP Frequency in !!Hertz!!
+dvapFrequency:
+dvapFrequency: VHF version: (144000000 .. 148000000) [Hz]
+dvapFrequency: UHF version: (420000000 .. 450000000) [Hz]
+dvapFrequency: (notice local laws and bandplans!)
+dvapFrequency:
+
+dvapPower:
+dvapPower:DVAP Transmit Power
+dvapPower: (-12 .. +10) [dBm]
+dvapPower:
+
+dvapSquelch:
+dvapSquelch:DVAP Squelchlevel
+dvapSquelch: (-128 .. -45) [dBm]
+dvapSquelch:
+
+dvapOffset:
+dvapOffset:DVAP Offset
+dvapOffset: (-2000 .. +2000) [Hz]
+dvapOffset:
+
+------------------------DVMEGA--------------------------------------------------------------------------
+
+dvmegaPort:
+dvmegaPort:Enter the device name of the DVMegaPort
+dvmegaPort:(incl. complete path like /dev/ttyACM0))
+dvmegaPort:
+dvmegaPort:The following interfaces are currently available on your system:
+dvmegaPort:
+
+dvmegaFrequency:
+dvmegaFrequency:DVMEGA Frequency in !!Hertz!!
+dvmegaFrequency:
+dvmegaFrequency: VHF version: (144000000 .. 148000000) [Hz]
+dvmegaFrequency: UHF version: (420000000 .. 450000000) [Hz]
+dvmegaFrequency: (notice local laws and bandplans!)
+dvmegaFrequency:
+
+dvmegaVariant:
+dvmegaVariant:DVMEGA Variant
+dvmegaVariant:
+dvmegaVariant: 0   Node
+dvmegaVariant: 1   Radio
+dvmegaVariant:
+
+dvmegaRXInvert:
+dvmegaRXInvert:DVMEGA RX-Invert
+dvmegaRXInvert:
+dvmegaRXInvert: 0=OFF
+dvmegaRXInvert: 1=ON
+dvmegaRXInvert:
+
+dvmegaTXInvert:
+dvmegaTXInvert:DVMEGA TX-Invert
+dvmegaTXInvert:
+dvmegaTXInvert: 0=OFF
+dvmegaTXInvert: 1=ON
+dvmegaTXInvert:
+
+dvmegaTXDelay:
+dvmegaTXDelay:DVMEGA Modem TX-Delay
+dvmegaTXDelay: (0-350) [ms]
+dvmegaTXDelay:
+
+------------------------SPLIT--------------------------------------------------------------------------
+
+split:
+split:Configuration of the Split Repeater
+split:
+split: 0) Back to main menu
+split:
+split: 1) local IP-Address / local UDP-Port
+split:
+split: 2) TX1 IP-Address / TX1 UDP-Port
+split: 3) RX1 IP-Address / RX1 UDP-Port
+split:
+split: 4) TX2 IP-Address / TX2 UDP-Port
+split: 5) RX2 IP-Address / RX2 UDP-Port
+split:
+split: 6) TX3 IP-Address / TX3 UDP-Port
+split: 7) RX3 IP-Address / RX3 UDP-Port
+split:
+split: 8) Split Timeout
+split:
+
+splitLocalAddress:
+splitLocalAddress:Split Repeater Local Address
+splitLocalAddress:
+splitLocalAddress:
+
+splitLocalPort:
+splitLocalPort:Split Repeater Local Port
+splitLocalPort:
+splitLocalPort:
+
+splitTX1Address:
+splitTX1Address:Split TX1 Address
+splitTX1Address:
+splitTX1Address:
+
+splitTX1Port:
+splitTX1Port:Split TX1 Port
+splitTX1Port:
+splitTX1Port:
+
+splitTX2Address:
+splitTX2Address:Split TX2 Address
+splitTX2Address:
+splitTX2Address:
+
+splitTX2Port:
+splitTX2Port:Split TX2 Port
+splitTX2Port:
+splitTX2Port:
+
+splitTX3Address:
+splitTX3Address:Split TX3 Address
+splitTX3Address:
+splitTX3Address:
+
+splitTX3Port:
+splitTX3Port:Split TX3 Port
+splitTX3Port:
+splitTX3Port:
+
+splitRX1Address:
+splitRX1Address:Split TX1 Address
+splitRX1Address:
+splitRX1Address:
+
+splitRX1Port:
+splitRX1Port:Split RX1 Port
+splitRX1Port:
+splitRX1Port:
+
+splitRX2Address:
+splitRX2Address:Split TX2 Address
+splitRX2Address:
+splitRX2Address:
+
+splitRX2Port:
+splitRX2Port:Split RX2 Port
+splitRX2Port:
+splitRX2Port:
+
+splitRX3Address:
+splitRX3Address:Split TX3 Address
+splitRX3Address:
+splitRX3Address:
+
+splitRX3Port:
+splitRX3Port:Split RX3 Port
+splitRX3Port:
+splitRX3Port:
+
+splitTimeout:
+splitTimeout:Split Timeout
+splitTimeout:
+splitTimeout:
+
+--------------------------------------------------------------------------------------------------
+
+err_module:
+err_module: Wrong module specification, needs to be in range 1-4
+err_module:
+
+err_hwtype:
+err_hwtype: Wrong hardware specification, needs to be in range 1-4
+err_hwtype: 1:  soundcardrepeater
+err_hwtype: 2:  dvrptrrepeater
+err_hwtype: 3:  gmskrepeater
+err_hwtype: 4:  dvapnode
+err_hwtype:
+
+hw_setup: 
+hw_setup:********************************************************************************
+hw_setup:*** Configuration of the Repeater Hardware Type. 
+hw_setup:********************************************************************************
+hw_setup: 
+
+hw_module: 
+hw_module:********************************************************************************
+hw_module:*** Configuration of the Repeater Modules Index.
+hw_module:********************************************************************************
+hw_module: 
+
+sel_module:
+sel_module:Select index of the repeater module 1-4
+sel_module:
+sel_module:This value has to meet the repeater index in the ircDDBGateway settings!!
+sel_module:It is recommended to configure the repeater modules from the ircddbgw_conf
+sel_module:program which makes sure that all values match in both configurations.
+sel_module:
+sel_module:You can stop here and start ircddbgw_conf by using <CTRL>C to configure
+sel_module:the repeater modules from there.
+sel_module:
+
+sel_hwtype:
+sel_hwtype:Select hardware type of this repeater module:
+sel_hwtype:  1:  soundcardrepeater
+sel_hwtype:  2:  dvrptrrepeater
+sel_hwtype:  3:  gmskrepeater
+sel_hwtype:  4:  dvapnode
+sel_hwtype:
+
+hb_reset: 
+hb_reset:Do you want to reset all settings for the homebrew repeteater interface ?
+hb_reset: 
+hb_reset:  0   NO 
+hb_reset:  1   YES 
+hb_reset:
+
+hb_head:     
+hb_head: *** G4KLX Software repeater setup 
+hb_head: 
+
+language: 
+language:You can select the language for the announcements of the gateway here.
+language:This configuration tool uses the same language setting.
+language: 
+language:Select language for announcements  
+language: 
+language:  0   English (UK) 
+language:  1   Deutsch 
+language:  2   Dansk 
+language:  3   Francais 
+language:  4   Italiano 
+language:  5   Espanol 
+language:  6   Polski 
+language:  7   Svenska 
+language:  8   Nederlands (NL) 
+language:  9   English (US) 
+language: 10   Norsk
+language: 
+language: -    RESET to default
+language: <CR> Keep old value
+language: 
+
+logging: 
+logging: Audio logging
+logging:
+logging: 0    DISABLE audio logging  
+logging: 1    ENABLE  audio logging 
+logging: 
+logging: -    RESET to default
+logging: <CR> Keep old value
+logging:
+logging: This option allows to write audio streams to .dvtool-files.
+logging: !!! Note: audio logging may need a lot of disk space !!!
+logging: 
+
+nolog:
+nolog: Switch logging on/off
+nolog:
+nolog: 0  NOLOG DISABLED    (logging is on)
+nolog: 1  NOLOG ENDABLED    (logging is off)
+nolog:
+nolog: Note: Growing logfiles may need a lot of disk space.
+nolog:
+
+logdir:
+logdir: Enter the directory where logfiles are created.
+logdir: This directory needs to exist and have write permissions for the daemon!!
+logdir: The path needs to be set even when logging was switched off
+logdir: because it is also used for statusfiles.
+logdir: It is save to keep the default path like it was installed automatically.
+logdir:
+
+audiodir:
+audiodir: Enter the directory where autio output file are stored (.dvtool)
+audiodir: This directory needs to exist and have write permissions for the daemon.
+audiodir:
+
+cmd_options:
+cmd_options: The command line options will be changed:
+
+
+
+
+rxInvert:
+rxInvert:RX-Invert
+rxInvert:
+rxInvert: 0=off
+rxInvert: 1=on
+rxInvert:
+
+txInvert:
+txInvert:TX-Invert
+txInvert: 0=off
+txInvert: 1=on
+txInvert: 
+
+hangTime:
+hangTime:Hang-Time
+hangTime:
+hangTime: (0 .. 3000) [ms]
+hangTime:
+
+
+pttInvert:
+pttInvert:PTT-Invert
+pttInvert:
+pttInvert: 0=OFF
+pttInvert: 1=ON
+pttInvert:
+
+
+header:--------------------------------------------------------------------------------
+header: 
+header: Configuration script for the D-Star Repeater from Jonathan Naylor, G4KLX 
+header: Copyright (C) 2014   Hans-J. Barthen, DL5DI (dl5di@gmx.de) 
+header: 
+header:--------------------------------------------------------------------------------
+
+copyright:-------------------------------------------------------------------------------- 
+copyright: 
+copyright: Configuration script for Repeater Modules from Jonathan Naylor, G4KLX 
+copyright: Copyright (C) 2014   Hans-J. Barthen, DL5DI (dl5di@gmx.de) 
+copyright: 
+copyright: This program is free software: you can redistribute it and/or modify 
+copyright: it under the terms of the GNU General Public License as published by 
+copyright: the Free Software Foundation, either version 2 of the License, or 
+copyright: (at your option) any later version. 
+copyright: 
+copyright: This program is distributed in the hope that it will be useful, 
+copyright: but WITHOUT ANY WARRANTY; without even the implied warranty of 
+copyright: MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the 
+copyright: GNU General Public License for more details. 
+copyright: 
+copyright: You should have received a copy of the GNU General Public License 
+copyright: along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+copyright: 
+copyright:-------------------------------------------------------------------------------- 
+copyright: 
+copyright: Press <ENTER> to return to the menu.
+copyright: 
+
+final: 
+final:Module configured! 
+final: 
+
+scr_act: 
+scr_act:** activate startup script of repeater module
+scr_act: 
+
+src_err: 
+src_err:ERROR: no startup script found 
+src_err: 
+
+scr_deact: 
+scr_deact:** deactivate startup script of repeater module 
+scr_deact: 
+
+scr_start: 
+scr_start:** start repeater module
+scr_start: 
+
+scr_stop: 
+scr_stop:** stop repeater module
+scr_stop:
+
+scr_restart: 
+scr_restart:** restart repeater module 
+scr_restart: 
+
+nofunc: 
+nofunc:not yet implemented 
+nofunc: 
+
+bye: 
+bye:bye
+bye: 
+bye:   73 
+bye: 

@@ -1,0 +1,11 @@
+BACKUPPATH=/var/backups
+LOGPATH=/var/log/opendv
+DEFVALUES=/home/opendv/ircddbgateway/ircddbgateway.default
+DATAPATH=/home/opendv/ircddbgateway/data
+CFGPATH=/home/opendv/ircddbgateway
+OPENDVDATA=/home/opendv/data
+IRCDDBGWCONFIG=/home/opendv/ircddbgateway/ircddbgateway
+TIMESERVERCFG=/home/opendv/ircddbgateway/timeserver
+DASHBOARDCFG=/var/www/ircddblocal.php
+RP2CIP=172.16.0.1
+RP2CPORT=20000

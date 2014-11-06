@@ -1,0 +1,95 @@
+TABLE {
+    vertical-align:middle;
+    empty-cells: show;
+    padding-left:10px;
+    padding-right:15px;
+    padding-top:10px;
+    padding-bottom:10px;
+    border-collapse:separate;
+    border-spacing:4px 3px;
+    text-decoration:none;
+    font: 12px Arial, sans-serif; 
+}
+
+a {
+    text-decoration:none;
+}
+
+a.tooltip, a.tooltip:link, a.tooltip:visited, a.tooltip:active  {
+    position: relative;
+    text-decoration: none;
+    color: #000000;
+}
+
+a.tooltip:hover {
+    color: #000000;
+    background: transparent;
+}
+
+a.tooltip span {
+    display: none;
+    text-decoration: none;
+}
+
+a.tooltip:hover span {
+    display: block;
+    position: absolute;
+    top: 20px;
+    left: 0;
+    width: 200px;
+    z-index: 100;
+    color: #000000;
+    border:1px solid #000000;
+    background: #FFFFCC;
+    font: 12px Verdana, sans-serif; 
+    text-align: left;
+}
+
+a.tooltip span b {
+    display: block;
+    color: #000000;
+    margin: 0;
+    padding: 0;
+    font-size: 12px;
+    font-weight: bold;
+    border: 0px;
+    border-bottom: 1px solid black;
+    background: #f0f0f0;
+}
+
+ul {
+    padding: 5px;
+    margin: 10px 0;
+    list-style: none;
+    float: left;
+}
+
+ul li {
+    float: left;
+    display: inline; /*For ignore double margin in IE6*/
+    margin: 0 10px;
+}
+
+ul li a {
+    text-decoration: none;
+    float:left;
+    color: #999;
+    cursor: pointer;
+    font: 900 14px/22px "Arial", Helvetica, sans-serif;
+}
+
+ul li a span {
+    margin: 0 10px 0 -10px;
+    padding: 1px 8px 5px 18px;
+    position: relative; /*To fix IE6 problem (not displaying)*/
+    float:left;
+}
+
+ul.mmenu li a.current, ul.mmenu li a:hover {
+    background: url(/images/buttonbg.png) no-repeat top right;
+    color: #0d5f83;
+}
+
+ul.mmenu li a.current span, ul.mmenu li a:hover span {
+    background: url(/images/buttonbg.png) no-repeat top left;
+}

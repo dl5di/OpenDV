@@ -1,0 +1,18 @@
+# Defaults for ircddbgateway initscript
+# sourced by /etc/init.d/ircddbgateway
+# installed at /etc/default/ircddbgateway by the maintainer scripts
+
+#
+# This is a POSIX shell fragment
+#
+DAEMON_NAME=ircddbgatewayd
+DAEMON_PATH=/usr/bin/ircddbgatewayd
+# Additional options that are passed to the Daemon.
+DAEMON_ARGS="-nolog -logdir=/var/log/opendv -daemon"
+DAEMON_USER=opendv
+#
+IRCDDBGATEWAY_DDENABLED="no"
+IRCDDBGATEWAY_DDDHCP="yes"
+IRCDDBGATEWAY_DDDEV="tap0"
+IRCDDBGATEWAY_DDIP="192.168.1.1"
+IRCDDBGATEWAY_DDMASK="255.255.255.0"

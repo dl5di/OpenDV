@@ -1,0 +1,102 @@
+#!/bin/bash
+#
+# universal repeater startup script
+# Hans-J. Barthen (DL5DI) dl5di@gmx.de
+#
+# chkconfig: 345 99 01
+# description: Starts the G4KLX repeater modules
+# config: /etc/sysconfig/$0
+#
+
+if [ $UID -ne 0 ]; then
+	echo
+	echo "ERROR:  This script must be run as the root user!"
+	echo "        Please use 'su' or log in as root and try again."
+	echo
+	exit 1
+fi
+
+me=repeater_1
+
+# Source function library.
+if [ -f /etc/init.d/functions ] ; then
+    . /etc/init.d/functions
+elif [ -f /etc/rc.d/init.d/functions ] ; then
+    . /etc/rc.d/init.d/functions
+else
+    exit 1
+fi
+
+# Source networking configuration.
+[ -r /etc/sysconfig/network ] && . /etc/sysconfig/network
+
+# Check that networking is up.
+[ "${NETWORKING}" = "no" ] && exit 1
+
+# Source the configuration
+[ -f /etc/sysconfig/$me ] && . /etc/sysconfig/$me || exit 2
+
+RETVAL=0
+
+dostart() {
+
+    echo -n "Starting $me:"
+    daemon --pidfile /var/run/$me.pid $DAEMON_PATH $DAEMON_OPTIONS &
+    RETVAL=$?
+    [ $RETVAL -eq 0 ] && touch /var/lock/subsys/$me
+    sleep 3
+    line=$(ps x | grep -v "grep" | grep "$DAEMON_PATH $DAEMON_OPTIONS")
+    set -- $line
+    echo ""
+    echo "PID: $1"
+    echo "$1" > /var/run/$me.pid
+# create a watchdog entry to the crontab
+    echo "*/10 * * * * root ps aux | grep '$DAEMON_PATH $DAEMON_OPTIONS' | grep -vq grep || /etc/init.d/$me start" > /etc/cron.d/$me
+    return $RETVAL
+}
+
+dostop() {
+    
+    echo -n "Stopping $me "
+    killproc -p /var/run/$me.pid $DAEMON_PATH
+    RETVAL=$?
+    [ $RETVAL -eq 0 ] && rm -f /var/lock/subsys/$me
+    echo
+# remove watchdog entry from crontab
+    rm -f /etc/cron.d/$me
+    return $RETVAL
+}
+
+dorestart() {
+    dostop
+    sleep 2
+    dostart
+}	
+
+# See how we were called.
+case "$1" in
+    start)
+	dostart
+	;;
+    stop)
+	dostop
+	;;
+    restart)
+	dorestart
+	;;
+    status)
+	status -p /var/run/$me.pid $DAEMON_PATH
+	RETVAL=$?
+	;;
+    *)
+	echo -e $"\nUsage: \n\t$me {option}"
+	echo -e "\n\tOptions:\n"
+	echo -e "\trestart       - restarts $me\n"
+	echo -e "\tstart         - starts $me\n"
+	echo -e "\tstatus        - display status\n"
+	echo -e "\tstop          - stops $me\n"
+	echo -e "\n"
+	exit 1
+esac
+
+exit $RETVAL

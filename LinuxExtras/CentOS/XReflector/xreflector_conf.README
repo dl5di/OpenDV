@@ -1,0 +1,37 @@
+--------------------------------------------------------------------------------
+
+ Configuration script for XReflector  from Jonathan Naylor, G4KLX
+ Copyright (C) 2012   Hans-J. Barthen, DL5DI (dl5di@gmx.de)
+
+--------------------------------------------------------------------------------
+
+The text based "xreflector_conf" configuration program allows to configure the
+G4KLX XReflector.
+
+Files:
+
+/etc/xreflector						main configfile for XRFeflector
+    
+/etc/default/xreflector_conf		default values for all settings
+
+/etc/init.d/xreflector				startscripts for xreflector
+
+/usr/share/xreflector_conf/*.hlp	helpfiles in different languages
+/usr/share/xreflector_conf/*.mnu	menufiles in different languages
+    
+/etc/sysconfig/xreflector			binary-path and commandline options for xreflector module
+
+This last file need to be edited before the configuration if you want to change 
+the logpath or switch logging on/off.
+
+PLEASE DO NOT EDIT and other files manually unless you know exactly what you are doing!
+Manual entries may cause issues and double entries.
+
+xreflector_conf will create the basic configfile for the xreflector module and 
+also the startup script and options file in /etc/sysconfig.
+Special menu options allow to activate the automatic startup script or manually 
+start the xreflector.
+
+february 20th 2013
+
+Hans, DL5DI

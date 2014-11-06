@@ -1,0 +1,97 @@
+@CHARSET "UTF-8";
+/* 
+Copyright 2011 - John D. Hays, K7VE
+Licensed for Amateur Radio Use by Stations using STARnet Digital Compatible Software
+*/
+body {
+	font-family: helvetica,swiss,arial,san-serif;
+	background: white;
+	padding: 0; 
+	margin: 0; 
+	text-align: center; 
+#	background: #369;
+}
+.starnetLink {
+	text-decoration: underline;
+	color: brown;
+}
+
+div#wrapper {
+	width: 80%; 
+	margin: 0 auto; 
+	background: #fff; 
+	text-align: left;
+}
+
+div#content {
+	padding: 5px;
+	margin: auto;
+}
+
+div.header,div.footer {
+	background: #33ccff;
+	text-align: center;
+	color: black;
+	clear: both;
+
+}
+div.first-menu {
+	text-align: left;
+	clear: both;
+}
+
+div.movie {
+	float: left;
+	margin-right: 5px; 
+}
+
+caption {
+	text-align: left;
+	padding: 2px;
+	font-weight: bold;
+}
+
+.links caption {
+	background: red; 
+	color: white;
+}
+
+.groups caption {
+	background: blue;
+	color: white;
+}
+
+.heard caption {
+	background: green;
+	color: white;
+}
+
+.gateway caption {
+	background: purple;
+	color: white;
+}
+th {
+	font: bold;
+	padding: 2px;
+	text-align: left;
+}
+div.groups, div.links, div.heard, div.gateway {
+	float: left;
+	padding-right: 5px;
+}
+
+div.groups table, div.links table, div.heard table, div.gateway table {
+	width:480px;
+	margin-bottom: 1em;
+	border-bottom: 1px solid;
+}
+div.groups table table.subs {
+	margin-left: 10px;
+	margin-bottom: 0em;
+	width: 100%;
+	border-bottom: none;
+}
+.smalltype {
+	font-size: 8pt;
+	font-weight: bold;
+}	

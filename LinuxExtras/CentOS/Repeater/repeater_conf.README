@@ -1,0 +1,83 @@
+--------------------------------------------------------------------------------
+
+ Configuration script for Repeater Modules from Jonathan Naylor, G4KLX
+ Copyright (C) 2012-2013   Hans-J. Barthen, DL5DI (dl5di@gmx.de)
+
+--------------------------------------------------------------------------------
+
+The text based "repeater_conf" configuration program allows to configure the
+G4KLX repeater modules.
+The recommended way for the initial installation of a repeater with gateway is 
+to configure the gateway first using the configuration tool "ircddbgw_conf".
+This program will automatically involve "repeater_conf" during the configuration 
+of a software repeater module.
+This will make sure that the settings of gateway and repeater module match to 
+each other.
+
+PLEASE NOTE: repeater_conf reads the gateway configuration but the ircddbgw_conf
+does not care about the repeater configuration!
+
+On a standalone repeater without any gateway you may start "repeater_conf" direct.
+The program takes 0 to 2 parameters.
+
+    repeater_conf <module> <hardwaretype>
+
+with
+
+<module> 	1-4  this value has to meet the module index of ircDDBGateway!
+<hardwaretype> 	1-4
+    1 soundcardrepeater
+    2 dvrptrrepeater
+    3 gmskrepeater
+    4 dvapnode
+    
+These commandline parameters allow to start the program from other software.
+
+When called without commandline parameters the program will request the values.
+ 
+Setting up a soundcardrepeater requires ALSA to be installed.
+Please note that the soundcard part is not really tested!
+The soundmodem configuration is different from other modem setups, it specifies 
+all devices by full text names, not by clearly defined devicenames.
+Example: [HDA Intel ALC662 rev1 Analog (hw:0,1)]
+
+The ALSA tools allow to read that names and offer it for selection.
+If you use other types of modem devices or can use "default" or can once set the
+value by the repeater in GUI-mode you won't need ALSA.
+
+
+Files:
+
+/etc/soundcardrepeater_*	configfile for soundcardrepeater module * (1-4)
+/etc/dvrptrrepeater_*		configfile for dvrptrrepeater module * (1-4)
+/etc/gmskrepeater_*			configfile for gmskrepeater module * (1-4)
+/etc/dvapnode_*				configfile for dvapnode module * (1-4)
+    
+/etc/default/repeater_conf	default values for all settings
+
+/etc/init.d/repeater_*		startscripts for repeater module * (1-4)
+
+/usr/share/repeater_conf/*.hlp	helpfiles in different languages
+/usr/share/repeater_conf/*.mnu	menufiles in different languages
+    
+/etc/sysconfig/repeater_*	binarypath and commandline options for 
+				repeater module * (1-4)
+
+This last file need to be edited before the configuration if you want to change 
+the logpath or switch logging on/off.
+
+PLEASE DO NOT EDIT and other files manually unless you know exactly what you are doing!
+Manual entries may cause issues and double entries.
+
+repeater_conf will create the basic configfile for the repeater module and also the 
+options file in /etc/sysconfig.
+Special menu options allow to activate the automatic startup script or manually start
+the repeater.
+
+Please address ideas, bug reports and experiences in the Yahoo Group 
+"PCRepeaterController".
+
+
+august 25th 2012
+
+Hans, DL5DI

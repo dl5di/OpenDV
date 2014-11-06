@@ -1,0 +1,231 @@
+
+filename of menu file:  /usr/share/xreflector_conf.#.menu
+filename of help file:  /usr/share/xreflector_conf.#.hlp
+
+where # is:
+
+   0   English (UK) 
+   1   Deutsch 
+
+BITTE DIE DATEIEN /usr/share/ircddb_conf.0.menu und /usr/share/ircddb_conf.0.hlp NICHT EDITIEREN!
+
+Diese Dateien werden automatisch beim YUM-Update ueberschrieben!
+
+--------------------------------------------------------------------------------------------------
+
+invalid_ip:
+invalid_ip:
+invalid_ip:FEHLER !  Ungueltige IP-Adresse !
+
+reset_allowed:Druecke '-' um den Wert auf die Standardvorgabe zurueck zu setzen
+reset_allowed: 
+
+request_input: 
+request_input:Eingabe zwingend erforderlich!"
+request_input: 
+
+reset_value: 
+reset_value:Der Wert wurde auf die Standardvorgabe zurueck gesetzt.
+reset_value: 
+
+basic_setup: 
+basic_setup: 
+basic_setup: 
+basic_setup: 
+basic_setup:********************************************************************************
+basic_setup: 
+basic_setup:*** XReflector Grundeinstellungen
+basic_setup: 
+basic_setup:********************************************************************************
+basic_setup: 
+
+callsign:
+callsign:Gib das Basis-Rufzeichen des Reflektors ein (max 7 Stellen). 
+callsign: 
+callsign: Beispiel: 'XRF023' 
+callsign: 
+
+
+dplus_setup: 
+dplus_setup: 
+dplus_setup: 
+dplus_setup: 
+dplus_setup:********************************************************************************
+dplus_setup: 
+dplus_setup:*** DPlus Reflektor-Netwerk Einstellungen
+dplus_setup: 
+dplus_setup:********************************************************************************
+
+dplusEnabled: 
+dplusEnabled:      0  DPlus-Service AUSschalten
+dplusEnabled:      1  DPlus-Service EINschalten  
+dplusEnabled: 
+dplusEnabled: -       Zuruecksetzen der Einstellung
+dplusEnabled: <ENTER> Den alten Wert beibehalten (Wert in [])
+dplusEnabled: 
+
+
+remoteEnabled: 
+remoteEnabled: 
+remoteEnabled:Zum Umfang der XReflector-Software gehoert eine Fernsteuersoftware
+remoteEnabled:mit grafischer Oberflaeche (Linux: 'remotecontrol'/Windows: 'remotecontrol.exe')
+remoteEnabled: 
+remoteEnabled:      0  Fernsteuerungszugang AUSschalten  
+remoteEnabled:      1  Fernsteuerungszugang EINschalten   
+remoteEnabled: 
+remoteEnabled: -       Zuruecksetzen der Einstellung
+remoteEnabled: <ENTER> Den alten Wert beibehalten (Wert in [])
+remoteEnabled: 
+
+remotePassword: 
+remotePassword:Gib ein Passwort fuer den Fernsteuerzugang ein  
+remotePassword: 
+
+remotePort: 
+remotePort:Gib die Portnummer fuer den Fernsteuerzugang ein (UDP-port)  
+
+language: 
+language: Hier wird die Menue-Sprache des Konfigurationsprogramms ausgewaehlt.  
+language: 
+language:  0      English (UK) 
+language:  1      Deutsch 
+language: 
+language: -       Zuruecksetzen der Einstellung
+language: <ENTER> Den alten Wert beibehalten (Wert in [])
+language: 
+
+logEnabled: 
+logEnabled:       0  Logging AUSschalten  
+logEnabled:       1  Logging EINschalten
+logEnabled: 
+logEnabled: -        Zuruecksetzen der Einstellung
+logEnabled: <ENTER>  Den alten Wert beibehalten (Wert in [])
+logEnabled: 
+logEnabled:(Beachte: Logging wird von lokalen Dashboards benoetigt)  
+logEnabled: 
+
+
+nolog:
+nolog: Logbuchabschaltung fuer XReflector
+nolog:
+nolog: Die Groesse von Logfiles kann sehr schnell anwachsen.
+nolog: Mit dieser Funktion kann das Logbuch abgeschaltet werden.
+nolog: Logfiles werden teilweise von Zusatzsoftware benoetigt (z.B. Dashboards)
+nolog:
+nolog: 0  LOGBUCHABSCHALTUNG AUS
+nolog: 1  LOGBUCHABSCHAlTUNG EIN
+nolog:
+
+
+logdir:
+logdir: Gib das Verzeichnis ein wo Logfiles angelegt werden sollen.
+logdir: Das Verzeichnis muss existieren und die richtigen Zugriffsrechte besitzen!!
+logdir: Die Einstellung ist auch erforderlich, wenn das Logbuch abgeschaltet wurde,
+logdir: da es auch für wichtige Statusfiles verwendet wird.
+logdir: Wenn nicht unbedingt anders erforderlich, sollte die Voreinstellung beibehalten werden!
+logdir:
+
+logpath:
+logpath: Gib das Verzeichnis ein wo Logfiles angelegt werden sollen.
+logpath: Das Verzeichnis muss existieren und die richtigen Zugriffsrechte besitzen!!
+logpath: Die Einstellung ist auch erforderlich, wenn das Logbuch abgeschaltet wurde,
+logpath: da es auch für wichtige Statusfiles verwendet wird.
+logpath: Wenn nicht unbedingt anders erforderlich, sollte die Voreinstellung beibehalten werden!
+logpath:
+
+log_path:
+log_path: Das Logverzeichnis von XReflector wurde geaendert:
+
+dashboard_path:
+dashboard_path: Die Konfigurationsdatei des Dashboards wurde geaendert:
+
+header:--------------------------------------------------------------------------------
+header: 
+header: Konfigurations-Skript fuer XReflector von Jonathan Naylor, G4KLX 
+header: Copyright (C) 2012-2013   Hans-J. Barthen, DL5DI (dl5di@gmx.de) 
+header: 
+header:--------------------------------------------------------------------------------
+
+copyright:--------------------------------------------------------------------------------
+copyright: 
+copyright: Configuration script for XReflector from Jonathan Naylor, G4KLX 
+copyright: Copyright (C) 2012-2013   Hans-J. Barthen, DL5DI (dl5di@gmx.de) 
+copyright: 
+copyright: This program is free software: you can redistribute it and/or modify 
+copyright: it under the terms of the GNU General Public License as published by 
+copyright: the Free Software Foundation, either version 2 of the License, or 
+copyright: (at your option) any later version. 
+copyright: 
+copyright: This program is distributed in the hope that it will be useful, 
+copyright: but WITHOUT ANY WARRANTY; without even the implied warranty of 
+copyright: MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the 
+copyright: GNU General Public License for more details. 
+copyright: 
+copyright: You should have received a copy of the GNU General Public License 
+copyright: along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+copyright: 
+copyright:--------------------------------------------------------------------------------
+copyright: 
+copyright: Druecke <ENTER> to return to the menu.
+copyright: 
+
+
+mainmenu: 
+mainmenu: Hauptmenue
+mainmenu:--------------------------------------------------------------------------------
+mainmenu: Konfiguration des Systems: 
+mainmenu: 1    Sprache                    (Gateway-Ansagen und Skript-Menues)
+mainmenu: 2    Grundinstallation          (3-14, Teile koennen uebersprungen werden) 
+mainmenu: 3    Logbuchfuehrung            (Log ein/aus, Logverzeichnis) 
+mainmenu: 10   Uebersicht                 (Anzeige der aktuellen Konfiguration)
+mainmenu:---------------------------------------------------------------------------------
+mainmenu:Konfiguration der Startskripte fuer den automatischen Start nach dem Booten: 
+mainmenu: XReflector:     20) EIN     21) AUS
+mainmenu:---------------------------------------------------------------------------------
+mainmenu:Manueller Start der Dienste:
+mainmenu: XReflector:     30) Start   31) Stopp   32) Neustart (Laden neuer Konfiguration)
+mainmenu:---------------------------------------------------------------------------------
+mainmenu:80    Backup             (erzeugt ein Backup der aktuellen Konfigurations-Datei)
+mainmenu: 
+mainmenu:90    Hilfe 
+mainmenu:91    Copyright
+mainmenu:99    Ende 
+mainmenu: 
+
+final: 
+final:Fertig! Alle Programmteile konfiguriert! 
+final: 
+	     
+scr_act: 
+scr_act:** aktiviere das xreflector Startup-Skript 
+scr_act: 
+
+src_err: 
+src_err:FEHLER: kein xreflector Startup-Skript gefunden
+src_err: 
+
+scr_deact: 
+scr_deact:** deaktiviere das xreflector Startup-Skript 
+scr_deact: 
+
+scr_start: 
+scr_start:** starte xreflector 
+scr_start: 
+
+scr_stop: 
+scr_stop:** beende xreflector 
+scr_stop:
+
+scr_restart: 
+scr_restart:** beende xreflector und starte neu
+scr_restart: 
+
+nofunc: 
+nofunc:noch nicht implementiert!
+nofunc: 
+
+bye: 
+bye:Tschuess!
+bye: 
+bye:   73 
+bye: 

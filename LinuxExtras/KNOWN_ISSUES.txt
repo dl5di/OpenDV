@@ -1,0 +1,67 @@
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+OPEN ISSUES
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+FOUND: 2013-07-20
+REPORTED: Hans DL5DI
+VERIFIED: 2012-07-20
+PRIORITY: normal
+SOLVED: open
+
+The repeater configuration script needs to be fixed, a setup from scratch may create nearly empty configfiles.
+The problem seems to be based on the changes from 2013-06-25
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+FOUND: 2013-02-21
+REPORTED: Michael OZ5WU
+VERIFIED: 2012-02-21
+PRIORITY: normal
+SOLVED: open
+
+Check soundmodem settings on Rapsberry Pi.
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+FOUND: 2013-02-03
+REPORTED: DL5DI
+VERIFIED: 2012-02-03
+PRIORITY: normal
+SOLVED: open
+
+Check GPIO and soundmodem activation and settings on Rapsberry Pi.
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+TITLE: verification issue during installation/upgrade
+FOUND: 2012-09-04
+REPORTED: ON4TOP
+VERIFIED: 2012-09-04
+PRIORITY: low
+SOLVED: open
+
+apt-get always shows verification issue which needs to be confirmed.
+clarification if/how this can be solved.
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+TITLE: messages/notices during installation of packages
+FOUND: 2012-09-04
+REPORTED: DL5DI
+VERIFIED: 2012-09-07
+PRIORITY: low
+SOLVED: open
+
+
+ircddbgateway-20120908-2:
+insserv: script repeater_4: service repeater already provided!
+insserv: script repeater_2: service repeater already provided!
+insserv: script repeater_1: service repeater already provided!
+
+dh_make rules still use "Replaces repeater" after data already have been excluded to separate package.
+
+Solution:
+change dh_make control file, remove "Replaces"
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+

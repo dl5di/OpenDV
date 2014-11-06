@@ -1,0 +1,4 @@
+DAEMON_NAME=dstarrepeaterd
+DAEMON_PATH=/usr/bin/dstarrepeaterd
+DAEMON_ARGS="-nolog -daemon -logdir /var/log/opendv"
+DAEMON_USER=opendv

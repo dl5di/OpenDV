@@ -1,0 +1,10 @@
+BACKUPPATH=/etc
+LOGPATH=/var/log/dstar
+CFGPATH=/etc
+DATAPATH=/usr/share/repeater_conf
+DEFVALUES=/etc/default/repeater_conf
+#
+REPEATERCONFIG_1=/etc/soundcardrepeater
+REPEATERCONFIG_2=/etc/dvrptrrepeater
+REPEATERCONFIG_3=/etc/gmskrepeater
+REPEATERCONFIG_4=/etc/dvapnode

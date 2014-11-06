@@ -1,0 +1,14 @@
+BACKUPPATH=/etc
+LOGPATH=/var/log/dstar
+CFGPATH=/etc
+DSGWDPATH=/opt/products/dstar/dstar_gw/dsgwd
+DSMPROPPATH=/opt/dstarmon
+IRCDDBPROPPATH=/etc/ircddbd
+RP2CIP=172.16.0.1
+RP2CPORT=20000
+DEFVALUES=/etc/default/ircddbgw_conf
+DATAPATH=/usr/share/ircddbgw_conf
+OPENDVDATA=/usr/local/etc
+IRCDDBGWCONFIG=/etc/ircddbgateway
+DASHBOARDCFG=/var/www/html/ircddblocal.php
+TIMESERVERCFG=/etc/timeserver

@@ -1,0 +1,897 @@
+#!/bin/bash
+#
+# Configure script for G4KLX/N8OHU XReflector
+#
+# Copyright (C) 2013   Hans-J. Barthen, DL5DI (dl5di@gmx.de)
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+# 2013-03-03 dl5di    initial version for xreflector
+#
+rev="20130303"
+
+if [ $UID -ne 0 ]; then
+	echo
+	echo "ERROR:  This script must be run as the root user!"
+	echo "        Please use 'su' or log in as root and try again."
+	echo
+	exit 1
+fi
+#
+#----------------------------------------------------------------------------
+
+function write_value(){
+
+#
+# 3 parameters: filename parametername value
+# sample call: write_value /etc/xreflector $var $gwcall
+# returns: 0=error, 1=ok, 2=no change
+#
+
+  RETVAL=0
+
+  if [ $# != 3 ]; then
+    echo "    not enough params $#" >> $LOG
+    return $RETVAL
+  fi
+
+  echo " - ($3) -> $1($2)" >> $LOG
+
+  if [ ! -f "$1" ]; then
+    echo "   $1 does not exist" >> $LOG
+    return $RETVAL
+  fi
+
+  if grep -q "^[[:space:]]*${2}[[:space:]]*=[[:space:]]*[[:graph:]][[:print:]]*" "$1"; then
+    if grep -q "^[[:space:]]*${2}[[:space:]]*=[[:space:]]*${3}[[:space:]]*$" "$1"; then
+      echo "   $1 already has ${2} set to ${3}, no change" >> $LOG
+      RETVAL=2
+    else
+      echo -e ",s|^[[:space:]]*${2}[[:space:]]*=[[:space:]]*[[:graph:]][[:print:]]*|${2}=${3}|\nwq" | ed -s "$1"
+      echo "   setting ${2}=${3} in file ${1}" >> $LOG
+      RETVAL=1
+    fi
+  else
+    echo "   adding ${2}=${3} to file $1" >> $LOG
+    echo "${2}=${3}" >> "$1"
+    RETVAL=1
+  fi
+
+  echo ""
+  if [ $RETVAL -gt 0 ]; then
+    echo "OK (${3})"
+  else
+    echo "ERROR (${3}) "
+  fi
+  echo ""
+  return $RETVAL
+}
+
+function read_default(){
+#
+# read default value from /etc/defaults/xreflector_conf
+# parameter: parametername
+# returns 0=error 1=OK 2=no defaultvalue
+# value in globale variable 'DEFAULT'
+#
+  RETVAL=0
+  unset DEFAULT
+    
+  if [ $# != 1 ]; then
+    return $RETVAL
+  fi
+
+  echo " - $DEFVALUES $1" >> $LOG
+
+  if [ ! -f $DEFVALUES ]; then
+    echo "   $DEFVALUES does not exists" >> $LOG
+    return $RETVAL
+  fi
+
+  if ! grep -q "^[[:space:]]*${1}[[:space:]]*=[[:space:]]*[[:graph:]][[:print:]]*" "$DEFVALUES"; then
+    if grep -q "^[[:space:]]*${1}[[:space:]]*=" "$DEFVALUES"; then
+   	echo "   property $1 from $DEFVALUES has empty value" >> $LOG
+	DEFAULT=""
+	RETVAL=2
+    else
+	echo "   $DEFVALUES does not contain $1 property" >> $LOG
+    fi
+    return $RETVAL
+  fi
+
+  DEFAULT=` gawk '
+   /^[[:space:]]*'"$1"'[[:space:]]*=[[:space:]]*[[:graph:]][[:print:]]*/ {
+     match( $0, "^[[:space:]]*'"$1"'[[:space:]]*=[[:space:]]*([[:graph:]][[:print:]]*)", a)
+     print a[1]
+     exit
+   } ' < "$DEFVALUES" `
+
+  if [ "x$DEFAULT" = "x" ]; then
+    echo "   could not read property $1 from file $DEFVALUES" >> $LOG
+    DEFAULT=""
+    return 2
+  fi
+  echo "   default is: $DEFAULT" >> $LOG
+
+  return 1
+}
+
+
+function read_value(){
+#
+# read value from file
+# 2 parameter1: filenamename parametername
+# returns 0=error 1=OK
+# value in globale variable 'VALUE'
+#
+  RETVAL=0
+  unset INPUT
+    
+  if [ $# != 2 ]; then
+    return $RETVAL
+  fi
+
+  echo " - $1($2)" >> $LOG
+
+  if [ ! -f "$1" ]; then
+    echo "   $1 does not exists" >> $LOG
+    return $RETVAL
+  fi
+
+  if ! grep -q "^[[:space:]]*${2}[[:space:]]*=[[:space:]]*[[:graph:]][[:print:]]*" "$1"; then
+    echo "   $1 does not contain $2 property" >> $LOG
+    return $RETVAL
+  fi
+
+  VALUE=` gawk '
+   /^[[:space:]]*'"$2"'[[:space:]]*=[[:space:]]*[[:graph:]][[:print:]]*/ {
+     match( $0, "^[[:space:]]*'"$2"'[[:space:]]*=[[:space:]]*([[:graph:]][[:print:]]*)", a)
+     print a[1]
+     exit
+   } ' < "$1" `
+
+  if [ "x$VALUE" = "x" ]; then
+    echo "   could not read property $2 from file $1" >> $LOG
+    return $RETVAL
+  fi
+  return 1
+}
+
+
+function request_input(){
+#
+# request input string from user
+# 4-5 parameters: prompt minlength maxlength require [default]
+# returns answer in global variable INPUT
+# require: 0=no/1=yes/2=yes but reset allowed
+# returns 0=error, 1=ok, 2= oldvalue, 3=reset 
+#
+  RETVAL=0
+  unset INPUT
+    
+  if [ $# != 4 -a $# != 5 ]; then
+    return $RETVAL
+  fi
+
+  echo " - input request $1 $2 $3 $4 $5" >> $LOG
+
+  while [ ${#INPUT} -lt $2 ]; do
+    if [ "$4" = 0 -o "$4" = 2 ]; then
+	print_text "reset_allowed"
+    fi
+    read -r -e -n $3 -p "$1 [$5] > " INPUT
+    RETVAL=1
+    if [ -z "$INPUT" ]; then
+	RETVAL=2
+	INPUT=$5
+	if [ -z "$INPUT" -a  "$4" -eq 0 ]; then
+	    break
+	fi	
+    fi
+    if [ "$INPUT" == "-" ]; then
+	if [ "$4" = 0 -o "$4" = 2 ]; then
+	    RETVAL=3
+	    break
+	else
+#	    print_text "request_input"
+	    INPUT=""
+	fi
+    fi
+  done
+  return $RETVAL
+}
+
+function request_value(){
+#
+# request numeric value from user
+# 4-5 parameters: prompt minvalue maxvalue require [default]
+# returns answer in global variable INPUT
+# require: 0=no/1=yes/2=yes but reset allowed
+# returns 0=error, 1=ok, 2=oldvalue, 3=reset 
+# returns value in global variable INPUT
+#
+  RETVAL=0
+  let INPUT=$2-1
+    
+  if [ $# != 4 -a $# != 5 ]; then
+    echo "ERROR request_value"
+    echo "ERROR request_value number of parameters" >> $LOG
+    return $RETVAL
+  fi
+
+  echo " - value request $1 $2 $3 $4 $5" >> $LOG
+
+  while [[ "${INPUT}" -lt "$2" ]] || [[ "${INPUT}" -gt "$3" ]]; do
+    if [ "$4" = 0 -o "$4" = 2 ]; then
+	print_text "reset_allowed"
+    fi
+    read -r -e -p "$1 [$5] > " INPUT
+    RETVAL=1
+    if [ -z "$INPUT" ]; then
+	RETVAL=2
+	INPUT=$5
+	if [ -z "$INPUT" -a  "$4" -eq 0 ]; then
+	    break
+	fi	
+    fi
+    if [ "$INPUT" == "-" ]; then
+	if [ "$4" = 0 -o "$4" = 2 ]; then
+	    RETVAL=3
+	    break
+	else
+#	    print_text "request_value"
+	    INPUT=""
+	fi
+    fi
+  done
+  return $RETVAL
+}
+
+
+function request_selection(){
+#
+# request selection from user
+# 3 parameters: prompt defaultvalue [oldvalue]
+# returns 0=No, 1=Yes, 2=oldvalue, 3=error
+# value in $RETVAL
+#
+  unset INPUT
+  if [ $# != 2 -a $# != 3 ]; then
+    return 3
+  fi
+  echo " - request_selection $1 $2 $3" >> $LOG
+  read -r -e -n 1 -p "$1 [$3] > " INPUT
+  if [ -z "$INPUT" ]; then
+    RETVAL=$3
+  else
+    case $INPUT in
+	[Yy1])
+	    RETVAL=1
+	    ;;
+	[Nn0])
+	    RETVAL=0
+	    ;;
+	[Rr-])
+	    RETVAL=$2
+	    ;;
+	*)
+	    RETVAL=$3
+	    ;;
+    esac    
+  fi
+  echo ""
+  return $RETVAL
+}
+
+
+function select_item(){
+#
+# 3 parameters: prompt max [oldvalue]
+# returns 0=error 1=OK 2=oldvalue, 3=reset
+# selection on global variable SELECT
+#
+  unset INPUT
+  unset SELECT
+  RETVAL=0
+  if [ $# != 2 -a $# != 3 ]; then
+    return 0
+  fi
+  echo " - select_item $1 $2 $3" >> $LOG
+  while [ true ]; do
+    read -r -e -n 2 -p "$1 [$3] > " INPUT
+    if [ -z "$INPUT" ]; then
+	RETVAL=2
+	SELECT=$3
+	break
+    elif [ "$INPUT" == "-" ]; then
+	RETVAL=3
+	break
+    elif [ $INPUT -le $2 ]; then
+	RETVAL=1
+	SELECT=$INPUT
+	break
+    fi
+  done
+  echo "- selected: $RETVAL/$SELECT" >> $LOG
+  return $RETVAL
+}
+
+
+function valid_ip(){
+#
+# return: 0=OK, 1=error
+#
+    local  ip=$1
+    local  stat=1
+
+    echo " - valid_ip $1" >> $LOG
+        if [[ $ip =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$ ]]; then
+	OIFS=$IFS
+	IFS='.'
+	ip=($ip)
+	IFS=$OIFS
+	[[ ${ip[0]} -le 255 && ${ip[1]} -le 255 && ${ip[2]} -le 255 && ${ip[3]} -le 255 ]]
+	stat=$?
+    fi
+
+    if [ $stat != 0 ]; then
+	print_text "invalid_ip"
+    fi
+    echo " - valid_ip stat $stat" >> $LOG
+    return $stat
+}
+
+
+function valid_port(){
+#
+# return: 0=OK, 1=error
+#
+    local  port=$1
+    local  stat=1
+
+    echo " - valid_port $1" >> $LOG
+    if [[ $port =~ ^[0-9]{4,5}$ ]]; then
+	if [ $port -ge 1024 -a $port -lt 65535 ]; then
+	    stat=0
+	fi 
+    fi
+
+    if [ $stat != 0 ]; then
+	print_text "invalid_port"
+    fi
+    echo " - valid_port stat $stat" >> $LOG
+    return $stat
+}
+
+
+function reset_value(){
+#
+# reset_value to default
+# 1 parameter: parametername
+#
+  RETVAL=0
+    
+  if [ $# != 1 ]; then
+    return $RETVAL
+  fi
+
+  echo " - reset $1" >> $LOG
+
+  read_default $1 
+  if [ $? -ge 1 ]; then
+    write_value $XREFLECTORCONFIG $1 "$DEFAULT"
+    if [ $? = 1 ]; then
+	echo -n "($1='$DEFAULT') "
+	print_text "reset_value"
+	RETVAL=1
+    fi
+  fi
+  echo ""
+  return $REVAL
+}
+
+
+function print_text(){
+#
+# 1 parameter: textlabel
+# returns: 0=OK, 1=ERROR
+#
+  RETVAL=0
+    
+  if [ $# != 1 ]; then
+    return $RETVAL
+  fi
+
+  echo " - text $1" >> $LOG
+
+  if [ ! -f "$MENUFILE" ]; then
+    echo "FATAL ERROR!! helpfile $HELPFILE does not exists"
+    echo "FATAL ERROR!! helpfile $HELPFILE does not exists" >> $LOG
+    exit
+  fi
+  grep "^$1:" $MENUFILE | sed "s!$1:!!g"
+}
+
+
+function set_language(){
+#
+#language=1
+#
+    var="language"
+    Dat=`date +%Y%m%d%H%M`
+    echo "$Dat: $var" >> $LOG
+    read_default $var
+    read_value $XREFLECTORCONFIG $var
+    if [ "$?" = 0 ]; then
+	read_value $XRFCFGCONFIG $var
+	if [ "$?" = 0 ]; then
+    	    VALUE=$DEFAULT
+	else
+#	    convert different language index from xreflector
+	    case $VALUE in
+		6)
+		    VALUE=9
+		    ;;
+		7)
+		    VALUE=6
+		    ;;
+		8)
+		    VALUE=7
+		    ;;
+		9-10)
+		    VALUE=8
+		    ;;
+		11)
+		    VALUE=10
+		    ;;
+		*)
+		    ;;
+	    esac	
+	fi
+    fi
+    print_text $var 
+    select_item $var 11 "$VALUE"
+    RET=$?
+    case $RET in
+	1)
+	    VALUE="$SELECT"
+	    ;;
+	2)
+#	    VALUE="$VALUE"
+	    ;;
+	3)
+	    VALUE="$DEFAULT"
+	    ;;
+	*)
+	    ;;
+    esac
+
+    write_value $XREFLECTORCONFIG $var "$VALUE"
+    HELPFILE="$DATAPATH/xreflector_conf.$VALUE.hlp"
+    if [ ! -f "$HELPFILE" ]; then
+	HELPFILE="$DATAPATH/xreflector_conf.0.hlp"
+    fi
+
+    MENUFILE="$DATAPATH/xreflector_conf.$VALUE.menu"
+    if [ ! -f "$MENUFILE" ]; then
+	MENUFILE="$DATAPATH/xreflector_conf.0.menu"
+    fi
+}
+
+#################### general configuration  ################################################
+
+function callsign_setup(){
+
+    print_text callsign_setup 
+    
+# 				
+# first choice for default values is always an exiting own configfile
+#
+# callsign=XRF023 
+#
+    var="callsign"
+    Dat=`date +%Y%m%d%H%M`
+    echo "$Dat: $var" >> $LOG
+    read_value $XREFLECTORCONFIG $var
+    VALID=1
+    while [ "$VALID" != 0 ]; do
+	print_text $var
+	request_input $var 6 6 2 "$VALUE"
+	if [ "$?" -ge 2 ]; then
+	    VALID=0
+	else
+	    VALUE=$(echo "$INPUT" | tr "[[:lower:]]" "[[:upper:]]")
+	    VALID=0
+	fi
+    done
+    write_value $XREFLECTORCONFIG $var "$VALUE"
+}
+
+function address_setup(){
+#
+# ipAddress=127.0.0.1
+#
+    var="address"
+    Dat=`date +%Y%m%d%H%M`
+#    /sbin/ifconfig | grep inet
+    echo "$Dat: $var" >> $LOG
+    read_default $var
+    read_value $XREFLECTORCONFIG $var
+    VALID=1
+    while [ "$VALID" != 0 ]; do
+	print_text $var 
+	request_input $var 7 15 2 "$VALUE"
+	if [ "$?" = 3 ]; then
+	    VALID=0
+	    INPUT=$DEFAULT
+	else
+	    valid_ip $INPUT
+	    VALID=$?
+	fi
+    done
+    write_value $XREFLECTORCONFIG $var "$INPUT"
+}
+
+function dplus_setup(){
+#
+# dplusEnabled=0
+#
+    print_text "dplus_setup" 
+    var="dplusEnabled"
+    Dat=`date +%Y%m%d%H%M`
+    echo "$Dat: $var" >> $LOG
+    read_default $var
+    read_value $XREFLECTORCONFIG $var
+    if [ "$?" = 0 ]; then
+	VALUE=$DEFAULT
+    fi
+    print_text $var 
+    request_selection $var $DEFAULT $VALUE
+    case $RETVAL in
+	[0-1])
+    		write_value $XREFLECTORCONFIG $var "$INPUT"
+		;;
+	2)   
+		write_value $XREFLECTORCONFIG $var "$VALUE"
+		;;
+	*)
+    		reset_value $var
+		;;
+    esac
+}
+
+
+function overview(){
+    cat $XREFLECTORCONFIG | more
+    read $tmp -p "<ENTER>"
+    return 1
+}
+
+
+function logging(){
+
+#
+# command line options for logging / logdir / audiodir
+#
+    var="nolog"
+    Dat=`date +%Y%m%d%H%M`
+    echo "$Dat: $var" >> $LOG
+
+    DAEMON_OPTIONS=$(grep "^DAEMON_OPTIONS" /etc/sysconfig/xreflector)
+    print_text $var 
+
+    options=( ${DAEMON_OPTIONS//-/ } )
+    i=0
+    NOLOG=0
+    while [ ! -z "${options[$i]}" ]; do
+
+	case "${options[$i]}" in
+	    logdir)
+	        let i+=1
+		LOGDIR=${options[$i]}
+		;;
+	    nolog)
+		NOLOG=1
+		;;
+	    daemon)
+		;;
+	    *)
+		;;
+	esac
+	let i+=1
+    done
+
+    NEW_ARGS="-daemon"
+    request_selection $var "1" "$NOLOG"
+    if [ "$?" != 0 ]; then
+    	NEW_ARGS="$NEW_ARGS -nolog"
+    fi
+    
+    var="logdir"
+    Dat=`date +%Y%m%d%H%M`
+    echo "$Dat: $var" >> $LOG
+    print_text $var 
+    echo $LOGDIR
+    request_input $var 3 80 2 "$LOGDIR"
+    if [ "$?" = 3 ]; then
+        INPUT="/var/log/opendv"
+    fi
+    if [ ! -z "$INPUT" ]; then
+	NEW_ARGS="$NEW_ARGS -logdir $INPUT"
+    fi
+    
+    NEW_ARGS="DAEMON_OPTIONS=\"$NEW_ARGS $MODULE\""
+    echo "OK!"
+    print_text "cmd_options"
+    echo "$DAEMON_OPTIONS -> $NEW_ARGS"
+    sed -i "s|$DAEMON_OPTIONS|$NEW_ARGS|g" /etc/default/xreflector
+
+#
+#logging=0
+#
+    var="logEnabled"
+    Dat=`date +%Y%m%d%H%M`
+    echo "$Dat: $var" >> $LOG
+    read_default $var
+    read_value $XREFLECTORCONFIG $var
+    if [ "$?" = 0 ]; then
+	VALUE=$DEFAULT
+    fi
+    print_text $var 
+    request_selection $var "$DEFAULT" "$VALUE"
+    INPUT=$?
+    case $INPUT in
+	[0-1])
+    	    write_value $XREFLECTORCONFIG $var "$INPUT"
+	    ;;
+	2)   
+	    write_value $XREFLECTORCONFIG $var "$VALUE"
+	    ;;
+	*)
+    	    reset_value $var
+	    ;;
+    esac
+}
+
+setup_main(){
+    INP=0
+    while [ "$INP" -ne 99 ]; do
+	echo ""
+	echo "xreflector_conf $rev" 
+	echo "(C) 2013 Hans-J. Barthen, DL5DI (dl5di@gmx.de)"
+	echo ""
+	print_text "mainmenu" 
+	select_item "(0-99)" 99 0
+	if [ $? -ne 1 ]; then
+	    continue
+	fi
+	Dat=`date +%Y%m%d%H%M`
+#´
+	case "$SELECT" in
+	    1)  set_language
+		;;
+	    2)
+		callsign_setup
+		address_setup
+		dplus_setup
+		logging
+		print_text "final"
+		;;
+	    3)
+		logging
+		nolog
+		;;
+	    10)
+		overview
+		;;
+	    20)
+		if [ -f /etc/init.d/xreflector ]; then
+		    print_text "scr_act"
+		    /usr/sbin/update-rc.d xreflector defaults
+		else
+		    print_text "scr_err" 
+		fi
+		echo "$Dat scr_act" >> $LOG
+		;;
+	    21)
+		if [ -f /etc/init.d/xreflector ]; then
+		    print_text "scr_deact" 
+		    /usr/sbin/update-rc.d xreflector remove
+		else
+		    print_text "scr_err" 
+		fi
+		echo "$Dat scr_deact" >> $LOG
+		;;
+	    30)
+		if [ -f /etc/init.d/xreflector ]; then
+		    print_text "scr_start" 
+		    /etc/init.d/xreflector start
+		else
+		    echo ""
+		    echo "ERROR: no startup script found"
+		    echo ""
+		fi
+		echo "$Dat scr_start" >> $LOG
+		;;
+	    31)
+		if [ -f /etc/init.d/xreflector ]; then
+		    print_text "scr_stop" 
+		    /etc/init.d/xreflector stop
+		else
+		    print_text "scr_err" 
+		fi
+		echo "$Dat scr_stop" >> $LOG
+		;;
+	    32)
+		if [ -f /etc/init.d/xreflector ]; then
+		    print_text "scr_restart" 
+		    /etc/init.d/xreflector restart
+		else
+		    print_text "scr_err" 
+		fi
+		echo "$Dat scr_restart" >> $LOG
+		;;
+	    80)
+		cp -p $XREFLECTORCONFIG $XREFLECTORCONFIG.$Dat
+		echo ""
+		echo "Backup: $XREFLECTORCONFIG.$Dat"
+		echo "$Dat backup" >> $LOG
+		;;
+
+	    81) apt-get update 
+			apr-get upgrade xreflector
+		;;
+	    
+	    90)
+		echo ""
+		cat $HELPFILE
+		read dummy
+		echo "$Dat help" >> $LOG
+		;;
+	    91)
+		echo ""
+		print_text "copyright"
+		read dummy
+		echo "$Dat copyright" >> $LOG
+		;;
+	    99)
+		print_text "bye" 
+		echo "$Dat ----- bye - exit programm -----" >> $LOG
+		return 1
+		;;
+	    *)
+		;;	
+	esac
+    done
+
+    return 0
+
+}
+
+readconfig(){
+    CONFIGFILE="/home/opendv/xreflector/xreflector_conf"
+
+    if [ -f $CONFIGFILE ]; then
+	read_value $CONFIGFILE "LOGPATH"
+	LOG=$VALUE/xreflector_conf-$Dat.log
+	Dat=`date +%Y%m%d%H%M`
+	echo "----- $Dat Program start ($rev)------" >> $LOG
+	if [ ! -d "$VALUE" ]; then
+	    mkdir -p "$VALUE"
+	    echo "Created log directory $VALUE"
+	    echo "Created log directory $VALUE >> $LOG"
+	fi
+	echo "logging to $LOG"
+
+	read_value $CONFIGFILE "CFGPATH"
+	CFG=$VALUE/xreflector_conf
+	touch $CFG
+
+	read_value $CONFIGFILE "DEFVALUES"
+	DEFVALUES=$VALUE
+	echo "Defaultvalues: $DEFVALUES"
+
+	read_value $CONFIGFILE "DATAPATH"
+	DATAPATH=$VALUE
+    else
+	echo "FATAL ERROR!! Configfile $CONFIGFILE not found"
+	echo "FATAL ERROR!! Configfile $CONFIGFILE not found" >> $LOG
+	echo " "
+	exit
+    fi
+    return
+}
+
+#################### MAIN ##########################
+
+export LC_NUMERIC="en_US.UTF-8" > /dev/null
+Dat=`date +%Y%m%d%H%M`
+
+echo ""
+echo "xreflector_conf $rev" 
+echo "(C)Hans-J. Barthen, dl5di 2013"
+echo ""
+
+LOG=/dev/null
+LANG=0
+RET=0
+
+export LC_NUMERIC="en_US.UTF-8" > /dev/null
+LOG=/dev/null
+CONFIGFILE="/etc/opendv/xreflector/xreflector_conf"
+
+if [ -f $CONFIGFILE ]; then
+    read_value $CONFIGFILE "LOGPATH"
+    Dat=`date +%Y%m%d%H%M`
+    LOG=$VALUE/xreflector_conf-$Dat.log
+    echo ""
+    echo "----- $Dat Program start ($rev)------" >> $LOG
+    if [ ! -d "$VALUE" ]; then
+		mkdir -p "$VALUE"
+		echo "created log directory: $VALUE"
+		echo "created log directory: $VALUE" >> $LOG
+    fi
+    echo "logging to $LOG"
+
+    read_value $CONFIGFILE "CFGPATH"
+    XREFLECTORCONFIG=$VALUE/xreflector
+    touch $CFG
+
+    read_value $CONFIGFILE "DEFVALUES"
+    DEFVALUES=$VALUE
+
+    read_value $CONFIGFILE "DATAPATH"
+    DATAPATH=$VALUE
+
+    read_value $CONFIGFILE "OPENDVDATA"
+    OPENDVDATA=$VALUE
+
+    read_value $CONFIGFILE "BACKUPPATH"
+    BACKUPPATH=$VALUE
+
+    read_value $CONFIGFILE "XRFCFGCONFIG"
+    XRFCFGCONFIG=$VALUE
+
+fi
+
+#echo "Configfile: $CONFIGFILE"
+#echo "XRFConfig:  $XREFLECTORCONFIG"
+#echo "Defaults:   $DEFVALUES"
+#echo "Data-Path:  $DATAPATH"
+#echo "OpenDVData: $OPENDVDATA"
+#echo "BackUpPath: $BACKUPPATH"
+#echo "own Config: $XRFCFGCONFIG"
+
+touch $XRFCFGCONFIG
+
+read_value $XREFLECTORCONFIG "language"
+if [ "$?" = 0 ]; then
+    VALUE=0
+fi
+
+HELPFILE="$DATAPATH/xreflector_conf.$VALUE.hlp"
+if [ ! -f "$HELPFILE" ]; then
+    HELPFILE="$DATAPATH/xreflector_conf.0.hlp"
+#    echo "H-File: $HELPFILE"
+fi
+
+MENUFILE="$DATAPATH/xreflector_conf.$VALUE.menu"
+if [ ! -f "$MENUFILE" ]; then
+    MENUFILE="$DATAPATH/xreflector_conf.0.menu"
+#    echo "M-File: $MENUFILE"
+fi
+
+setup_main
+
+exit

@@ -1,0 +1,7 @@
+# Defaults for analoguerepeater initscript
+# sourced by /etc/init.d/analoguerepeater
+# installed at /etc/default/analoguerepeater by the maintainer scripts
+#
+DAEMON_PATH=/usr/bin/analoguerepeaterd
+DAEMON_ARGS="-daemon -logdir /var/log"
+DAEMON_USER=opendv

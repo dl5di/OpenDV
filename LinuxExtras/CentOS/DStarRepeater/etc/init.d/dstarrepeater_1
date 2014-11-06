@@ -1,0 +1,102 @@
+#!/bin/bash
+#
+# universal dstarrepeater startup script
+# Hans-J. Barthen (DL5DI) dl5di@gmx.de
+#
+# chkconfig: 345 99 01
+# description: Starts the G4KLX dstarrepeater modules
+# config: /etc/sysconfig/$0
+#
+
+DESC=dstarrepeater             # Introduce a short description here
+NAME=dstarrepeater_1           # Introduce the short server's name here
+PIDFILE=/var/run/$NAME.pid
+SCRIPTNAME=/etc/init.d/$NAME
+MOD=1
+
+if [ $UID -ne 0 ]; then
+	echo
+	echo "ERROR:  This script must be run as the root user!"
+	echo "        Please use 'su' or log in as root and try again."
+	echo
+	exit 1
+fi
+
+# Source function library.
+if [ -f /etc/init.d/functions ] ; then
+    . /etc/init.d/functions
+elif [ -f /etc/rc.d/init.d/functions ] ; then
+    . /etc/rc.d/init.d/functions
+else
+    exit 1
+fi
+
+# Source networking configuration.
+[ -r /etc/sysconfig/network ] && . /etc/sysconfig/network
+
+# Check that networking is up.
+[ "${NETWORKING}" = "no" ] && exit 1
+
+# Source the configuration
+[ -f /etc/sysconfig/$NAME ] && . /etc/sysconfig/$NAME || exit 2
+
+RETVAL=0
+
+dostart() {
+
+    echo -n "Starting $NAME:"
+    daemon $DAEMON_PATH $DAEMON_OPTIONS $MOD &
+    RETVAL=$?
+    [ $RETVAL -eq 0 ] && touch /var/lock/subsys/$NAME
+    sleep 3
+    echo ""
+# create a watchdog entry to the crontab
+    echo "*/10 * * * * root ps aux | grep '$DAEMON_PATH $DAEMON_OPTIONS $MOD' | grep -vq grep || /etc/init.d/$NAME start" > /etc/cron.d/$NAME
+    return $RETVAL
+}
+
+dostop() {
+    
+    echo -n "Stopping $NAME "
+    killproc -p $PIDFILE $DAEMON_PATH
+    RETVAL=$?
+    [ $RETVAL -eq 0 ] && rm -f /var/lock/subsys/$NAME
+    echo
+# remove watchdog entry from crontab
+    rm -f /etc/cron.d/$NAME
+    return $RETVAL
+}
+
+dorestart() {
+    dostop
+    sleep 2
+    dostart
+}	
+
+# See how we were called.
+case "$1" in
+    start)
+	dostart
+	;;
+    stop)
+	dostop
+	;;
+    restart)
+	dorestart
+	;;
+    status)
+	status -p $PIDFILE $DAEMON_PATH
+	RETVAL=$?
+	;;
+    *)
+	echo -e $"\nUsage: \n\t$NAME {option}"
+	echo -e "\n\tOptions:\n"
+	echo -e "\trestart       - restarts $NAME\n"
+	echo -e "\tstart         - starts $NAME\n"
+	echo -e "\tstatus        - display status\n"
+	echo -e "\tstop          - stops $NAME\n"
+	echo -e "\n"
+	exit 1
+esac
+
+exit $RETVAL

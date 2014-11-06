@@ -1,0 +1,635 @@
+
+filename of menu file:  /usr/share/repeater_conf.#.menu
+filename of help file:  /usr/share/repeater_conf.#.hlp
+
+where # is:
+
+   0   English (UK) 
+   1   Deutsch 
+   2   Dansk 
+   3   Italiano 
+   4   Francais 
+   5   Espanol 
+   6   Svenska 
+   7   Polski 
+   8   English (US) 
+   9   Nederlands (NL) 
+  10   Nederland (BE) 
+
+
+BITTE DIE DATEIEN /usr/share/repeater_conf.0.menu und /usr/share/repeater_conf.0.hlp NICHT EDITIEREN!
+
+Diese Dateien werden automatisch beim YUM-Update ueberschrieben!
+
+--------------------------------------------------------------------------------------------------
+
+invalid_ip:
+invalid_ip:
+invalid_ip:FEHLER !  Ungueltige IP-Adresse !
+
+invalid_port:
+invalid_port:
+invalid_port:FEHLER !  Ungueltige Portnummer ! (1024-65535)
+
+invalid_freq:
+invalid_freq:
+invalid_freq:FEHLER !  Ungueltige Frequenzangabe ! (out of range [MHz]!)
+
+reset_allowed:Druecke '-' um den Wert auf die Standardvorgabe zurueck zu setzen
+reset_allowed: 
+
+request_input: 
+request_input:Eingabe zwingend erforderlich!"
+request_input: 
+
+reset_value: 
+reset_value:Der Wert wurde auf die Standardvorgabe zurueck gesetzt.
+reset_value: 
+
+band_in_use:FEHLER !  Diese Band-Kennung wird bereits verwendet !
+
+invalid_band:FEHLER !  Unueltige Band-Kennung !
+
+mainmenu: 
+mainmenu: Hauptmenue
+mainmenu:--------------------------------------------------------------------------------
+mainmenu:Konfiguration des Systems: 
+mainmenu: 
+mainmenu: 1    Sprache                    (Gateway-Ansagen und Skript-Menues)
+mainmenu: 2    Grundinstallation          (durchlaeuft Option 3-4) 
+mainmenu: 3    Basiseinstellungen         (allgemeine Einstellungen) 
+mainmenu: 4    Logbuchfuehrung            (Logbuch ein/aus und Log-Verzeichnis) 
+mainmenu: 5    Hardware-Einstellungen     (Konfiguration Hardware-spezifischer Parameter) 
+mainmenu:
+mainmenu:10    Ueberblick                 (wichtige Einstellungen anzeigen) 
+mainmenu:---------------------------------------------------------------------------------
+mainmenu:Konfiguration der Startskripte fuer den automatischen Start nach dem Booten: 
+mainmenu: 
+mainmenu: Repeatermodul:  20) EIN     21) AUS
+mainmenu:---------------------------------------------------------------------------------
+mainmenu:Manueller Start der Dienste:
+mainmenu: 
+mainmenu: Repeatermodul:  30) Start   31) Stopp   32) Neustart (Laden neuer Konfiguration)
+mainmenu:---------------------------------------------------------------------------------
+mainmenu:80    Backup             (erzeugt ein Backup der aktuellen Konfigurations-Datei)
+mainmenu: 
+mainmenu:90    Hilfe 
+mainmenu:91    Copyright
+mainmenu:99    Ende 
+mainmenu: 
+
+basic_setup: 
+basic_setup: 
+basic_setup:********************************************************************************
+basic_setup: 
+basic_setup:*** G4KLX Repeater Modul Grundeinstellungen
+basic_setup: 
+basic_setup:********************************************************************************
+basic_setup: 
+
+gateway: 
+gateway:Gib das Basis-Rufzeichen des Gateways ein (max 7 Stellen). 
+gateway: 
+
+err_module:
+err_module:Falsche Modulangabe, zulaessiger Bereich 1-4
+err_module:
+
+err_hwtype:
+err_hwtype:Falsche Hardwareangabe, zulaessiger Bereich 1-4
+err_hwtype: 1:  soundcardrepeater
+err_hwtype: 2:  dvrptrrepeater
+err_hwtype: 3:  gmskrepeater
+err_hwtype: 4:  dvapnode
+err_hwtype:
+
+hw_setup: 
+hw_setup:********************************************************************************
+hw_setup:*** Konfiguration des Repeater Hardware Typs. 
+hw_setup:********************************************************************************
+hw_setup:
+
+hw_module: 
+hw_module:********************************************************************************
+hw_module:*** Konfiguration des Repeater Modul Index. 
+hw_module:********************************************************************************
+hw_module: 
+
+hw_reset:
+hw_reset:Soll eine neue Konfiguration erzeugt werden?
+hw_reset:  0: behalte die bisherigen Autostart-Einstellungen und Konfigurationsparameter bei
+hw_reset:  1: setze die Autostart-Einstellungen zurueck und loesche das Konfigurationsfile
+hw_reset:
+
+hw_new:
+hw_new:Die Autostart-Einstellungen wurden zurueckgesetzt, das Konfigurationsfile geloescht.
+hw_new:
+
+hw_keep:
+hw_keep:Die bisherigen Einstellungen werden uebernommen.
+hw_keep:
+
+sel_module:
+sel_module:Waehle Repeater-Modul 1-4
+sel_module:
+sel_module: Dieser Wert muss mit dem Repeater-Index in den ircDDBGateway-Einstellungen uebereinstimmen!!
+sel_module: Es ist sehr empfehlenswert die Repeaterkonfiguration aus dem ircDDBGateway-Konfigurations-
+sel_module: programm "ircddbgw_conf" zu starten, was sicherstellt, dass alle Werte zueinander passen.
+sel_module: Du kannst hier mit <CTRL>C abbrechen und ircddbgw_conf starten und von dort die Repeater-
+sel_module: Module konfigurieren.
+sel_module:
+
+sel_hwtype:
+sel_hwtype:Waehle den Hardware-Typ dieses Repeatermoduls:
+sel_hwtype: 1:  soundcardrepeater
+sel_hwtype: 2:  dvrptrrepeater
+sel_hwtype: 3:  gmskrepeater
+sel_hwtype: 4:  dvapnode
+sel_hwtype:
+
+hb_setup: 
+hb_setup: 
+hb_setup:********************************************************************************
+hb_setup: 
+hb_setup:*** G4KLX Software-Repeater Einstellungen
+hb_setup: 
+hb_setup:********************************************************************************
+
+gatewayAddress: 
+gatewayAddress:Gib die IP-Adresse 'gatewayAddress' ein. 
+gatewayAddress:Dies ist die IP-Adresse des Gateways, die der Software-Repeater adressiert.
+gatewayAddress:Wenn Gateway und Repeater-Software auf dem gleichen PC betrieben werden,
+gatewayAddress:ist es 127.0.0.1 
+gatewayAddress: 
+     
+gatewayPort: 
+gatewayPort:Gib die Portnummer 'gatewayPort' ein. 
+gatewayPort:Dies ist der UDP-Port des Gateways, den der Software-Repeater adressiert.
+gatewayPort:Diese Portnummer darf nicht mehrfach verwendet werden! 20010 ist eine gute Wahl.
+gatewayPort: 
+
+repeaterReset: 
+repeaterReset:Willst Du dieses Repeater-Modul loeschen?
+repeaterReset: 
+
+localAddress: 
+localAddress:Gib die IP-Addresse des Repeatermoduls ein. 
+localAddress:Dies ist die IP-Address unter der das Gateway diesen Repeater erreicht.
+localAddress:Wenn Gateway und Repeater auf dem gleichen PC laufen ist es 127.0.0.1 
+localAddress: 
+
+localPort: 
+localPort:Gib die Portnummer des Repeater-Moduls ein. 
+localPort:Dies ist der UDP-Port unter dem das Gateway das Repeatermodul erreicht.
+localPort:Diese Portnummer darf nicht mehrfach vorkommen. 
+localPort:Es ist sicher den vorgegebenen Wert zu uebernehmen. 
+localPort: 
+
+language: 
+language: Sprache der Ansagetexte.
+language: Dieses Konfigurationsprogramm benutzt die gleiche Einstellung fuer die Menues.
+language: 
+language:  0      English (UK) 
+language:  1      Deutsch 
+language:  2      Dansk 
+language:  3      Francais 
+language:  4      Italiano 
+language:  5      Espanol 
+language:  6      Polski 
+language:  7      Svenska 
+language:  8      Nederlands (NL) 
+language:  9      English (US) 
+language: 10      Norsk
+language: 
+language: -       Zuruecksetzen der Einstellung
+language: <ENTER> Den alten Wert beibehalten (Wert in [])
+language: 
+
+logging: 
+logging: Audio Logging
+logging:
+logging:       0  Logging AUSschalten  
+logging:       1  Logging EINschalten
+logging: 
+logging: -        Zuruecksetzen der Einstellung
+logging: <ENTER>  Den alten Wert beibehalten (Wert in [])
+logging:
+logging: Diese Option speichert alle Audio-Streams in .dvtool-Files.
+logging: !!! BEACHTE: Audio-Logging braucht sehr viel Speicherplatz !!!
+logging: 
+
+nolog:
+nolog: Logbuchabschaltung
+nolog:
+nolog: Die Groesse von Logfiles kann sehr schnell anwachsen.
+nolog: Mit dieser Funktion kann das Logbuch abgeschaltet werden.
+nolog:
+nolog: 0  LOGBUCHABSCHALTUNG AUS
+nolog: 1  LOGBUCHABSCHALTUNG EIN
+nolog:
+
+logdir:
+logdir: Gib das Verzeichnis ein wo Logfiles angelegt werden sollen.
+logdir: Das Verzeichnis muss existieren und die richtigen Zugriffsrechte besitzen!!
+logdir: Die Einstellung ist auch erforderlich, wenn das Logbuch abgeschaltet wurde,
+logdir: da es auch für wichtige Statusfiles verwendet wird.
+logdir: Wenn nicht unbedingt anders erforderlich, sollte die Voreinstellung beibehalten werden!
+logdir:
+
+audiodir:
+audiodir: Gib das Verzeichnis ein wo Audioaufzeichungen angelegt werden sollen.
+audiodir: Das Verzeichnis muss existieren und die richtigen Zugriffsrechte besitzen!!
+audiodir: Wenn nicht unbedingt anders erforderlich, sollte die Voreinstellung beibehalten werden!
+audiodir:
+
+cmd_options:
+cmd_options: Die Kommandozeilenoptionen des Repeater-Moduls wurden geaendert:
+
+mode:
+mode: Mode-Einstellung:
+mode:
+mode:  0  Duplex   (Voreinstellung)
+mode:  1  Simplex
+mode:  2  Gateway
+mode:  3  nur Tx
+mode:  4  nur Rx
+mode:  5  Tx und Rx
+mode:
+mode: -        Zuruecksetzen der Einstellung
+mode: <ENTER>  Den alten Wert beibehalten (Wert in [])
+mode:
+
+timeout:
+timeout:Timeout
+timeout:
+timeout: 0-300s
+timeout:
+
+ack:
+ack:Ack-Einstellung:
+ack:
+ack: 0=aus
+ack: 1=BER       (Voreinstellung)
+ack: 2=Status
+ack:
+
+ackTime:
+ackTime:Ack-Timer:
+ackTime:
+ackTime: 100-2000ms
+ackTime:
+
+beaconTime:
+beaconTime:Baken-Intervall:
+beaconTime:
+beaconTime: 0-1800s
+beaconTime:
+
+beaconText:
+beaconText:Bakentext, max. 20 Zeichen
+beaconText:NUR ASCII! KEINE SONDERZEICHEN, UMLAUTE ETC. !!
+beaconText:
+
+beaconVoice:
+beaconVoice:Soll die Rufzeichenbake auch als Ansage erfolgen?
+beaconVoice:
+beaconVoice:  0   NEIN 
+beaconVoice:  1   JA 
+beaconVoice:
+
+restriction:
+restriction:Restriktion
+restriction:
+restriction: 0=AUS   (Voreinstellung)
+restriction: 1=EIN
+restriction:
+
+rpt1Validation:
+rpt1Validation:Repeater1-Validierung
+rpt1Validation:
+rpt1Validation: 0=AUS
+rpt1Validation: 1=EIN   (Voreinstellung)
+rpt1Validation:
+
+dtmfBlanking:
+dtmfBlanking:Unterdrueckung der DTMF Toene auf der Ausgabe
+dtmfBlanking:
+dtmfBlanking: 0=AUS
+dtmfBlanking: 1=EIN
+dtmfBlanking:
+
+errorReply:
+errorReply:Fehler-Meldungen
+errorReply:
+errorReply: 0=AUS
+errorReply: 1=EIN
+errorReply:
+
+readDevice:
+readDevice:Soundmodem Eingang
+readDevice:
+
+writeDevice:
+writeDevice:Soundmodem Ausgang
+writeDevice: 
+
+rxLevel:
+rxLevel:Empfangspegel
+rxLevel: (0 .. 100) [%]
+rxLevel:
+
+txLevel:
+txLevel:Sendepegel
+txLevel: (0 .. 100) [%]
+txLevel:
+
+
+squelchmode:
+squelchmode:Squelch-Mode
+squelchmode:
+squelchmode: 0:  normal
+squelchmode: 1:  invertiert
+squelchmode: 2:  offen
+squelchmode:
+
+squelchLevel:
+squelchLevel:Squelch-Level
+squelchLevel: (0 .. 100) [%]
+squelchLevel:
+
+rxInvert:
+rxInvert:RX-Invertierung
+rxInvert: 0=AUS
+rxInvert: 1=EIN
+rxInvert:
+
+txInvert:
+txInvert:TX-Invertierung
+txInvert: 0=AUS
+txInvert: 1=EIN
+txInvert: 
+
+hangTime:
+hangTime:Hang-Time
+hangTime: (0 .. 3000) [ms]
+hangTime:
+
+interfaceType:
+interfaceType:Soundinterface-Typ: 
+interfaceType:
+interfaceType: 1:  "Velleman K8055 - *"
+interfaceType: 2:  "URI USB - *"
+interfaceType: 3:  "Serial - /dev/ttyS*"
+interfaceType: 4:  "/dev/ttyUSB*"
+interfaceType: 5:  "RaspberryPi GPIOs (nur unter Raspbian verfuegbar!)"
+interfaceType:
+
+alsa_req:
+alsa_req:Das Paket "alsa-utils" wird zur Erkennung von Sound-Devices benoetigt.
+alsa_req:Aktuell kann nur "default" gefunden werden.
+alsa_req:(yum -y install alsa-driver alsa-lib alsa-utils)
+alsa_req:
+
+iface_vel:
+iface_vel:Nummer des Velleman K8055 Boards (1-3)
+iface_vel:
+iface_vel: 1:  "Velleman K8055 - 1"
+iface_vel: 2:  "Velleman K8055 - 2"
+iface_vel: 3:  "Velleman K8055 - 3"
+iface_vel:
+
+iface_uri:
+iface_uri:Nummer des URI Interface (1-6)
+iface_uri:
+iface_uri: 1:  "URI USB - 1"
+iface_uri: 2:  "URI USB - 2"
+iface_uri: 3:  "URI USB - 3"
+iface_uri: 4:  "URI USB - 4"
+iface_uri: 5:  "URI USB - 5"
+iface_uri: 6:  "URI USB - 6"
+iface_uri:
+
+iface_ser:
+iface_ser:Nummer der seriellen Schnittstelle (0-4)
+iface_ser:
+iface_ser: 0:  "Serial - /dev/ttyS0"
+iface_ser: 1:  "Serial - /dev/ttyS1"
+iface_ser: 2:  "Serial - /dev/ttyS2"
+iface_ser: 3:  "Serial - /dev/ttyS3"
+iface_ser: 4:  "Serial - /dev/ttyS4"
+iface_ser:
+iface_ser:Die folgenden Interfaces sind momentan im System verfuegbar:
+iface_ser:
+
+iface_usb:
+iface_usb: Nummer der USB-Schnittstelle (0-4)
+iface_usb:
+iface_usb: 0:  "/dev/ttyUSB0"
+iface_usb: 1:  "/dev/ttyUSB1"
+iface_usb: 2:  "/dev/ttyUSB2"
+iface_usb: 1:  "/dev/ttyUSB3"
+iface_usb: 2:  "/dev/ttyUSB4"
+iface_usb: 
+iface_usb:Die folgenden Interfaces sind momentan im System verfuegbar:
+iface_usb:
+
+iface_rpi_gpio:
+iface_rpi_gpio:Die GPIOs des Raspberry Pi werden aktiviert.
+iface_rpi_gpio:
+
+iface_rpi_nogpio:
+iface_rpi_nogpio:Die GPIOs des Raspberry Pi's werden nicht unterstuetzt.
+iface_rpi_nogpio:Hierzu ist Raspbian mit bcm2835 Unterstützung erforderlich.
+iface_rpi_nogpio:
+
+interfaceConfig:
+interfaceConfig:Interface Konfigurationsprofil
+interfaceConfig:
+interfaceConfig: interfaceConfig
+interfaceConfig: (1 .. 3)
+interfaceConfig:
+
+pttInvert:
+pttInvert:PTT-Invertierung
+pttInvert:
+pttInvert: 0=AUS
+pttInvert: 1=EIN
+pttInvert:
+
+modemVersion:
+modemVersion:Firmware-/Protocol-Version
+modemVersion:
+modemVersion: 1-2
+modemVersion:
+
+modemConnection:
+modemConnection: DVRPTR_V2 Modemanbindung
+modemConnection:
+modemConnection: 0 = USB
+modemConnection: 1 = Ethernet
+modemConnection:
+
+modemUSBPort:
+modemUSBPort:Index der Modemport-Adresse (0-9)
+modemUSBPort:
+modemUSBPort: 0:  /dev/ttyACM0
+modemUSBPort: 1:  /dev/ttyACM1
+modemUSBPort: 2:  /dev/ttyACM2
+modemUSBPort:     ...
+modemUSBPort: 9:  /dev/ttyACM9
+modemUSBPort:
+modemUSBPort: Die folgenden Interfaces werden aktuell im System gefunden:
+modemUSBPort:
+
+modemIPAddress:
+modemIPAddress: IP-Address des DVRPTR-Modems
+modemIPAddress:
+
+modemPort:
+modemPort: TCP-Port des DVRPTR-Modems
+modemPort: (1-65535, voreingestellt: 23 / Telnet)
+modemPort:
+
+modemRXInvert:
+modemRXInvert:Modem RX-Invertierung
+modemRXInvert:
+modemRXInvert: 0=AUS
+modemRXInvert: 1=EIN
+modemRXInvert:
+
+modemTXInvert:
+modemTXInvert:Modem TX-Invertierung
+modemTXInvert:
+modemTXInvert: 0=AUS
+modemTXInvert: 1=EIN
+modemTXInvert:
+
+modemChannel:
+modemChannel:Modem-Kanal
+modemChannel:
+modemChannel: (0-1)
+modemChannel: 
+
+modemModLevel:
+modemModLevel:Modem Modulations-Pegel
+modemModLevel:
+modemModLevel: (0-100) [%]
+modemModLevel:
+
+modemTXDelay:
+modemTXDelay:Modem TX-Delay
+modemTXDelay:
+modemTXDelay: (0-500) [ms]
+modemTXDelay:
+
+modemAddress:
+modemAddress:Modem Adresse
+modemAddress:
+modemAddress: (300-31F) [hex]
+modemAddress: Dezimalwert eingeben! (768-799)
+modemAddress:
+
+dvapPort:
+dvapPort:Index des dvaPorts (0-4)
+dvapPort:
+dvapPort: dvapPort=/dev/ttyUSB0
+dvapPort:
+dvapPort: 0  /dev/ttyUSB0
+dvapPort: 1  /dev/ttyUSB1
+dvapPort: 2  /dev/ttyUSB2
+dvapPort: 3  /dev/ttyUSB3
+dvapPort: 4  /dev/ttyUSB4
+dvapPort:
+dvapPort: Die folgenden Interfaces werden aktuell im System gefunden:
+dvapPort:
+
+dvapFrequency:
+dvapFrequency:DVAP Frequenz in !!Hertz!!
+dvapFrequency:
+dvapFrequency: VHF-Version: (144000000 .. 148000000) [Hz]
+dvapFrequency: UHF-Version: (420000000 .. 450000000) [Hz]
+dvapFrequency:
+
+dvapPower:
+dvapPower:DVAP Sendeleistung
+dvapPower:
+dvapPower: (-12 .. +10) [dBm]
+dvapPower:
+
+dvapSquelch:
+dvapSquelch: DVAP Squelchlevel
+dvapSquelch:
+dvapSquelch: (-128 .. -45) [dBm]
+dvapSquelch:
+
+dvapOffset:
+dvapOffset: DVAP Frequenzversatz
+dvapOffset:
+dvapOffset: (-2000 .. +2000) [Hz]
+dvapOffset:
+
+header:--------------------------------------------------------------------------------
+header: 
+header: Konfigurations-Skript fuer G4KLX Repeater von Jonathan Naylor, G4KLX 
+header: Copyright (C) 2012   Hans-J. Barthen, DL5DI (dl5di@gmx.de) 
+header: 
+header:--------------------------------------------------------------------------------
+
+copyright:--------------------------------------------------------------------------------
+copyright: 
+copyright: Configuration script for G4KLX Repeater from Jonathan Naylor, G4KLX 
+copyright: Copyright (C) 2012   Hans-J. Barthen, DL5DI (dl5di@gmx.de) 
+copyright: Basic components from ircddbconfig (C) 2011 Michael Dirska, DL1BFF
+copyright: 
+copyright: This program is free software: you can redistribute it and/or modify 
+copyright: it under the terms of the GNU General Public License as published by 
+copyright: the Free Software Foundation, either version 2 of the License, or 
+copyright: (at your option) any later version. 
+copyright: 
+copyright: This program is distributed in the hope that it will be useful, 
+copyright: but WITHOUT ANY WARRANTY; without even the implied warranty of 
+copyright: MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the 
+copyright: GNU General Public License for more details. 
+copyright: 
+copyright: You should have received a copy of the GNU General Public License 
+copyright: along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+copyright: 
+copyright:--------------------------------------------------------------------------------
+copyright: 
+copyright: Druecke <ENTER> to return to the menu.
+copyright: 
+
+	     
+scr_act: 
+scr_act:** aktiviere das Startup-Skript des Repeater-Moduls
+scr_act: 
+
+src_err: 
+src_err:FEHLER: kein Repeater Startup-Skript gefunden
+src_err: 
+
+scr_deact: 
+scr_deact:** deaktiviere das Startup-Skript des Repeater-Moduls
+scr_deact: 
+
+scr_start: 
+scr_start:** starte das Repeater-Modul
+scr_start: 
+
+scr_stop: 
+scr_stop:** beende das Repeater-Mmodul 
+scr_stop:
+
+scr_restart: 
+scr_restart:** beende das Repeater-Modul und starte neu
+scr_restart: 
+
+nofunc: 
+nofunc:noch nicht implementiert!
+nofunc: 
+
+bye: 
+bye:Tschuess!
+bye: 
+bye:   73 
+bye: 

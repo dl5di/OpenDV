@@ -1,0 +1,2 @@
+DAEMON_PATH=/usr/local/bin/dvrptrrepeaterd
+DAEMON_OPTIONS="-daemon -logdir /var/log/dstar"

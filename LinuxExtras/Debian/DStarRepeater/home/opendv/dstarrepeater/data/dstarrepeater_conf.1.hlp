@@ -1,0 +1,16 @@
+
+Du kannst das Skript an jeder Stelle mit <CTRL><C> verlassen.
+Bitte beachte, dass Probleme auftreten koennen wenn ein ausgewaehlter Block nicht 
+komplett konfiguriert wird!
+
+Du kannst die meisten Werte durch Eingabe von '-' auf den Standardwert zuruecksetzen.
+Bitte beachte, dass diese Werte meistens, aber nicht immer zum Betrieb des Repeaters 
+geeignet sind.
+
+Das Programm verwendet die Sprache, die auch fuer die Ansagen des Repeaters konfiguriert 
+wurden. Zum Umstellen waehle Menuepunkt 1.
+ 
+Das Menue wechselt erst nach dem Wechsel zum Hauptmenue.
+
+Druecke jetzt <ENTER> um ins Hauptmenue zurueck zu kehren.
+

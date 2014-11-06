@@ -1,0 +1,179 @@
+#!/bin/bash
+### BEGIN INIT INFO
+# Provides:          repeater_2
+# Required-Start:    $network $local_fs
+# Required-Stop:
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: repeater
+# Description:       repeater is a free internet gateway for D-Star Digital Voice on amateur radio
+### END INIT INFO
+
+# Author: Hans-J. Barthen DL5DI <dl5di@gmx.de>
+# (settings may be overwritten by options in /etc/default/repeater_2)
+
+# PATH should only include /usr/* if it runs after the mountnfs.sh script
+PATH=/sbin:/usr/sbin:/bin:/usr/bin
+DESC=repeater             # Introduce a short description here
+NAME=repeater_2           # Introduce the short server's name here
+PIDFILE=/var/run/$NAME.pid
+SCRIPTNAME=/etc/init.d/$NAME
+
+if [ $UID -ne 0 ]; then
+	echo
+	echo "ERROR:  This script must be run as the root user!"
+	echo "        Please use 'su' or log in as root and try again."
+	echo
+	exit 1
+fi
+
+# Read configuration file if it exists
+[ -r /etc/default/$NAME ] && . /etc/default/$NAME || exit 2
+
+# Exit if configfile is not complete
+if [ -z $DAEMON_NAME ] || [ -z $DAEMON_PATH ] || [ -z $DAEMON_USER ]; then
+    echo "/etc/default/$NAME not complete!"
+    exit 2
+fi
+
+# Exit if the package is not installed
+[ -x $DAEMON_PATH ] || exit 0
+
+# Load the VERBOSE setting and other rcS variables
+. /lib/init/vars.sh
+
+# Define LSB log_* functions.
+# Depend on lsb-base (>= 3.0-6) to ensure that this file is present.
+. /lib/lsb/init-functions
+
+
+#
+# Function that starts the daemon/service
+#
+do_start()
+{
+	# Return
+	#   0 if daemon has been started
+	#   1 if daemon was already running
+	#   2 if daemon could not be started
+
+	# Check if the PID file exists and the actual status of the process
+	if [ -e $PIDFILE ]; then
+		status_of_proc -p $PIDFILE $DAEMON_PATH "$NAME process" && status="0" || status="$?"
+		# If the status is SUCCESS then don't need to start again.
+		if [ $status = "0" ]; then
+			return 1 # Exit
+		fi
+	fi
+
+#	setting the time might be necessary on systems without realtime clock
+#	ps aux | grep ntpd | grep -vq grep && /etc/init.d/ntp stop
+#	ntpdate pool.ntp.org
+#	[ -x /etc/init.d/ntp ] && /etc/init.d/ntp start
+#	sleep 2
+
+	start-stop-daemon --start --quiet --pidfile $PIDFILE --chuid $DAEMON_USER --exec $DAEMON_PATH -- \
+		$DAEMON_ARGS \
+		|| return 2
+
+	# create PID-file, option "--make-pidfile" wont work in this case
+	ps -ef | grep "$DAEMON_PATH $DAEMON_ARGS" | grep -v grep | awk '{print $2}' > $PIDFILE
+
+	# create a watchdog entry to the crontab
+	echo "*/10 * * * * root ps aux | grep '$DAEMON_PATH $DAEMON_ARGS' | grep -vq grep || /etc/init.d/$NAME start" > /etc/cron.d/$NAME
+}
+
+#
+# Function that stops the daemon/service
+#
+do_stop()
+{
+	# Return
+	#   0 if daemon has been stopped
+	#   1 if daemon was already stopped
+	#   2 if daemon could not be stopped
+	#   other if a failure occurred
+
+	# create pidfile, daemon might have been started without using this script
+	ps -ef | grep "$DAEMON_PATH $DAEMON_ARGS" | grep -v grep | awk '{print $2}' > $PIDFILE
+
+	start-stop-daemon --stop --quiet --retry=TERM/30/KILL/5 --pidfile $PIDFILE
+	RETVAL="$?"
+	[ "$RETVAL" = 2 ] && return 2
+
+	rm -f $PIDFILE
+	# remove watchdog entry from crontab
+	rm -f /etc/cron.d/$NAME
+	return "$RETVAL"
+}
+
+#
+# Function that sends a SIGHUP to the daemon/service
+#
+do_reload() {
+	#
+	# If the daemon can reload its configuration without
+	# restarting (for example, when it is sent a SIGHUP),
+	# then implement that here.
+	#
+	start-stop-daemon --stop --signal 1 --quiet --pidfile $PIDFILE --name $NAME
+	return 0
+}
+
+case "$1" in
+  start)
+    [ "$VERBOSE" != no ] && log_daemon_msg "Starting $DESC " "$NAME"
+    do_start
+    case "$?" in
+		0|1) [ "$VERBOSE" != no ] && log_end_msg 0 ;;
+		2) [ "$VERBOSE" != no ] && log_end_msg 1 ;;
+	esac
+  ;;
+  stop)
+	[ "$VERBOSE" != no ] && log_daemon_msg "Stopping $DESC" "$NAME"
+	do_stop
+	case "$?" in
+		0|1) [ "$VERBOSE" != no ] && log_end_msg 0 ;;
+		2) [ "$VERBOSE" != no ] && log_end_msg 1 ;;
+	esac
+	;;
+  status)
+       status_of_proc "$DAEMON_NAME" "$NAME" && exit 0 || exit $?
+       ;;
+  #reload|force-reload)
+	#
+	# If do_reload() is not implemented then leave this commented out
+	# and leave 'force-reload' as an alias for 'restart'.
+	#
+	#log_daemon_msg "Reloading $DESC" "$NAME"
+	#do_reload
+	#log_end_msg $?
+	#;;
+  restart|force-reload)
+	#
+	# If the "reload" option is implemented then remove the
+	# 'force-reload' alias
+	#
+	log_daemon_msg "Restarting $DESC" "$NAME"
+	do_stop
+	case "$?" in
+	  0|1)
+		do_start
+		case "$?" in
+			0) log_end_msg 0 ;;
+			1) log_end_msg 1 ;; # Old process is still running
+			*) log_end_msg 1 ;; # Failed to start
+		esac
+		;;
+	  *)
+	  	# Failed to stop
+		log_end_msg 1
+		;;
+	esac
+	;;
+  *)
+	#echo "Usage: $SCRIPTNAME {start|stop|restart|reload|force-reload}" >&2
+	echo "Usage: $SCRIPTNAME {start|stop|status|restart|force-reload}" >&2
+	exit 3
+	;;
+esac

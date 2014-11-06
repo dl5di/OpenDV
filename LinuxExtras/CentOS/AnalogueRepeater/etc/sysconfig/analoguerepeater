@@ -1,0 +1,6 @@
+# Defaults for analoguerepeater initscript
+# sourced by /etc/init.d/analoguerepeater
+# installed at /etc/sysconfig/analoguerepeater by the maintainer scripts
+# 
+DAEMON_PATH=/usr/local/bin/analoguerepeaterd
+DAEMON_OPTIONS="-daemon -logdir /var/log/dstar"

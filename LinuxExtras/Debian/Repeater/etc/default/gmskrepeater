@@ -1,0 +1,4 @@
+DAEMON_NAME=gmskrepeaterd
+DAEMON_PATH=/usr/bin/gmskrepeaterd
+DAEMON_ARGS="-nolog -daemon -logdir /var/log/opendv"
+DAEMON_USER=root

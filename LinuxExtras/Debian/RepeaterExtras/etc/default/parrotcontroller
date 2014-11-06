@@ -1,0 +1,3 @@
+DAEMON_PATH=/usr/bin/parrotcontrollerd
+DAEMON_ARGS="-daemon -logdir /var/log"
+DAEMON_USER=opendv

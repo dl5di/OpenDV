@@ -1,0 +1,59 @@
+--------------------------------------------------------------------------------
+
+ Configuration script for ircDDBGateway  from Jonathan Naylor, G4KLX
+ Copyright (C) 2012   Hans-J. Barthen, DL5DI (dl5di@gmx.de)
+
+--------------------------------------------------------------------------------
+
+The text based "ircddbgw_conf" configuration program allows to configure the
+G4KLX ircDDBGateway.
+The recommended way for the initial installation of a combination of G4KLX repeater 
+and ircddbgateway is to configure the gateway first using the configuration tool 
+"ircddbgw_conf".
+This program will automatically involve "repeater_conf" during the configuration 
+of a software repeater module and will make sure that the settings of repeater
+module and ircddbgateway match to each other.
+
+PLEASE NOTE: ircddbgw_conf reads the repeater configuration but the repeater_conf
+does not care about the ircddbgateway configuration!
+Changing repeater settings manually may break the system. 
+
+
+Files:
+
+/home/opendv/ircddbgateway/ircddbgateway		main configfile for ircDDBGatway
+    
+/home/opendv/ircddbgateway/ircddbgateway.default	default values for all settings
+/home/opendv/ircddbgateway/timeserver.default		default values for all settings
+
+/etc/init.d/ircddbgateway				startscripts for ircddbgateway
+/etc/init.d/timeserver					startscripts for timeserver
+
+/etc/cron.d/ircddbgateway				"keepalive" crontab entry for ircddbgateway
+
+/home/opendv/ircddbgateway/data/ircddbgateway/*.hlp	helpfiles in different languages
+/home/opendv/ircddbgateway/data/*.mnu			menufiles in different languages
+    
+/home/opendv/data						AMBE-files shared with ircDDBGateway
+
+/etc/default/ircddbgateway				startup options for ircddbgateway
+/etc/default/timeserver					startup options for the timeserver
+
+/usr/bin/ircddbgateway.sh				startfile for GUI mode (incl. LOCALE settings)
+/usr/bin/ircddbgateway-ddmode.sh		include file for startfile
+/usr/bin/ircddbgw_conf					configuration tool
+
+/var/www								dashboard files
+
+This last 2 files need to be edited manually if want to change the logpath or switch logging on/off.
+
+PLEASE DO NOT EDIT any other files manually unless you know what you are doing!
+Manual entries may cause issues and double entries.
+
+ircddbgw_conf will create the basic configfile for the ircddbgateway module and also 
+the startup options in /etc/default.
+Special menu options allow to activate the automatic startup script or manually start ircddbgateway.
+
+March 1st 2013
+
+Hans, DL5DI

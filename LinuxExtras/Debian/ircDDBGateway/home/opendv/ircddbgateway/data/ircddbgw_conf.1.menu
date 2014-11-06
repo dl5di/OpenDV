@@ -1,0 +1,1167 @@
+
+filename of menu file:  /opt/opendv/ircddbgateway/ircddb_conf.#.menu
+filename of help file:  /opt/opendv/ircddbgateway/ircddb_conf.#.hlp
+
+where # is:
+
+   0   English (UK) 
+   1   Deutsch 
+   2   Dansk 
+   3   Italiano 
+   4   Francais 
+   5   Espanol 
+   6   Svenska 
+   7   Polski 
+   8   English (US) 
+   9   Nederlands (NL) 
+  10   Nederland (BE) 
+
+
+BITTE DIE DATEIEN /opt/opendv/ircddbgateway/ircddb_conf.0.menu und 
+/opt/opendv/ircddbgateway/ircddb_conf.0.hlp NICHT EDITIEREN!
+
+Diese Dateien werden automatisch beim YUM-Update ueberschrieben!
+
+--------------------------------------------------------------------------------------------------
+
+invalid_ip:
+invalid_ip:
+invalid_ip:FEHLER !  Ungueltige IP-Adresse !
+
+invalid_port:
+invalid_port:
+invalid_port:FEHLER !  Ungueltige Portnummer ! (1024-65535)
+
+invalid_lat:
+invalid_lat:
+invalid_lat:FEHLER !  Ungueltiger Breitengrad ! (range -90 +90)
+
+invalid_lon:
+invalid_lon:
+invalid_lon:FEHLER !  Ungueltiger Laengengrad ! (range -180 +180)
+
+invalid_freq:
+invalid_freq:
+invalid_freq:FEHLER !  Ungueltige Frequenzangabe ! (out of range [MHz]!)
+
+invalid_offset:
+invalid_offset:
+invalid_offset:FEHLER !  Ungueltige Ablage ! (ausserhalb des Bereichs [MHz]!)
+
+reset_allowed:Druecke '-' um den Wert auf die Standardvorgabe zurueck zu setzen
+reset_allowed: 
+
+request_input: 
+request_input:Eingabe zwingend erforderlich!"
+request_input: 
+
+reset_value: 
+reset_value:Der Wert wurde auf die Standardvorgabe zurueck gesetzt.
+reset_value: 
+
+band_in_use:FEHLER !  Diese Band-Kennung wird bereits verwendet !
+
+invalid_band:FEHLER !  Ungueltige Band-Kennung !
+
+
+basic_setup: 
+basic_setup: 
+basic_setup: 
+basic_setup: 
+basic_setup: 
+basic_setup: 
+basic_setup:********************************************************************************
+basic_setup: 
+basic_setup:*** ircDDBGateway Grundeinstellungen
+basic_setup: 
+basic_setup: Der erste Teil sammelt einige Informationen zum Gateway wie zum Beispiel
+basic_setup: Angaben zum Standort. 
+basic_setup: 
+basic_setup:********************************************************************************
+basic_setup: 
+
+gatewayCallsign:Gib das Basis-Rufzeichen des Gateways ein (max 7 Stellen). 
+gatewayCallsign: 
+
+latitude: 
+latitude:Gib den Breitengrad des GATEWAY-Standorts in Grad/Dezimalform ein 
+latitude:(+ Nord / - Sued)
+latitude:
+latitude:Beispiel: 50.388300 
+latitude:
+latitude:Diese Angabe wird fuer die ircDDB-Webseite QRGs&Maps verwendet
+latitude:http://status.ircddb.net/qam.php, von "Dashboard"-Software und zum
+latitude:Erstellen von Speicherlisten fuer DStar-Geraet.
+latitude:Bitte gib einen genauen Wert ein und pruefe den Standort bei 
+latitude:http://www.aprs.fi 
+latitude: 
+
+longitude: 
+longitude:Gib den Laengengrad des GATEWAY-Standorts in Grad/Dezimalform ein 
+longitude:(+ Ost / - West) 
+longitude:
+longitude:Beispiel: -7.563300 
+longitude:
+longitude:Diese Angabe wird fuer die ircDDB-Webseite QRGs&Maps verwendet
+longitude:http://status.ircddb.net/qam.php, von "Dashboard"-Software und zum
+longitude:Erstellen von Speicherlisten fuer DStar-Geraet.
+longitude:Bitte gib einen genauen Werte ein und pruefe den Standort bei 
+longitude:http://www.aprs.fi 
+longitude: 
+
+description1: 
+description1:Gib eine aussagekraeftige Angabe zum Gateway-Standort ein, max. 20 Zeichen.
+description1:Dieser Text wird auf der ircDDB-Webseite angezeigt, in Repeaterlisten und 
+description1:im Display von Geraeten, die die automatisch generierten Speicherlisten 
+description1:verwenden.
+description1:Bitte keine Sonderzeichen, Umlaute und keinen HTML-Code verwenden! 
+description1:Hier sollte eine Angabe stehen, die im Display des mobilen Benutzers die
+description1:Auswahl eines Gateways erleichtert.
+description1:Weitere 20 Zeichen koennen nachfolgend in 'description2' eingegeben werden.
+description1:'description2' wird nur auf Webseiten angezeigt.
+description1: 
+
+description2:
+description2:Hier kannst Du weitere Details zum Repeaterstandort angeben, max. 20 Zeichen.
+description2:Dieser Text wird zusaetzlich zu 'description1' auf Webseiten angezeigt. 
+description2:Bitte keine Sonderzeichen, Umlaute, keinen HTML-Code, keine Geo-Position,
+description2:keine Frequenzangaben, Software-Versionen etc. verwenden, hierfuer sind 
+description2:andere Felder vorgesehen!
+description2: 
+
+description1R: 
+description1R:DIESE EINGABE IST OPTIONAL:
+description1R: 
+description1R:Gib eine aussagekraeftige Angabe zum Repeater-Standort ein, max. 20 Zeichen.
+description1R:Dieser Text ersetzt den Text des Gateways fuer diesen Repeater. Er wird auf 
+description1R:der ircDDB-Webseite angezeigt, in Repeaterlisten und im Display von Geraeten,
+description1R:die die automatisch generierten Speicherlisten verwenden.
+description1R:Bitte keine Sonderzeichen, Umlaute und keinen HTML-Code verwenden! 
+description1R:Hier sollte eine Angabe stehen, die im Display des mobilen Benutzers die
+description1R:Auswahl eines Gateways erleichtert.
+description1R:Weitere 20 Zeichen koennen nachfolgend in 'description2' eingegeben werden.
+description1R:'description2' wird nur auf Webseiten angezeigt.
+description1R: 
+
+description2R:
+description2R:DIESE EINGABE IST OPTIONAL:
+description2R:
+description2R:Hier kannst Du weitere Details zum Repeaterstandort angeben, max. 20 Zeichen.
+description2R:Dieser Text wird zusaetzlich zu 'description1' auf Webseiten angezeigt. 
+description2R:Bitte keine Sonderzeichen, Umlaute, keinen HTML-Code, keine Geo-Position,
+description2R:keine Frequenzangaben, Software-Versionen etc. verwenden, hierfuer sind 
+description2R:andere Felder vorgesehen!
+description2R: 
+
+url: 
+url:Hier kann eine URL eingegeben werden, wo weitere Informationen zum Gateway zu
+url:finden sind.
+url:Diese URL wird auf der ircDDB Statusseite angezeigt und auch in 'Dashboard'-
+url:Software. 
+url:Bitte keine Links auf Seiten mit kommerziellem Inhalt verwenden! 
+url: 
+
+urlR: 
+urlR:DIESE EINGABE IST OPTIONAL:
+urlR: 
+urlR:Hier kann eine URL eingegeben werden, wo weitere Informationen zu diesem Repeater
+urlR:zu finden sind. Eine Eingabe ersetzt die Angaben des Gateways fuer diesen Repeater.
+urlR:Diese URL wird auf der ircDDB Statusseite angezeigt und auch in 'Dashboard'-
+urlR:Software. 
+urlR:Bitte keine Links auf Seiten mit kommerziellem Inhalt verwenden! 
+urlR: 
+
+hw_setup: 
+hw_setup: 
+hw_setup: 
+hw_setup: 
+hw_setup: 
+hw_setup: 
+hw_setup: 
+hw_setup: 
+hw_setup:********************************************************************************
+hw_setup: 
+hw_setup:*** Konfiguration der Repeater Module. 
+hw_setup: 
+hw_setup:Du kannst mit ircDDBGatway Icom Hardware ansteuern (RP2C und Repeater-module,  
+hw_setup:incl. DD-Mode) oder den G4KLX Software Repeater mit verschiedenen Hardware-
+hw_setup:Modulen.
+hw_setup:Beides kann auch bis zu einer max. Anzahl von 4 Modulen kombiniert werden.
+hw_setup: 
+hw_setup:********************************************************************************
+hw_setup: 
+
+icom_setup: 
+icom_setup: 
+icom_setup: 
+icom_setup: 
+icom_setup: 
+icom_setup: 
+icom_setup:********************************************************************************
+icom_setup: 
+icom_setup:*** ircDDBGateway Icom Konfiguration 
+icom_setup: 
+icom_setup:Im naechsten Schritt wird zunaechst das Interface fuer den Icom RP2C-Controller 
+icom_setup:konfiguriert. Du wirst IP-Adresse und Portnummer eingeben muessen.
+icom_setup:Wenn das Skript auf dem PC eine Icom-G2 Konfiguration vorfindet, werden 
+icom_setup:existierende Einstellungen aus den Konfigurationsfiles in der Eingabezeile der 
+icom_setup:Masken angezeigt. 
+icom_setup:Du kannst diese Werte in [..] durch Druecken von <ENTER> uebernehmen.
+icom_setup: 
+icom_setup:********************************************************************************
+
+icom_menu: 
+icom_menu:Willst Du einen Icom-Controller RP2C mit ircDDBGateway verwenden? 
+icom_menu: 
+icom_menu:  0   NEIN 
+icom_menu:  1   JA 
+icom_menu:
+
+icom_quit1:
+icom_quit1:Die Icom-Software-Installation wird nun ausser Betrieb genommen.
+icom_quit1:Soll der US-Trust-Registrierungsserver weiter aktiv bleiben?
+icom_quit1:(sinnvoll wenn lokal Benutzer registriert wurden)
+icom_quit1: 
+icom_quit1:  0   NEIN 
+icom_quit1:  1   JA 
+icom_quit1:
+
+icom_quit2:
+icom_quit2:Die root crontab mit den Aufrufen der Keep-Alive-Skripte wird von
+icom_quit2:/var/spool/cron ins Verzeichnis /dstar/backups verschoben und der
+icom_quit2:Cron-Prozess ohne diese Eintraege neu geladen.
+icom_quit2:
+
+icom_quit3:
+icom_quit3:Die Icom-Gateway-Prozesse und Zusatzsoftware werden gestoppt.
+icom_quit3:
+
+icom_quit4:
+icom_quit4:Die Icom-Gateway-Software und die Addons werden vom automatischen Start
+icom_quit4:beim Booten ausgeschlossen.
+icom_quit4:
+
+icom_quit5:
+icom_quit5:Die ircDDB-Addons fuer Icom-Gateway-Software werden gestoppt und vom
+icom_quit5:automatischen Start beim Booten ausgeschlossen.
+icom_quit5:
+
+icom_quit6:
+icom_quit6:Dextra- und DCS-Reflektor-Clients fuer Icom-Gateway-Software werden gestoppt 
+icom_quit6:gestoppt und vom automatischen Start beim Booten ausgeschlossen.
+icom_quit6:
+
+icom_quit7:
+icom_quit7:Der Icom Registrierungsservice wird neu gestartet, bitte warten ...
+icom_quit7:
+
+icom_reset: 
+icom_reset:Willst Du alle eventuell vorhandenen bisherigen Einstellungen zuruecksetzen ?
+icom_reset: 
+icom_reset:  0   NEIN 
+icom_reset:  1   JA 
+icom_reset:
+
+icom_skip: 
+icom_skip:Die Konfiguration fuer einen Icom-Repeater wird uebersprungen 
+icom_skip: 
+
+icom_head:     
+icom_head:*** ircDDBGateway Icom-Repeater Konfiguration 
+icom_head: 
+
+icomAddress:
+icomAddress:Gib die lokale IP-Addresse des Gateways ein an die der Icom-Controller seine
+icomAddress:Daten das adressiert 
+icomAddress:
+icomAddress:Wurde der Controller bereits mit Icom-G2 Software betrieben und danach nicht
+icomAddress:umkonfiguriert, dann ist in der Regel 172.16.0.20 richtig.
+icomAddress:Der Wert wird aus einer noch vorhandenen dsgwd.conf gelesen.
+icomAddress:Dieser Wert muss der Einstellung im Controller entsprechen!
+icomAddress:
+
+icomPort: 
+icomPort:Gib die lokale Portnummer des Gateways ein an der der Icom-Controller seine
+icomPort:Daten adressiert.
+icomPort: 
+icomPort:Wurde der Controller bereits mit Icom-G2 Software betrieben und danach nicht
+icomPort:umkonfiguriert, so ist Port 20000 richtig, andernfalls wird Port 20009
+icomPort:vorgeschlagen.
+icomPort:Der Wert wird aus einer noch vorhanden dsgwd.conf gelesen.
+icomPort:Dieser Wert muss der Einstellung im Controller entsprechen!
+icomPort: 
+
+rp2cAddress: 
+rp2cAddress:Gib die IP-Addresse des Icom-Controllers ein. 
+rp2cAddress:Wurde der Controller bereits mit Icom-G2 Software betrieben und danach nicht
+rp2cAddress:umkonfiguriert, dann ist i.d.R. 172.16.0.1 richtig. 
+rp2cAddress:Der Wert wird aus einer noch vorhanden dsgwd.conf gelesen.
+rp2cAddress:Dieser Wert muss der Einstellung im Controller entsprechen!
+rp2cAddress: 
+
+rp2cPort: 
+rp2cPort:Gib die Portnummer des Icom-Controllers ein.
+rp2cPort:Wurde der Controller bereits mit Icom-G2 Software betrieben und danach nicht
+rp2cPort:umkonfiguriert, so ist Port 20000 richtig.
+rp2cPort:Der Wert wird aus einer noch vorhanden dsgwd.conf gelesen.
+rp2cPort:Dieser Wert muss der Einstellung im Controller entsprechen!
+rp2cPort: 
+
+icom_addr_err:
+icom_addr_err:FEHLER: Die Icom-Addresse wurde nicht gefunden!
+icom_addr_err:Du musst zuerst die Einstellungen fuer den icom-Controller vornehmen! 
+icom_addr_err:(Menuepunkt 4)
+icom_addr_err:
+
+icom_port_err:
+icom_port_err:FEHLER: Die Icom-Port-Konfiguration wurde nicht gefunden!
+icom_port_err:Du musst zuerst die Einstellungen fuer den icom-Controller vornehmen!
+icom_port_err:(Menuepunkt 4)
+icom_port_err:
+
+hb_setup: 
+hb_setup: 
+hb_setup: 
+hb_setup: 
+hb_setup: 
+hb_setup: 
+hb_setup:********************************************************************************
+hb_setup: 
+hb_setup:*** ircDDBGateway Software-Repeater Einstellungen
+hb_setup: 
+hb_setup:Im naechten Schritt wird die Schnittstelle zum G4KLX-Software-Repeater  
+hb_setup:konfiguriert. Du wirst IP-Adresse und Portnummer benoetigen.
+hb_setup:Wenn ircDDBGateway und Repeater auf dem gleichen PC betrieben werden solltest
+hb_setup:Du die Werte uebernehmen, die in [..] angezeigt werden. Druecke einfach <ENTER>.
+hb_setup: 
+hb_setup:********************************************************************************
+
+hb_menu: 
+hb_menu:Willst Du den G4KLX-Software-Repeater mit ircDDBGateway verwenden? 
+hb_menu: 
+hb_menu:  0   NEIN 
+hb_menu:  1   JA 
+hb_menu:
+
+hb_reset: 
+hb_reset:Sollen alle vorher getaetigten Einstellungen der Schnittstelle zum Software-
+hb_reset:Repeater zurueckgsetzt werden?
+hb_reset: 
+hb_reset:  0   NEIN 
+hb_reset:  1   JA 
+hb_reset:
+
+hb_head:     
+hb_head: *** ircDDBGateway Software-Repeater-Einstellungen 
+hb_head: 
+
+hb_skip: 
+hb_skip:Die Konfiguration fuer Software-Repeater wird uebersprungen 
+hb_skip: 
+
+hbAddress: 
+hbAddress:Gib die IP-Adresse 'hbAddress' ein. 
+hbAddress:Dies ist die lokale IP-Adresse des Gateways, die der Software-Repeater 
+hbAddress:adressiert.
+hbAddress:Wenn Gateway und Repeater-Software auf dem gleichen PC betrieben werden,
+hbAddress:ist es 127.0.0.1 
+hbAddress: 
+     
+hbPort: 
+hbPort:Gib die Portnummer 'hbPort' ein. 
+hbPort:Dies ist der lokale UDP-Port des Gateways, den der Software-Repeater adressiert.
+hbPort:Diese Portnummer darf nicht mehrfach verwendet werden! 20010 ist eine gute Wahl.
+hbPort: 
+
+     
+rptr_setup: 
+rptr_setup: 
+rptr_setup: 
+rptr_setup: 
+rptr_setup: 
+rptr_setup: 
+rptr_setup:********************************************************************************
+rptr_setup: 
+rptr_setup:*** ircDDBGateway Repeater-Konfiguration
+rptr_setup: 
+rptr_setup:Im naechsten Schritt werden die Repeater-Module konfiguriert.
+rptr_setup:Die Module koennen an einen Icom-Controller angeschlossen sein oder an den
+rptr_setup:G4KLX-Software-Repeater, sofern die zugehoerigen Grundeinstellungen in den 
+rptr_setup:Schritten vorher konfiguriert wurden.
+rptr_setup: 
+rptr_setup:********************************************************************************
+
+rptr_init:
+rptr_init:Wie viele Repeater-Module sollen konfiguriert werden? (1-4).
+rptr_init:Bitte beachte, dass Du die Hardware-Informationen und Device-Namen benoetigst. 
+rptr_init:Die Reihenfolge der Module spielt keine Rolle (egal ob A,B,C,D oder D,A,C,B),
+rptr_init:jedoch muss die Konfiguration lueckenlos sein!
+rptr_init: 
+rptr_init: 0 oder <ENTER> um die Konfiguration der Repeater-Module zu ueberspringen.
+rptr_init: 
+
+rptr_edit:
+rptr_edit:Welches Repeater-Modul soll konfiguriert werden? (1-4).
+rptr_edit:Bitte beachte, dass Du die Hardware-Informationen und Device-Namen benoetigst. 
+rptr_edit:Die Reihenfolge der Module spielt keine Rolle (egal ob A,B,C,D oder D,A,C,B),
+rptr_edit:jedoch muss die Konfiguration lueckenlos sein!
+rptr_edit: 
+rptr_edit: 0 oder <ENTER> um die Konfiguration der Repeater-Module zu ueberspringen.
+rptr_edit: Folgende Module sind derzeit konfiguriert:
+rptr_edit: 
+
+rptr_stop:  
+rptr_stop:Die Repeater-Konfiguration wird abgebrochen! 
+rptr_stop: 
+	 
+repeaterBand: 
+repeaterBand:Gib das Kennzeichen fuer das Repeater-Band ein. 
+repeaterBand:A, B, C, D, E fuer Sprachmodule, AD, BD, CD, DD, ED fuer DD-Daten-Module. 
+repeaterBand:Der uebliche Standard ist A=SHF, B=UHF, C=VHF, DD=SHF/Data, E=HF.
+repeaterBand:Beachte: jedes Bandkennzeichen kann nur einmal verwendet werden! 
+repeaterBand: 
+repeaterBand:'-' wird das Modul loeschen, alle Einstellungen zuruecksetzen.
+repeaterBand: 
+
+repeaterReset:
+repeaterReset:Willst Du dieses Repeater-Modul wirklich loeschen?
+repeaterReset:
+repeaterReset:  0   NEIN
+repeaterReset:  1   JA
+repeaterReset
+
+repeaterType: 
+repeaterType:Waehle den Typ dieses Repeater-Moduls:
+repeaterType: 
+repeaterType: 0   Eigenbau-Hardware angebunden ueber den G4KLX Software-Repeater
+repeaterType: 1   ICOM-Hardware angebunden ueber den Icom RP2C-Controller
+repeaterType: 
+
+repeaterHW: 
+repeaterHW: Welche Repeater-Hardware wird fuer dieses Module eingesetzt?
+repeaterHW: 
+repeaterHW: 1) Soundmodem/DStar-Repeater
+repeaterHW: 2) DVRPTR-Repeater
+repeaterHW: 3) GMSK-Repeater
+repeaterHW: 4) DVAP-Node
+repeaterHW: 
+     
+repeaterAddress: 
+repeaterAddress:Gib die IP-Addresse des Repeatermoduls ein. 
+repeaterAddress:Dies ist die IP-Address unter der das Gateway den Repeater erreicht.
+repeaterAddress:Wenn Gateway und Repeater auf dem gleichen PC laufen ist es 127.0.0.1 
+repeaterAddress: 
+
+repeaterPort: 
+repeaterPort:Gib die Portnummer des Repeater-Moduls ein. 
+repeaterPort:Dies ist der UDP-Port unter dem das Gateway das Repeatermodul erreicht.
+repeaterPort:Diese Portnummer darf nicht mehrfach vorkommen. 
+repeaterPort:Falls verfuegbar ist es sicher den vorgegebenen Wert zu uebernehmen. 
+repeaterPort: 
+repeaterPort:Uebliche Werte sind:
+repeaterPort: 20011
+repeaterPort: 20012
+repeaterPort: 20012
+repeaterPort: 20013
+repeaterPort: 
+repeaterPort:Aktuell zugewiesen sind:
+
+extraOptions:
+extraOptions: ircDDBGateway erlaubt den Anschluss von abgesetzten Repeatern.
+extraOptions: Die folgenden Zusatzoptionen erlauben die Eingabe von Parametern wie
+extraOptions: Rufzeichen und Standort fuer solche speziellen Installationen.
+extraOptions: Wenn das Repeatermodul am gleichen Standort steht wie das Gateway und
+extraOptions: das Basisrufzeichen gleich ist, druecke '0' um die 'Extra Optionen'
+extraOptions: zu ueberspringen.
+extraOptions:
+extraOptions: Willst Du 'Extra Optionen' eingeben ?
+extraOptions: 0 = NEIN, 1 = JA
+extraOptions:
+
+repeaterCall:
+repeaterCall: !!! ACHTUNG !!! ACHTUNG !!! ACHTUNG !!! ACHTUNG !!! ACHTUNG !!!
+repeaterCall:
+repeaterCall: GIB HIER KEIN RUFZEICHEN EIN, ES SEI DENN, DAS CALLS DES REPEATERMODULS
+repeaterCall:            WEICHT VOM CALL DES GATEWAYS AB !!
+repeaterCall:
+repeaterCall:Dies ist eine Spezialfunktion, die benoetigt wird falls Gateway und
+repeaterCall:Repeater an unterschiedlichen Orten stehen.
+repeaterCall:Dieser Spezialfall benoetigt auch eine spezielle Konfiguration im ircDDB-
+repeaterCall:Netz, bitte kontaktiere das ircDDB-Team in einem solchen Fall.
+repeaterCall:
+repeaterCall:NORMALERWEISE DRUECKE HIER NUR <ENTER> !
+repeaterCall:
+
+frequency: 
+frequency:Gib hier die Sendefrequenz des Repeatermoduls IN MHZ ein!! 
+frequency:Die Duplex-Ablage wird im naechsten Schritt konfiguriert.
+frequency:Beispiel: 439.5625 
+frequency:Diese Angabe erscheint auf der ircDDB-Status-Seite http://status.ircddb.net
+frequency:und wird zum Erstellen von Speicherlisten fuer DStar-Geraete verwendet.
+frequency:Gib den richtigen Wert ein, ansonsten ist der Eintrag in den Speicherlisten 
+frequency:wertlos!
+frequency: 
+
+offset: 
+offset:Gib die Duplexablage des Repeater-Moduls IN >>MHZ<< ein !! 
+offset:Beispiele: 28.0 -28.0 -9.4 -7.6  -5.0 -0.6 
+offset:Diese Angabe erscheint auf der ircDDB-Status-Seite http://status.ircddb.net
+offset:und wird zum Erzeugen von Speicherlisten fuer DStar-Geraete verwendet.
+offset:Gib den richtigen Wert ein, ansonsten ist der Eintrag in den Speicherlisten
+offset:wertlos!
+offset: 
+
+rangeKms: 
+rangeKms:Gib hier die Reichweite des Gateways in KILOMETER ein. 
+rangeKms:Dies ist der Radius um den Repeater-Standort.
+rangeKms:Beispiel: 25 
+rangeKms:Diese Angabe wird fuer "QRGs&Maps" http://status.ircddb.net/qam.php 
+rangeKms:verwendet um Abdeckungsbereiche anzuzeigen und Benutzern die Auswahl
+rangeKms:einers Repeaters in ihrer Reichweite zu ermoeglichen.
+rangeKms:Bitte gib einen realistischen Wert ein, ansonsten ist er sinnlos!
+rangeKms:Es sollte der Bereich sein, in dem Pixel-freier Mobilbetrieb moeglich ist. 
+rangeKms: 
+
+latitudeR: 
+latitudeR: !!! ACHTUNG !!! ACHTUNG !!! ACHTUNG !!! ACHTUNG !!! ACHTUNG !!!
+latitudeR: 
+latitudeR:GIB HIER NUR DANN EINEN WERT AN, WENN DAS REPEATER-MODUL AN EINEM ABWEICHENDEN
+latitudeR:ORT STEHT!!
+latitudeR: 
+latitudeR:Gib den Breitengrad des GATEWAY-Standorts in Grad/Dezimalform ein 
+latitudeR:(+ Nord / - Sued)
+latitudeR:Beispiel: 50.388300 
+latitudeR:Diese Angabe wird fuer "CQRGs&Maps" verwendet http://status.ircddb.net/qam.php
+latitudeR:und zum Erstellen von Speicherlisten fuer DStar-Geraete.
+latitudeR:Bitte gibt hier genaue Werte ein und pruefe den Standort bei http://www.aprs.fi
+latitudeR:
+latitudeR:NORMALERWEISE DRUECKE HIER NUR <ENTER> !
+latitudeR:
+
+longitudeR:
+longitudeR: !!! ACHTUNG !!! ACHTUNG !!! ACHTUNG !!! ACHTUNG !!! ACHTUNG !!!
+longitudeR: 
+longitudeR:GIB HIER NUR DANN EINEN WERT AN, WENN DAS REPEATER-MODUL AN EINEM ABWEICHENDEN 
+longitudeR:ORT STEHT!!
+longitudeR: 
+longitudeR:Gib den Laengengrad des GATEWAY-Standorts in Grad/Dezimalform ein 
+longitudeR:(+ Ost / - West) 
+longitudeR:Beispiel: -7.563300 
+longitudeR:Diese Angabe wird fuer "QRGs&Maps" verwendet http://status.ircddb.net/qam.php
+longitudeR:und zum Erstellen von Speicherlisten fuer DStar-Geraete.
+longitudeR:Bitte gibt hier genaue Werte ein und pruefe den Standort bei http://www.aprs.fi 
+longitudeR: 
+longitudeR:NORMALERWEISE DRUECKE HIER NUR <ENTER> !
+longitudeR: 
+
+agl: 
+agl:Gib nun die ANTENNENHOEHE UEBER GRUND in Meter ein. 
+agl:Beispiel: 15.70 
+agl:Dieser Wert wird in Zukunft bei "QRGs&Maps" http://status.ircddb.net/qam.php 
+agl:zur Darstellung von realistischen Abdeckungsbereichen verwendet werden.
+agl:Beachte unbedingt, dass dies die Hoehe ueber lokalem Grund ist, nicht ueber NN, 
+agl:Umgebung etc.!!
+agl: 
+
+reflector: 
+reflector:Gib einen Reflektor ein, falls er automatisch verbunden werden soll.
+reflector:Beispiel: 'XRF023 A' 
+reflector: 
+
+atStartup: 
+atStartup:Soll der Reflektor beim Programmstart verbunden werden?
+atStartup:      0  NEIN 
+atStartup:      1  JA 
+atStartup:     
+atStartup: -       Zuruecksetzen der Einstellung
+atStartup: <ENTER> Den alten Wert beibehalten (Wert in [])
+atStartup:     
+
+reconnect: 
+reconnect:Zeit nach dem ein vom Benutzer gelinkter, nicht mehr genutzter Reflektor
+reconnect:getrennt und mit dem ggf. vorgegeben Reflektor wieder verbunden werden soll: 
+reconnect:  
+reconnect: 0      Nie 
+reconnect: 1     Fest 
+reconnect: 2     5min 
+reconnect: 3    10min 
+reconnect: 4    15min 
+reconnect: 5    20min 
+reconnect: 6    25min 
+reconnect: 7    30min 
+reconnect: 8    60min 
+reconnect: 9    90min 
+reconnect:10   120min 
+reconnect:11   180min 
+reconnect: 
+
+ircddb_setup: 
+ircddb_setup: 
+ircddb_setup: 
+ircddb_setup: 
+ircddb_setup: 
+ircddb_setup: 
+ircddb_setup:********************************************************************************
+ircddb_setup: 
+ircddb_setup:*** ircDDB network setup 
+ircddb_setup: 
+ircddb_setup:Der naechste Konfigurationsteil erfasst die Zugangsdaten zum ircDDB Routing-Netz
+ircddb_setup: 
+ircddb_setup:******************************************************************************** 
+
+ircddbEnabled: 
+ircddbEnabled:      0  ircDDB-Service AUSschalten 
+ircddbEnabled:      1  ircDDB-Service EINschalten
+ircddbEnabled: 
+ircddbEnabled: -       Zuruecksetzen der Einstellung
+ircddbEnabled: <ENTER> Den alten Wert beibehalten (Wert in [])
+ircddbEnabled: 
+
+ircddbHostname: 
+ircddbHostname:Waehle die ircDDB-Server-Gruppe um eine beste Anbindung zu ermoeglichen:  
+ircddbHostname: 
+ircddbHostname: 1   fuer Gateways in Europa, Asien, Afrika, Australien 
+ircddbHostname: 2   fuer Gateways in Nord-/Sued-Amerika 
+ircddbHostname: 3   Italienischer Testserver ohne Anbindung ans Routing-Netz 
+ircddbHostname: 
+
+ircddbUsername: 
+ircddbUsername:Gib den Benutzernamen ein, der Dir bei der Registrierung mitgeteilt wurde.  
+ircddbUsername:(normalerweise das Rufzeichen des Gateways in Kleinschrift) 
+ircddbUsername:Die Registrierung erfolgt hier: http://regsrv.ircddb.net/index.htm
+ircddbUsername: 
+
+ircddbPassword: 
+ircddbPassword:Gib das Passwort ein, das Dubei der Registrierung erhalten hast (16 Stellen)
+ircddbPassword:Achte auf die richtige Eingabe, incl. Gross-/Kleinschrift, am besten per 
+ircddbPassword:Copy&Paste uebertragen.
+ircddbPassword: 
+
+aprs_setup: 
+aprs_setup: 
+aprs_setup: 
+aprs_setup: 
+aprs_setup: 
+aprs_setup: 
+aprs_setup:********************************************************************************
+aprs_setup: 
+aprs_setup:*** APRS-Netzwerkeinstellungen 
+aprs_setup: 
+aprs_setup:Im naechsten Schritt wird der Zugang zum APRS-Netz konfiguriert.
+aprs_setup:Dieser Zugang ist notwendig um Positionsdaten, die Benutzer per DPRS aussenden,
+aprs_setup:und die eigene Postion des Gateways an das weltweite APRS-Netz zu uebertragen.
+aprs_setup:Ratsam ist die Verwendung eines lokalen Servers, am besten eines Rotate-Servers
+aprs_setup:fuer den eigenen Kontinent.
+aprs_setup:Mehr Details findest Du hier: http://www.aprs2.net
+aprs_setup: 
+aprs_setup:********************************************************************************
+
+
+aprsEnabled: 
+aprsEnabled:      0  APRS-Service AUSschalten
+aprsEnabled:      1  APRS-Service EINschalten  
+aprsEnabled: 
+aprsEnabled: -       Zuruecksetzen der Einstellung
+aprsEnabled: <ENTER> Den alten Wert beibehalten (Wert in [])
+aprsEnabled: 
+
+aprsHostname: 
+aprsHostname:APRS-Hostname (mehr Informationen hier http://www.aprs2.net)  
+
+aprsPort: 
+aprsPort:Enter APRS-Port (mehr Information hhier http://www.aprs2.net)  
+
+ccs_setup: 
+ccs_setup: 
+ccs_setup: 
+ccs_setup: 
+ccs_setup: 
+ccs_setup: 
+ccs_setup:********************************************************************************
+ccs_setup: 
+ccs_setup:*** CCS Netzwerk  Einstellungen
+ccs_setup: 
+ccs_setup:********************************************************************************
+
+ccsEnabled: 
+ccsEnabled:      0  CCS-Service AUSschalten  
+ccsEnabled:      1  CCS-Service EINschalten  
+ccsEnabled: 
+ccsEnabled: -       Zuruecksetzen der Einstellung
+ccsEnabled: <ENTER> Den alten Wert beibehalten (Wert in [])
+ccsEnabled: 
+
+ccsHostmissing: 
+ccsHostmissing:Das File CCS_Hosts.txt fehlt! 
+ccsHostmissing: 
+
+ccsHostentries:
+ccsHostentries:Waehle den CCS-Host von der Liste:
+ccsHostentries:
+
+dextra_setup: 
+dextra_setup: 
+dextra_setup: 
+dextra_setup: 
+dextra_setup: 
+dextra_setup: 
+dextra_setup:********************************************************************************
+dextra_setup: 
+dextra_setup:*** DExtra Reflektor-Netzwerk Einstellungen 
+dextra_setup: 
+dextra_setup:********************************************************************************
+
+dextraEnabled: 
+dextraEnabled:      0  DExtra-Service AUSschalten 
+dextraEnabled:      1  DExtra-Service EINschalten
+dextraEnabled: 
+dextraEnabled: -       Zuruecksetzen der Einstellung
+dextraEnabled: <ENTER> Den alten Wert beibehalten (Wert in [])
+dextraEnabled: 
+
+dextraMaxDongles: 
+dextraMaxDongles:Gib die Anzahl der maximal zulaessigen Dextra-Dongle-Verbindungen ein.
+dextraMaxDongles:(beachte, dass jedes Dongle einen eigenen Sprachdatenstrom erzeugt!) 
+
+dplus_setup: 
+dplus_setup: 
+dplus_setup: 
+dplus_setup: 
+dplus_setup: 
+dplus_setup: 
+dplus_setup:********************************************************************************
+dplus_setup: 
+dplus_setup:*** DPlus Reflektor-Netzwerk Einstellungen
+dplus_setup: 
+dplus_setup:********************************************************************************
+
+dplusEnabled: 
+dplusEnabled:      0  DPlus-Service AUSschalten
+dplusEnabled:      1  DPlus-Service EINschalten  
+dplusEnabled: 
+dplusEnabled: -       Zuruecksetzen der Einstellung
+dplusEnabled: <ENTER> Den alten Wert beibehalten (Wert in [])
+dplusEnabled: 
+
+dplusMaxDongles: 
+dplusMaxDongles:Gib die Anzahl der maximal zulaessigen DPlus-Dongle-Verbindungen ein.
+dplusMaxDongles:(beachte, dass jedes Dongle einen eigenen Sprachdatenstrom erzeugt!) 
+
+dplusLogin: 
+dplusLogin:Gib den DPlus Login-Namen ein. 
+dplusLogin:Dies muss ein Rufzeichen sein, was am US-Trust-Netzwerk registriert ist.
+dplusLogin:Beachte, dass Gateway-Rufzeichen mit der Leerzeichen-ID dort nicht registriert
+dplusLogin:werden sollten, weil dies zu Routing-Problemen fuehren kann. 
+dplusLogin:(Nimm Dein eigenes Rufzeichen, es dient nur zum Einloggen ins Netz und taucht
+dplusLogin:nicht auf den Baendern auf. 
+dplusLogin:  
+
+dcs_setup: 
+dcs_setup: 
+dcs_setup: 
+dcs_setup: 
+dcs_setup: 
+dcs_setup: 
+dcs_setup:********************************************************************************
+dcs_setup: 
+dcs_setup:*** DCS Reflektor-Netzwerk  Einstellungen
+dcs_setup: 
+dcs_setup:********************************************************************************
+
+dcsEnabled: 
+dcsEnabled:      0  DCS-Service AUSschalten  
+dcsEnabled:      1  DCS-Service EINschalten  
+dcsEnabled: 
+dcsEnabled: -       Zuruecksetzen der Einstellung
+dcsEnabled: <ENTER> Den alten Wert beibehalten (Wert in [])
+dcsEnabled: 
+
+stn_setup: 
+stn_setup: 
+stn_setup: 
+stn_setup: 
+stn_setup: 
+stn_setup: 
+stn_setup:********************************************************************************
+stn_setup: 
+stn_setup:*** STARnet-Server Einstellungen 
+stn_setup: 
+stn_setup:********************************************************************************
+
+stn_max:      
+stn_max:Gib die Anzahl gewuenschter STARnet-Server-Module ein (0-5) 
+stn_max:Wenn Du nicht weisst was das ist, druecke <ENTER> und ueberspringe diesen Teil.
+stn_max: 
+
+stn_exit: 
+stn_exit:Die STARnet-Server Konfiguration wird verlassen.
+stn_exit: 
+
+	 
+starNetBand: 
+starNetBand:Gib das STARnetBand ein (A,B,C,D - A ist eine gute Wahl) 
+starNetBand: 
+
+starNetReset: 
+starNetReset:Moechtest Du diesen STARner-Server loeschen?
+starNetReset: 
+
+starNetCallsign: 
+starNetCallsign:Gib das STARnet-Rufzeichen ein (Rufzeichen + Leerzeichen + ID = 8 Zeichen) 
+starNetCallsign:Rufzeichen mit ID muessen um Netz einzigartig sein! 
+starNetCallsign:Bitte STN-Rufzeichen hier eintragen:
+starNetCallsign: http://db0fhn.efi.fh-nuernberg.de/doku.php?id=projects:dstar:starnet
+starNetCallsign:
+starNetCallsign:'-' loescht das STARnet-Server Modul (setzt alle Einstellungen zurueck)
+starNetCallsign: 
+
+starNetDelSrv: 
+starNetDelSrv:Willst Du den STARnet-Server loeschen?  
+starNetDelSrv: 
+starNetDelSrv:   0  NEIN - behalte die Konfiguration dieses STN-Servers bei 
+starNetDelSrv:   1  JA   - loesche alle Einstellungen des STN-Servers
+starNetDelSrv: 
+
+starNetLogoff: 
+starNetLogoff:Eingabe STARnet-LogOff-Rufzeichen (Rufzeichen + Leerzeichen + ID = 8 Zeichen) 
+starNetLogoff:Rufzeichen mit ID muessen um Netz einzigartig sein!
+starNetLogoff: 
+
+starNetPermanent: 
+starNetPermanent:Optionale Eingabe eines STARnet Permanent Callsign (Rufzeichen + Leerzeichen + ID = 8 digits) 
+starNetPermanent:Dieses Rufzeichen bleibt permanent verbunden, ohne Timeout! 
+starNetPermanent: 
+
+starNetInfo: 
+starNetInfo:Gib einen STARnet Infotext ein (20 Zeichen) 
+starNetInfo: 
+
+starNetUserTimeout: 
+starNetUserTimeout:STARnet Benutzer Timeout (sec) 
+starNetUserTimeout:Ist ein Benutzer laenger als diese Zeit nicht aktiv, wird er getrennt.
+starNetUserTimeout: 
+
+starNetGroupTimeout: 
+starNetGroupTimeout:STARnet Gruppen Timeout (sec) 
+starNetGroupTimeout:Ist niemand in der Gruppe innnerhalb dieser Zeit aktiv, werden alle
+starNetGroupTimeout:Gruppenmitglieder getrennt.
+starNetGroupTimeout: 
+
+starNetCallsignSwitch: 
+starNetCallsignSwitch:STARnet-Callsign Schalter 
+starNetCallsignSwitch:(mehr Infos im Manual)
+starNetCallsignSwitch:
+
+starNetTXMsgSwitch: 
+starNetTXMsgSwitch:STARnet TX-Message Schalter 
+starNetTXMsgSwitch:(mehr Info im Manual)
+starNetTXMsgSwitch:
+
+starNetReflector: 
+starNetReflector:Gib den STARnet-Reflektor ein
+starNetReflector: 
+
+misc_setup: 
+misc_setup: 
+misc_setup: 
+misc_setup: 
+misc_setup: 
+misc_setup: 
+misc_setup:********************************************************************************
+misc_setup: 
+misc_setup:*** Verschiedene Optionen 
+misc_setup: 
+misc_setup:********************************************************************************
+
+remoteEnabled: 
+remoteEnabled: 
+remoteEnabled:Zum Umfang der ircDDBGateway-Software gehoert eine Fernsteuersoftware
+remoteEnabled:mit grafischer Oberflaeche (Linux: 'remotecontrol'/Windows: 'remotecontrol.exe')
+remoteEnabled: 
+remoteEnabled:      0  Fernsteuerungszugang AUSschalten  
+remoteEnabled:      1  Fernsteuerungszugang EINschalten   
+remoteEnabled: 
+remoteEnabled: -       Zuruecksetzen der Einstellung
+remoteEnabled: <ENTER> Den alten Wert beibehalten (Wert in [])
+remoteEnabled: 
+
+remotePassword: 
+remotePassword:Gib ein Passwort fuer den Fernsteuerzugang ein  
+remotePassword: 
+
+remotePort: 
+remotePort:Gib die Portnummer fuer den Fernsteuerzugang ein (UDP-port)  
+
+language: 
+language: Hier wird die Sprache fuer die Ansagetexte des Gateways ausgewaehlt.  
+language: Dieses Konfigurationsprogramm benutzt die gleiche Einstellung fuer die Menues.
+language: 
+language:  0      English (UK) 
+language:  1      Deutsch 
+language:  2      Dansk 
+language:  3      Francais 
+language:  4      Italiano 
+language:  5      Polski 
+language:  6      English (US) 
+language:  7      Espanol 
+language:  8      Svenska 
+language:  9      Nederlands (NL) 
+language: 10      Nederland (BE) 
+language: 11      Norsk
+language: 
+language: -       Zuruecksetzen der Einstellung
+language: <ENTER> Den alten Wert beibehalten (Wert in [])
+language: 
+
+timesrv_setup:
+timesrv_setup:
+timesrv_setup:
+timesrv_setup:
+timesrv_setup:
+timesrv_setup:********************************************************************************
+timesrv_setup:
+timesrv_setup:*** Zeitansage / Timeserver Konfiguration
+timesrv_setup:
+timesrv_setup:********************************************************************************
+	 
+timeserver:
+timeserver:Soll die Zeitansage eingeschaltet werden?
+timeserver:
+timeserver: 0  Nein
+timeserver: 1  Ja
+timeserver:
+
+tsrv_err:
+tsrv_err: FEHLER! Das Gateway wurde noch nicht konfiguriert!
+tsrv_err:
+
+tsrv_send:
+tsrv_send: Soll die Zeit auf diesem Modul angesagt werden?
+tsrv_send:
+tsrv_send: 0  Nein
+tsrv_send: 1  Ja
+tsrv_send:
+
+
+tsrv_language:
+tsrv_language: Waehle die Sprache fuer die Zeitansage:
+tsrv_language:
+tsrv_language: 0   English (UK) 1
+tsrv_language: 1   English (UK) 2
+tsrv_language: 2   English (US) 1
+tsrv_language: 3   English (US) 2
+tsrv_language: 4   Deutsch 1
+tsrv_language: 5   Deutsch 2
+tsrv_language: 6   Francais
+tsrv_language: 7   Nederlands
+tsrv_language: 8   Svenska
+tsrv_language: 9   Espanol
+tsrv_language: 10  Norsk
+tsrv_language: 11  Portugues
+tsrv_language:
+
+interval:
+interval: Waehle das Intervall der Zeitansagen:	 
+interval: 
+interval: 0   15 minutes
+interval: 1   30 minutes
+interval: 2   60 minutes
+interval:	 
+
+infoEnabled: 
+infoEnabled:      0  DStar Info-Kommando ABschalten  
+infoEnabled:      1  DStar Info-Kommando EINschalten   
+infoEnabled: 
+infoEnabled: -       Zuruecksetzen der Einstellung
+infoEnabled: <ENTER> Den alten Wert beibehalten (Wert in [])
+infoEnabled: 
+
+echoEnabled: 
+echoEnabled:      0  DStar Echo-Kommando ABschalten  
+echoEnabled:      1  DStar Echo-Kommand EINschalten 
+echoEnabled: 
+echoEnabled: -       Zuruecksetzen der Einstellung
+echoEnabled: <ENTER> Den alten Wert beibehalten (Wert in [])
+echoEnabled: 
+
+logEnabled: 
+logEnabled:       0  Logging AUSschalten  
+logEnabled:       1  Logging EINschalten
+logEnabled: 
+logEnabled: -        Zuruecksetzen der Einstellung
+logEnabled: <ENTER>  Den alten Wert beibehalten (Wert in [])
+logEnabled: 
+logEnabled:(Beachte: Logging wird von lokalen Dashboards benoetigt)  
+logEnabled: 
+
+dratsEnabled: 
+dratsEnabled:      0  D-Rats-Service AUSschalten  
+dratsEnabled:      1  D-Rats-Service EINschalten
+dratsEnabled: 
+dratsEnabled: -       Zuruecksetzen der Einstellung
+dratsEnabled: <ENTER> Den alten Wert beibehalten (Wert in [])
+dratsEnabled: 
+
+dtmfEnabled: 
+dtmfEnabled:      0  DTMF-Steuerung AUSschalten  
+dtmfEnabled:      1  DTMF-Steuerung EINschalten 
+dtmfEnabled: 
+dtmfEnabled: -       Zuruecksetzen der Einstellung
+dtmfEnabled: <ENTER> Den alten Wert beibehalten (Wert in [])
+dtmfEnabled: 
+dtmfEnabled:(DTMF is used to controle repeater status, linking, unlinking) 
+dtmfEnabled: 
+
+nolog_ircddbgateway:
+nolog_ircddbgateway: Logbuchabschaltung fuer ircDDBGateway
+nolog_ircddbgateway:
+nolog_ircddbgateway: Die Groesse von Logfiles kann sehr schnell anwachsen.
+nolog_ircddbgateway: Mit dieser Funktion kann das Logbuch abgeschaltet werden.
+nolog_ircddbgateway: Logfiles werden teilweise von Zusatzsoftware benoetigt (z.B. Dashboard)
+nolog_ircddbgateway: Das Dashboard aus dem Installationspaket benoetigt kein Logfile.
+nolog_ircddbgateway:
+nolog_ircddbgateway: 0  LOGBUCHABSCHALTUNG AUS
+nolog_ircddbgateway: 1  LOGBUCHABSCHAlTUNG EIN
+nolog_ircddbgateway:
+
+nolog_timeserver:
+nolog_timeserver: Logbuchabschaltung fuer den Timeserver
+nolog_timeserver:
+nolog_timeserver: Die Groesse von Logfiles kann sehr schnell anwachsen.
+nolog_timeserver: Mit dieser Funktion kann das Logbuch abgeschaltet werden.
+nolog_timeserver:
+nolog_timeserver: 0  LOGBUCHABSCHALTUNG AUS
+nolog_timeserver: 1  LOGBUCHABSCHAlTUNG EIN
+nolog_timeserver:
+
+logpath:
+logpath: Gib das Verzeichnis ein wo Logfiles angelegt werden sollen.
+logpath: Das Verzeichnis muss existieren und die richtigen Zugriffsrechte besitzen!!
+logpath: Die Einstellung ist auch erforderlich, wenn das Logbuch abgeschaltet wurde,
+logpath: da es auch für wichtige Statusfiles verwendet wird.
+logpath: Wenn nicht unbedingt anders erforderlich, sollte die Voreinstellung bebehalten werden!
+logpath:
+
+log_path:
+log_path: Das Logverzeichnis von ircDDBGateway wurde geaendert:
+
+dashboard_path:
+dashboard_path: Die Konfigurationsdatei des Dashboards wurde geaendert:
+
+header:--------------------------------------------------------------------------------
+header: 
+header: Konfigurations-Skript fuer ircDDBGateway von Jonathan Naylor, G4KLX 
+header: Copyright (C) 2012-2014   Hans-J. Barthen, DL5DI (dl5di@gmx.de) 
+header: 
+header:--------------------------------------------------------------------------------
+
+copyright:--------------------------------------------------------------------------------
+copyright: 
+copyright: Configuration script for ircDDBGateway from Jonathan Naylor, G4KLX 
+copyright: Copyright (C) 2012-2014   Hans-J. Barthen, DL5DI (dl5di@gmx.de) 
+copyright: Basic components from ircddbconfig (C) 2011 Michael Dirska, DL1BFF
+copyright: 
+copyright: This program is free software: you can redistribute it and/or modify 
+copyright: it under the terms of the GNU General Public License as published by 
+copyright: the Free Software Foundation, either version 2 of the License, or 
+copyright: (at your option) any later version. 
+copyright: 
+copyright: This program is distributed in the hope that it will be useful, 
+copyright: but WITHOUT ANY WARRANTY; without even the implied warranty of 
+copyright: MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the 
+copyright: GNU General Public License for more details. 
+copyright: 
+copyright: You should have received a copy of the GNU General Public License 
+copyright: along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+copyright: 
+copyright:--------------------------------------------------------------------------------
+copyright: 
+copyright: Druecke <ENTER> to return to the menu.
+copyright: 
+
+
+mainmenu: 
+mainmenu: Hauptmenue
+mainmenu:--------------------------------------------------------------------------------
+mainmenu: Konfiguration des Systems: 
+mainmenu: 1    Sprache                    (Gateway-Ansagen und Skript-Menues)
+mainmenu: 2    Grundinstallation          (3-14, Teile koennen uebersprungen werden) 
+mainmenu: 3    Basiseinstellungen         (Rufzeichen, Standort, Infotext etc. ..) 
+mainmenu: 4    ICOM-Repeater              (Konfiguration Icom RP2C Repeater) 
+mainmenu: 5    Eigenbau-Repeater          (Konfiguration G4KLX Software Repeater) 
+mainmenu: 6    Repeater-Module            (Konfiguration der Repeater-Module Icom+G4KLX) 
+mainmenu: 7    ircDDB                     (ircDDB Routing-Nezwerk Einstellungen) 
+mainmenu: 8    APRS                       (APRS-Netzwerk Einstellungen) 
+mainmenu: 9    DExtra                     (DExtra-Reflektornetz) 
+mainmenu:10    DPlus                      (DPlus-Reflektornetzwerk) 
+mainmenu:11    CCS/DCS                    (CCS/DCS-Netzwerk) 
+mainmenu:12    STARnet                    (STARnet-Server) 
+mainmenu:13    Timeserver/Zeitansage      (Zeitansagen Einstellungen) 
+mainmenu:14    Verschiedenes              (DTMF, Echo, Info etc.) 
+mainmenu:15    Logbuchfuehrung            (Logbuch ein/aus, Logverzeichnis) 
+mainmenu:---------------------------------------------------------------------------------
+mainmenu:Konfiguration der Startskripte fuer den automatischen Start nach dem Booten: 
+mainmenu: ircDDBGateway:  20) EIN     21) AUS
+mainmenu: Zeitansagen:    22) EIN     23) AUS
+mainmenu:---------------------------------------------------------------------------------
+mainmenu:Manueller Start der Dienste:
+mainmenu: ircDDBGateway:  30) Start   31) Stopp   32) Neustart (Laden neuer Konfiguration)
+mainmenu: Zeitansagen:    33) Start   34) Stopp   35) Neustart (Laden neuer Konfiguration)
+mainmenu:---------------------------------------------------------------------------------
+mainmenu:80    Backup             (erzeugt ein Backup der aktuellen Konfigurations-Datei)
+mainmenu: 
+mainmenu:90    Hilfe 
+mainmenu:91    Copyright
+mainmenu:99    Ende 
+mainmenu: 
+
+final: 
+final:Fertig! Alle Programmteile konfiguriert! 
+final: 
+	     
+scr_act: 
+scr_act:** aktiviere das ircddbgateway Startup-Skript 
+scr_act: 
+
+src_err: 
+src_err:FEHLER: kein ircddbgateway Startup-Skript gefunden
+src_err: 
+
+scr_deact: 
+scr_deact:** deaktiviere das ircddbgateway Startup-Skript 
+scr_deact: 
+
+scr_start: 
+scr_start:** starte ircddbgateway 
+scr_start: 
+
+scr_stop: 
+scr_stop:** beende ircddbgateway 
+scr_stop:
+
+scr_restart: 
+scr_restart:** beende ircddbgateway und starte neu
+scr_restart: 
+
+timer_start: 
+timer_start:** start Server fuer Zeitansagen
+timer_start: 
+
+timer_stop: 
+timer_stop:** stop Server fuer Zeitansagen
+timer_stop:
+
+timer_restart: 
+timer_restart:** restart Server fuer Zeitansagen 
+timer_restart: 
+
+
+nofunc: 
+nofunc:noch nicht implementiert!
+nofunc: 
+
+bye: 
+bye:Tschuess!
+bye: 
+bye:   73 
+bye: 

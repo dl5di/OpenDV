@@ -1,0 +1,75 @@
+--------------------------------------------------------------------------------
+
+ Configuration script for DStarRepeater from Jonathan Naylor, G4KLX
+ Copyright (C) 2013-2014   Hans-J. Barthen, DL5DI (dl5di@gmx.de)
+
+--------------------------------------------------------------------------------
+
+THIS TOOL IS UNDER CONSTRUCTION - IT INLCUDES SOME DUMMY FILES FOR TEST
+IT IS NOT WORKING YET!
+
+
+The text based "dstarrepeater_conf" configuration program allows to configure the
+initial settings of the G4KLX dstarrepeater.
+The recommended way for the initial installation of a repeater with gateway is 
+to configure the gateway first using the configuration tool "ircddbgw_conf".
+This program will automatically involve "dstarrepeater_conf" during the configuration 
+of a software repeater module.
+This will make sure that the settings of gateway and repeater module match to 
+each other.
+
+PLEASE NOTE: dstarrepeater_conf reads the gateway configuration but the ircddbgw_conf
+does not care about the dstarrepeater configuration!
+
+On a standalone dstarrepeater without any gateway you may start "dstarrepeater_conf" direct.
+The program takes a 1 parameter.
+
+    dstarrepeater_conf <module>
+
+with
+
+<module> 	1-4  this value has to meet the module index of ircDDBGateway!
+    
+These commandline parameter allows to start the program from other software.
+When called without commandline parameter the program will request the values.
+ 
+Setting up a soundcardrepeater requires ALSA to be installed.
+Please note that the soundcard part is not really tested!
+The sound modem configuration is different from other modem setups, it specifies 
+all devices by full text names, not by clearly defined device names.
+Example: [HDA Intel ALC662 rev1 Analog (hw:0,1)]
+
+The ALSA tools allow to read that names and offer it for selection.
+If you use other types of modem devices or can use "default" or can once set the
+value by the repeater in GUI-mode you won't need ALSA.
+
+
+Files:
+
+/etc/dstarrepeater_*					configfile for dstarrepeater module * (1-4)
+
+/etc/default/dstarrepeater_conf			default values for all settings
+
+/etc/init.d/dstarrepeater_*				startscripts for dstarrepeater module * (1-4)
+
+/usr/share/dstarrepeater_conf/*.hlp		helpfiles in different languages
+/usr/share/dstarrepeater_conf/*.mnu		menufiles in different languages
+    
+/etc/sysconfig/dstarrepeater_*			binary-path and commandline options for 
+										dstarrepeater module * (1-4)
+
+PLEASE DO NOT EDIT the files manually unless you know exactly what you are doing!
+Manual entries may cause issues and double entries.
+
+dstarrepeater_conf will create the basic configfile for the dstarrepeater modules and 
+also the options file in /etc/sysconfig.
+Special menu options allow to activate the automatic startup script or manually start
+the repeater.
+
+Please address ideas, bug reports and experiences in the Yahoo Group 
+"PCRepeaterController".
+
+
+jan 16th 2014
+
+Hans, DL5DI

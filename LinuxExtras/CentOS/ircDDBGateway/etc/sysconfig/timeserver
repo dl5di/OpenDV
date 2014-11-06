@@ -1,0 +1,2 @@
+DAEMON_PATH=/usr/local/bin/timeserverd
+DAEMON_OPTIONS="-logdir /var/log -daemon"

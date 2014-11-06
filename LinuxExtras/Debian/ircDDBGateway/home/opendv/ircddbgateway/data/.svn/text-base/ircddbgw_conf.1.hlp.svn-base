@@ -1,0 +1,17 @@
+
+Du kannst das Skript an jeder Stelle mit <CTRL><C> verlassen.
+Bitte beachte, dass Probleme auftreten koennen wenn ein ausgewaehlter block nicht 
+komplett konfiguriert wird!
+
+Du kannst die meisten Werte durch Eingabe von '-' auf den Standardwert zuruecksetzen.
+Bitte beachte, dass diese Werte meistens, aber nicht immer zum Betrieb des Gateways 
+geeignet sind.
+
+Das Sprache verwendet die Sprache, die auch fuer die Ansagen des Gateways konfiguriert 
+wurden. Zum Umstellen waehle Menuepunkt 10 "Misc" (Verschiedenes).
+Die erste Einstellung aendert die Sprache.
+ 
+Das Menue wechselt erst nachd em Wechsel zum Hauptmenue.
+
+Druecke jetzt <ENTER> um ins Hauptmenue zurueck zu kehren.
+

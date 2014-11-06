@@ -1,0 +1,13 @@
+
+You can leave the script with <CTRL><C> at any time.
+Please note that it may cause issues if a selected block has not been configured complete! 
+
+You can reset most values to their defaults by entering '-' instead of a value.
+Please note that a lot of default values are good, but some can not be used to run the repeater.
+
+The language is the same as configured for the repeater (if available).
+Select option 1 to set the language.
+The menu will be changed after leaving the section and returning to the main menu.
+
+Press <ENTER> to return to the menu.
+

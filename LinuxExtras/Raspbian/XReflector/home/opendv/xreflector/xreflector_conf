@@ -1,0 +1,6 @@
+BACKUPPATH=/var/backups
+LOGPATH=/var/log/opendv
+DEFVALUES=/home/opendv/xreflector/xreflector.default
+DATAPATH=/home/opendv/xreflector/data
+CFGPATH=/home/opendv/xreflector
+XREFLECTORCONFIG=/home/opendv/xreflector/xreflector

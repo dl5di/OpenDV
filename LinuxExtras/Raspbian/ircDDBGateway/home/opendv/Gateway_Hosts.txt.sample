@@ -1,0 +1,7 @@
+# Gateway_Hosts.txt
+# This is a sample, the address is only available in the closed amprnet!
+#
+# The format of this file is the callsign of the gateway followed by its IP address.
+#
+DB0LJ	44.225.73.2	L
+DB0MYK	44.225.73.34	L

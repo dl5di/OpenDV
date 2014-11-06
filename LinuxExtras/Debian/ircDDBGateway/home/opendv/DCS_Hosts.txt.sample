@@ -1,0 +1,9 @@
+# DCS_Hosts.txt
+# This is a sample, the address is only available in the closed amprnet!
+#
+# The format of this file is the name of the reflector followed by its IP address.
+# An 'L' at the end defines the address as 'local' and prevents an update from the network.
+#
+DCS001	44.142.200.135	L
+DCS003	44.142.200.138	L
+DCS009	44.143.9.60	L
