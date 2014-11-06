@@ -212,6 +212,7 @@ void CAudioUnit::clock(unsigned int ms)
 				m_in     = 0U;
 				m_out    = 0U;
 				m_status = AS_IDLE;
+				m_timer.stop();
 				return;
 			}
 		}

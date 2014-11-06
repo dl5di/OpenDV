@@ -27,6 +27,8 @@
 #include "AMBEData.h"
 #include "Utils.h"
 
+#include <wx/filename.h>
+
 const unsigned int  ETHERNET_ADDRESS_LENGTH = 6U;
 
 const unsigned char ETHERNET_BROADCAST_ADDRESS[] = {0xFFU, 0xFFU, 0xFFU, 0xFFU, 0xFFU, 0xFFU};
@@ -115,8 +117,12 @@ m_linkStartup(reflector),
 m_linkReconnectTimer(1000U),
 m_linkRelink(false),
 m_echo(NULL),
-m_audio(NULL),
+m_infoAudio(NULL),
 m_infoNeeded(false),
+m_msgAudio(NULL),
+m_msgNeeded(false),
+m_wxAudio(NULL),
+m_wxNeeded(false),
 m_version(NULL),
 m_drats(NULL),
 m_dtmf(),
@@ -185,9 +191,21 @@ m_heardTimer(1000U, 0U, 100U)		// 100ms
 			break;
 	}
 
-	m_echo    = new CEchoUnit(this, callsign);
-	m_audio   = new CAudioUnit(this, callsign);
-	m_version = new CVersionUnit(this, callsign);
+	wxFileName messageFile;
+	messageFile.SetPath(::wxGetHomeDir());
+	messageFile.SetName(wxT("message"));
+	messageFile.SetExt(wxT("dvtool"));
+
+	wxFileName weatherFile;
+	weatherFile.SetPath(::wxGetHomeDir());
+	weatherFile.SetName(wxT("weather"));
+	weatherFile.SetExt(wxT("dvtool"));
+
+	m_echo      = new CEchoUnit(this, callsign);
+	m_infoAudio = new CAudioUnit(this, callsign);
+	m_msgAudio  = new CAnnouncementUnit(this, callsign, messageFile.GetFullPath(), wxT("MSG"));
+	m_wxAudio   = new CAnnouncementUnit(this, callsign, weatherFile.GetFullPath(), wxT("WX"));
+	m_version   = new CVersionUnit(this, callsign);
 
 	if (dratsEnabled) {
 		m_drats = new CDRATSServer(m_localAddress, port, callsign, this);
@@ -202,7 +220,9 @@ m_heardTimer(1000U, 0U, 100U)		// 100ms
 CRepeaterHandler::~CRepeaterHandler()
 {
 	delete m_echo;
-	delete m_audio;
+	delete m_infoAudio;
+	delete m_msgAudio;
+	delete m_wxAudio;
 	delete m_version;
 
 	if (m_drats != NULL)
@@ -584,7 +604,9 @@ void CRepeaterHandler::processRepeater(CHeaderData& header)
 	m_dtmf.reset();
 
 	// Reset the info, echo and version commands if they're running
-	m_audio->cancel();
+	m_infoAudio->cancel();
+	m_msgAudio->cancel();
+	m_wxAudio->cancel();
 	m_echo->cancel();
 	m_version->cancel();
 
@@ -660,6 +682,20 @@ void CRepeaterHandler::processRepeater(CHeaderData& header)
 	if (m_infoEnabled && m_yourCall.IsSameAs(wxT("       I"))) {
 		m_g2Status = G2_LOCAL;
 		m_infoNeeded = true;
+		return;
+	}
+
+	// Handle the MSG command
+	if (m_infoEnabled && m_yourCall.IsSameAs(wxT("       M"))) {
+		m_g2Status = G2_LOCAL;
+		m_msgNeeded = true;
+		return;
+	}
+
+	// Handle the WX command
+	if (m_infoEnabled && m_yourCall.IsSameAs(wxT("       W"))) {
+		m_g2Status = G2_LOCAL;
+		m_wxNeeded = true;
 		return;
 	}
 
@@ -846,8 +882,18 @@ void CRepeaterHandler::processRepeater(CAMBEData& data)
 	}
 
 	if (data.isEnd() && m_infoNeeded) {
-		m_audio->sendStatus();
+		m_infoAudio->sendStatus();
 		m_infoNeeded = false;
+	}
+
+	if (data.isEnd() && m_msgNeeded) {
+		m_msgAudio->sendAnnouncement();
+		m_msgNeeded = false;
+	}
+
+	if (data.isEnd() && m_wxNeeded) {
+		m_wxAudio->sendAnnouncement();
+		m_wxNeeded = false;
 	}
 }
 
@@ -949,8 +995,18 @@ void CRepeaterHandler::processBusy(CAMBEData& data)
 
 	if (data.isEnd()) {
 		if (m_infoNeeded) {
-			m_audio->sendStatus();
+			m_infoAudio->sendStatus();
 			m_infoNeeded = false;
+		}
+
+		if (m_msgNeeded) {
+			m_msgAudio->sendAnnouncement();
+			m_msgNeeded = false;
+		}
+
+		if (m_wxNeeded) {
+			m_wxAudio->sendAnnouncement();
+			m_wxNeeded = false;
 		}
 
 		if (m_g2Status == G2_VERSION)
@@ -1270,7 +1326,9 @@ void CRepeaterHandler::resolveRepeaterInt(const wxString& repeater, const wxStri
 
 void CRepeaterHandler::clockInt(unsigned int ms)
 {
-	m_audio->clock(ms);
+	m_infoAudio->clock(ms);
+	m_msgAudio->clock(ms);
+	m_wxAudio->clock(ms);
 	m_echo->clock(ms);
 	m_version->clock(ms);
 
@@ -1461,8 +1519,18 @@ void CRepeaterHandler::clockInt(unsigned int ms)
 			}
 
 			if (m_infoNeeded) {
-				m_audio->sendStatus();
+				m_infoAudio->sendStatus();
 				m_infoNeeded = false;
+			}
+
+			if (m_msgNeeded) {
+				m_msgAudio->sendAnnouncement();
+				m_msgNeeded = false;
+			}
+
+			if (m_wxNeeded) {
+				m_wxAudio->sendAnnouncement();
+				m_wxNeeded = false;
 			}
 
 			m_repeaterId = 0x00U;
@@ -1471,8 +1539,18 @@ void CRepeaterHandler::clockInt(unsigned int ms)
 
 		if (m_busyId != 0x00U) {
 			if (m_infoNeeded) {
-				m_audio->sendStatus();
+				m_infoAudio->sendStatus();
 				m_infoNeeded = false;
+			}
+
+			if (m_msgNeeded) {
+				m_msgAudio->sendAnnouncement();
+				m_msgNeeded = false;
+			}
+
+			if (m_wxNeeded) {
+				m_wxAudio->sendAnnouncement();
+				m_wxNeeded = false;
 			}
 
 			if (m_g2Status == G2_VERSION)
@@ -1983,10 +2061,8 @@ void CRepeaterHandler::reflectorCommandHandler(const wxString& callsign, const w
 		}
 
 		// Ensure duplicate link requests aren't acted on
-		if (m_linkStatus != LS_NONE && reflector.IsSameAs(m_linkRepeater)) {
-			triggerInfo();
+		if (m_linkStatus != LS_NONE && reflector.IsSameAs(m_linkRepeater))
 			return;
-		}
 
 		// We can't link to ourself
 		if (reflector.IsSameAs(m_rptCallsign)) {
@@ -2365,7 +2441,7 @@ void CRepeaterHandler::writeLinkingTo(const wxString &callsign)
 	CTextData textData(m_linkStatus, callsign, text, m_address, m_port);
 	m_repeaterHandler->writeText(textData);
 
-	m_audio->setStatus(m_linkStatus, m_linkRepeater, text);
+	m_infoAudio->setStatus(m_linkStatus, m_linkRepeater, text);
 	triggerInfo();
 
 	m_ccsHandler->setReflector();
@@ -2415,7 +2491,7 @@ void CRepeaterHandler::writeLinkedTo(const wxString &callsign)
 	CTextData textData(m_linkStatus, callsign, text, m_address, m_port);
 	m_repeaterHandler->writeText(textData);
 
-	m_audio->setStatus(m_linkStatus, m_linkRepeater, text);
+	m_infoAudio->setStatus(m_linkStatus, m_linkRepeater, text);
 	triggerInfo();
 
 	m_ccsHandler->setReflector(callsign);
@@ -2465,7 +2541,7 @@ void CRepeaterHandler::writeNotLinked()
 	CTextData textData(LS_NONE, wxEmptyString, text, m_address, m_port);
 	m_repeaterHandler->writeText(textData);
 
-	m_audio->setStatus(m_linkStatus, m_linkRepeater, text);
+	m_infoAudio->setStatus(m_linkStatus, m_linkRepeater, text);
 	triggerInfo();
 
 	m_ccsHandler->setReflector();
@@ -2530,8 +2606,8 @@ void CRepeaterHandler::writeIsBusy(const wxString& callsign)
 	CTextData textData2(m_linkStatus, m_linkRepeater, text, m_address, m_port);
 	m_repeaterHandler->writeText(textData2);
 
-	m_audio->setStatus(m_linkStatus, m_linkRepeater, text);
-	m_audio->setTempStatus(m_linkStatus, m_linkRepeater, tempText);
+	m_infoAudio->setStatus(m_linkStatus, m_linkRepeater, text);
+	m_infoAudio->setTempStatus(m_linkStatus, m_linkRepeater, tempText);
 	triggerInfo();
 
 	m_ccsHandler->setReflector();
@@ -2588,13 +2664,13 @@ void CRepeaterHandler::ccsLinkMade(const wxString& callsign, DIRECTION direction
 		CTextData textData(m_linkStatus, callsign, text, m_address, m_port);
 		m_repeaterHandler->writeText(textData);
 
-		m_audio->setStatus(m_linkStatus, m_linkRepeater, text);
+		m_infoAudio->setStatus(m_linkStatus, m_linkRepeater, text);
 		triggerInfo();
 	} else {
 		CTextData textData(m_linkStatus, m_linkRepeater, text, m_address, m_port, true);
 		m_repeaterHandler->writeText(textData);
 
-		m_audio->setTempStatus(LS_LINKED_CCS, callsign, text);
+		m_infoAudio->setTempStatus(LS_LINKED_CCS, callsign, text);
 		triggerInfo();
 	}
 }
@@ -2665,15 +2741,15 @@ void CRepeaterHandler::ccsLinkEnded(const wxString&, DIRECTION direction)
 			CTextData textData2(m_linkStatus, m_linkRepeater, text, m_address, m_port);
 			m_repeaterHandler->writeText(textData2);
 
-			m_audio->setStatus(m_linkStatus, m_linkRepeater, text);
-			m_audio->setTempStatus(m_linkStatus, m_linkRepeater, tempText);
+			m_infoAudio->setStatus(m_linkStatus, m_linkRepeater, text);
+			m_infoAudio->setTempStatus(m_linkStatus, m_linkRepeater, tempText);
 			triggerInfo();
 		}
 	} else {
 		CTextData textData(m_linkStatus, m_linkRepeater, tempText, m_address, m_port, true);
 		m_repeaterHandler->writeText(textData);
 
-		m_audio->setTempStatus(m_linkStatus, m_linkRepeater, tempText);
+		m_infoAudio->setTempStatus(m_linkStatus, m_linkRepeater, tempText);
 		triggerInfo();
 	}
 }
@@ -2744,15 +2820,15 @@ void CRepeaterHandler::ccsLinkFailed(const wxString& dtmf, DIRECTION direction)
 			CTextData textData2(m_linkStatus, m_linkRepeater, text, m_address, m_port);
 			m_repeaterHandler->writeText(textData2);
 
-			m_audio->setStatus(m_linkStatus, m_linkRepeater, text);
-			m_audio->setTempStatus(m_linkStatus, m_linkRepeater, tempText);
+			m_infoAudio->setStatus(m_linkStatus, m_linkRepeater, text);
+			m_infoAudio->setTempStatus(m_linkStatus, m_linkRepeater, tempText);
 			triggerInfo();
 		}
 	} else {
 		CTextData textData(m_linkStatus, m_linkRepeater, tempText, m_address, m_port, true);
 		m_repeaterHandler->writeText(textData);
 
-		m_audio->setTempStatus(m_linkStatus, m_linkRepeater, tempText);
+		m_infoAudio->setTempStatus(m_linkStatus, m_linkRepeater, tempText);
 		triggerInfo();
 	}
 }
@@ -2847,7 +2923,7 @@ void CRepeaterHandler::triggerInfo()
 	if (m_repeaterId != 0x00U || m_busyId != 0x00U) {
 		m_infoNeeded = true;
 	} else {
-		m_audio->sendStatus();
+		m_infoAudio->sendStatus();
 		m_infoNeeded = false;
 	}
 }

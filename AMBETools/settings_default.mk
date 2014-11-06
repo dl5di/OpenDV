@@ -17,7 +17,7 @@ export ARCH := x86-64
 
 export CC := $(shell wx-config --cxx)
 
-export LIBS := -lportaudio -lusb $(shell wx-config --libs adv,core)
+export LIBS := -lportaudio $(shell wx-config --libs adv,core)
 
 export CFLAGS := -g -O2 -Wall -Wno-non-virtual-dtor -Wno-strict-aliasing -march=$(ARCH) -DDATA_DIR='$(DATADIR)' -DBIN_DIR='$(BINDIR)' $(shell wx-config --cxxflags)
 

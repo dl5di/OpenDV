@@ -34,18 +34,14 @@
 
 #if defined(RASPBERRY_PI)
 #include <wiringPi.h>
+#define	DV3000_TTY		"/dev/ttyAMA0"
+#elif defined(BANANA_PI)
+#define	DV3000_TTY		"/dev/ttyS0"
 #else
-int  wiringPiSetup();
-void pinMode(int pin, int mode);
-void digitalWrite(int pin, int value);
-void delay(unsigned int delay);
-#define	OUTPUT	1
-#define	HIGH	1
-#define	LOW	0
+#define	DV3000_TTY		"/dev/ttyUSB0"
 #endif
 
-#define	DV3000_TTY		"/dev/ttyAMA0"
-#define	DV3000_VERSION		"2014-05-19"
+#define	DV3000_VERSION		"2014-05-31"
 
 #define	AMBE3000_HEADER_LEN	4U
 #define	AMBE3000_START_BYTE	0x61U
@@ -99,6 +95,7 @@ void dump(char *text, unsigned char *data, unsigned int length)
 	}
 }
 
+#if defined(RASPBERRY_PI)
 int openWiringPi(void)
 {
 	int ret = wiringPiSetup();
@@ -123,6 +120,7 @@ int openWiringPi(void)
 
 	return 1;
 }
+#endif
 
 int openSerial()
 {
@@ -340,10 +338,14 @@ int main(int argc, char **argv)
 		umask(0);
 	}
 
+#if defined(RASPBERRY_PI)
 	ret = openWiringPi();
 	if (!ret)
 		return 1;
-	
+#elif defined(BANANA_PI)
+#error "The Banana Pi is not supported yet"
+#endif
+
 	sockFd = openSocket(port);
 	if (sockFd < 0)
 		return 1;

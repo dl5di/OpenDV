@@ -786,159 +786,168 @@ wxThread::ExitCode IRCDDBApp::Entry()
 
 	long sendlistTableID = 0L;
 
-	while (!m_stopped) {
-		m_timer.clock();
+	try {
+		while (!m_stopped) {
+			m_timer.clock();
 
-		switch (m_state) {
-			case 0:  // wait for network to start
-				if (getSendQ() != NULL)
-					m_state = 1;
-				break;
+			switch (m_state) {
+				case 0:  // wait for network to start
+					if (getSendQ() != NULL)
+						m_state = 1;
+					break;
 
-			case 1:
-				// connect to db
-				m_state = 2;
+				case 1:
+					// connect to db
+					m_state = 2;
 
-				m_timer.start(200U);
+					m_timer.start(200U);
 
-				break;
+					break;
 
-			case 2:   // choose server
-				if (getSendQ() == NULL) {
-					m_state = 10;
-				} else {	
-					if (findServerUser()) {
-						sendlistTableID = NUMBER_OF_TABLES;
+				case 2:   // choose server
+					if (getSendQ() == NULL) {
+						m_state = 10;
+					} else {	
+						if (findServerUser()) {
+							sendlistTableID = NUMBER_OF_TABLES;
 
-						m_state = 3; // next: send "SENDLIST"
+							m_state = 3; // next: send "SENDLIST"
+						} else if (m_timer.isRunning() && m_timer.hasExpired()) {
+							m_timer.stop();
+
+							m_state = 10;
+							IRCMessage* m = new IRCMessage(wxT("QUIT"));
+
+							m->m_params.Add(wxT("no op user with 's-' found."));
+
+							IRCMessageQueue* q = getSendQ();
+							if (q != NULL)
+								q->putMessage(m);
+						}
+					}
+					break;
+
+				case 3:
+					if (getSendQ() == NULL) {
+						m_state = 10; // disconnect DB
+					} else {
+						sendlistTableID --;
+						if (sendlistTableID < 0L) {
+							m_state = 6; // end of sendlist
+						} else {
+							m_state = 4; // send "SENDLIST"
+
+							m_timer.start(900U); // 15 minutes max for update
+						}
+					}
+					break;
+
+				case 4:
+					if (getSendQ() == NULL) {
+						m_state = 10; // disconnect DB
+					} else {
+						if (needsDatabaseUpdate(sendlistTableID)) {
+							IRCMessage * m = new IRCMessage(m_currentServer, 
+								wxT("SENDLIST") + getTableIDString(sendlistTableID, true) 
+								+ wxT(" ") + getLastEntryTime(sendlistTableID) );
+
+							IRCMessageQueue* q = getSendQ();
+							if (q != NULL)
+								q->putMessage(m);
+
+							m_state = 5; // wait for answers
+						} else {
+							m_state = 3; // don't send SENDLIST for this table, go to next table
+						}
+					}
+					break;
+
+				case 5: // sendlist processing
+					if (getSendQ() == NULL) {
+						m_state = 10; // disconnect DB
 					} else if (m_timer.isRunning() && m_timer.hasExpired()) {
 						m_timer.stop();
 
-						m_state = 10;
+						m_state = 10; // disconnect DB
 						IRCMessage* m = new IRCMessage(wxT("QUIT"));
 
-						m->m_params.Add(wxT("no op user with 's-' found."));
+						m->m_params.Add(wxT("timeout SENDLIST"));
 
 						IRCMessageQueue* q = getSendQ();
 						if (q != NULL)
 							q->putMessage(m);
 					}
-				}
-				break;
+					break;
 
-			case 3:
-				if (getSendQ() == NULL) {
-					m_state = 10; // disconnect DB
-				} else {
-					sendlistTableID --;
-					if (sendlistTableID < 0L) {
-						m_state = 6; // end of sendlist
+				case 6:
+					if (getSendQ() == NULL) {
+						m_state = 10; // disconnect DB
 					} else {
-						m_state = 4; // send "SENDLIST"
-
-						m_timer.start(900U); // 15 minutes max for update
+						m_moduleDataTimer.start(2U);
+		
+						m_initReady = true;
+						m_state = 7;
 					}
-				}
-				break;
+					break;
 
-			case 4:
-				if (getSendQ() == NULL) {
-					m_state = 10; // disconnect DB
-				} else {
-					if (needsDatabaseUpdate(sendlistTableID)) {
-						IRCMessage * m = new IRCMessage(m_currentServer, 
-							wxT("SENDLIST") + getTableIDString(sendlistTableID, true) 
-							+ wxT(" ") + getLastEntryTime(sendlistTableID) );
+				case 7: // standby state after initialization
+					if (getSendQ() == NULL)
+						m_state = 10; // disconnect DB
 
-						IRCMessageQueue* q = getSendQ();
-						if (q != NULL)
-							q->putMessage(m);
+					m_moduleDataTimer.clock();
+					m_moduleWDTimer.clock();
 
-						m_state = 5; // wait for answers
-					} else {
-						m_state = 3; // don't send SENDLIST for this table, go to next table
+					if (m_moduleDataTimer.isRunning() && m_moduleDataTimer.hasExpired()) {
+						m_moduleDataTimer.stop();
+
+						wxMutexLocker locker(m_moduleDataMutex);
+
+						for (wxArrayString::const_iterator it = m_moduleData.begin(); it != m_moduleData.end(); ++it) {
+							IRCMessage* m = new IRCMessage(m_currentServer, *it);
+
+							IRCMessageQueue* q = getSendQ();
+							if (q != NULL)
+								q->putMessage(m);
+						}
+
+						m_moduleData.clear();
 					}
-				}
-				break;
 
-			case 5: // sendlist processing
-				if (getSendQ() == NULL) {
-					m_state = 10; // disconnect DB
-				} else if (m_timer.isRunning() && m_timer.hasExpired()) {
+					if (m_moduleWDTimer.isRunning() && m_moduleWDTimer.hasExpired()) {
+						m_moduleWDTimer.stop();
+
+						wxMutexLocker locker(m_moduleWDMutex);
+
+						for (wxArrayString::const_iterator it = m_moduleWD.begin(); it != m_moduleWD.end(); ++it) {
+							IRCMessage* m = new IRCMessage(m_currentServer, *it);
+
+							IRCMessageQueue* q = getSendQ();
+							if (q != NULL)
+								q->putMessage(m);
+						}
+
+						m_moduleWD.clear();
+					}
+
+					break;
+
+				case 10:
+					// disconnect db
+					m_state = 0;
 					m_timer.stop();
+					m_initReady = false;
+					break;
+			}
 
-					m_state = 10; // disconnect DB
-					IRCMessage* m = new IRCMessage(wxT("QUIT"));
-
-					m->m_params.Add(wxT("timeout SENDLIST"));
-
-					IRCMessageQueue* q = getSendQ();
-					if (q != NULL)
-						q->putMessage(m);
-				}
-				break;
-
-			case 6:
-				if (getSendQ() == NULL) {
-					m_state = 10; // disconnect DB
-				} else {
-					m_moduleDataTimer.start(2U);
-	
-					m_initReady = true;
-					m_state = 7;
-				}
-				break;
-
-			case 7: // standby state after initialization
-				if (getSendQ() == NULL)
-					m_state = 10; // disconnect DB
-
-				m_moduleDataTimer.clock();
-				m_moduleWDTimer.clock();
-
-				if (m_moduleDataTimer.isRunning() && m_moduleDataTimer.hasExpired()) {
-					m_moduleDataTimer.stop();
-
-					wxMutexLocker locker(m_moduleDataMutex);
-
-					for (wxArrayString::const_iterator it = m_moduleData.begin(); it != m_moduleData.end(); ++it) {
-						IRCMessage* m = new IRCMessage(m_currentServer, *it);
-
-						IRCMessageQueue* q = getSendQ();
-						if (q != NULL)
-							q->putMessage(m);
-					}
-
-					m_moduleData.clear();
-				}
-
-				if (m_moduleWDTimer.isRunning() && m_moduleWDTimer.hasExpired()) {
-					m_moduleWDTimer.stop();
-
-					wxMutexLocker locker(m_moduleWDMutex);
-
-					for (wxArrayString::const_iterator it = m_moduleWD.begin(); it != m_moduleWD.end(); ++it) {
-						IRCMessage* m = new IRCMessage(m_currentServer, *it);
-
-						IRCMessageQueue* q = getSendQ();
-						if (q != NULL)
-							q->putMessage(m);
-					}
-
-					m_moduleWD.clear();
-				}
-
-				break;
-
-			case 10:
-				// disconnect db
-				m_state = 0;
-				m_timer.stop();
-				m_initReady = false;
-				break;
+			Sleep(1000UL);
 		}
-
-		Sleep(1000UL);
+	}
+	catch (std::exception& e) {
+		wxString message(e.what(), wxConvLocal);
+		wxLogError(wxT("Exception raised in the IRCDDB Application thread - \"%s\""), message.c_str());
+	}
+	catch (...) {
+		wxLogError(wxT("Unknown exception raised in the IRCDDB Application thread"));
 	}
 
 	wxLogMessage(wxT("Stopping the IRCDDB Application thread"));

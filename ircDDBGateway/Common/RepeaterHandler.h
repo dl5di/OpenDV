@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2010-2013 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2010-2014 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -26,6 +26,7 @@
 #include "G2ProtocolHandler.h"
 #include "ReflectorCallback.h"
 #include "RepeaterCallback.h"
+#include "AnnouncementUnit.h"
 #include "StarNetHandler.h"
 #include "TextCollector.h"
 #include "CacheManager.h"
@@ -241,8 +242,12 @@ private:
 	CEchoUnit*                m_echo;
 
 	// Voice messages
-	CAudioUnit*               m_audio;
+	CAudioUnit*               m_infoAudio;
 	bool                      m_infoNeeded;
+	CAnnouncementUnit*        m_msgAudio;
+	bool                      m_msgNeeded;
+	CAnnouncementUnit*        m_wxAudio;
+	bool                      m_wxNeeded;
 
 	// Version information
 	CVersionUnit*             m_version;

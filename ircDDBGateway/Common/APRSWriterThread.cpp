@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2010-2013 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2010-2014 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -65,60 +65,69 @@ bool CAPRSWriterThread::start()
 
 void* CAPRSWriterThread::Entry()
 {
-	wxLogMessage(wxT("Starting the APRS writer thread"));
+	wxLogMessage(wxT("Starting the APRS Writer thread"));
 
 	m_connected = connect();
 
-	while (!m_exit) {
-		if (!m_connected) {
-			m_connected = connect();
+	try {
+		while (!m_exit) {
+			if (!m_connected) {
+				m_connected = connect();
 
-			if (!m_connected)
-				wxLogError(wxT("Reconnect attempt to the APRS server has failed"));
-		}
-
-		if (m_connected && !m_queue.isEmpty()) {
-			char* p = m_queue.getData();
-
-			wxString text(p, wxConvLocal);
-			wxLogMessage(wxT("APRS ==> %s"), text.c_str());
-
-			::strcat(p, "\r\n");
-
-			bool ret = m_socket.write((unsigned char*)p, ::strlen(p));
-			if (!ret) {
-				m_connected = false;
-				m_socket.close();
-				wxLogError(wxT("Connection to the APRS thread has failed"));
-			} else {
-				unsigned char buffer[200U];
-				int length = m_socket.read(buffer, 200U, APRS_TIMEOUT);
-
-				if (length == 0)
-					wxLogWarning(wxT("No response from the APRS server after %u seconds"), APRS_TIMEOUT);
-
-				if (length < 0) {
-					m_connected = false;
-					m_socket.close();
-					wxLogError(wxT("Error when reading from the APRS server"));
-				}
+				if (!m_connected)
+					wxLogError(wxT("Reconnect attempt to the APRS server has failed"));
 			}
 
-			delete[] p;
+			if (m_connected && !m_queue.isEmpty()) {
+				char* p = m_queue.getData();
+
+				wxString text(p, wxConvLocal);
+				wxLogMessage(wxT("APRS ==> %s"), text.c_str());
+
+				::strcat(p, "\r\n");
+
+				bool ret = m_socket.write((unsigned char*)p, ::strlen(p));
+				if (!ret) {
+					m_connected = false;
+					m_socket.close();
+					wxLogError(wxT("Connection to the APRS thread has failed"));
+				} else {
+					unsigned char buffer[200U];
+					int length = m_socket.read(buffer, 200U, APRS_TIMEOUT);
+
+					if (length == 0)
+						wxLogWarning(wxT("No response from the APRS server after %u seconds"), APRS_TIMEOUT);
+
+					if (length < 0) {
+						m_connected = false;
+						m_socket.close();
+						wxLogError(wxT("Error when reading from the APRS server"));
+					}
+				}
+
+				delete[] p;
+			}
+
+			Sleep(10000UL);		// 10 secs
 		}
 
-		Sleep(10000UL);		// 10 secs
+		if (m_connected)
+			m_socket.close();
+
+		while (!m_queue.isEmpty()) {
+			char* p = m_queue.getData();
+			delete[] p;
+		}
+	}
+	catch (std::exception& e) {
+		wxString message(e.what(), wxConvLocal);
+		wxLogError(wxT("Exception raised in the APRS Writer thread - \"%s\""), message.c_str());
+	}
+	catch (...) {
+		wxLogError(wxT("Unknown exception raised in the APRS Writer thread"));
 	}
 
-	if (m_connected)
-		m_socket.close();
-
-	while (!m_queue.isEmpty()) {
-		char* p = m_queue.getData();
-		delete[] p;
-	}
-
-	wxLogMessage(wxT("Stopping the APRS writer thread"));
+	wxLogMessage(wxT("Stopping the APRS Writer thread"));
 
 	return NULL;
 }

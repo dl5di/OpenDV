@@ -4,12 +4,16 @@ network using UDP frames. Details of the chip are beyond the scope of this
 document, but sufficient to say that it is capable of vocoding audio for D-Star,
 DMR, and P.25 and maybe more.
 
+See the pdf included here and at 
+http://nwdigitalradio.com/wp-content/uploads/2014/05/dv3000d-AMBEserver.pdf
+
 In order to use it a few preliminaries need to be done.
 
 1. Prepare the DV3000 board. You need to ensure that the board is running at
    230400 baud and to do this, ensure that only one jumper is fitted on the
    board, BR2, and it is the one between pins 1 and 2. This is the one at the
-   end nearest to the connector to the Pi.
+   end nearest to the connector to the Pi. [Step not required on production
+   boards.]
 
 2. Prepare the Raspberry Pi. This consists of (a) increasing the clock to the
    RPi UART, (b) disabling the getty (to allow terminal login) running on
@@ -38,6 +42,26 @@ In order to use it a few preliminaries need to be done.
    dwc_otg.lpm_enable=0 console=tty1 root=/dev/mmcblk0p2 rootfstype=ext4 elevator=deadline rootwait
 
 3. Fit the DV3000 board and reboot your Raspberry Pi.
+
+Test the board.
+
+apt-get install python-serial
+
+From the DV3000 build directory run:
+
+python AMBEtest2.py
+
+The results will include:
+
+Product ID
+6100010030
+Wrote: 5 bytes
+a
+ 0AMBE3000R
+Version
+6100010031
+Wrote: 5 bytes
+a11V120.E100.XXXX.C106.G514.R009.B0010411.C0020208
 
 The dv3000d program then needs to be built and run on the Pi. Take the files
 from this directory and copy them to somewhere suitable on the Pi, once there,

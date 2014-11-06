@@ -15,7 +15,7 @@
  *   along with this program; if not, write to the Free Software
  *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
-
+ 
 #ifndef	Version_H
 #define	Version_H
 
@@ -23,12 +23,12 @@
 
 const wxString VENDOR_NAME = wxT("G4KLX");
 
-const wxString SVNREV = wxT("$Revision: 682 $ on $Date: 2014-03-29 13:47:20 +0100 (Sa, 29. Mrz 2014) $");
+const wxString SVNREV = wxT("$Revision: 735 $ on $Date: 2014-06-02 17:52:07 +0100 (Mon, 02 Jun 2014) $");
 
 #if defined(__WXDEBUG__)
-const wxString VERSION = wxT("20140326 - DEBUG");
+const wxString VERSION = wxT("20140602 - DEBUG");
 #else
-const wxString VERSION = wxT("20140326");
+const wxString VERSION = wxT("20140602");
 #endif
 
 #endif

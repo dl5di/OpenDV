@@ -65,7 +65,7 @@ void CDPlusAuthenticator::start()
 
 void* CDPlusAuthenticator::Entry()
 {
-	wxLogMessage(wxT("Starting the D-Plus authentication thread"));
+	wxLogMessage(wxT("Starting the D-Plus Authenticator thread"));
 
 	authenticate(m_loginCallsign, OPENDSTAR_HOSTNAME, OPENDSTAR_PORT, '2', true);
 	authenticate(m_gatewayCallsign, DUTCHSTAR_HOSTNAME, DUTCHSTAR_PORT, 'K', false);
@@ -73,25 +73,34 @@ void* CDPlusAuthenticator::Entry()
 	m_timer.start();
 	m_pollTimer.start();
 
-	while (!m_killed) {
-		if (m_pollTimer.hasExpired()) {
-			poll(m_gatewayCallsign, DUTCHSTAR_HOSTNAME, DUTCHSTAR_PORT, 'K');
-			m_pollTimer.start();
+	try {
+		while (!m_killed) {
+			if (m_pollTimer.hasExpired()) {
+				poll(m_gatewayCallsign, DUTCHSTAR_HOSTNAME, DUTCHSTAR_PORT, 'K');
+				m_pollTimer.start();
+			}
+
+			if (m_timer.hasExpired()) {
+				authenticate(m_loginCallsign, OPENDSTAR_HOSTNAME, OPENDSTAR_PORT, '2', true);
+				authenticate(m_gatewayCallsign, DUTCHSTAR_HOSTNAME, DUTCHSTAR_PORT, 'K', false);
+				m_timer.start();
+			}
+
+			Sleep(1000UL);
+
+			m_timer.clock();
+			m_pollTimer.clock();
 		}
-
-		if (m_timer.hasExpired()) {
-			authenticate(m_loginCallsign, OPENDSTAR_HOSTNAME, OPENDSTAR_PORT, '2', true);
-			authenticate(m_gatewayCallsign, DUTCHSTAR_HOSTNAME, DUTCHSTAR_PORT, 'K', false);
-			m_timer.start();
-		}
-
-		Sleep(1000UL);
-
-		m_timer.clock();
-		m_pollTimer.clock();
+	}
+	catch (std::exception& e) {
+		wxString message(e.what(), wxConvLocal);
+		wxLogError(wxT("Exception raised in the D-Plus Authenticator thread - \"%s\""), message.c_str());
+	}
+	catch (...) {
+		wxLogError(wxT("Unknown exception raised in the D-Plus Authenticator thread"));
 	}
 
-	wxLogMessage(wxT("Stopping the D-Plus authentication thread"));
+	wxLogMessage(wxT("Stopping the D-Plus Authenticator thread"));
 
 	return NULL;
 }

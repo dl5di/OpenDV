@@ -110,76 +110,85 @@ wxThread::ExitCode IRCReceiver::Entry()
 
 	int state = 0;
 
-	while (!m_stopped) {
-		char buf[200];
-		int r = doRead(buf, sizeof(buf));
-		if (r < 0) {
-			m_recvQ->signalEOF();
-			delete m;  // delete unfinished IRCMessage
-			break;
-		}
+	try {
+		while (!m_stopped) {
+			char buf[200];
+			int r = doRead(buf, sizeof(buf));
+			if (r < 0) {
+				m_recvQ->signalEOF();
+				delete m;  // delete unfinished IRCMessage
+				break;
+			}
 
-		for (int i = 0; i < r; i++) {
-			char b = buf[i];
+			for (int i = 0; i < r; i++) {
+				char b = buf[i];
 
-			if (b > 0) {
-				if (b == 10) {
-					m_recvQ->putMessage(m);
-					m = new IRCMessage;
-					state = 0;
-				} else if (b == 13) {
-					// do nothing
-				} else switch (state) {
-					case 0:
-						if (b == ':') {
-							state = 1; // prefix
-						} else if (b == 32) {
-							// do nothing
-						} else {
-							m->m_command.Append(wxChar(b));
-							state = 2; // command
-						}
-						break;
+				if (b > 0) {
+					if (b == 10) {
+						m_recvQ->putMessage(m);
+						m = new IRCMessage;
+						state = 0;
+					} else if (b == 13) {
+						// do nothing
+					} else switch (state) {
+						case 0:
+							if (b == ':') {
+								state = 1; // prefix
+							} else if (b == 32) {
+								// do nothing
+							} else {
+								m->m_command.Append(wxChar(b));
+								state = 2; // command
+							}
+							break;
 
-					case 1:
-						if (b == 32) {
-							state = 2; // command is next
-						} else {
-							m->m_prefix.Append(wxChar(b));
-						}
-						break;
+						case 1:
+							if (b == 32) {
+								state = 2; // command is next
+							} else {
+								m->m_prefix.Append(wxChar(b));
+							}
+							break;
 
-					case 2:
-						if (b == 32) {
-							state = 3; // params
-							m->m_params.Add(wxEmptyString);
-						} else {
-							m->m_command.Append(wxChar(b));
-						}
-						break;
+						case 2:
+							if (b == 32) {
+								state = 3; // params
+								m->m_params.Add(wxEmptyString);
+							} else {
+								m->m_command.Append(wxChar(b));
+							}
+							break;
 
-					case 3:
-						if (b == 32) {
-							if (m->m_params.GetCount() >= 15U)
-								state = 5; // ignore the rest
+						case 3:
+							if (b == 32) {
+								if (m->m_params.GetCount() >= 15U)
+									state = 5; // ignore the rest
 
-							m->m_params.Add(wxEmptyString);
-						} else if ((b == ':') && (m->m_params.Last().Len() == 0)) {
-							state = 4; // rest of line is this param
-						} else {
+								m->m_params.Add(wxEmptyString);
+							} else if ((b == ':') && (m->m_params.Last().Len() == 0)) {
+								state = 4; // rest of line is this param
+							} else {
+								m->m_params.Last().Append(wxChar(b));
+							}
+							break;
+
+						case 4:
 							m->m_params.Last().Append(wxChar(b));
-						}
-						break;
+							break;
 
-					case 4:
-						m->m_params.Last().Append(wxChar(b));
-						break;
-
-					default:
-						break;
+						default:
+							break;
+					}
 				}
 			}
 		}
+	}
+	catch (std::exception& e) {
+		wxString message(e.what(), wxConvLocal);
+		wxLogError(wxT("Exception raised in the IRC Receiver thread - \"%s\""), message.c_str());
+	}
+	catch (...) {
+		wxLogError(wxT("Unknown exception raised in the IRC Receiver thread"));
 	}
 
 	wxLogMessage(wxT("Stopping the IRC Receiver thread"));

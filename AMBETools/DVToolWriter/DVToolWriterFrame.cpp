@@ -29,6 +29,7 @@
 
 #include <wx/gbsizer.h>
 #include <wx/aboutdlg.h>
+#include <wx/filename.h>
 
 unsigned char startImage[] = {
 	0x00U, 0x00U, 0x00U, 0x00U, 0x00U, 0x00U, 0x00U, 0x00U, 0x00U, 0x00U, 0x00U, 0x00U, 0x00U, 0x00U, 0x00U, 0x00U, 0x00U, 0x00U, 0x00U, 0x00U, 0x00U, 0x00U, 0x00U, 0x00U, 0x00U, 0x00U, 0x00U, 0x00U, 0x00U, 0x00U, 0x00U, 0x00U, 0x00U, 0x00U, 0x00U, 0x00U, 0x00U, 0x00U, 0x00U, 0x00U, 0x00U, 0x00U, 0x00U, 0x00U, 0x00U,
@@ -272,15 +273,17 @@ void CDVToolWriterFrame::onOpen(wxCommandEvent& event)
 		return;
 	}
 
-	wxDateTime dateTime = wxDateTime::Now();
+	wxFileName outFileName(fileName);
 
 	IFileWriter* writer = NULL;
 	switch (m_format->GetSelection()) {
 		case 0:
-			writer = new CDVTOOLFileWriter(dateTime.Format(wxT("%Y%m%d-%H%M%S.dvtool")));
+			outFileName.SetExt(wxT("dvtool"));
+			writer = new CDVTOOLFileWriter(outFileName.GetFullPath());
 			break;
 		case 1:
-			writer = new CAMBEFileWriter(dateTime.Format(wxT("%Y%m%d-%H%M%S.ambe")));
+			outFileName.SetExt(wxT("ambe"));
+			writer = new CAMBEFileWriter(outFileName.GetFullPath());
 			break;
 		default:
 			break;
@@ -305,13 +308,19 @@ void CDVToolWriterFrame::onStart(wxCommandEvent& event)
 {
 	wxDateTime dateTime = wxDateTime::Now();
 
+	wxFileName fileName;
+	fileName.SetPath(wxFileName::GetHomeDir());
+	fileName.SetName(dateTime.Format(wxT("%Y%m%d-%H%M%S")));
+
 	IFileWriter* writer = NULL;
 	switch (m_format->GetSelection()) {
 		case 0:
-			writer = new CDVTOOLFileWriter(dateTime.Format(wxT("%Y%m%d-%H%M%S.dvtool")));
+			fileName.SetExt(wxT("dvtool"));
+			writer = new CDVTOOLFileWriter(fileName.GetFullPath());
 			break;
 		case 1:
-			writer = new CAMBEFileWriter(dateTime.Format(wxT("%Y%m%d-%H%M%S.ambe")));
+			fileName.SetExt(wxT("ambe"));
+			writer = new CAMBEFileWriter(fileName.GetFullPath());
 			break;
 		default:
 			break;
@@ -380,7 +389,7 @@ void CDVToolWriterFrame::onAbout(wxCommandEvent& event)
 	info.SetCopyright(wxT("(C) 2014 using GPL v2 or later"));
 	info.SetName(APPLICATION_NAME);
 	info.SetVersion(VERSION);
-	info.SetDescription(_("This program writes .ambe and .dvtool files created and displays\nthe enclosed information and plays the AMBE audio."));
+	info.SetDescription(_("This program writes .ambe and .dvtool files from either\nan existing WAV file or from the microphone."));
 
 	::wxAboutBox(info);
 }

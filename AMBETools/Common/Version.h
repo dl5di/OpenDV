@@ -18,12 +18,12 @@
 
 const wxString VENDOR_NAME = wxT("G4KLX");
 
-const wxString SVNREV = wxT("$Revision: 722 $ on $Date: 2014-05-21 19:42:16 +0200 (Mi, 21. Mai 2014) $");
+const wxString SVNREV = wxT("$Revision: 736 $ on $Date: 2014-06-03 20:40:51 +0100 (Tue, 03 Jun 2014) $");
 
 #if defined(__WXDEBUG__)
-const wxString VERSION = wxT("20140519 - DEBUG");
+const wxString VERSION = wxT("20140603 - DEBUG");
 #else
-const wxString VERSION = wxT("20140519");
+const wxString VERSION = wxT("20140603");
 #endif
 
 #endif

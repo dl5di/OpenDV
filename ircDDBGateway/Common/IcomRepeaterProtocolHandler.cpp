@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2010-2013 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2010-2014 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -133,19 +133,28 @@ bool CIcomRepeaterProtocolHandler::open()
 
 void* CIcomRepeaterProtocolHandler::Entry()
 {
-	wxLogMessage(wxT("Starting the Icom controller thread"));
+	wxLogMessage(wxT("Starting the Icom Controller thread"));
 
-	while (!m_killed) {
-		sendGwyPackets();
+	try {
+		while (!m_killed) {
+			sendGwyPackets();
 
-		Sleep(LOOP_DELAY);
+			Sleep(LOOP_DELAY);
 
-		readIcomPackets();
+			readIcomPackets();
 
-		m_retryTimer.clock();
+			m_retryTimer.clock();
+		}
+	}
+	catch (std::exception& e) {
+		wxString message(e.what(), wxConvLocal);
+		wxLogError(wxT("Exception raised in the Icom Controller thread - \"%s\""), message.c_str());
+	}
+	catch (...) {
+		wxLogError(wxT("Unknown exception raised in the Icom Controller thread"));
 	}
 
-	wxLogMessage(wxT("Stopping the Icom controller thread"));
+	wxLogMessage(wxT("Stopping the Icom Controller thread"));
 
 	m_socket.close();
 

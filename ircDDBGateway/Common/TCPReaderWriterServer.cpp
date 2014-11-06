@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2011 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2011,2014 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -114,29 +114,38 @@ bool CTCPReaderWriterServer::write(const unsigned char* buffer, unsigned int len
 
 void* CTCPReaderWriterServer::Entry()
 {
-	while (!m_stopped) {
-		int ret = accept();
-		switch (ret) {
-			case -2:
-				break;
-			case -1:
-				break;
-			default:
-				wxLogMessage(wxT("Incoming TCP connection to port %u"), m_port);
-				m_client = new CTCPReaderWriterClient(ret);
-				close();
-				break;
+	try {
+		while (!m_stopped) {
+			int ret = accept();
+			switch (ret) {
+				case -2:
+					break;
+				case -1:
+					break;
+				default:
+					wxLogMessage(wxT("Incoming TCP connection to port %u"), m_port);
+					m_client = new CTCPReaderWriterClient(ret);
+					close();
+					break;
+			}
+
+			Sleep(1000UL);
 		}
 
-		Sleep(1000UL);
-	}
+		if (m_client != NULL) {
+			m_client->close();
+			delete m_client;
+		}
 
-	if (m_client != NULL) {
-		m_client->close();
-		delete m_client;
+		close();
 	}
-
-	close();
+	catch (std::exception& e) {
+		wxString message(e.what(), wxConvLocal);
+		wxLogError(wxT("Exception raised in the TCP Reader-Writer Server thread - \"%s\""), message.c_str());
+	}
+	catch (...) {
+		wxLogError(wxT("Unknown exception raised in the TCP Reader-Writer Server thread"));
+	}
 
 	return NULL;
 }

@@ -1,4 +1,4 @@
-AMBE Tools - 20140519
+AMBE Tools - 20140603
 =====================
 
 20140519
@@ -8,3 +8,9 @@ Split from the Digital Voice package.
 Add support for the DV3000 on the Raspberry Pi.
 Added the DV Tool Writer program.
 Added the ambe2wav, dvtool2wav, wav2ambe and wav2dvtool command-line programs.
+
+20140603
+--------
+
+Change the output directories in DVToolWriter.
+Make the config defaults to be a local DV3000.

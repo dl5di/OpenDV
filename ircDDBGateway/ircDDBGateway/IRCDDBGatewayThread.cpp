@@ -391,10 +391,10 @@ void CIRCDDBGatewayThread::run()
 	}
 	catch (std::exception& e) {
 		wxString message(e.what(), wxConvLocal);
-		wxLogError(wxT("Exception raised - \"%s\""), message.c_str());
+		wxLogError(wxT("Exception raised in the main thread - \"%s\""), message.c_str());
 	}
 	catch (...) {
-		wxLogError(wxT("Unknown exception raised"));
+		wxLogError(wxT("Unknown exception raised in the main thread"));
 	}
 
 	wxLogMessage(wxT("Stopping the ircDDB Gateway thread"));

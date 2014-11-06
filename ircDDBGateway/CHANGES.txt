@@ -1,4 +1,4 @@
-ircDDB Gateway - 20140326
+ircDDB Gateway - 20140602
 =========================
 
 20101010
@@ -1404,7 +1404,10 @@ Allow for multiple STARnet Digital permanent users.
 Fixed the voice transmit program and added diagnostics.
 Fixed the command line remote control program, hopefully.
 
-201404xx
+20140602
 --------
 
 Add StarNet logging for remote control events.
+Ensure that duplicate link requests don't initiate a status message.
+Stop taking DExtra addresses from xreflector.net
+Added the "       W" and "       M" commands to send weather and messages respectively.

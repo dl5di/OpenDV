@@ -37,9 +37,9 @@ const wxString KEY_DONGLE_PORT    = wxT("/donglePort");
 
 const wxString     DEFAULT_CALLSIGN1      = wxEmptyString;
 const wxString     DEFAULT_CALLSIGN2      = wxEmptyString;
-const DONGLE_TYPE  DEFAULT_DONGLE_TYPE    = DT_DVDONGLE;
+const DONGLE_TYPE  DEFAULT_DONGLE_TYPE    = DT_DV3000;
 const wxString     DEFAULT_DONGLE_DEVICE  = wxEmptyString;
-const wxString     DEFAULT_DONGLE_ADDRESS = wxEmptyString;
+const wxString     DEFAULT_DONGLE_ADDRESS = wxT("127.0.0.1");
 const unsigned int DEFAULT_DONGLE_PORT    = 2460L;
 
 int main(int argc, char** argv)

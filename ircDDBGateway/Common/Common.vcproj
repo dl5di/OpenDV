@@ -161,6 +161,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\AnnouncementUnit.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\APRSCollector.cpp"
 				>
 			</File>
@@ -472,6 +476,10 @@
 			</File>
 			<File
 				RelativePath=".\AMBEData.h"
+				>
+			</File>
+			<File
+				RelativePath=".\AnnouncementUnit.h"
 				>
 			</File>
 			<File

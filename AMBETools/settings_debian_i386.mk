@@ -9,4 +9,4 @@
 	export CC      := $(shell wx-config --cxx)
 	export LDFLAGS := -g
 	export CFLAGS  := -g -O2 -m32 -Wall -Wno-non-virtual-dtor -Wno-strict-aliasing -DDATA_DIR='$(DATADIR)' -DBIN_DIR='$(BINDIR)' $(shell wx-config --cxxflags)
-	export LIBS := -lportaudio -lusb-1.0 $(shell wx-config --libs adv,core)
+	export LIBS    := -lportaudio $(shell wx-config --libs adv,core)

@@ -57,15 +57,24 @@ void* CCallsignServer::Entry()
 
 	m_timer.start();
 
-	while (!m_killed) {
-		if (m_timer.hasExpired()) {
-			process(CALLSERVER_HOSTNAME, CALLSERVER_PORT);
-			m_timer.start();
+	try {
+		while (!m_killed) {
+			if (m_timer.hasExpired()) {
+				process(CALLSERVER_HOSTNAME, CALLSERVER_PORT);
+				m_timer.start();
+			}
+
+			Sleep(1000UL);
+
+			m_timer.clock();
 		}
-
-		Sleep(1000UL);
-
-		m_timer.clock();
+	}
+	catch (std::exception& e) {
+		wxString message(e.what(), wxConvLocal);
+		wxLogError(wxT("Exception raised in the Callsign Server thread - \"%s\""), message.c_str());
+	}
+	catch (...) {
+		wxLogError(wxT("Unknown exception raised in the Callsign Server thread"));
 	}
 
 	wxLogMessage(wxT("Stopping the Callsign Server thread"));
@@ -80,14 +89,14 @@ void CCallsignServer::stop()
 	Wait();
 }
 
-unsigned int CCallsignServer::process(const wxString& hostname, unsigned int port)
+void CCallsignServer::process(const wxString& hostname, unsigned int port)
 {
 	CTCPReaderWriterClient socket(hostname, port, m_address);
 
 	bool ret = socket.open();
 	if (!ret) {
 		wxLogMessage(wxT("Cannot connect to %s"), hostname.c_str());
-		return 0U;
+		return;
 	}
 
 	// Space for 5000 entries
@@ -119,8 +128,7 @@ unsigned int CCallsignServer::process(const wxString& hostname, unsigned int por
 
 	buffer[offset] = 0x00U;
 
-	unsigned int dextraCount = 0U;
-	unsigned int dcsCount    = 0U;
+	unsigned int count = 0U;
 
 	char* p = (char*)buffer;
 
@@ -130,25 +138,7 @@ unsigned int CCallsignServer::process(const wxString& hostname, unsigned int por
 		if (p1 != NULL)
 			*p1 = 0x00;
 
-		if (::strncmp(p, "XRF", 3U) == 0) {
-			char* p2 = ::strtok(p, " \t\r\n");
-			char* p3 = ::strtok(NULL, " \t\r\n");
-
-			if (p2 != NULL && p3 != NULL) {
-				wxString name    = wxString(p2, wxConvLocal);
-				wxString address = wxString(p3, wxConvLocal);
-
-				if (!address.IsSameAs(wxT("0.0.0.0"))) {
-					wxLogMessage(wxT("DExtra: %s\t%s"), name.c_str(), address.c_str());
-
-					name.resize(LONG_CALLSIGN_LENGTH - 1U, wxT(' '));
-					name.Append(wxT("G"));
-					m_cache->updateGateway(name, address, DP_DEXTRA, false, true);
-
-					dextraCount++;
-				}
-			}
-		} else if (::strncmp(p, "DCS", 3U) == 0) {
+		if (::strncmp(p, "DCS", 3U) == 0) {
 			char* p2 = ::strtok(p, " \t\r\n");
 			char* p3 = ::strtok(NULL, " \t\r\n");
 
@@ -163,7 +153,7 @@ unsigned int CCallsignServer::process(const wxString& hostname, unsigned int por
 					name.Append(wxT("G"));
 					m_cache->updateGateway(name, address, DP_DCS, false, true);
 
-					dcsCount++;
+					count++;
 				}
 			}
 		}
@@ -176,10 +166,8 @@ unsigned int CCallsignServer::process(const wxString& hostname, unsigned int por
 
 	wxLogMessage(wxT("Registered with %s using callsign %s"), hostname.c_str(), m_callsign.Left(LONG_CALLSIGN_LENGTH - 1U).c_str());
 
-	wxLogMessage(wxT("Loaded %u DExtra and %u DCS reflectors from %s"), dextraCount, dcsCount, hostname.c_str());
+	wxLogMessage(wxT("Loaded %u DCS reflectors from %s"), count, hostname.c_str());
 
 	delete[] buffer;
 	socket.close();
-
-	return dextraCount + dcsCount;
 }

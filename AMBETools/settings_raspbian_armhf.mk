@@ -9,4 +9,4 @@
 	export CC      := $(shell wx-config --cxx)
 	export LDFLAGS := -g
 	export CFLAGS  := -g -O2 -march=armv6 -mfpu=vfp -mfloat-abi=hard -Wall -Wno-non-virtual-dtor -Wno-strict-aliasing -Wno-psabi -DDATA_DIR='$(DATADIR)' -DBIN_DIR='$(BINDIR)' -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES -D__WXGTK__ -pthread $(shell wx-config --cxxflags)
-	export LIBS := -lportaudio -lusb-1.0 $(shell wx-config --libs adv,core)
+	export LIBS    := -lportaudio $(shell wx-config --libs adv,core)

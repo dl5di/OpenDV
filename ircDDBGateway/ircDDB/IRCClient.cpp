@@ -123,158 +123,141 @@ wxThread::ExitCode IRCClient::Entry()
 	CTimer timer(2U, 1U);
 	timer.start();
 
-	while (true) {
-		timer.clock();
+	try {
+		while (true) {
+			timer.clock();
 
-		switch (state) {
-			case 0:
-				if (m_stopped) {
-					wxLogMessage(wxT("Stopping the IRC Client thread :1"));
-					return 0;
-				}
-
-				if (timer.isRunning() && timer.hasExpired()) {
-					timer.start(15U);
-
-					if (IRCUtils::getAllIPV4Addresses(m_hostName, m_port, numAddr, addr, MAXIPV4ADDR) == 0) {
-						if (numAddr > 0U) {
-							currentAddr = 0U;
-							state = 1;
-
-							timer.start(1U);
-						}
-					}
-				}
-				break;
-
-			case 1: {
+			switch (state) {
+				case 0:
 					if (m_stopped) {
-						wxLogMessage(wxT("Stopping the IRC Client thread :2"));
+						wxLogMessage(wxT("Stopping the IRC Client thread :1"));
 						return 0;
 					}
 
 					if (timer.isRunning() && timer.hasExpired()) {
-						sock = ::socket( PF_INET, SOCK_STREAM, IPPROTO_TCP);
-						if (sock < 0) {
-							wxLogError(wxT("IRCClient::Entry: socket"));
-
-							timer.start(15U);
-
-							state = 0;
-
-							break;
-						}
-#if defined(__WINDOWS__)
-						u_long nonBlock = 1UL;
-						if (::ioctlsocket(sock, FIONBIO, &nonBlock) != 0) {
-							wxLogError(wxT("IRCClient::Entry: ioctlsocket"));
-
-							::closesocket(sock);
-
-							timer.start(15U);
-
-							state = 0;
-
-							break;
-						}
-#else
-						if (::fcntl(sock, F_SETFL, O_NONBLOCK) < 0) {
-							wxLogError(wxT("IRCClient::Entry: fcntl"));
-
-							::close(sock);
-
-							timer.start(15U);
-
-							state = 0;
-
-							break;
-						}
-#endif
-						int res = ::bind(sock, (struct sockaddr*)&myaddr, sizeof (struct sockaddr_in));
-						if (res != 0) {
-							wxLogError(wxT("IRCClient::Entry: bind"));
-#if defined(__WINDOWS__)
-							::closesocket(sock);
-#else
-							::close(sock);
-#endif
-							state = 0;
-
-							timer.start(15U);
-
-							break;
-						}
-
-
-						res = ::connect(sock, (struct sockaddr *)(addr + currentAddr), sizeof (struct sockaddr_in));
-						if (res == 0) {
-							state = 4;
-						} else {
-#if defined(__WINDOWS__)
-							if (::WSAGetLastError() == WSAEWOULDBLOCK) {
-#else
-							if (errno == EINPROGRESS) {
-#endif
-								state = 3;
-
-								timer.start(5U);
-							} else {
-								wxLogError(wxT("IRCClient::Entry: connect"));
-#if defined(__WINDOWS__)
-								::closesocket(sock);
-#else
-								::close(sock);
-#endif
-								currentAddr++;
-								if (currentAddr >= numAddr) {
-									state = 0;
-
-									timer.start(15U);
-								} else {
-									state = 1;
-
-									timer.start(2U);
-								}
-							}
-						} // connect
-					}
-				}
-				break;
-
-			case 3: {
-					struct timeval tv;
-					tv.tv_sec = 0; 
-					tv.tv_usec = 0; 
-
-					fd_set myset;
-					FD_ZERO(&myset);
-#if defined(__WINDOWS__)
-					FD_SET((unsigned int)sock, &myset);
-#else
-					FD_SET(sock, &myset);
-#endif
-
-					int res = ::select(sock + 1, NULL, &myset, NULL, &tv); 
-					if (res < 0) {
-						wxLogError(wxT("IRCClient::Entry: select"));
-#if defined(__WINDOWS__)
-						::closesocket(sock);
-#else
-						::close(sock);
-#endif
-						state = 0;
-
 						timer.start(15U);
-					} else if (res > 0) { // connect is finished
+
+						if (IRCUtils::getAllIPV4Addresses(m_hostName, m_port, numAddr, addr, MAXIPV4ADDR) == 0) {
+							if (numAddr > 0U) {
+								currentAddr = 0U;
+								state = 1;
+
+								timer.start(1U);
+							}
+						}
+					}
+					break;
+
+				case 1: {
+						if (m_stopped) {
+							wxLogMessage(wxT("Stopping the IRC Client thread :2"));
+							return 0;
+						}
+
+						if (timer.isRunning() && timer.hasExpired()) {
+							sock = ::socket( PF_INET, SOCK_STREAM, IPPROTO_TCP);
+							if (sock < 0) {
+								wxLogError(wxT("IRCClient::Entry: socket"));
+
+								timer.start(15U);
+
+								state = 0;
+
+								break;
+							}
 #if defined(__WINDOWS__)
-						int val_len;
+							u_long nonBlock = 1UL;
+							if (::ioctlsocket(sock, FIONBIO, &nonBlock) != 0) {
+								wxLogError(wxT("IRCClient::Entry: ioctlsocket"));
+
+								::closesocket(sock);
+
+								timer.start(15U);
+
+								state = 0;
+
+								break;
+							}
 #else
-						socklen_t val_len;
+							if (::fcntl(sock, F_SETFL, O_NONBLOCK) < 0) {
+								wxLogError(wxT("IRCClient::Entry: fcntl"));
+
+								::close(sock);
+
+								timer.start(15U);
+
+								state = 0;
+
+								break;
+							}
 #endif
-						int value;
-						val_len = sizeof value;
-						if (::getsockopt(sock, SOL_SOCKET, SO_ERROR, (char *)&value, &val_len) < 0) {
-							wxLogError(wxT("IRCClient::Entry: getsockopt"));
+							int res = ::bind(sock, (struct sockaddr*)&myaddr, sizeof (struct sockaddr_in));
+							if (res != 0) {
+								wxLogError(wxT("IRCClient::Entry: bind"));
+#if defined(__WINDOWS__)
+								::closesocket(sock);
+#else
+								::close(sock);
+#endif
+								state = 0;
+
+								timer.start(15U);
+
+								break;
+							}
+
+
+							res = ::connect(sock, (struct sockaddr *)(addr + currentAddr), sizeof (struct sockaddr_in));
+							if (res == 0) {
+								state = 4;
+							} else {
+#if defined(__WINDOWS__)
+								if (::WSAGetLastError() == WSAEWOULDBLOCK) {
+#else
+								if (errno == EINPROGRESS) {
+#endif
+									state = 3;
+
+									timer.start(5U);
+								} else {
+									wxLogError(wxT("IRCClient::Entry: connect"));
+#if defined(__WINDOWS__)
+									::closesocket(sock);
+#else
+									::close(sock);
+#endif
+									currentAddr++;
+									if (currentAddr >= numAddr) {
+										state = 0;
+
+										timer.start(15U);
+									} else {
+										state = 1;
+
+										timer.start(2U);
+									}
+								}
+							} // connect
+						}
+					}
+					break;
+
+				case 3: {
+						struct timeval tv;
+						tv.tv_sec = 0; 
+						tv.tv_usec = 0; 
+
+						fd_set myset;
+						FD_ZERO(&myset);
+#if defined(__WINDOWS__)
+						FD_SET((unsigned int)sock, &myset);
+#else
+						FD_SET(sock, &myset);
+#endif
+
+						int res = ::select(sock + 1, NULL, &myset, NULL, &tv); 
+						if (res < 0) {
+							wxLogError(wxT("IRCClient::Entry: select"));
 #if defined(__WINDOWS__)
 							::closesocket(sock);
 #else
@@ -283,129 +266,155 @@ wxThread::ExitCode IRCClient::Entry()
 							state = 0;
 
 							timer.start(15U);
-						} else {
-							if (value != 0) {
-								wxLogWarning(wxT("IRCClient::Entry: SO_ERROR=%d"), value);
+						} else if (res > 0) { // connect is finished
+#if defined(__WINDOWS__)
+							int val_len;
+#else
+							socklen_t val_len;
+#endif
+							int value;
+							val_len = sizeof value;
+							if (::getsockopt(sock, SOL_SOCKET, SO_ERROR, (char *)&value, &val_len) < 0) {
+								wxLogError(wxT("IRCClient::Entry: getsockopt"));
 #if defined(__WINDOWS__)
 								::closesocket(sock);
 #else
 								::close(sock);
 #endif
-								currentAddr++;
-								if (currentAddr >= numAddr) {
-									state = 0;
-									timer.start(15U);
-								} else {
-									state = 1;
-									timer.start(1U);
-								}
+								state = 0;
+
+								timer.start(15U);
 							} else {
-								state = 4;
-							}
-						}
-					} else if (timer.isRunning() && timer.hasExpired()) {  // select timeout and timer timeout
+								if (value != 0) {
+									wxLogWarning(wxT("IRCClient::Entry: SO_ERROR=%d"), value);
 #if defined(__WINDOWS__)
-						::closesocket(sock);
+									::closesocket(sock);
 #else
-						::close(sock);
+									::close(sock);
 #endif
-						currentAddr++;
-						if (currentAddr >= numAddr) {
-							state = 0;
+									currentAddr++;
+									if (currentAddr >= numAddr) {
+										state = 0;
+										timer.start(15U);
+									} else {
+										state = 1;
+										timer.start(1U);
+									}
+								} else {
+									state = 4;
+								}
+							}
+						} else if (timer.isRunning() && timer.hasExpired()) {  // select timeout and timer timeout
+#if defined(__WINDOWS__)
+							::closesocket(sock);
+#else
+							::close(sock);
+#endif
+							currentAddr++;
+							if (currentAddr >= numAddr) {
+								state = 0;
 
-							timer.start(15U);
-						} else {
-							state = 1; // open new socket
+								timer.start(15U);
+							} else {
+								state = 1; // open new socket
 
-							timer.start(1U);
+								timer.start(1U);
+							}
 						}
 					}
-				}
-				break;
+					break;
 
-			case 4: {
-					m_recvQ = new IRCMessageQueue;
-					m_sendQ = new IRCMessageQueue;
+				case 4: {
+						m_recvQ = new IRCMessageQueue;
+						m_sendQ = new IRCMessageQueue;
 
-					m_recv = new IRCReceiver(sock, m_recvQ);
-					m_recv->startWork();
+						m_recv = new IRCReceiver(sock, m_recvQ);
+						m_recv->startWork();
 
-					m_proto->setNetworkReady(true);
-					state = 5;
-					timer.stop();
-				}
-				break;
-
-			case 5:
-				if (m_stopped) {
-					state = 6;
-				} else {
-					if (m_recvQ->isEOF()) {
+						m_proto->setNetworkReady(true);
+						state = 5;
 						timer.stop();
-						state = 6;
-					} else if (!m_proto->processQueues(m_recvQ, m_sendQ)) {
-						timer.stop();
-						state = 6;
 					}
+					break;
 
-					while ((state == 5) && m_sendQ->messageAvailable()) {
-						IRCMessage* m = m_sendQ->getMessage();
-
-						wxString out = m->composeMessage();
-
-						char buf[200];
-						IRCUtils::safeStringCopy(buf, out.mb_str(wxConvUTF8), sizeof buf);
-						int len = ::strlen(buf);
-
-						if (buf[len - 1] == 10) {  // is there a NL char at the end?
-							int r = ::send(sock, buf, len, 0);
-							if (r != len) {
-								timer.stop();
-								state = 6;
-							}
-						} else {
+				case 5:
+					if (m_stopped) {
+						state = 6;
+					} else {
+						if (m_recvQ->isEOF()) {
+							timer.stop();
+							state = 6;
+						} else if (!m_proto->processQueues(m_recvQ, m_sendQ)) {
 							timer.stop();
 							state = 6;
 						}
 
-						delete m;
+						while ((state == 5) && m_sendQ->messageAvailable()) {
+							IRCMessage* m = m_sendQ->getMessage();
+
+							wxString out = m->composeMessage();
+
+							char buf[200];
+							IRCUtils::safeStringCopy(buf, out.mb_str(wxConvUTF8), sizeof buf);
+							int len = ::strlen(buf);
+
+							if (buf[len - 1] == 10) {  // is there a NL char at the end?
+								int r = ::send(sock, buf, len, 0);
+								if (r != len) {
+									timer.stop();
+									state = 6;
+								}
+							} else {
+								timer.stop();
+								state = 6;
+							}
+
+							delete m;
+						}
 					}
-				}
-				break;
+					break;
 
-			case 6: {
-					if (m_app != NULL) {
-						m_app->setSendQ(NULL);
-						m_app->userListReset();
-					}
+				case 6: {
+						if (m_app != NULL) {
+							m_app->setSendQ(NULL);
+							m_app->userListReset();
+						}
 
-					m_proto->setNetworkReady(false);
-					m_recv->stopWork();
+						m_proto->setNetworkReady(false);
+						m_recv->stopWork();
 
-					Sleep(2000UL);
+						Sleep(2000UL);
 
-					delete m_recvQ;
-					delete m_sendQ;
+						delete m_recvQ;
+						delete m_sendQ;
 
 #if defined(__WINDOWS__)
-					::closesocket(sock);
+						::closesocket(sock);
 #else
-					::close(sock);
+						::close(sock);
 #endif
 
-					if (m_stopped) {	// request to end the thread
-						wxLogMessage(wxT("Stopping the IRC Client thread :3"));
-						return 0;
+						if (m_stopped) {	// request to end the thread
+							wxLogMessage(wxT("Stopping the IRC Client thread :3"));
+							return 0;
+						}
+
+						timer.start(15U);
+
+						state = 0;  // reconnect to IRC server
 					}
+					break;
+			}
 
-					timer.start(15U);
-
-					state = 0;  // reconnect to IRC server
-				}
-				break;
+			Sleep(500UL);
 		}
-
-		Sleep(500UL);
+	}
+	catch (std::exception& e) {
+		wxString message(e.what(), wxConvLocal);
+		wxLogError(wxT("Exception raised in the IRC Client thread - \"%s\""), message.c_str());
+	}
+	catch (...) {
+		wxLogError(wxT("Unknown exception raised in the IRC Client thread"));
 	}
 
 	wxLogMessage(wxT("Stopping the IRC Client thread :4"));

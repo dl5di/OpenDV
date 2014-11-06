@@ -166,7 +166,7 @@ void CDRATSServer::writeEnd()
 
 void* CDRATSServer::Entry()
 {
-	wxLogMessage(wxT("Starting the D-RATS server thread for %s"), m_callsign.c_str());
+	wxLogMessage(wxT("Starting the D-RATS Server thread for %s"), m_callsign.c_str());
 
 	bool sending = false;
 	unsigned int id = 0U;
@@ -176,134 +176,91 @@ void* CDRATSServer::Entry()
 
 	wxStopWatch time;
 
-	while (!m_stopped) {
-		serviceSocket();
+	try {
+		while (!m_stopped) {
+			serviceSocket();
 
-		if (m_readEnd && !sending) {
-			id = CHeaderData::createId();
+			if (m_readEnd && !sending) {
+				id = CHeaderData::createId();
 
-			// Write header
-			CHeaderData header;
-			header.setMyCall1(m_callsign);
-			header.setMyCall2(wxT("DATA"));
-			header.setYourCall(wxT("CQCQCQ  "));
-			header.setId(id);
-
-#if defined(LOOPBACK)
-			writeHeader(header);
-#else
-			m_handler->process(header, DIR_INCOMING, AS_DRATS);
-#endif
-
-			m_readState = SS_FIRST;
-			m_readPos   = 0U;
-			sending     = true;
-			seqNo       = 0U;
-			sent        = 0U;
-
-			time.Start();
-		}
-
-		if (m_readEnd && sending) {
-			unsigned int needed = time.Time() / DSTAR_FRAME_TIME_MS;
-
-			while (sent < needed && sending) {
-				// Write AMBE data
-				CAMBEData data;
-				data.setId(id);
-
-				unsigned char buffer[DV_FRAME_LENGTH_BYTES];
-				::memcpy(buffer + 0U, NULL_AMBE_DATA_BYTES, VOICE_FRAME_LENGTH_BYTES);
-
-				// Insert sync bytes when the sequence number is zero, slow data otherwise
-				if (seqNo == 0U) {
-					::memcpy(buffer + VOICE_FRAME_LENGTH_BYTES, DATA_SYNC_BYTES, DATA_FRAME_LENGTH_BYTES);
-					m_readState = SS_FIRST;
-				} else {
-					if (m_readState == SS_FIRST) {
-						unsigned char readText[3U];
-						::memset(readText, 'f', 3U);
-
-						unsigned int length = m_readLength - m_readPos;
-						unsigned char bytes = 5U;
-						if (length < 5U)
-							bytes = length;
-
-						readText[0U] = SLOW_DATA_TYPE_GPS | bytes;
-
-						for (unsigned int i = 0U; i < 2U && m_readPos < m_readLength; i++)
-							readText[i + 1U] = m_readBuffer[m_readPos++];
-
-						readText[0U] ^= SCRAMBLER_BYTE1;
-						readText[1U] ^= SCRAMBLER_BYTE2;
-						readText[2U] ^= SCRAMBLER_BYTE3;
-
-						::memcpy(buffer + VOICE_FRAME_LENGTH_BYTES, readText, DATA_FRAME_LENGTH_BYTES);
-
-						m_readState = SS_SECOND;
-					} else {
-						unsigned char readText[3U];
-						::memset(readText, 'f', 3U);
-
-						for (unsigned int i = 0U; i < 3U && m_readPos < m_readLength; i++)
-							readText[i] = m_readBuffer[m_readPos++];
-
-						readText[0U] ^= SCRAMBLER_BYTE1;
-						readText[1U] ^= SCRAMBLER_BYTE2;
-						readText[2U] ^= SCRAMBLER_BYTE3;
-
-						::memcpy(buffer + VOICE_FRAME_LENGTH_BYTES, readText, DATA_FRAME_LENGTH_BYTES);				
-
-						m_readState = SS_FIRST;
-					}
-				}
-
-				data.setSeq(seqNo);
-				data.setData(buffer, DV_FRAME_LENGTH_BYTES);
-				sent++;
+				// Write header
+				CHeaderData header;
+				header.setMyCall1(m_callsign);
+				header.setMyCall2(wxT("DATA"));
+				header.setYourCall(wxT("CQCQCQ  "));
+				header.setId(id);
 
 #if defined(LOOPBACK)
-				writeData(data);
+				writeHeader(header);
 #else
-				m_handler->process(data, DIR_INCOMING, AS_DRATS);
+				m_handler->process(header, DIR_INCOMING, AS_DRATS);
 #endif
 
-				if (m_readPos == m_readLength) {
-					if (m_readState == SS_SECOND) {
-						seqNo++;
-						if (seqNo == 21U)
-							seqNo = 0U;
+				m_readState = SS_FIRST;
+				m_readPos   = 0U;
+				sending     = true;
+				seqNo       = 0U;
+				sent        = 0U;
 
-						unsigned char readText[3U];
-						readText[0U] = 'f' ^ SCRAMBLER_BYTE1;
-						readText[1U] = 'f' ^ SCRAMBLER_BYTE2;
-						readText[2U] = 'f' ^ SCRAMBLER_BYTE3;
+				time.Start();
+			}
 
-						::memcpy(buffer + VOICE_FRAME_LENGTH_BYTES, readText, DATA_FRAME_LENGTH_BYTES);
+			if (m_readEnd && sending) {
+				unsigned int needed = time.Time() / DSTAR_FRAME_TIME_MS;
 
-						data.setSeq(seqNo);
-						data.setData(buffer, DV_FRAME_LENGTH_BYTES);
-						sent++;
+				while (sent < needed && sending) {
+					// Write AMBE data
+					CAMBEData data;
+					data.setId(id);
 
-#if defined(LOOPBACK)
-						writeData(data);
-#else
-						m_handler->process(data, DIR_INCOMING, AS_DRATS);
-#endif
-					}
+					unsigned char buffer[DV_FRAME_LENGTH_BYTES];
+					::memcpy(buffer + 0U, NULL_AMBE_DATA_BYTES, VOICE_FRAME_LENGTH_BYTES);
 
-					seqNo++;
-					if (seqNo == 21U)
-						seqNo = 0U;
-
-					if (seqNo == 0U)
+					// Insert sync bytes when the sequence number is zero, slow data otherwise
+					if (seqNo == 0U) {
 						::memcpy(buffer + VOICE_FRAME_LENGTH_BYTES, DATA_SYNC_BYTES, DATA_FRAME_LENGTH_BYTES);
-					else
-						::memcpy(buffer + VOICE_FRAME_LENGTH_BYTES, NULL_SLOW_DATA_BYTES, DATA_FRAME_LENGTH_BYTES);
+						m_readState = SS_FIRST;
+					} else {
+						if (m_readState == SS_FIRST) {
+							unsigned char readText[3U];
+							::memset(readText, 'f', 3U);
 
-					data.setData(buffer, DV_FRAME_LENGTH_BYTES);
+							unsigned int length = m_readLength - m_readPos;
+							unsigned char bytes = 5U;
+							if (length < 5U)
+								bytes = length;
+
+							readText[0U] = SLOW_DATA_TYPE_GPS | bytes;
+
+							for (unsigned int i = 0U; i < 2U && m_readPos < m_readLength; i++)
+								readText[i + 1U] = m_readBuffer[m_readPos++];
+
+							readText[0U] ^= SCRAMBLER_BYTE1;
+							readText[1U] ^= SCRAMBLER_BYTE2;
+							readText[2U] ^= SCRAMBLER_BYTE3;
+
+							::memcpy(buffer + VOICE_FRAME_LENGTH_BYTES, readText, DATA_FRAME_LENGTH_BYTES);
+
+							m_readState = SS_SECOND;
+						} else {
+							unsigned char readText[3U];
+							::memset(readText, 'f', 3U);
+
+							for (unsigned int i = 0U; i < 3U && m_readPos < m_readLength; i++)
+								readText[i] = m_readBuffer[m_readPos++];
+
+							readText[0U] ^= SCRAMBLER_BYTE1;
+							readText[1U] ^= SCRAMBLER_BYTE2;
+							readText[2U] ^= SCRAMBLER_BYTE3;
+
+							::memcpy(buffer + VOICE_FRAME_LENGTH_BYTES, readText, DATA_FRAME_LENGTH_BYTES);				
+
+							m_readState = SS_FIRST;
+						}
+					}
+
 					data.setSeq(seqNo);
-					data.setEnd(true);
+					data.setData(buffer, DV_FRAME_LENGTH_BYTES);
 					sent++;
 
 #if defined(LOOPBACK)
@@ -312,27 +269,79 @@ void* CDRATSServer::Entry()
 					m_handler->process(data, DIR_INCOMING, AS_DRATS);
 #endif
 
-					m_readLength = 0U;
-					m_readPos    = 0U;
-					m_readEnd    = false;
-					sending      = false;
-					sent         = 0U;
-				}
+					if (m_readPos == m_readLength) {
+						if (m_readState == SS_SECOND) {
+							seqNo++;
+							if (seqNo == 21U)
+								seqNo = 0U;
 
-				seqNo++;
-				if (seqNo == 21U)
-					seqNo = 0U;
+							unsigned char readText[3U];
+							readText[0U] = 'f' ^ SCRAMBLER_BYTE1;
+							readText[1U] = 'f' ^ SCRAMBLER_BYTE2;
+							readText[2U] = 'f' ^ SCRAMBLER_BYTE3;
+
+							::memcpy(buffer + VOICE_FRAME_LENGTH_BYTES, readText, DATA_FRAME_LENGTH_BYTES);
+
+							data.setSeq(seqNo);
+							data.setData(buffer, DV_FRAME_LENGTH_BYTES);
+							sent++;
+
+#if defined(LOOPBACK)
+							writeData(data);
+#else
+							m_handler->process(data, DIR_INCOMING, AS_DRATS);
+#endif
+						}
+
+						seqNo++;
+						if (seqNo == 21U)
+							seqNo = 0U;
+
+						if (seqNo == 0U)
+							::memcpy(buffer + VOICE_FRAME_LENGTH_BYTES, DATA_SYNC_BYTES, DATA_FRAME_LENGTH_BYTES);
+						else
+							::memcpy(buffer + VOICE_FRAME_LENGTH_BYTES, NULL_SLOW_DATA_BYTES, DATA_FRAME_LENGTH_BYTES);
+
+						data.setData(buffer, DV_FRAME_LENGTH_BYTES);
+						data.setSeq(seqNo);
+						data.setEnd(true);
+						sent++;
+
+#if defined(LOOPBACK)
+						writeData(data);
+#else
+						m_handler->process(data, DIR_INCOMING, AS_DRATS);
+#endif
+
+						m_readLength = 0U;
+						m_readPos    = 0U;
+						m_readEnd    = false;
+						sending      = false;
+						sent         = 0U;
+					}
+
+					seqNo++;
+					if (seqNo == 21U)
+						seqNo = 0U;
+				}
 			}
+
+			// 50ms
+			Sleep(50UL);
 		}
 
-		// 50ms
-		Sleep(50UL);
+		if (m_socket != NULL)
+			m_socket->stop();
+	}
+	catch (std::exception& e) {
+		wxString message(e.what(), wxConvLocal);
+		wxLogError(wxT("Exception raised in the D-RATS Server thread - \"%s\""), message.c_str());
+	}
+	catch (...) {
+		wxLogError(wxT("Unknown exception raised in the D-RATS Server thread"));
 	}
 
-	if (m_socket != NULL)
-		m_socket->stop();
-
-	wxLogMessage(wxT("Stopping the D-RATS server thread for %s"), m_callsign.c_str());
+	wxLogMessage(wxT("Stopping the D-RATS Server thread for %s"), m_callsign.c_str());
 
 	return NULL;
 }
