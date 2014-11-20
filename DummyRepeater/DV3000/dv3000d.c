@@ -45,7 +45,7 @@ void delay(unsigned int delay);
 #endif
 
 #define	DV3000_TTY		"/dev/ttyAMA0"
-#define	DV3000_VERSION		"2014-05-19"
+#define	DV3000_VERSION		"2014-04-23"
 
 #define	AMBE3000_HEADER_LEN	4U
 #define	AMBE3000_START_BYTE	0x61U
@@ -319,6 +319,8 @@ int main(int argc, char **argv)
 				return 1;
 		}
 	}
+	
+	fprintf(stderr, "dv3000d has been deprecated, please use AMBEserverGPIO for DV3000 or AMBEserver for DV3000U\n");
 
 	if (daemon) {
 		pid_t pid = fork();

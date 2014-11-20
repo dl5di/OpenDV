@@ -34,14 +34,18 @@
 
 #if defined(RASPBERRY_PI)
 #include <wiringPi.h>
-#define	DV3000_TTY		"/dev/ttyAMA0"
-#elif defined(BANANA_PI)
-#define	DV3000_TTY		"/dev/ttyS0"
 #else
-#define	DV3000_TTY		"/dev/ttyUSB0"
+int  wiringPiSetup();
+void pinMode(int pin, int mode);
+void digitalWrite(int pin, int value);
+void delay(unsigned int delay);
+#define	OUTPUT	1
+#define	HIGH	1
+#define	LOW	0
 #endif
 
-#define	DV3000_VERSION		"2014-05-31"
+#define	DV3000_TTY		"/dev/ttyAMA0"
+#define	DV3000_VERSION		"2014-04-23"
 
 #define	AMBE3000_HEADER_LEN	4U
 #define	AMBE3000_START_BYTE	0x61U
@@ -95,7 +99,6 @@ void dump(char *text, unsigned char *data, unsigned int length)
 	}
 }
 
-#if defined(RASPBERRY_PI)
 int openWiringPi(void)
 {
 	int ret = wiringPiSetup();
@@ -120,7 +123,6 @@ int openWiringPi(void)
 
 	return 1;
 }
-#endif
 
 int openSerial()
 {
@@ -317,6 +319,8 @@ int main(int argc, char **argv)
 				return 1;
 		}
 	}
+	
+	fprintf(stderr, "dv3000d has been deprecated, please use AMBEserverGPIO for DV3000 or AMBEserver for DV3000U\n");
 
 	if (daemon) {
 		pid_t pid = fork();
@@ -338,14 +342,10 @@ int main(int argc, char **argv)
 		umask(0);
 	}
 
-#if defined(RASPBERRY_PI)
 	ret = openWiringPi();
 	if (!ret)
 		return 1;
-#elif defined(BANANA_PI)
-#error "The Banana Pi is not supported yet"
-#endif
-
+	
 	sockFd = openSocket(port);
 	if (sockFd < 0)
 		return 1;

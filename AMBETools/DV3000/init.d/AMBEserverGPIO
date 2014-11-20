@@ -1,0 +1,36 @@
+#! /bin/sh
+
+### BEGIN INIT INFO
+# Provides:          AMBEserverGPIO
+# Required-Start:    $local_fs $remote_fs
+# Required-Stop:
+# X-Start-Before:    
+# Default-Start:     2 3 4 5
+# Default-Stop:
+# Short-Description: Provide AMBE Encode/Decode
+# Description: Provide daemon for AMBE Encoding and Decoding
+### END INIT INFO
+
+N=/etc/init.d/AMBEserverGPIO
+
+set -e
+
+case "$1" in
+  start)
+	/usr/bin/AMBEserverGPIO -d -i /dev/ttyAMA0
+	echo "Starting AMBEserverGPIO" >&2
+	exit 0
+	;;
+  stop)
+	killall AMBEserverGPIO
+	exit 0
+	;;
+  reload|restart|force-reload|status)
+	;;
+  *)
+	echo "Usage: $N {start|stop}" >&2
+	exit 1
+	;;
+esac
+
+exit 0
