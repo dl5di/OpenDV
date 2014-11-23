@@ -50,6 +50,7 @@ m_password(NULL)
 	m_hostname->Append(wxT("group1-irc.ircddb.net"));
 	m_hostname->Append(wxT("group2-irc.ircddb.net"));
 	m_hostname->Append(wxT("rr.openquad.net"));
+	m_hostname->Append(wxT("freestar-irc-cluster.ve3lsr.ca"));
 	m_hostname->Append(wxT("server1-ik2xyp.free-dstar.org"));
 	m_hostname->Append(wxT("ircddb.dstar.su"));
 	sizer->Add(m_hostname, 0, wxALL | wxALIGN_LEFT, BORDER_SIZE);
