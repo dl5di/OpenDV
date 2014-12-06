@@ -28,6 +28,8 @@
 #include <IOKit/serial/IOSerialKeys.h>
 #include <IOKit/IOBSD.h>
 #include <sys/param.h>
+#include <sys/ioctl.h>
+#include <termios.h>
 #elif defined(__WINDOWS__)
 #include <setupapi.h>
 #include <winioctl.h>
