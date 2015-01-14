@@ -188,11 +188,9 @@ int openSerial()
 		return -1;
 	}
 
-
-
+	n1 = write(fd,reset,5);
 	if (debug)
 		fprintf(stdout, "opened %s\n",dv3000tty);
-		n1 = write(fd,reset,5);
 		fprintf(stderr,"Wrote Reset %d chars\n",n1);
 	return fd;
 }
