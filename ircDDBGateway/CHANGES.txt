@@ -1,4 +1,4 @@
-ircDDB Gateway - 20140602
+ircDDB Gateway - 20150213
 =========================
 
 20101010
@@ -1411,3 +1411,14 @@ Add StarNet logging for remote control events.
 Ensure that duplicate link requests don't initiate a status message.
 Stop taking DExtra addresses from xreflector.net
 Added the "       W" and "       M" commands to send weather and messages respectively.
+
+20150210
+--------
+
+Updated the DCS and D-Plus hosts files.
+First attempt to fix the multiple linking bug.
+
+20150213
+--------
+
+Slight modification to completely fix the multiple linking bug.

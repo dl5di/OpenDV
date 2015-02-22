@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2010-2014 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2010-2015 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -1595,6 +1595,25 @@ void CRepeaterHandler::linkUp(DSTAR_PROTOCOL protocol, const wxString& callsign)
 
 bool CRepeaterHandler::linkFailed(DSTAR_PROTOCOL protocol, const wxString& callsign, bool isRecoverable)
 {
+	// Have we linked to something else in the meantime?
+	if (m_linkStatus == LS_NONE || !m_linkRepeater.IsSameAs(callsign)) {
+		switch (protocol) {
+			case DP_DCS:
+				wxLogMessage(wxT("DCS link to %s has failed"), callsign.c_str());
+				break;
+			case DP_DEXTRA:
+				wxLogMessage(wxT("DExtra link to %s has failed"), callsign.c_str());
+				break;
+			case DP_DPLUS:
+				wxLogMessage(wxT("D-Plus link to %s has failed"), callsign.c_str());
+				break;
+			default:
+				break;
+		}
+
+		return false;
+	}
+
 	// Is relink to another module required?
 	if (!isRecoverable && m_linkRelink) {
 		m_linkRelink = false;
@@ -1605,7 +1624,7 @@ bool CRepeaterHandler::linkFailed(DSTAR_PROTOCOL protocol, const wxString& calls
 
 	if (!isRecoverable) {
 		if (protocol == DP_DEXTRA && callsign.IsSameAs(m_linkRepeater)) {
-			wxLogMessage(wxT("DExtra link to %s has ended"), m_linkRepeater.c_str());
+			wxLogMessage(wxT("DExtra link to %s has failed"), m_linkRepeater.c_str());
 			m_linkRepeater.Clear();
 			m_linkStatus = LS_NONE;
 			writeNotLinked();
@@ -1613,7 +1632,7 @@ bool CRepeaterHandler::linkFailed(DSTAR_PROTOCOL protocol, const wxString& calls
 		}
 
 		if (protocol == DP_DPLUS && callsign.IsSameAs(m_linkRepeater)) {
-			wxLogMessage(wxT("D-Plus link to %s has ended"), m_linkRepeater.c_str());
+			wxLogMessage(wxT("D-Plus link to %s has failed"), m_linkRepeater.c_str());
 			m_linkRepeater.Clear();
 			m_linkStatus = LS_NONE;
 			writeNotLinked();
@@ -1622,9 +1641,9 @@ bool CRepeaterHandler::linkFailed(DSTAR_PROTOCOL protocol, const wxString& calls
 
 		if (protocol == DP_DCS && callsign.IsSameAs(m_linkRepeater)) {
 			if (m_linkStatus == LS_LINKED_DCS || m_linkStatus == LS_LINKING_DCS)
-				wxLogMessage(wxT("DCS link to %s has ended"), m_linkRepeater.c_str());
+				wxLogMessage(wxT("DCS link to %s has failed"), m_linkRepeater.c_str());
 			else
-				wxLogMessage(wxT("Loopback link to %s has ended"), m_linkRepeater.c_str());
+				wxLogMessage(wxT("Loopback link to %s has failed"), m_linkRepeater.c_str());
 			m_linkRepeater.Clear();
 			m_linkStatus = LS_NONE;
 			writeNotLinked();

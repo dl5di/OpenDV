@@ -1,4 +1,4 @@
-ircDDB Gateway - 20140602
+ircDDB Gateway - 20150213
 =========================
 
 Windows
@@ -38,10 +38,9 @@ need to copy and run the Vcredist_x86.exe file which is found at
 Linux
 -----
 
-You need to ensure that wxGTK and PortAudio are already installed on your
-machine, under Ubuntu these are available from the standard repositories, the
-version of wxWidgets is adequate. However you should get the latest version of 
-PortAudio from its home and build it from scratch.
+You need to ensure that wxGTK is already installed on your machine, under Ubuntu
+these are available from the standard repositories, the version of wxWidgets is
+adequate.
 
 To install them from scratch, you need to get wxGTK from 
 <http://www.wxwidgets.org>. If you do a "make install" on both then they'll be 
