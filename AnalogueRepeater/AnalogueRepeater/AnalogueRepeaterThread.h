@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2009-2014 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2009-2015 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -36,7 +36,6 @@
 #include "FIRFilter.h"
 #include "Goertzel.h"
 #include "PTTDelay.h"
-#include "APRSTX.h"
 #include "Timer.h"
 #include "VOGAD.h"
 #include "NCO.h"
@@ -58,7 +57,8 @@ public:
 	CAnalogueRepeaterThread();
 	virtual ~CAnalogueRepeaterThread();
 
-	virtual void callback(const wxFloat32* input, wxFloat32* output, unsigned int nSamples, int id);
+	virtual void readCallback(const wxFloat32* input, unsigned int nSamples, int id);
+	virtual void writeCallback(wxFloat32* output, unsigned int& nSamples, int id);
 
 	virtual void setCallsign(IFixedAudioSource* openId, IFixedAudioSource* closeId, IFixedAudioSource* beacon1, IFixedAudioSource* beacon2, wxFloat32 level1, wxFloat32 level2);
 	virtual void setAck(IFixedAudioSource* radioAck, IFixedAudioSource* extAck, IFixedAudioSource* batteryAck, wxFloat32 level, unsigned int ack, unsigned int minimum);
@@ -74,7 +74,6 @@ public:
 		const wxString& command2Line, const wxString& output1, const wxString& output2, const wxString& output3,
 		const wxString& output4, wxFloat32 threshold);
 	virtual void setActiveHang(unsigned int time);
-	virtual void setAPRSTX(CAPRSTX* aprsTx);
 #if defined(__WXDEBUG__)
 	virtual void setReader(CWAVFileReader* reader);
 #endif
@@ -162,7 +161,7 @@ private:
 	bool                      m_sendOpen;
 	bool                      m_sendClose;
 	bool                      m_sendBeacon1;
-	SB2_STATE                 m_sendBeacon2;
+	bool                      m_sendBeacon2;
 	ACK_TYPE                  m_sendAck;
 	CDTMFController*          m_radioDTMF;
 	CDTMFController*          m_extDTMF;
@@ -183,7 +182,6 @@ private:
 	unsigned int              m_transmitCount;
 	unsigned int              m_timeCount;
 	unsigned int              m_lastHour;
-	CAPRSTX*                  m_aprsTx;
 
 	void getAudio(wxFloat32* radioAudio, wxFloat32* extAudio, unsigned int& nRadio, unsigned int& nExt);
 	ANALOGUE_SQUELCH checkRadioSquelch(const wxFloat32* audio, unsigned int length, ANALOGUE_SQUELCH squelch);

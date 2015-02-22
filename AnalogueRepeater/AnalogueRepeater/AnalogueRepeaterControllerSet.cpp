@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2009-2013 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2009-2013,2015 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -18,8 +18,7 @@
 
 #include "AnalogueRepeaterControllerSet.h"
 
-#include "SerialDataController.h"
-#include "SerialLineController.h"
+#include "SerialPortSelector.h"
 
 const unsigned int BORDER_SIZE    = 5U;
 const unsigned int CONTROL_WIDTH1 = 300U;
@@ -44,8 +43,8 @@ m_squelchInvert(NULL)
 
 	m_type->Append(_("None"));
 
-#if defined(RASPBERRY_PI)
-	m_type->Append(wxT("Raspberry Pi"));
+#if defined(GPIO)
+	m_type->Append(wxT("GPIO"));
 #endif
 
 	// Add the Velleman K8055
@@ -55,12 +54,12 @@ m_squelchInvert(NULL)
 	m_type->Append(wxT("Velleman K8055 - 3"));
 
 	// Add the serial ports
-	wxArrayString serialDevs = CSerialLineController::getDevices();
+	wxArrayString serialDevs = CSerialPortSelector::getDevices();
 	for (size_t i = 0U; i < serialDevs.GetCount(); i++)
 		m_type->Append(wxT("Serial - ") + serialDevs.Item(i));
 
 	// Add the Arduino ports
-	serialDevs = CSerialDataController::getDevices();
+	serialDevs = CSerialPortSelector::getDevices();
 	for (size_t i = 0U; i < serialDevs.GetCount(); i++)
 		m_type->Append(wxT("Arduino - ") + serialDevs.Item(i));
 

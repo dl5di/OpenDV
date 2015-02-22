@@ -185,10 +185,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\AnalogueRepeaterAPRSSet.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\AnalogueRepeaterCallsignSet.cpp"
 				>
 			</File>
@@ -264,10 +260,6 @@
 			</File>
 			<File
 				RelativePath=".\AnalogueRepeaterApp.h"
-				>
-			</File>
-			<File
-				RelativePath=".\AnalogueRepeaterAPRSSet.h"
 				>
 			</File>
 			<File

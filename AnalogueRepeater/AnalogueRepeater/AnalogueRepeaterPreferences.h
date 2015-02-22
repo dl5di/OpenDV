@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2009-2014 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2009-2015 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -28,7 +28,6 @@
 #include "AnalogueRepeaterTonesSet.h"
 #include "AnalogueRepeaterTimesSet.h"
 #include "AnalogueRepeaterFeelSet.h"
-#include "AnalogueRepeaterAPRSSet.h"
 #include "AnalogueRepeaterAckSet.h"
 #include "AnalogueRepeaterDefs.h"
 #include "AnalogueDefines.h"
@@ -61,8 +60,7 @@ public:
 		const wxString& dtmfOutput1, const wxString& dtmfOutput2, const wxString& dtmfOutput3,
 		const wxString& dtmfOutput4, const wxString& dtmfCommand1, const wxString& dtmfCommand1Line,
 		const wxString& dtmfCommand2, const wxString& dtmfCommand2Line, wxFloat32 dtmfThreshold,
-		bool aprsTxEnabled, const wxString& aprsCallsign, wxFloat32 aprsLatitude, wxFloat32 aprsLongitude,
-		int aprsHeight, const wxString& aprsDescription, unsigned int activeHangTime);
+        unsigned int activeHangTime);
 	virtual ~CAnalogueRepeaterPreferences();
 
 	virtual bool Validate();
@@ -155,13 +153,6 @@ public:
 	virtual wxString  getDTMFCommand2() const;
 	virtual wxString  getDTMFCommand2Line() const;
 
-	virtual bool      getAPRSTXEnabled() const;
-	virtual wxString  getAPRSCallsign() const;
-	virtual wxFloat32 getAPRSLatitude() const;
-	virtual wxFloat32 getAPRSLongitude() const;
-	virtual int       getAPRSHeight() const;
-	virtual wxString  getAPRSDescription() const;
-
 	virtual unsigned int getActiveHangTime() const;
 
 private:
@@ -175,7 +166,6 @@ private:
 	CAnalogueRepeaterControllerSet*  m_controller;
 	CAnalogueRepeaterDTMF1Set*       m_dtmf1;
 	CAnalogueRepeaterDTMF2Set*       m_dtmf2;
-	CAnalogueRepeaterAPRSSet*        m_aprs;
 	CActiveHangSet*                  m_active;
 };
 

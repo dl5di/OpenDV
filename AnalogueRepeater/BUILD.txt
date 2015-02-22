@@ -1,4 +1,4 @@
-Analogue Repeater - 20140303
+Analogue Repeater - 20150213
 ============================
 
 Windows
@@ -52,16 +52,15 @@ need to copy and run the Vcredist_x86.exe file which is found at
 Linux
 -----
 
-You need to ensure that wxGTK, PortAudio and libusb-1.0 are already 
+You need to ensure that wxGTK, ALSA and libusb-1.0 are already 
 installed on your machine, under Ubuntu these are available from the standard 
 repositories, the version of wxWidgets is adequate. However you should get the 
 latest version of PortAudio from its home and build it from scratch.
 
 To install them from scratch, you need to get wxGTK from 
-<http://www.wxwidgets.org>, PortAudio from <http://www.portaudio.com>, and
-libusb-1.0 from <http://www.libusb.org/wiki/libusb-1.0>. If you do a
-"make install" on  all of them then they'll be installed in the right places
-and nothing more needs to be done.
+<http://www.wxwidgets.org>, and libusb-1.0 from <http://www.libusb.org/wiki/libusb-1.0>.
+If you do a "make install" on  all of them then they'll be installed in the
+right places and nothing more needs to be done.
 
 On the Raspberry Pi you will need to build and install the wiringPi GPIO library
 which is available from <https://projects.drogon.net/raspberry-pi/wiringpi>.

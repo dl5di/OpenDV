@@ -1,4 +1,4 @@
-Analogue Repeater - 20140303
+Analogue Repeater - 20150213
 ============================
 
 20130702
@@ -20,3 +20,22 @@ Added optional delay before sending the opening callsign.
 Add exception catching.
 Added APRS transmission with the beacon.
 Fixed bug in WAV file reading under Linux.
+
+20150208
+--------
+
+Use ALSA on Linux instead of PortAudio.
+Dynamic serial port selection on Linux.
+GPIO control potentially available on more platforms.
+
+20150210
+--------
+
+Updated the dynamic serial port selection for /dev/ttyACM*
+Updated the ALSA handing.
+
+20150213
+--------
+
+Updated the ALSA handling.
+Fixed a compile bug when defining GPIO.

@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2009-2014 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2009-2015 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -107,13 +107,6 @@ const wxString KEY_DTMF_OUTPUT3       = wxT("dtmfOutput3");
 const wxString KEY_DTMF_OUTPUT4       = wxT("dtmfOutput4");
 const wxString KEY_DTMF_THRESHOLD     = wxT("dtmfThreshold");
 
-const wxString KEY_APRS_TXENABLED   = wxT("aprsTxEnabled");
-const wxString KEY_APRS_CALLSIGN    = wxT("aprsCallsign");
-const wxString KEY_APRS_LATITUDE    = wxT("aprsLatitude");
-const wxString KEY_APRS_LONGITUDE   = wxT("aprsLongitude");
-const wxString KEY_APRS_HEIGHT      = wxT("aprsHeight");
-const wxString KEY_APRS_DESCRIPTION = wxT("aprsDescription");
-
 const wxString KEY_ACTIVE_HANG_TIME = wxT("activeHangTime");
 
 const wxString KEY_OUTPUT1          = wxT("output1");
@@ -217,13 +210,6 @@ const bool      DEFAULT_OUTPUT2            = false;
 const bool      DEFAULT_OUTPUT3            = false;
 const bool      DEFAULT_OUTPUT4            = false;
 
-const bool      DEFAULT_APRS_TXENABLED     = false;
-const wxString  DEFAULT_APRS_CALLSIGN      = wxEmptyString;
-const wxFloat32 DEFAULT_APRS_LATITUDE      = 0.0F;
-const wxFloat32 DEFAULT_APRS_LONGITUDE     = 0.0F;
-const int       DEFAULT_APRS_HEIGHT        = 0;
-const wxString  DEFAULT_APRS_DESCRIPTION   = wxEmptyString;
-
 const unsigned int DEFAULT_ACTIVE_HANG_TIME   = 0U;
 
 const int       DEFAULT_WINDOW_X           = -1;
@@ -315,12 +301,6 @@ m_dtmfOutput3(DEFAULT_DTMF_OUTPUT3),
 m_dtmfOutput4(DEFAULT_DTMF_OUTPUT4),
 m_dtmfThreshold(DEFAULT_DTMF_THRESHOLD),
 m_activeHangTime(DEFAULT_ACTIVE_HANG_TIME),
-m_aprsTxEnabled(DEFAULT_APRS_TXENABLED),
-m_aprsCallsign(DEFAULT_APRS_CALLSIGN),
-m_aprsLatitude(DEFAULT_APRS_LATITUDE),
-m_aprsLongitude(DEFAULT_APRS_LONGITUDE),
-m_aprsHeight(DEFAULT_APRS_HEIGHT),
-m_aprsDescription(DEFAULT_APRS_DESCRIPTION),
 m_output1(DEFAULT_OUTPUT1),
 m_output2(DEFAULT_OUTPUT2),
 m_output3(DEFAULT_OUTPUT3),
@@ -545,21 +525,6 @@ m_y(DEFAULT_WINDOW_Y)
 	m_config->Read(m_name + KEY_ACTIVE_HANG_TIME, &temp1, long(DEFAULT_ACTIVE_HANG_TIME));
 	m_activeHangTime = (unsigned int)temp1;
 
-	m_config->Read(m_name + KEY_APRS_TXENABLED, &m_aprsTxEnabled, DEFAULT_APRS_TXENABLED);
-
-	m_config->Read(m_name + KEY_APRS_CALLSIGN, &m_aprsCallsign, DEFAULT_APRS_CALLSIGN);
-
-	m_config->Read(m_name + KEY_APRS_LATITUDE, &temp2, double(DEFAULT_APRS_LATITUDE));
-	m_aprsLatitude = wxFloat32(temp2);
-
-	m_config->Read(m_name + KEY_APRS_LONGITUDE, &temp2, double(DEFAULT_APRS_LONGITUDE));
-	m_aprsLongitude = wxFloat32(temp2);
-
-	m_config->Read(m_name + KEY_APRS_HEIGHT, &temp1, long(DEFAULT_APRS_HEIGHT));
-	m_aprsHeight = int(temp1);
-
-	m_config->Read(m_name + KEY_APRS_DESCRIPTION, &m_aprsDescription, DEFAULT_APRS_DESCRIPTION);
-
 	m_config->Read(m_name + KEY_WINDOW_X, &temp1, long(DEFAULT_WINDOW_X));
 	m_x = int(temp1);
 
@@ -656,12 +621,6 @@ m_dtmfOutput3(DEFAULT_DTMF_OUTPUT3),
 m_dtmfOutput4(DEFAULT_DTMF_OUTPUT4),
 m_dtmfThreshold(DEFAULT_DTMF_THRESHOLD),
 m_activeHangTime(DEFAULT_ACTIVE_HANG_TIME),
-m_aprsTxEnabled(DEFAULT_APRS_TXENABLED),
-m_aprsCallsign(DEFAULT_APRS_CALLSIGN),
-m_aprsLatitude(DEFAULT_APRS_LATITUDE),
-m_aprsLongitude(DEFAULT_APRS_LONGITUDE),
-m_aprsHeight(DEFAULT_APRS_HEIGHT),
-m_aprsDescription(DEFAULT_APRS_DESCRIPTION),
 m_output1(DEFAULT_OUTPUT1),
 m_output2(DEFAULT_OUTPUT2),
 m_output3(DEFAULT_OUTPUT3),
@@ -925,22 +884,6 @@ m_y(DEFAULT_WINDOW_Y)
 		} else if (key.IsSameAs(KEY_ACTIVE_HANG_TIME)) {
 			val.ToULong(&temp2);
 			m_activeHangTime = (unsigned int)temp2;
-		} else if (key.IsSameAs(KEY_APRS_TXENABLED)) {
-			val.ToLong(&temp1);
-			m_aprsTxEnabled = temp1 == 1L;
-		} else if (key.IsSameAs(KEY_APRS_CALLSIGN)) {
-			m_aprsCallsign = val;
-		} else if (key.IsSameAs(KEY_APRS_LATITUDE)) {
-			val.ToDouble(&temp3);
-			m_aprsLatitude = wxFloat32(temp3);
-		} else if (key.IsSameAs(KEY_APRS_LONGITUDE)) {
-			val.ToDouble(&temp3);
-			m_aprsLongitude = wxFloat32(temp3);
-		} else if (key.IsSameAs(KEY_APRS_HEIGHT)) {
-			val.ToLong(&temp1);
-			m_aprsHeight = int(temp1);
-		} else if (key.IsSameAs(KEY_APRS_DESCRIPTION)) {
-			m_aprsDescription = val;
 		} else if (key.IsSameAs(KEY_OUTPUT1)) {
 			val.ToLong(&temp1);
 			m_output1 = temp1 == 1L;
@@ -1219,26 +1162,6 @@ void CAnalogueRepeaterConfig::setOutputs(bool out1, bool out2, bool out3, bool o
 	m_output4 = out4;
 }
 
-void CAnalogueRepeaterConfig::getAPRS(bool& txEnabled, wxString& callsign, wxFloat32& latitude, wxFloat32& longitude, int& height, wxString& description) const
-{
-	txEnabled   = m_aprsTxEnabled;
-	callsign    = m_aprsCallsign;
-	latitude    = m_aprsLatitude;
-	longitude   = m_aprsLongitude;
-	height      = m_aprsHeight;
-	description = m_aprsDescription;
-}
-
-void CAnalogueRepeaterConfig::setAPRS(bool txEnabled, const wxString& callsign, wxFloat32 latitude, wxFloat32 longitude, int height, const wxString& description)
-{
-	m_aprsTxEnabled   = txEnabled;
-	m_aprsCallsign    = callsign;
-	m_aprsLatitude    = latitude;
-	m_aprsLongitude   = longitude;
-	m_aprsHeight      = height;
-	m_aprsDescription = description;
-}
-
 void CAnalogueRepeaterConfig::getActiveHang(unsigned int& time) const
 {
 	time = m_activeHangTime;
@@ -1349,12 +1272,6 @@ bool CAnalogueRepeaterConfig::write()
 	m_config->Write(m_name + KEY_OUTPUT3, m_output3);
 	m_config->Write(m_name + KEY_OUTPUT4, m_output4);
 	m_config->Write(m_name + KEY_ACTIVE_HANG_TIME, long(m_activeHangTime));
-	m_config->Write(m_name + KEY_APRS_TXENABLED, m_aprsTxEnabled);
-	m_config->Write(m_name + KEY_APRS_CALLSIGN, m_aprsCallsign);
-	m_config->Write(m_name + KEY_APRS_LATITUDE, double(m_aprsLatitude));
-	m_config->Write(m_name + KEY_APRS_LONGITUDE, double(m_aprsLongitude));
-	m_config->Write(m_name + KEY_APRS_HEIGHT, long(m_aprsHeight));
-	m_config->Write(m_name + KEY_APRS_DESCRIPTION, m_aprsDescription);
 	m_config->Write(m_name + KEY_WINDOW_X, long(m_x));
 	m_config->Write(m_name + KEY_WINDOW_Y, long(m_y));
 	m_config->Flush();
@@ -1467,12 +1384,6 @@ bool CAnalogueRepeaterConfig::write()
 	buffer.Printf(wxT("%s=%s"),   KEY_DTMF_OUTPUT4.c_str(), m_dtmfOutput4.c_str()); file.AddLine(buffer);
 	buffer.Printf(wxT("%s=%.4f"), KEY_DTMF_THRESHOLD.c_str(), m_dtmfThreshold); file.AddLine(buffer);
 	buffer.Printf(wxT("%s=%u"),   KEY_ACTIVE_HANG_TIME.c_str(), m_activeHangTime); file.AddLine(buffer);
-	buffer.Printf(wxT("%s=%d"),   KEY_APRS_TXENABLED.c_str(), m_aprsTxEnabled ? 1 : 0); file.AddLine(buffer);
-	buffer.Printf(wxT("%s=%s"),   KEY_APRS_CALLSIGN.c_str(), m_aprsCallsign.c_str()); file.AddLine(buffer);
-	buffer.Printf(wxT("%s=%.4f"), KEY_APRS_LATITUDE.c_str(), m_aprsLatitude); file.AddLine(buffer);
-	buffer.Printf(wxT("%s=%.4f"), KEY_APRS_LONGITUDE.c_str(), m_aprsLongitude); file.AddLine(buffer);
-	buffer.Printf(wxT("%s=%d"),   KEY_APRS_HEIGHT.c_str(), m_aprsHeight); file.AddLine(buffer);
-	buffer.Printf(wxT("%s=%s"),   KEY_APRS_DESCRIPTION.c_str(), m_aprsDescription.c_str()); file.AddLine(buffer);
 	buffer.Printf(wxT("%s=%d"),   KEY_OUTPUT1.c_str(), m_output1 ? 1 : 0); file.AddLine(buffer);
 	buffer.Printf(wxT("%s=%d"),   KEY_OUTPUT2.c_str(), m_output2 ? 1 : 0); file.AddLine(buffer);
 	buffer.Printf(wxT("%s=%d"),   KEY_OUTPUT3.c_str(), m_output3 ? 1 : 0); file.AddLine(buffer);

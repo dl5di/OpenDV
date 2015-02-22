@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2010-2014 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2010-2015 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -23,12 +23,10 @@
 
 const wxString VENDOR_NAME = wxT("G4KLX");
 
-const wxString SVNREV = wxT("$Revision: 641 $ on $Date: 2014-03-03 16:20:50 +0100 (Mo, 03. Mrz 2014) $");
-
 #if defined(__WXDEBUG__)
-const wxString VERSION = wxT("20140303 - DEBUG");
+const wxString VERSION = wxT("20150213 - DEBUG");
 #else
-const wxString VERSION = wxT("20140303");
+const wxString VERSION = wxT("20150213");
 #endif
 
 #endif

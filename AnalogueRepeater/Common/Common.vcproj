@@ -162,23 +162,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\APRSTX.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\ArduinoController.cpp"
 				>
 			</File>
 			<File
 				RelativePath=".\AudioDelay.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\AX25Checksum.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\AX25TX.cpp"
 				>
 			</File>
 			<File
@@ -270,6 +258,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\SerialPortSelector.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\SoundCardReaderWriter.cpp"
 				>
 			</File>
@@ -316,10 +308,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\APRSTX.h"
-				>
-			</File>
-			<File
 				RelativePath=".\ArduinoController.h"
 				>
 			</File>
@@ -329,14 +317,6 @@
 			</File>
 			<File
 				RelativePath=".\AudioDelay.h"
-				>
-			</File>
-			<File
-				RelativePath=".\AX25Checksum.h"
-				>
-			</File>
-			<File
-				RelativePath=".\AX25TX.h"
 				>
 			</File>
 			<File
@@ -429,6 +409,10 @@
 			</File>
 			<File
 				RelativePath=".\SerialLineController.h"
+				>
+			</File>
+			<File
+				RelativePath=".\SerialPortSelector.h"
 				>
 			</File>
 			<File
