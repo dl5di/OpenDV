@@ -1,5 +1,5 @@
 /*
- *	Copyright (C) 2009-2014 by Jonathan Naylor, G4KLX
+ *	Copyright (C) 2009-2015 by Jonathan Naylor, G4KLX
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -189,8 +189,10 @@ enum USB_INTERFACE {
 };
 
 enum DVMEGA_VARIANT {
-	DVMV_NODE,
-	DVMV_RADIO
+	DVMV_MODEM,
+	DVMV_RADIO_2M,
+	DVMV_RADIO_70CM,
+	DVMV_RADIO_2M_70CM
 };
 
 #endif

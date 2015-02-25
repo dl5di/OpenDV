@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2011-2014 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2011-2015 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -196,19 +196,20 @@ void CDStarRepeaterConfigModemSet::onConfigure(wxCommandEvent& event)
 		wxString port;
 		DVMEGA_VARIANT variant;
 		bool txInvert, rxInvert;
-		unsigned int txDelay, frequency, power;
-		m_config->getDVMEGA(port, variant, rxInvert, txInvert, txDelay, frequency, power);
-		CDStarRepeaterConfigDVMegaSet modem(this, -1, port, variant, rxInvert, txInvert, txDelay, frequency, power);
+		unsigned int txDelay, rxFrequency, txFrequency, power;
+		m_config->getDVMEGA(port, variant, rxInvert, txInvert, txDelay, rxFrequency, txFrequency, power);
+		CDStarRepeaterConfigDVMegaSet modem(this, -1, port, variant, rxInvert, txInvert, txDelay, rxFrequency, txFrequency, power);
 		if (modem.ShowModal() == wxID_OK) {
 			if (modem.Validate()) {
-				port      = modem.getPort();
-				variant   = modem.getVariant();
-				rxInvert  = modem.getRXInvert();
-				txInvert  = modem.getTXInvert();
-				txDelay   = modem.getTXDelay();
-				frequency = modem.getFrequency();
-				power     = modem.getPower();
-				m_config->setDVMEGA(port, variant, rxInvert, txInvert, txDelay, frequency, power);
+				port        = modem.getPort();
+				variant     = modem.getVariant();
+				rxInvert    = modem.getRXInvert();
+				txInvert    = modem.getTXInvert();
+				txDelay     = modem.getTXDelay();
+				rxFrequency = modem.getRXFrequency();
+				txFrequency = modem.getTXFrequency();
+				power       = modem.getPower();
+				m_config->setDVMEGA(port, variant, rxInvert, txInvert, txDelay, rxFrequency, txFrequency, power);
 			}
 		}
 	} else if (type.IsSameAs(wxT("Sound Card"))) {

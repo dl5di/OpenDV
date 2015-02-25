@@ -36,23 +36,22 @@ DStarRepeaterConfigControl1Set.o:	DStarRepeaterConfigControl1Set.cpp DStarRepeat
 DStarRepeaterConfigControl2Set.o:	DStarRepeaterConfigControl2Set.cpp DStarRepeaterConfigControl2Set.h ../Common/CallsignTextCtrl.h ../Common/DStarDefines.h
 				$(CC) $(CFLAGS) -c DStarRepeaterConfigControl2Set.cpp
 
-DStarRepeaterConfigControllerSet.o:	DStarRepeaterConfigControllerSet.cpp DStarRepeaterConfigControllerSet.h ../Common/SerialDataController.h \
-					../Common/SerialLineController.h
+DStarRepeaterConfigControllerSet.o:	DStarRepeaterConfigControllerSet.cpp DStarRepeaterConfigControllerSet.h ../Common/SerialPortSelector.h
 				$(CC) $(CFLAGS) -c DStarRepeaterConfigControllerSet.cpp
 
-DStarRepeaterConfigDVAPSet.o:	DStarRepeaterConfigDVAPSet.cpp DStarRepeaterConfigDVAPSet.h ../Common/SerialDataController.h ../Common/DStarDefines.h
+DStarRepeaterConfigDVAPSet.o:	DStarRepeaterConfigDVAPSet.cpp DStarRepeaterConfigDVAPSet.h ../Common/SerialPortSelector.h ../Common/DStarDefines.h
 				$(CC) $(CFLAGS) -c DStarRepeaterConfigDVAPSet.cpp
 
-DStarRepeaterConfigDVMegaSet.o:	DStarRepeaterConfigDVMegaSet.cpp DStarRepeaterConfigDVMegaSet.h ../Common/SerialDataController.h ../Common/DStarDefines.h
+DStarRepeaterConfigDVMegaSet.o:	DStarRepeaterConfigDVMegaSet.cpp DStarRepeaterConfigDVMegaSet.h ../Common/SerialPortSelector.h ../Common/DStarDefines.h
 				$(CC) $(CFLAGS) -c DStarRepeaterConfigDVMegaSet.cpp
 
-DStarRepeaterConfigDVRPTR1Set.o:	DStarRepeaterConfigDVRPTR1Set.cpp DStarRepeaterConfigDVRPTR1Set.h ../Common/SerialDataController.h ../Common/DStarDefines.h
+DStarRepeaterConfigDVRPTR1Set.o:	DStarRepeaterConfigDVRPTR1Set.cpp DStarRepeaterConfigDVRPTR1Set.h ../Common/SerialPortSelector.h ../Common/DStarDefines.h
 				$(CC) $(CFLAGS) -c DStarRepeaterConfigDVRPTR1Set.cpp
 
-DStarRepeaterConfigDVRPTR2Set.o:	DStarRepeaterConfigDVRPTR2Set.cpp DStarRepeaterConfigDVRPTR2Set.h ../Common/SerialDataController.h ../Common/DStarDefines.h
+DStarRepeaterConfigDVRPTR2Set.o:	DStarRepeaterConfigDVRPTR2Set.cpp DStarRepeaterConfigDVRPTR2Set.h ../Common/SerialPortSelector.h ../Common/DStarDefines.h
 				$(CC) $(CFLAGS) -c DStarRepeaterConfigDVRPTR2Set.cpp
 
-DStarRepeaterConfigDVRPTR3Set.o:	DStarRepeaterConfigDVRPTR3Set.cpp DStarRepeaterConfigDVRPTR3Set.h ../Common/SerialDataController.h ../Common/DStarDefines.h
+DStarRepeaterConfigDVRPTR3Set.o:	DStarRepeaterConfigDVRPTR3Set.cpp DStarRepeaterConfigDVRPTR3Set.h ../Common/SerialPortSelector.h ../Common/DStarDefines.h
 				$(CC) $(CFLAGS) -c DStarRepeaterConfigDVRPTR3Set.cpp
 
 DStarRepeaterConfigFrame.o:	DStarRepeaterConfigFrame.cpp DStarRepeaterConfigFrame.h DStarRepeaterConfigDefs.h DStarRepeaterConfigControllerSet.h \

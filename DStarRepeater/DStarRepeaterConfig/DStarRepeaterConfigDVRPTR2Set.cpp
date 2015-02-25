@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2011-2014 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2011-2015 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
  */
 
 #include "DStarRepeaterConfigDVRPTR2Set.h"
-#include "SerialDataController.h"
+#include "SerialPortSelector.h"
 
 const unsigned int BORDER_SIZE    = 5U;
 const unsigned int CONTROL_WIDTH1 = 150U;
@@ -62,7 +62,7 @@ m_txDelay(NULL)
 	m_usbPort = new wxChoice(this, -1, wxDefaultPosition, wxSize(CONTROL_WIDTH1, -1));
 	sizer->Add(m_usbPort, 0, wxALL | wxALIGN_LEFT, BORDER_SIZE);
 
-	wxArrayString ports = CSerialDataController::getDevices();
+	wxArrayString ports = CSerialPortSelector::getDevices();
 	for (unsigned int i = 0U; i < ports.GetCount(); i++)
 		m_usbPort->Append(ports.Item(i));
 

@@ -15,4 +15,4 @@ export CONFDIR := "/etc"
 export CC      := $(DEB_HOST_GNU_TYPE)-g++
 export LDFLAGS := -Xlinker -rpath-link /lib/$(DEB_HOST_GNU_TYPE) -Xlinker -rpath-link /usr/lib/$(DEB_HOST_GNU_TYPE)
 export CFLAGS  := -O2 -Wall -Wno-non-virtual-dtor -Wno-strict-aliasing -Wno-psabi -DLOG_DIR='$(LOGDIR)' -DCONF_DIR='$(CONFDIR)' -DDATA_DIR='$(DATADIR)' -DBIN_DIR='$(BINDIR)' -I/usr/include/$(DEB_HOST_GNU_TYPE) -I/usr/$(DEB_HOST_GNU_TYPE)/include -I/usr/include $(WX_INC)
-export LIBS    := -lportaudio -lusb-1.0 -L/usr/local/lib -L/usr/lib/$(DEB_HOST_GNU_TYPE) -L/usr/$(DEB_HOST_GNU_TYPE)/lib $(WX_LIB)
+export LIBS    := -lasound -lusb-1.0 -L/usr/local/lib -L/usr/lib/$(DEB_HOST_GNU_TYPE) -L/usr/$(DEB_HOST_GNU_TYPE)/lib $(WX_LIB)

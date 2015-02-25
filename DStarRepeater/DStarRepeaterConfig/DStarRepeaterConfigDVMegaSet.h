@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2011-2014 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2011-2015 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -26,7 +26,7 @@
 
 class CDStarRepeaterConfigDVMegaSet : public wxDialog {
 public:
-	CDStarRepeaterConfigDVMegaSet(wxWindow* parent, int id, const wxString& port, DVMEGA_VARIANT variant, bool rxInvert, bool txInvert, unsigned int txDelay, unsigned int frequency, unsigned int power);
+	CDStarRepeaterConfigDVMegaSet(wxWindow* parent, int id, const wxString& port, DVMEGA_VARIANT variant, bool rxInvert, bool txInvert, unsigned int txDelay, unsigned int rxFrequency, unsigned int txFrequency, unsigned int power);
 	virtual ~CDStarRepeaterConfigDVMegaSet();
 
 	virtual bool Validate();
@@ -36,7 +36,8 @@ public:
 	virtual bool           getRXInvert() const;
 	virtual bool           getTXInvert() const;
 	virtual unsigned int   getTXDelay() const;
-	virtual unsigned int   getFrequency() const;
+	virtual unsigned int   getRXFrequency() const;
+	virtual unsigned int   getTXFrequency() const;
 	virtual unsigned int   getPower() const;
 
 	virtual void onVariant(wxCommandEvent& event);
@@ -47,7 +48,6 @@ private:
 	wxChoice*   m_txInvert;
 	wxChoice*   m_rxInvert;
 	wxSlider*   m_txDelay;
-	wxChoice*   m_band;
 	wxTextCtrl* m_frequency;
 	wxSlider*   m_power;
 

@@ -266,6 +266,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\GPIOController.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\HardwareController.cpp"
 				>
 			</File>
@@ -302,10 +306,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\RaspberryController.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\RepeaterProtocolHandler.cpp"
 				>
 			</File>
@@ -319,6 +319,10 @@
 			</File>
 			<File
 				RelativePath=".\SerialLineController.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\SerialPortSelector.cpp"
 				>
 			</File>
 			<File
@@ -492,6 +496,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\GPIOController.h"
+				>
+			</File>
+			<File
 				RelativePath=".\HardwareController.h"
 				>
 			</File>
@@ -532,10 +540,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\RaspberryController.h"
-				>
-			</File>
-			<File
 				RelativePath=".\RepeaterProtocolHandler.h"
 				>
 			</File>
@@ -553,6 +557,10 @@
 			</File>
 			<File
 				RelativePath=".\SerialLineController.h"
+				>
+			</File>
+			<File
+				RelativePath=".\SerialPortSelector.h"
 				>
 			</File>
 			<File

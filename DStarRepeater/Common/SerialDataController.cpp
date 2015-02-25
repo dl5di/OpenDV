@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2002-2004,2007-2011,2013,2014 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2002-2004,2007-2011,2013,2014,2015 by Jonathan Naylor G4KLX
  *   Copyright (C) 1999-2001 by Thomas Sailor HB9JNX
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -33,56 +33,15 @@
 #include <termios.h>
 #endif
 
-wxArrayString CSerialDataController::getDevices()
-{
-	wxArrayString devices;
-
-	devices.Alloc(20);
-
-#if defined(__WINDOWS__)
-	devices.Add(wxT("\\\\.\\COM1"));
-	devices.Add(wxT("\\\\.\\COM2"));
-	devices.Add(wxT("\\\\.\\COM3"));
-	devices.Add(wxT("\\\\.\\COM4"));
-	devices.Add(wxT("\\\\.\\COM5"));
-	devices.Add(wxT("\\\\.\\COM6"));
-	devices.Add(wxT("\\\\.\\COM7"));
-	devices.Add(wxT("\\\\.\\COM8"));
-	devices.Add(wxT("\\\\.\\COM9"));
-	devices.Add(wxT("\\\\.\\COM10"));
-	devices.Add(wxT("\\\\.\\COM11"));
-	devices.Add(wxT("\\\\.\\COM12"));
-	devices.Add(wxT("\\\\.\\COM13"));
-	devices.Add(wxT("\\\\.\\COM14"));
-	devices.Add(wxT("\\\\.\\COM15"));
-	devices.Add(wxT("\\\\.\\COM16"));
-	devices.Add(wxT("\\\\.\\COM17"));
-	devices.Add(wxT("\\\\.\\COM18"));
-	devices.Add(wxT("\\\\.\\COM19"));
-#else
-	devices.Add(wxT("/dev/ttyUSB0"));
-	devices.Add(wxT("/dev/ttyUSB1"));
-	devices.Add(wxT("/dev/ttyUSB2"));
-	devices.Add(wxT("/dev/ttyUSB3"));
-	devices.Add(wxT("/dev/ttyUSB4"));
-	devices.Add(wxT("/dev/ttyACM0"));
-	devices.Add(wxT("/dev/ttyACM1"));
-	devices.Add(wxT("/dev/ttyACM2"));
-	devices.Add(wxT("/dev/ttyACM3"));
-	devices.Add(wxT("/dev/ttyACM4"));
-	devices.Add(wxT("/dev/ttyAMA0"));
-#endif
-
-	return devices;
-}
 
 #if defined(__WINDOWS__)
 
 const unsigned int BUFFER_LENGTH = 1000U;
 
-CSerialDataController::CSerialDataController(const wxString& device, SERIAL_SPEED speed) :
+CSerialDataController::CSerialDataController(const wxString& device, SERIAL_SPEED speed, bool assertRTS) :
 m_device(device),
 m_speed(speed),
+m_assertRTS(assertRTS),
 m_handle(INVALID_HANDLE_VALUE),
 m_readOverlapped(),
 m_writeOverlapped(),
@@ -194,8 +153,8 @@ bool CSerialDataController::open()
 		return false;
 	}
 
-	if (::EscapeCommFunction(m_handle, CLRRTS) == 0) {
-		wxLogError(wxT("Cannot clear RTS for %s, err=%04lx"), m_device.c_str(), ::GetLastError());
+	if (::EscapeCommFunction(m_handle, m_assertRTS ? SETRTS : CLRRTS) == 0) {
+		wxLogError(wxT("Cannot set/clear RTS for %s, err=%04lx"), m_device.c_str(), ::GetLastError());
 		::ClearCommError(m_handle, &errCode, NULL);
 		::CloseHandle(m_handle);
 		return false;
@@ -336,9 +295,10 @@ void CSerialDataController::close()
 
 #else
 
-CSerialDataController::CSerialDataController(const wxString& device, SERIAL_SPEED speed) :
+CSerialDataController::CSerialDataController(const wxString& device, SERIAL_SPEED speed, bool assertRTS) :
 m_device(device),
 m_speed(speed),
+m_assertRTS(assertRTS),
 m_fd(-1)
 {
 	wxASSERT(!device.IsEmpty());
@@ -422,6 +382,23 @@ bool CSerialDataController::open()
 		wxLogError(wxT("Cannot set the attributes for %s"), m_device.c_str());
 		::close(m_fd);
 		return false;
+	}
+
+	if (m_assertRTS) {
+		unsigned int y;
+		if (::ioctl(m_fd, TIOCMGET, &y) < 0) {
+			wxLogError(wxT("Cannot get the control attributes for %s"), m_device.c_str());
+			::close(m_fd);
+			return false;
+		}
+
+		y |= TIOCM_RTS;
+                                                                                
+		if (::ioctl(m_fd, TIOCMSET, &y) < 0) {
+			wxLogError(wxT("Cannot set the control attributes for %s"), m_device.c_str());
+			::close(m_fd);
+			return false;
+		}
 	}
 
 	return true;

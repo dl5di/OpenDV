@@ -1,4 +1,4 @@
-Repeater - 20140521
+Repeater - 20150213
 ===================
 
 20090530
@@ -2011,3 +2011,27 @@ Add two extra commands.
 --------
 
 Added DVAP error dump.
+
+20150208
+--------
+
+Added ALSA for use on Linux, PortAudio is used elsewhere.
+Dynamic serial port selection on Linux.
+Allow for cross-band operating on the DVMEGA.
+GPIO is potentially available on more platforms.
+Assert the RTS pin for the DVMEGA at startup.
+Getting the version at the startup of a DVMEGA is now more aggressive.
+Added a sanity check to the reply from the DVMEGA.
+Improved configuration and validation for the DVMEGA.
+
+20150210
+--------
+
+Updated the dynamic serial port selection for /dev/ttyACM*
+Updated the ALSA handing.
+
+20150213
+--------
+
+Updated the ALSA handling once again.
+Fixed a compile bug when defining GPIO.

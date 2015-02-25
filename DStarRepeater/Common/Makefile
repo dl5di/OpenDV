@@ -3,9 +3,9 @@ all:		Common.a
 OBJS :=	AddressTextCtrl.o AMBEFEC.o AnnouncementUnit.o ArduinoController.o BeaconUnit.o CallsignList.o CallsignTextCtrl.o CCITTChecksum.o CCITTChecksumReverse.o \
 		DStarGMSKDemodulator.o DStarGMSKModulator.o DStarRepeaterConfig.o DummyController.o DVAPController.o DVMegaController.o DVRPTRV1Controller.o \
 		DVRPTRV2Controller.o DVRPTRV3Controller.o DVTOOLFileReader.o DVTOOLFileWriter.o ExternalController.o FIRFilter.o GatewayProtocolHandler.o GMSKController.o \
-		GMSKModem.o GMSKModemLibUsb.o Golay.o HardwareController.o HeaderData.o K8055Controller.o LogEvent.o Logger.o MessageTextCtrl.o Modem.o OutputQueue.o \
-		PortTextCtrl.o RaspberryController.o RepeaterProtocolHandler.o RestrictedTextCtrl.o SerialDataController.o SerialLineController.o SlowDataDecoder.o \
-		SlowDataEncoder.o SoundCardController.o SoundCardReaderWriter.o SplitController.o TCPReaderWriter.o Timer.o UDPReaderWriter.o Utils.o
+		GMSKModem.o GMSKModemLibUsb.o Golay.o GPIOController.o HardwareController.o HeaderData.o K8055Controller.o LogEvent.o Logger.o MessageTextCtrl.o Modem.o \
+		OutputQueue.o PortTextCtrl.o RepeaterProtocolHandler.o RestrictedTextCtrl.o SerialDataController.o SerialLineController.o SerialPortSelector.o \
+		SlowDataDecoder.o SlowDataEncoder.o SoundCardController.o SoundCardReaderWriter.o SplitController.o TCPReaderWriter.o Timer.o UDPReaderWriter.o Utils.o
 
 Common.a:	$(OBJS)
 		ar rcs Common.a $(OBJS)
@@ -96,6 +96,9 @@ GMSKModemLibUsb.o:	GMSKModemLibUsb.cpp GMSKModemLibUsb.h GMSKModem.h DStarDefine
 Golay.o:	Golay.cpp Golay.h
 		$(CC) $(CFLAGS) -c Golay.cpp
 
+GPIOController.o:	GPIOController.cpp GPIOController.h HardwareController.h
+		$(CC) $(CFLAGS) -c GPIOController.cpp
+
 HardwareController.o:	HardwareController.cpp HardwareController.h
 		$(CC) $(CFLAGS) -c HardwareController.cpp
 
@@ -123,9 +126,6 @@ OutputQueue.o:	OutputQueue.cpp OutputQueue.h RingBuffer.h HeaderData.h
 PortTextCtrl.o:	PortTextCtrl.cpp PortTextCtrl.h RestrictedTextCtrl.h
 		$(CC) $(CFLAGS) -c PortTextCtrl.cpp
 
-RaspberryController.o:	RaspberryController.cpp RaspberryController.h HardwareController.h
-		$(CC) $(CFLAGS) -c RaspberryController.cpp
-
 RepeaterProtocolHandler.o:	RepeaterProtocolHandler.cpp RepeaterProtocolHandler.h DStarDefines.h HeaderData.h UDPReaderWriter.h CCITTChecksumReverse.h Utils.h
 		$(CC) $(CFLAGS) -c RepeaterProtocolHandler.cpp
 
@@ -137,6 +137,9 @@ SerialDataController.o:	SerialDataController.cpp SerialDataController.h Hardware
 
 SerialLineController.o:	SerialLineController.cpp SerialLineController.h HardwareController.h
 		$(CC) $(CFLAGS) -c SerialLineController.cpp
+
+SerialPortSelector.o:	SerialPortSelector.cpp SerialPortSelector.h
+		$(CC) $(CFLAGS) -c SerialPortSelector.cpp
 
 SlowDataDecoder.o:	SlowDataDecoder.cpp SlowDataDecoder.h DStarDefines.h HeaderData.h CCITTChecksumReverse.h
 		$(CC) $(CFLAGS) -c SlowDataDecoder.cpp
