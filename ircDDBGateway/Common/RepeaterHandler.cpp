@@ -1595,6 +1595,14 @@ void CRepeaterHandler::linkUp(DSTAR_PROTOCOL protocol, const wxString& callsign)
 
 bool CRepeaterHandler::linkFailed(DSTAR_PROTOCOL protocol, const wxString& callsign, bool isRecoverable)
 {
+	// Is relink to another module required?
+	if (!isRecoverable && m_linkRelink) {
+		m_linkRelink = false;
+		wxLogMessage(wxT("Relinking %s from %s to %s"), m_rptCallsign.c_str(), callsign.c_str(), m_linkRepeater.c_str());
+		linkInt(m_linkRepeater);
+		return false;
+	}
+
 	// Have we linked to something else in the meantime?
 	if (m_linkStatus == LS_NONE || !m_linkRepeater.IsSameAs(callsign)) {
 		switch (protocol) {
@@ -1611,14 +1619,6 @@ bool CRepeaterHandler::linkFailed(DSTAR_PROTOCOL protocol, const wxString& calls
 				break;
 		}
 
-		return false;
-	}
-
-	// Is relink to another module required?
-	if (!isRecoverable && m_linkRelink) {
-		m_linkRelink = false;
-		wxLogMessage(wxT("Relinking %s from %s to %s"), m_rptCallsign.c_str(), callsign.c_str(), m_linkRepeater.c_str());
-		linkInt(m_linkRepeater);
 		return false;
 	}
 
