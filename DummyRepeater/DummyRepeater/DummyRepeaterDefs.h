@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2010,2012,2014 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2010,2012,2014,2015 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -57,7 +57,8 @@ const wxString UNUSED = wxT("<unused>");
 
 enum DONGLE_TYPE {
 	DT_DVDONGLE,
-	DT_DV3000
+	DT_DV3000_NETWORK,
+	DT_DV3000_SERIAL
 };
 
 #endif

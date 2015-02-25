@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2009-2013 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2009-2013,2015 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@
 
 #include "DummyRepeaterControllerSet.h"
 
-#include "SerialLineController.h"
+#include "SerialPortSelector.h"
 
 const unsigned int BORDER_SIZE    = 5U;
 const unsigned int CONTROL_WIDTH1 = 300U;
@@ -37,15 +37,15 @@ m_squelchInvert(NULL)
 	wxStaticText* typeLabel = new wxStaticText(this, -1, _("Type"));
 	sizer->Add(typeLabel, 0, wxALL | wxALIGN_LEFT, BORDER_SIZE);
 
-	wxArrayString serialDevs = CSerialLineController::getDevices();
+	wxArrayString serialDevs = CSerialPortSelector::getDevices();
 
 	m_type = new wxChoice(this, -1, wxDefaultPosition, wxSize(CONTROL_WIDTH1, -1));
 
 	m_type->Append(_("None"));
 
 // XXX ???
-#if defined(RASPBERRY_PI)
-	m_type->Append(wxT("Raspberry Pi"));
+#if defined(GPIO)
+	m_type->Append(wxT("GPIO"));
 #endif
 
 	// Add the Velleman K8055

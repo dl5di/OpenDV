@@ -22,58 +22,9 @@
 #include <sys/types.h>
 
 #if defined(__WINDOWS__)
+
 #include <setupapi.h>
 #include <winioctl.h>
-#else
-#include <sys/ioctl.h>
-#include <sys/stat.h>
-#include <cerrno>
-#include <fcntl.h>
-#include <unistd.h>
-#include <termios.h>
-#endif
-
-wxArrayString CSerialDataController::getDevices()
-{
-	wxArrayString devices;
-
-	devices.Alloc(10);
-
-#if defined(__WINDOWS__)
-	devices.Add(wxT("\\\\.\\COM1"));
-	devices.Add(wxT("\\\\.\\COM2"));
-	devices.Add(wxT("\\\\.\\COM3"));
-	devices.Add(wxT("\\\\.\\COM4"));
-	devices.Add(wxT("\\\\.\\COM5"));
-	devices.Add(wxT("\\\\.\\COM6"));
-	devices.Add(wxT("\\\\.\\COM7"));
-	devices.Add(wxT("\\\\.\\COM8"));
-	devices.Add(wxT("\\\\.\\COM9"));
-	devices.Add(wxT("\\\\.\\COM10"));
-	devices.Add(wxT("\\\\.\\COM11"));
-	devices.Add(wxT("\\\\.\\COM12"));
-	devices.Add(wxT("\\\\.\\COM13"));
-	devices.Add(wxT("\\\\.\\COM14"));
-	devices.Add(wxT("\\\\.\\COM15"));
-	devices.Add(wxT("\\\\.\\COM16"));
-	devices.Add(wxT("\\\\.\\COM17"));
-	devices.Add(wxT("\\\\.\\COM18"));
-	devices.Add(wxT("\\\\.\\COM19"));
-#else
-#if defined(RASPBERRY_PI)
-	devices.Add(wxT("/dev/ttyAMA0"));
-#endif
-	devices.Add(wxT("/dev/ttyUSB0"));
-	devices.Add(wxT("/dev/ttyUSB1"));
-	devices.Add(wxT("/dev/ttyUSB2"));
-	devices.Add(wxT("/dev/ttyUSB3"));
-	devices.Add(wxT("/dev/ttyUSB4"));
-#endif
-
-	return devices;
-}
-
-#if defined(__WINDOWS__)
 
 const unsigned int BUFFER_LENGTH = 1000U;
 
@@ -332,6 +283,13 @@ void CSerialDataController::close()
 }
 
 #else
+
+#include <sys/ioctl.h>
+#include <sys/stat.h>
+#include <cerrno>
+#include <fcntl.h>
+#include <unistd.h>
+#include <termios.h>
 
 CSerialDataController::CSerialDataController(const wxString& device, SERIAL_SPEED speed) :
 m_device(device),

@@ -50,8 +50,6 @@ public:
 
 	void close();
 
-	static wxArrayString getDevices();
-
 private:
 	wxString       m_device;
 	SERIAL_SPEED   m_speed;

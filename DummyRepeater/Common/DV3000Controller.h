@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2014 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2015 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -19,39 +19,23 @@
 #ifndef	DV3000Controller_H
 #define	DV3000Controller_H
 
-#include "UDPReaderWriter.h"
-
 #include <wx/wx.h>
 
-class CDV3000Controller {
+class IDV3000Controller {
 public:
-	CDV3000Controller(const wxString& address, unsigned int port);
-	~CDV3000Controller();
+	virtual ~IDV3000Controller() = 0;
 
-	bool open();
+	virtual bool open() = 0;
 
-	void encodeIn(const wxFloat32* audio, unsigned int length);
-	bool encodeOut(unsigned char* ambe, unsigned int length);
+	virtual void encodeIn(const wxFloat32* audio, unsigned int length) = 0;
+	virtual bool encodeOut(unsigned char* ambe, unsigned int length) = 0;
 
-	void decodeIn(const unsigned char* ambe, unsigned int length);
-	bool decodeOut(wxFloat32* audio, unsigned int length);
+	virtual void decodeIn(const unsigned char* ambe, unsigned int length) = 0;
+	virtual bool decodeOut(wxFloat32* audio, unsigned int length) = 0;
 
-	void close();
+	virtual void close() = 0;
 
 private:
-	CUDPReaderWriter m_socket;
-
-	enum RESP_TYPE {
-		RESP_NONE,
-		RESP_ERROR,
-		RESP_RATEP,
-		RESP_NAME,
-		RESP_AMBE,
-		RESP_AUDIO,
-		RESP_UNKNOWN
-	};
-
-	RESP_TYPE getResponse(unsigned char* buffer, unsigned int length);
 };
 
 #endif
