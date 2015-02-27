@@ -657,7 +657,11 @@ void* CSoundCardReader::Entry()
 	while (!m_killed) {
 		snd_pcm_sframes_t ret;
 		while ((ret = ::snd_pcm_readi(m_handle, m_samples, m_blockSize)) < 0) {
-			wxLogWarning(wxT("snd_pcm_readi returned %d"), ret);
+			if (ret != -EPIPE) {
+				wxString error(::snd_strerror(ret), wxConvLocal);
+				wxLogWarning(wxT("snd_pcm_readi returned %d (%s)"), ret, error.c_str());
+			}
+
 			::snd_pcm_recover(m_handle, ret, 1);
 		}
 
@@ -720,7 +724,7 @@ void* CSoundCardWriter::Entry()
 		m_callback->writeCallback(m_buffer, nSamples, m_id);
 
 		if (nSamples == 0U) {
-			Sleep(10UL);
+			Sleep(5UL);
 		} else {
 			if (m_channels == 1U) {
 				for (unsigned int n = 0U; n < nSamples; n++)
@@ -734,10 +738,19 @@ void* CSoundCardWriter::Entry()
 				}
 			}
         
+			unsigned int offset = 0U;
 			snd_pcm_sframes_t ret;
-			while ((ret = ::snd_pcm_writei(m_handle, m_samples, nSamples)) < 0) {
-				wxLogWarning(wxT("snd_pcm_writei returned %d"), ret);
-				::snd_pcm_recover(m_handle, ret, 1);
+			while ((ret = ::snd_pcm_writei(m_handle, m_samples + offset, nSamples - offset)) != (nSamples - offset)) {
+				if (ret < 0) {
+					if (ret != -EPIPE) {
+						wxString error(::snd_strerror(ret), wxConvLocal);
+						wxLogWarning(wxT("snd_pcm_writei returned %d (%s)"), ret, error.c_str());
+					}
+
+					::snd_pcm_recover(m_handle, ret, 1);
+				} else {
+					offset += (unsigned int)ret;
+				}
 			}
 		}
 	}
