@@ -1,4 +1,4 @@
-ircDDB Gateway - 20150213
+ircDDB Gateway - 20150303
 =========================
 
 20101010
@@ -1422,3 +1422,9 @@ First attempt to fix the multiple linking bug.
 --------
 
 Slight modification to completely fix the multiple linking bug.
+
+20150303
+--------
+
+A slightly less agressive fix for multiple linking.
+Updated the DExtra hosts file.
