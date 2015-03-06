@@ -11,8 +11,8 @@
 ;Configuration
 
   ;General
-  Name "Analogue Repeater 20140303"
-  OutFile "AnalogueRepeater-20140303.exe"
+  Name "Analogue Repeater 20150213"
+  OutFile "AnalogueRepeater-20150213.exe"
 
   ;Folder selection page
   InstallDir "$PROGRAMFILES\Analogue Repeater"
@@ -28,7 +28,7 @@
 ;--------------------------------
 ;Pages
 
-  !insertmacro MUI_PAGE_LICENSE "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\opendv\trunk\AnalogueRepeater\COPYING.txt"
+  !insertmacro MUI_PAGE_LICENSE "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\opendv-git\OpenDV\AnalogueRepeater\COPYING.txt"
   !insertmacro MUI_PAGE_DIRECTORY
   !insertmacro MUI_PAGE_INSTFILES
   !insertmacro MUI_UNPAGE_CONFIRM
@@ -46,13 +46,13 @@ Section "Analogue Repeater Program Files" SecProgram
 
   SetOutPath "$INSTDIR"
 
-  File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\opendv\trunk\AnalogueRepeater\Release\AnalogueRepeater.exe"
-  File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\opendv\trunk\AnalogueRepeater\Release\portaudio_x86.dll"
-  File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\opendv\trunk\AnalogueRepeater\Release\wxbase28u_vc_custom.dll"
-  File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\opendv\trunk\AnalogueRepeater\Release\wxmsw28u_adv_vc_custom.dll"
-  File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\opendv\trunk\AnalogueRepeater\Release\wxmsw28u_core_vc_custom.dll"
-  File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\opendv\trunk\AnalogueRepeater\COPYING.txt"
-  File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\opendv\trunk\AnalogueRepeater\CHANGES.txt"
+  File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\opendv-git\OpenDV\AnalogueRepeater\Release\AnalogueRepeater.exe"
+  File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\opendv-git\OpenDV\AnalogueRepeater\Release\portaudio_x86.dll"
+  File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\opendv-git\OpenDV\AnalogueRepeater\Release\wxbase28u_vc_custom.dll"
+  File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\opendv-git\OpenDV\AnalogueRepeater\Release\wxmsw28u_adv_vc_custom.dll"
+  File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\opendv-git\OpenDV\AnalogueRepeater\Release\wxmsw28u_core_vc_custom.dll"
+  File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\opendv-git\OpenDV\AnalogueRepeater\COPYING.txt"
+  File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\opendv-git\OpenDV\AnalogueRepeater\CHANGES.txt"
 
   ;Create start menu entry
   CreateDirectory "$SMPROGRAMS\Analogue Repeater"

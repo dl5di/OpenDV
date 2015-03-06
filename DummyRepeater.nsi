@@ -11,8 +11,8 @@
 ;Configuration
 
   ;General
-  Name "DummyRepeater 20140519"
-  OutFile "DummyRepeater-20140519.exe"
+  Name "DummyRepeater 20150213"
+  OutFile "DummyRepeater-20150213.exe"
 
   ;Folder selection page
   InstallDir "$PROGRAMFILES\Dummy Repeater"
@@ -28,7 +28,7 @@
 ;--------------------------------
 ;Pages
 
-  !insertmacro MUI_PAGE_LICENSE "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\opendv\trunk\DummyRepeater\COPYING.txt"
+  !insertmacro MUI_PAGE_LICENSE "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\opendv-git\OpenDV\DummyRepeater\COPYING.txt"
   !insertmacro MUI_PAGE_DIRECTORY
   !insertmacro MUI_PAGE_INSTFILES
   !insertmacro MUI_UNPAGE_CONFIRM
@@ -46,13 +46,13 @@ Section "Repeater Program Files" SecProgram
 
   SetOutPath "$INSTDIR"
 
-  File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\opendv\trunk\DummyRepeater\Release\DummyRepeater.exe"
-  File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\opendv\trunk\DummyRepeater\Release\portaudio_x86.dll"
-  File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\opendv\trunk\DummyRepeater\Release\wxbase28u_vc_custom.dll"
-  File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\opendv\trunk\DummyRepeater\Release\wxmsw28u_adv_vc_custom.dll"
-  File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\opendv\trunk\DummyRepeater\Release\wxmsw28u_core_vc_custom.dll"
-  File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\opendv\trunk\DummyRepeater\COPYING.txt"
-  File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\opendv\trunk\DummyRepeater\CHANGES.txt"
+  File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\opendv-git\OpenDV\DummyRepeater\Release\DummyRepeater.exe"
+  File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\opendv-git\OpenDV\DummyRepeater\Release\portaudio_x86.dll"
+  File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\opendv-git\OpenDV\DummyRepeater\Release\wxbase28u_vc_custom.dll"
+  File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\opendv-git\OpenDV\DummyRepeater\Release\wxmsw28u_adv_vc_custom.dll"
+  File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\opendv-git\OpenDV\DummyRepeater\Release\wxmsw28u_core_vc_custom.dll"
+  File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\opendv-git\OpenDV\DummyRepeater\COPYING.txt"
+  File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\opendv-git\OpenDV\DummyRepeater\CHANGES.txt"
 
   ;Create start menu entry
   CreateDirectory "$SMPROGRAMS\Dummy Repeater"

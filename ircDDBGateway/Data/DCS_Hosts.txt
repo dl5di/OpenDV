@@ -31,5 +31,7 @@ DCS024	dcs024.xreflector.net
 DCS025	dcs025.xreflector.net
 DCS027	dcs027.xreflector.net
 DCS028	dcs028.xreflector.net
+DCS029	dcs028.xreflector.net
+DCS032	dcs033.xreflector.net
 DCS033	dcs033.xreflector.net
 DCS044	dcs044.xreflector.net

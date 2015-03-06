@@ -1,18 +1,16 @@
 all:		Common.a
 
-OBJS :=	AddressTextCtrl.o AMBE3000Thread.o ArduinoController.o Bleeper.o CallsignTextCtrl.o CCITTChecksumReverse.o DongleThread.o DummyController.o \
-		DV3000Controller.o DVDongleController.o DVDongleThread.o ExternalController.o FIRFilter.o HardwareController.o HeaderData.o K8055Controller.o Logger.o \
-		MessageData.o MessageTextCtrl.o PortTextCtrl.o RaspberryController.o RepeaterProtocolHandler.o RestrictedTextCtrl.o SerialDataController.o \
-		SerialLineController.o SlowDataDecoder.o SlowDataEncoder.o SoundCardReaderWriter.o Timer.o UDPReaderWriter.o URIUSBController.o Utils.o
+OBJS :=	AddressTextCtrl.o ArduinoController.o Bleeper.o CallsignTextCtrl.o CCITTChecksumReverse.o DongleThread.o DummyController.o DV3000Controller.o \
+		DV3000NetworkController.o DV3000SerialController.o DV3000Thread.o DVDongleController.o DVDongleThread.o ExternalController.o FIRFilter.o \
+		GPIOController.o HardwareController.o HeaderData.o K8055Controller.o Logger.o MessageData.o MessageTextCtrl.o PortTextCtrl.o \
+		RepeaterProtocolHandler.o RestrictedTextCtrl.o SerialDataController.o SerialLineController.o SerialPortSelector.o SlowDataDecoder.o \
+		SlowDataEncoder.o SoundCardReaderWriter.o Timer.o UDPReaderWriter.o URIUSBController.o Utils.o
 
 Common.a:	$(OBJS)
 		ar rcs Common.a $(OBJS)
 
 AddressTextCtrl.o:	AddressTextCtrl.cpp AddressTextCtrl.h RestrictedTextCtrl.h
 		$(CC) $(CFLAGS) -c AddressTextCtrl.cpp
-
-AMBE3000Thread.o:	AMBE3000Thread.cpp AMBE3000Thread.h DongleThread.h DV3000Controller.h DStarDefines.h
-		$(CC) $(CFLAGS) -c AMBE3000Thread.cpp
 
 ArduinoController.o:	ArduinoController.cpp ArduinoController.h SerialDataController.h HardwareController.h
 		$(CC) $(CFLAGS) -c ArduinoController.cpp
@@ -32,8 +30,14 @@ DongleThread.o:	DongleThread.cpp DongleThread.h FIRFilter.h Bleeper.h RingBuffer
 DummyController.o:	DummyController.cpp DummyController.h HardwareController.h
 		$(CC) $(CFLAGS) -c DummyController.cpp
 
-DV3000Controller.o:	DV3000Controller.cpp DV3000Controller.h DStarDefines.h UDPReaderWriter.h Utils.h
+DV3000Controller.o:	DV3000Controller.cpp DV3000Controller.h
 		$(CC) $(CFLAGS) -c DV3000Controller.cpp
+
+DV3000NetworkController.o:	DV3000NetworkController.cpp DV3000NetworkController.h DV3000Controller.h DStarDefines.h SerialDataController.h Utils.h
+		$(CC) $(CFLAGS) -c DV3000NetworkController.cpp
+
+DV3000SerialController.o:	DV3000SerialController.cpp DV3000SerialController.h DV3000Controller.h DStarDefines.h UDPReaderWriter.h Utils.h
+		$(CC) $(CFLAGS) -c DV3000SerialController.cpp
 
 DV3000Thread.o:	DV3000Thread.cpp DV3000Thread.h DongleThread.h DV3000Controller.h DStarDefines.h
 		$(CC) $(CFLAGS) -c DV3000Thread.cpp
@@ -49,6 +53,9 @@ ExternalController.o:	ExternalController.cpp ExternalController.h DStarDefines.h
 
 FIRFilter.o:	FIRFilter.cpp FIRFilter.h
 		$(CC) $(CFLAGS) -c FIRFilter.cpp
+
+GPIOController.o:	GPIOController.cpp GPIOController.h HardwareController.h
+		$(CC) $(CFLAGS) -c GPIOController.cpp
 
 HardwareController.o:	HardwareController.cpp HardwareController.h
 		$(CC) $(CFLAGS) -c HardwareController.cpp
@@ -71,9 +78,6 @@ MessageTextCtrl.o:	MessageTextCtrl.cpp MessageTextCtrl.h RestrictedTextCtrl.h
 PortTextCtrl.o:	PortTextCtrl.cpp PortTextCtrl.h RestrictedTextCtrl.h
 		$(CC) $(CFLAGS) -c PortTextCtrl.cpp
 
-RaspberryController.o:	RaspberryController.cpp RaspberryController.h HardwareController.h
-		$(CC) $(CFLAGS) -c RaspberryController.cpp
-
 RepeaterProtocolHandler.o:	RepeaterProtocolHandler.cpp RepeaterProtocolHandler.h DStarDefines.h HeaderData.h UDPReaderWriter.h CCITTChecksumReverse.h Utils.h
 		$(CC) $(CFLAGS) -c RepeaterProtocolHandler.cpp
 
@@ -85,6 +89,9 @@ SerialDataController.o:	SerialDataController.cpp SerialDataController.h Hardware
 
 SerialLineController.o:	SerialLineController.cpp SerialLineController.h HardwareController.h
 		$(CC) $(CFLAGS) -c SerialLineController.cpp
+
+SerialPortSelector.o:	SerialPortSelector.cpp SerialPortSelector.h
+		$(CC) $(CFLAGS) -c SerialPortSelector.cpp
 
 SlowDataDecoder.o:	SlowDataDecoder.cpp SlowDataDecoder.h DStarDefines.h
 		$(CC) $(CFLAGS) -c SlowDataDecoder.cpp

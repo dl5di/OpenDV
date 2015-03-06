@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2009-2014 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2009-2015 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -445,12 +445,6 @@ void CAnalogueRepeaterFrame::onPreferences(wxCommandEvent&)
 	wxFloat32 dtmfThreshold;
 	::wxGetApp().getDTMF(dtmfRadio, dtmfExternal, dtmfShutdown, dtmfStartup, dtmfTimeout, dtmfTimeReset, dtmfCommand1, dtmfCommand1Line, dtmfCommand2, dtmfCommand2Line, dtmfOutput1, dtmfOutput2, dtmfOutput3, dtmfOutput4, dtmfThreshold);
 
-	bool aprsTxEnabled;
-	wxString aprsCallsign, aprsDescription;
-	wxFloat32 aprsLatitude, aprsLongitude;
-	int aprsHeight;
-	::wxGetApp().getAPRS(aprsTxEnabled, aprsCallsign, aprsLatitude, aprsLongitude, aprsHeight, aprsDescription);
-
 	unsigned int activeHangTime;
 	::wxGetApp().getActiveHang(activeHangTime);
 
@@ -465,8 +459,7 @@ void CAnalogueRepeaterFrame::onPreferences(wxCommandEvent&)
 		externalRXPin, externalBackground, interfaceType, interfaceConfig, pttDelay, squelchDelay, pttInvert,
 		squelchInvert, dtmfRadio, dtmfExternal, dtmfShutdown, dtmfStartup, dtmfTimeout, dtmfTimeReset,
 		dtmfOutput1, dtmfOutput2, dtmfOutput3, dtmfOutput4, dtmfCommand1, dtmfCommand1Line, dtmfCommand2,
-		dtmfCommand2Line, dtmfThreshold, aprsTxEnabled, aprsCallsign, aprsLatitude, aprsLongitude, aprsHeight,
-		aprsDescription, activeHangTime);
+		dtmfCommand2Line, dtmfThreshold, activeHangTime);
 	if (dialog1.ShowModal() != wxID_OK)
 		return;
 
@@ -567,14 +560,6 @@ void CAnalogueRepeaterFrame::onPreferences(wxCommandEvent&)
 	dtmfThreshold    = dialog1.getDTMFThreshold();
 	::wxGetApp().setDTMF(dtmfRadio, dtmfExternal, dtmfShutdown, dtmfStartup, dtmfTimeout, dtmfTimeReset, dtmfCommand1, dtmfCommand1Line, dtmfCommand2, dtmfCommand2Line, dtmfOutput1, dtmfOutput2, dtmfOutput3, dtmfOutput4, dtmfThreshold);
 
-	aprsTxEnabled   = dialog1.getAPRSTXEnabled();
-	aprsCallsign    = dialog1.getAPRSCallsign();
-	aprsLatitude    = dialog1.getAPRSLatitude();
-	aprsLongitude   = dialog1.getAPRSLongitude();
-	aprsHeight      = dialog1.getAPRSHeight();
-	aprsDescription = dialog1.getAPRSDescription();
-	::wxGetApp().setAPRS(aprsTxEnabled, aprsCallsign, aprsLatitude, aprsLongitude, aprsHeight, aprsDescription);
-
 	activeHangTime = dialog1.getActiveHangTime();
 	::wxGetApp().setActiveHang(activeHangTime);
 
@@ -605,7 +590,7 @@ void CAnalogueRepeaterFrame::onAbout(wxCommandEvent&)
 {
 	wxAboutDialogInfo info;
 	info.AddDeveloper(wxT("Jonathan Naylor, G4KLX"));
-	info.SetCopyright(wxT("(C) 2009-2014 using GPL v2 or later"));
+	info.SetCopyright(wxT("(C) 2009-2015 using GPL v2 or later"));
 	info.SetName(APPLICATION_NAME);
 	info.SetVersion(VERSION);
 	info.SetDescription(_("This program allows a computer with a soundcard to act as a repeater."));

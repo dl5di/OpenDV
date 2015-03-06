@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2009-2014 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2009-2015 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -45,8 +45,7 @@ CAnalogueRepeaterPreferences::CAnalogueRepeaterPreferences(wxWindow* parent, int
 		const wxString& dtmfTimeReset, const wxString& dtmfOutput1, const wxString& dtmfOutput2,
 		const wxString& dtmfOutput3, const wxString& dtmfOutput4, const wxString& dtmfCommand1,
 		const wxString& dtmfCommand1Line, const wxString& dtmfCommand2, const wxString& dtmfCommand2Line,
-		wxFloat32 dtmfThreshold, bool aprsTxEnabled, const wxString& aprsCallsign, wxFloat32 aprsLatitude,
-		wxFloat32 aprsLongitude, int aprsHeight, const wxString& aprsDescription, unsigned int activeHangTime) :
+		wxFloat32 dtmfThreshold, unsigned int activeHangTime) :
 wxDialog(parent, id, wxString(_("Analogue Repeater Preferences"))),
 m_callsign(NULL),
 m_ack(NULL),
@@ -58,7 +57,6 @@ m_external(NULL),
 m_controller(NULL),
 m_dtmf1(NULL),
 m_dtmf2(NULL),
-m_aprs(NULL),
 m_active(NULL)
 {
 	wxBoxSizer* mainSizer = new wxBoxSizer(wxVERTICAL);
@@ -94,9 +92,6 @@ m_active(NULL)
 
 	m_dtmf2 = new CAnalogueRepeaterDTMF2Set(noteBook, -1, APPLICATION_NAME, dtmfCommand1, dtmfCommand1Line, dtmfCommand2, dtmfCommand2Line);
 	noteBook->AddPage(m_dtmf2, _("DTMF Commands 2"), false);
-
-	m_aprs = new CAnalogueRepeaterAPRSSet(noteBook, -1, APPLICATION_NAME, aprsTxEnabled, aprsCallsign, aprsLatitude, aprsLongitude, aprsHeight, aprsDescription);
-	noteBook->AddPage(m_aprs, _("APRS"), false);
 
 	m_active = new CActiveHangSet(noteBook, -1, APPLICATION_NAME, activeHangTime);
 	noteBook->AddPage(m_active, _("Active Output"), false);
@@ -521,36 +516,6 @@ wxString CAnalogueRepeaterPreferences::getDTMFOutput4() const
 wxFloat32 CAnalogueRepeaterPreferences::getDTMFThreshold() const
 {
 	return m_dtmf1->getThreshold();
-}
-
-bool CAnalogueRepeaterPreferences::getAPRSTXEnabled() const
-{
-	return m_aprs->getTXEnabled();
-}
-
-wxString CAnalogueRepeaterPreferences::getAPRSCallsign() const
-{
-	return m_aprs->getCallsign();
-}
-
-wxFloat32 CAnalogueRepeaterPreferences::getAPRSLatitude() const
-{
-	return m_aprs->getLatitude();
-}
-
-wxFloat32 CAnalogueRepeaterPreferences::getAPRSLongitude() const
-{
-	return m_aprs->getLongitude();
-}
-
-int CAnalogueRepeaterPreferences::getAPRSHeight() const
-{
-	return m_aprs->getHeight();
-}
-
-wxString CAnalogueRepeaterPreferences::getAPRSDescription() const
-{
-	return m_aprs->getDescription();
 }
 
 unsigned int CAnalogueRepeaterPreferences::getActiveHangTime() const

@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2009-2014 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2009-2015 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -51,7 +51,8 @@ public:
 	virtual bool writeHeader(const CHeaderData& header);
 	virtual bool writeData(const unsigned char* data, unsigned int length, bool end);
 
-	virtual void callback(const wxFloat32* input, wxFloat32* output, unsigned int n, int id);
+	virtual void readCallback(const wxFloat32* input, unsigned int n, int id);
+	virtual void writeCallback(wxFloat32* output, unsigned int& n, int id);
 
 private:
 	CSoundCardReaderWriter     m_sound;

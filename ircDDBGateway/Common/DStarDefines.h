@@ -1,5 +1,5 @@
 /*
- *	Copyright (C) 2009-2014 by Jonathan Naylor, G4KLX
+ *	Copyright (C) 2009-2015 by Jonathan Naylor, G4KLX
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -116,7 +116,7 @@ const unsigned int  CCS_PORT    = 30061U;
 const unsigned int  G2_DV_PORT  = 40000U;
 const unsigned int  G2_DD_PORT  = 40001U;
 
-const unsigned int NETWORK_TIMEOUT  = 1U;		// Network timeout for G2, CCS, DCS, DExtra, and D-Plus
+const unsigned int NETWORK_TIMEOUT  = 2U;		// Network timeout for G2, CCS, DCS, DExtra, and D-Plus
 const unsigned int REPEATER_TIMEOUT = 2U;		// Repeater timeout
 const unsigned int REPLY_TIME       = 2U;		// The turnaround time for version, echo, audio prompts
 

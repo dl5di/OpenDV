@@ -1,4 +1,4 @@
-Repeater - 20140519
+Repeater - 20150213
 ===================
 
 20090530
@@ -1945,3 +1945,21 @@ First release of the Dummy Repeater as its own package.
 --------
 
 Add support for the DV3000 on the Raspberry Pi.
+
+20150209
+--------
+
+Use ALSA instead of PortAudio on Linux.
+Dynamic serial port list on Linux.
+Two configurations of GPIO PTT pins.
+Support for the DV3000U.
+
+20150210
+--------
+
+Updated the ALSA handing.
+
+20150213
+--------
+
+Updated the ALSA handling again.

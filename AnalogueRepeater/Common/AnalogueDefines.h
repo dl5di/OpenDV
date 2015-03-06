@@ -81,10 +81,4 @@ enum AUDIO_SOURCE {
 	AS_WAV_FILE
 };
 
-enum SB2_STATE {
-	SB2S_NONE,
-	SB2S_ID,
-	SB2S_APRS
-};
-
 #endif

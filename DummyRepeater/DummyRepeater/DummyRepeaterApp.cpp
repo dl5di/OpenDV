@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2010-2014 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2010-2015 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -17,11 +17,10 @@
  */
 
 #include "RepeaterProtocolHandler.h"
+#include "DV3000NetworkController.h"
+#include "DV3000SerialController.h"
 #include "SoundCardReaderWriter.h"
 #include "SerialLineController.h"
-#if defined(RASPBERRY_PI)
-#include "RaspberryController.h"
-#endif
 #include "ExternalController.h"
 #include "DVDongleController.h"
 #include "ArduinoController.h"
@@ -30,8 +29,11 @@
 #include "DV3000Controller.h"
 #include "K8055Controller.h"
 #include "DummyController.h"
+#if defined(GPIO)
+#include "GPIOController.h"
+#endif
 #include "DVDongleThread.h"
-#include "AMBE3000Thread.h"
+#include "DV3000Thread.h"
 #include "DStarDefines.h"
 #include "Version.h"
 #include "Logger.h"
@@ -144,8 +146,7 @@ bool CDummyRepeaterApp::OnInit()
 
 	wxLogInfo(wxT("Starting ") + APPLICATION_NAME + wxT(" - ") + VERSION);
 
-	// Log the SVN revsion and the version of wxWidgets and the Operating System
-	wxLogInfo(SVNREV);
+	// Log the version of wxWidgets and the Operating System
 	wxLogInfo(wxT("Using wxWidgets %d.%d.%d on %s"), wxMAJOR_VERSION, wxMINOR_VERSION, wxRELEASE_NUMBER, ::wxGetOsDescription().c_str());
 
 	createThread();
@@ -706,9 +707,13 @@ void CDummyRepeaterApp::createThread()
 			if (!dongleDevice.IsEmpty())
 				dongle = new CDVDongleThread(new CDVDongleController(dongleDevice));
 			break;
-		case DT_DV3000:
+		case DT_DV3000_NETWORK:
 			if (!dongleAddress.IsEmpty() && donglePort > 0U)
-				dongle = new CAMBE3000Thread(new CDV3000Controller(dongleAddress, donglePort));
+				dongle = new CDV3000Thread(new CDV3000NetworkController(dongleAddress, donglePort));
+			break;
+		case DT_DV3000_SERIAL:
+			if (!dongleDevice.IsEmpty())
+				dongle = new CDV3000Thread(new CDV3000SerialController(dongleDevice));
 			break;
 		default:
 			wxLogError(wxT("Invalid Dongle type specified - %d"), int(dongleType));
@@ -733,11 +738,7 @@ void CDummyRepeaterApp::createThread()
 	getSoundcard(readDevice, writeDevice);
 
 	if (!readDevice.IsEmpty() && !writeDevice.IsEmpty()) {
-#if defined(__WINDOWS__)
 		CSoundCardReaderWriter* soundcard = new CSoundCardReaderWriter(readDevice, writeDevice, DSTAR_RADIO_SAMPLE_RATE, DSTAR_RADIO_BLOCK_SIZE);
-#else
-		CSoundCardReaderWriter* soundcard = new CSoundCardReaderWriter(readDevice, writeDevice, DSTAR_RADIO_SAMPLE_RATE, 64U);
-#endif
 		soundcard->setCallback(m_thread, 0);
 
 		bool res = soundcard->open();
@@ -785,9 +786,9 @@ void CDummyRepeaterApp::createThread()
 		controller = new CExternalController(new CSerialLineController(port, config), pttInvert, squelchInvert);
 	} else if (type.StartsWith(wxT("Arduino - "), &port)) {
 		controller = new CExternalController(new CArduinoController(port), pttInvert, squelchInvert);
-#if defined(RASPBERRY_PI)
-	} else if (type.IsSameAs(wxT("Raspberry Pi"))) {
-		controller = new CExternalController(new CRaspberryController, pttInvert, squelchInvert);
+#if defined(GPIO)
+	} else if (type.IsSameAs(wxT("GPIO"))) {
+		controller = new CExternalController(new CGPIOController(config), pttInvert, squelchInvert);
 #endif
 	} else {
 		controller = new CExternalController(new CDummyController, pttInvert, squelchInvert);

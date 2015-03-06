@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2011-2014 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2011-2015 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
  */
 
 #include "DStarRepeaterConfigDVMegaSet.h"
-#include "SerialDataController.h"
+#include "SerialPortSelector.h"
 
 const unsigned int BORDER_SIZE    = 5U;
 const unsigned int CONTROL_WIDTH1 = 150U;
@@ -32,7 +32,7 @@ BEGIN_EVENT_TABLE(CDStarRepeaterConfigDVMegaSet, wxDialog)
 END_EVENT_TABLE()
 
 
-CDStarRepeaterConfigDVMegaSet::CDStarRepeaterConfigDVMegaSet(wxWindow* parent, int id, const wxString& port, DVMEGA_VARIANT variant, bool rxInvert, bool txInvert, unsigned int txDelay, unsigned int frequency, unsigned int power) :
+CDStarRepeaterConfigDVMegaSet::CDStarRepeaterConfigDVMegaSet(wxWindow* parent, int id, const wxString& port, DVMEGA_VARIANT variant, bool rxInvert, bool txInvert, unsigned int txDelay, unsigned int rxFrequency, unsigned int txFrequency, unsigned int power) :
 wxDialog(parent, id, wxString(_("DVMEGA Settings"))),
 m_port(NULL),
 m_variant(NULL),
@@ -52,7 +52,7 @@ m_power(NULL)
 	m_port = new wxChoice(this, -1, wxDefaultPosition, wxSize(CONTROL_WIDTH1, -1));
 	sizer->Add(m_port, 0, wxALL | wxALIGN_LEFT, BORDER_SIZE);
 
-	wxArrayString ports = CSerialDataController::getDevices();
+	wxArrayString ports = CSerialPortSelector::getDevices();
 	for (unsigned int i = 0U; i < ports.GetCount(); i++)
 		m_port->Append(ports.Item(i));
 
@@ -64,8 +64,10 @@ m_power(NULL)
 	sizer->Add(variantLabel, 0, wxALL | wxALIGN_LEFT, BORDER_SIZE);
 
 	m_variant = new wxChoice(this, CHOICE_VARIANT, wxDefaultPosition, wxSize(CONTROL_WIDTH1, -1));
-	m_variant->Append(_("Node"));
-	m_variant->Append(_("Radio"));
+	m_variant->Append(_("Modem"));
+	m_variant->Append(_("Radio - 2m"));
+	m_variant->Append(_("Radio - 70cm"));
+	m_variant->Append(_("Radio - 2m + 70cm"));
 	sizer->Add(m_variant, 0, wxALL | wxALIGN_LEFT, BORDER_SIZE);
 	m_variant->SetSelection(int(variant));
 
@@ -87,25 +89,16 @@ m_power(NULL)
 	sizer->Add(m_rxInvert, 0, wxALL | wxALIGN_LEFT, BORDER_SIZE);
 	m_rxInvert->SetSelection(rxInvert ? 1 : 0);
 
-	wxStaticText* bandLabel = new wxStaticText(this, -1, _("Band"));
-	sizer->Add(bandLabel, 0, wxALL | wxALIGN_LEFT, BORDER_SIZE);
-
-	m_band = new wxChoice(this, -1, wxDefaultPosition, wxSize(CONTROL_WIDTH1, -1));
-	m_band->Append(_("2m"));
-	m_band->Append(_("70cm"));
-	sizer->Add(m_band, 0, wxALL | wxALIGN_LEFT, BORDER_SIZE);
-	if (frequency >= 400000000U)
-		m_band->SetSelection(1);
-	else
-		m_band->SetSelection(0);
-
 	wxStaticText* freqLabel = new wxStaticText(this, -1, _("Frequency (Hz)"));
 	sizer->Add(freqLabel, 0, wxALL | wxALIGN_LEFT, BORDER_SIZE);
 
 	wxString text;
-	text.Printf(wxT("%u"), frequency);
+	if (rxFrequency == txFrequency)
+	    text.Printf(wxT("%u"), rxFrequency);
+        else
+            text.Printf(wxT("%u/%u"), rxFrequency, txFrequency);
 
-	m_frequency = new wxTextCtrl(this, -1, text, wxDefaultPosition, wxSize(CONTROL_WIDTH1, -1));
+        m_frequency = new wxTextCtrl(this, -1, text, wxDefaultPosition, wxSize(CONTROL_WIDTH1, -1));
 	sizer->Add(m_frequency, 0, wxALL | wxALIGN_LEFT, BORDER_SIZE);
 
 	wxStaticText* txDelayLabel = new wxStaticText(this, -1, _("TX Delay (ms)"));
@@ -125,12 +118,13 @@ m_power(NULL)
 	topSizer->Add(CreateButtonSizer(wxOK | wxCANCEL), 0, wxALL | wxALIGN_RIGHT, BORDER_SIZE);
 
 	switch (variant) {
-		case DVMV_RADIO:
+		case DVMV_RADIO_2M:
+		case DVMV_RADIO_70CM:
+		case DVMV_RADIO_2M_70CM:
 			m_txInvert->Disable();
 			m_rxInvert->Disable();
 			break;
 		default:
-			m_band->Disable();
 			m_frequency->Disable();
 			m_power->Disable();
 			break;
@@ -162,23 +156,44 @@ bool CDStarRepeaterConfigDVMegaSet::Validate()
 	if (m_rxInvert->GetCurrentSelection() == wxNOT_FOUND)
 		return false;
 
-	if (m_band->GetCurrentSelection() == wxNOT_FOUND)
-		return false;
-
-	// When DVMV_RADIO
 	if (m_variant->GetSelection() == 1) {
-		unsigned int frequency = getFrequency();
+		unsigned int frequency = getRXFrequency();
 
-		switch (m_band->GetSelection()) {
-			case 0:		// 2m
-				if (frequency < 144000000U || frequency > 148000000U)
-					return false;
-				break;
-			case 1:		// 70cms
-				if (frequency < 420000000U || frequency > 450000000U)
-					return false;
-				break;
-		}
+                if (frequency >= 144000000U && frequency < 148000000U)
+                        return true;
+                else
+                        return false;
+	} else if (m_variant->GetSelection() == 2) {
+		unsigned int frequency = getRXFrequency();
+
+                if (frequency >= 420000000U && frequency < 450000000U)
+                        return true;
+                else
+                        return false;
+	} else if (m_variant->GetSelection() == 3) {
+		unsigned int rxFrequency = getRXFrequency();
+		unsigned int txFrequency = getTXFrequency();
+
+		if (rxFrequency == txFrequency) {
+                        if ((rxFrequency >= 144000000U && rxFrequency < 148000000U) ||
+		            (rxFrequency >= 420000000U && rxFrequency < 450000000U))
+                                return true;
+                        else
+                                return false;
+                } else {
+        		bool rx2m   = (rxFrequency >= 144000000U && rxFrequency < 148000000U);
+			bool rx70cm = (rxFrequency >= 420000000U && rxFrequency < 450000000U);
+
+			bool tx2m   = (txFrequency >= 144000000U && txFrequency < 148000000U);
+        		bool tx70cm = (txFrequency >= 420000000U && txFrequency < 450000000U);
+
+        		if (rx2m && tx70cm)
+        		    return true;
+                        else if (rx70cm && tx2m)
+                            return true;
+                        else
+                            return false;
+                }
 	}
 
 	return true;
@@ -199,7 +214,7 @@ DVMEGA_VARIANT CDStarRepeaterConfigDVMegaSet::getVariant() const
 	int n = m_variant->GetCurrentSelection();
 
 	if (n == wxNOT_FOUND)
-		return DVMV_NODE;
+		return DVMV_MODEM;
 
 	return DVMEGA_VARIANT(n);
 }
@@ -229,14 +244,43 @@ unsigned int CDStarRepeaterConfigDVMegaSet::getTXDelay() const
 	return (unsigned int)m_txDelay->GetValue();
 }
 
-unsigned int CDStarRepeaterConfigDVMegaSet::getFrequency() const
+unsigned int CDStarRepeaterConfigDVMegaSet::getRXFrequency() const
 {
 	wxString hz = m_frequency->GetValue();
 
-	unsigned long frequency;
-	hz.ToULong(&frequency);
+	int pos = hz.Find(wxT('/'));
+	if (pos != wxNOT_FOUND) {
+            unsigned long frequency;
+            hz.Left(pos).ToULong(&frequency);
+            return frequency;
+        } else {
+	    unsigned long frequency;
+	    hz.ToULong(&frequency);
+	    return frequency;
+        }
+}
 
-	return frequency;
+unsigned int CDStarRepeaterConfigDVMegaSet::getTXFrequency() const
+{
+        DVMEGA_VARIANT variant = getVariant();
+	wxString hz = m_frequency->GetValue();
+
+	int pos = hz.Find(wxT('/'));
+	if (pos != wxNOT_FOUND && variant == DVMV_RADIO_2M_70CM) {
+            unsigned long frequency;
+            hz.Mid(pos + 1).ToULong(&frequency);
+            return frequency;
+        } else {
+            if (pos != wxNOT_FOUND) {
+                unsigned long frequency;
+                hz.Left(pos).ToULong(&frequency);
+                return frequency;
+            } else {
+	        unsigned long frequency;
+	        hz.ToULong(&frequency);
+	        return frequency;
+            }
+        }
 }
 
 unsigned int CDStarRepeaterConfigDVMegaSet::getPower() const
@@ -246,20 +290,20 @@ unsigned int CDStarRepeaterConfigDVMegaSet::getPower() const
 
 void CDStarRepeaterConfigDVMegaSet::onVariant(wxCommandEvent &event)
 {
-	int n = event.GetSelection();
+	DVMEGA_VARIANT variant = getVariant();
 
-	switch (n) {
-		case 1:		// DVMV_RADIO
+	switch (variant) {
+		case DVMV_RADIO_2M:
+		case DVMV_RADIO_70CM:
+		case DVMV_RADIO_2M_70CM:
 			m_txInvert->Disable();
 			m_rxInvert->Disable();
-			m_band->Enable();
 			m_frequency->Enable();
 			m_power->Enable();
 			break;
-		default:	// DVMV_NODE
+		default:	// DVMV_MODEM
 			m_txInvert->Enable();
 			m_rxInvert->Enable();
-			m_band->Disable();
 			m_frequency->Disable();
 			m_power->Disable();
 			break;

@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2009-2014 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2009-2015 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -18,19 +18,18 @@
 
 #include "AnalogueRepeaterConfig.h"
 #include "SerialLineController.h"
-#if defined(RASPBERRY_PI)
-#include "RaspberryController.h"
-#endif
 #include "ExternalController.h"
 #include "ArduinoController.h"
 #include "AnalogueRepeaterD.h"
 #include "DummyController.h"
 #include "K8055Controller.h"
+#if defined(GPIO)
+#include "GPIOController.h"
+#endif
 #include "WAVFileStore.h"
 #include "CWKeyer.h"
 #include "Version.h"
 #include "Logger.h"
-#include "APRSTX.h"
 
 #include <wx/cmdline.h>
 #include <wx/wfstream.h>
@@ -153,8 +152,7 @@ bool CAnalogueRepeaterD::init()
 
 	wxLogInfo(wxT("Starting ") + APPLICATION_NAME + wxT(" daemon - ") + VERSION);
 
-	// Log the SVN revsion and the version of wxWidgets and the Operating System
-	wxLogInfo(SVNREV);
+	// Log the version of wxWidgets and the Operating System
 	wxLogInfo(wxT("Using wxWidgets %d.%d.%d on %s"), wxMAJOR_VERSION, wxMINOR_VERSION, wxRELEASE_NUMBER, ::wxGetOsDescription().c_str());
 
 	return createThread();
@@ -334,11 +332,7 @@ bool CAnalogueRepeaterD::createThread()
 	wxLogInfo(wxT("Radio soundcard set to %s:%s, delay: %u ms, de-emphasis: %d, pre-emphasis %d, vogad: %d"), readDevice.c_str(), writeDevice.c_str(), audioDelay * 20U, int(deEmphasis), int(preEmphasis), int(vogad));
 
 	if (!readDevice.IsEmpty() && !writeDevice.IsEmpty()) {
-#if defined(__WINDOWS__)
 		CSoundCardReaderWriter* soundcard = new CSoundCardReaderWriter(readDevice, writeDevice, ANALOGUE_RADIO_SAMPLE_RATE, ANALOGUE_RADIO_BLOCK_SIZE);
-#else
-		CSoundCardReaderWriter* soundcard = new CSoundCardReaderWriter(readDevice, writeDevice, ANALOGUE_RADIO_SAMPLE_RATE, 64U);
-#endif
 		soundcard->setCallback(m_thread, SOUNDCARD_RADIO);
 
 		bool res = soundcard->open();
@@ -367,9 +361,9 @@ bool CAnalogueRepeaterD::createThread()
 		controller = new CExternalController(new CSerialLineController(port, cfg), pttInvert, squelchInvert);
 	} else if (type.StartsWith(wxT("Arduino - "), &port)) {
 		controller = new CExternalController(new CArduinoController(port), pttInvert, squelchInvert);
-#if defined(RASPBERRY_PI)
-	} else if (type.IsSameAs(wxT("Raspberry Pi"))) {
-		controller = new CExternalController(new CRaspberryController, pttInvert, squelchInvert);
+#if defined(GPIO)
+	} else if (type.IsSameAs(wxT("GPIO"))) {
+		controller = new CExternalController(new CGPIOController(cfg), pttInvert, squelchInvert);
 #endif
 	} else {
 		controller = new CExternalController(new CDummyController, pttInvert, squelchInvert);
@@ -391,11 +385,7 @@ bool CAnalogueRepeaterD::createThread()
 	wxLogInfo(wxT("External mode: %d, soundcard set to %s:%s, delay: %u ms, de-emphasis: %d, pre-emphasis %d, vogad: %u, interface set to %s, tx %d, rx %d, background: %d"), mode, readDevice.c_str(), writeDevice.c_str(), audioDelay * 20U, int(deEmphasis), int(preEmphasis), int(vogad), device.c_str(), txPin, rxPin, int(background));
 
 	if (mode != AEM_DISABLED) {
-#if defined(__WINDOWS__)
 		CSoundCardReaderWriter* soundcard = new CSoundCardReaderWriter(readDevice, writeDevice, ANALOGUE_RADIO_SAMPLE_RATE, ANALOGUE_RADIO_BLOCK_SIZE);
-#else
-		CSoundCardReaderWriter* soundcard = new CSoundCardReaderWriter(readDevice, writeDevice, ANALOGUE_RADIO_SAMPLE_RATE, 64U);
-#endif
 		soundcard->setCallback(m_thread, SOUNDCARD_EXTERNAL);
 
 		bool res = soundcard->open();
@@ -428,17 +418,6 @@ bool CAnalogueRepeaterD::createThread()
 	config.getDTMF(dtmfRadio, dtmfExternal, dtmfShutdown, dtmfStartup, dtmfTimeout, dtmfTimeReset, dtmfCommand1, dtmfCommand1Line, dtmfCommand2, dtmfCommand2Line, dtmfOutput1, dtmfOutput2, dtmfOutput3, dtmfOutput4, dtmfThreshold);
 	m_thread->setDTMF(dtmfRadio, dtmfExternal, dtmfShutdown, dtmfStartup, dtmfTimeout, dtmfTimeReset, dtmfCommand1, dtmfCommand1Line, dtmfCommand2, dtmfCommand2Line, dtmfOutput1, dtmfOutput2, dtmfOutput3, dtmfOutput4, dtmfThreshold);
 	wxLogInfo(wxT("DTMF: Radio: %d, External: %d, Shutdown: %s, Startup: %s, Timeout: %s, Time Reset: %s, Command1: %s = %s, Command2: %s = %s, Output1: %s, Output2: %s, Output3: %s, Output4: %s, Threshold: %f"), dtmfRadio, dtmfExternal, dtmfShutdown.c_str(), dtmfStartup.c_str(), dtmfTimeout.c_str(), dtmfTimeReset.c_str(), dtmfCommand1.c_str(), dtmfCommand1Line.c_str(), dtmfCommand2.c_str(), dtmfCommand2Line.c_str(), dtmfOutput1.c_str(), dtmfOutput2.c_str(), dtmfOutput3.c_str(), dtmfOutput4.c_str(), dtmfThreshold);
-
-	bool txEnabled;
-	wxString aprsCallsign, description;
-	wxFloat32 latitude, longitude;
-	int height;
-	config.getAPRS(txEnabled, aprsCallsign, latitude, longitude, height, description);
-	wxLogInfo(wxT("APRS: TX Enabled: %d, Callsign: %s, Latitude: %.4f, Longitude: %.4f, Height: %d m, Description: %s"), int(txEnabled), aprsCallsign.c_str(), latitude, longitude, height, description.c_str());
-	if (txEnabled) {
-		CAPRSTX* aprsTx = new CAPRSTX(aprsCallsign, latitude, longitude, height, description);
-		m_thread->setAPRSTX(aprsTx);
-	}
 
 	unsigned int activeHangTime;
 	config.getActiveHang(activeHangTime);

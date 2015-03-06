@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2010,2014 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2010,2014,2015 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
  */
 
 #include "DummyRepeaterDongleSet.h"
-#include "SerialDataController.h"
+#include "SerialPortSelector.h"
 
 const unsigned int ADDRESS_LENGTH  = 15U;
 const unsigned int PORT_LENGTH     = 5U;
@@ -43,11 +43,12 @@ m_port(NULL)
 
 	m_type = new wxChoice(this, CHOICE_TYPE, wxDefaultPosition, wxSize(CONTROL_WIDTH, -1));
 	m_type->Append(wxT("DV-Dongle"));
-	m_type->Append(wxT("DV3000"));
+	m_type->Append(_("DV3000 Network"));
+	m_type->Append(_("DV3000 Serial"));
 	sizer->Add(m_type, 0, wxALL, BORDER_SIZE);
 	m_type->SetSelection(int(type));
 
-	wxArrayString devices = CSerialDataController::getDevices();
+	wxArrayString devices = CSerialPortSelector::getDevices();
 
 	wxStaticText* deviceLabel = new wxStaticText(this, -1, _("Device"));
 	sizer->Add(deviceLabel, 0, wxALL, BORDER_SIZE);
@@ -81,7 +82,7 @@ m_port(NULL)
 	m_port->SetMaxLength(PORT_LENGTH);
 	sizer->Add(m_port, 0, wxALL, BORDER_SIZE);
 
-	if (type == DT_DV3000) {
+	if (type == DT_DV3000_NETWORK) {
 		m_device->Disable();
 	} else {
 		m_address->Disable();
@@ -171,13 +172,13 @@ void CDummyRepeaterDongleSet::onType(wxCommandEvent& event)
 	int n = event.GetSelection();
 
 	switch (n) {
-		default:	// DV-Dongle
+		default:	// DV-Dongle, DV3000 Serial
 			m_device->Enable();
 			m_address->Disable();
 			m_port->Disable();
 			break;
 
-		case 1:		// DV3000
+		case 1:		// DV3000 Network
 			m_device->Disable();
 			m_address->Enable();
 			m_port->Enable();

@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2002-2004,2007-2011,2013 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2002-2004,2007-2011,2013,2015 by Jonathan Naylor G4KLX
  *   Copyright (C) 1999-2001 by Thomas Sailor HB9JNX
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -40,81 +40,6 @@
 #include <termios.h>
 #endif
 
-
-wxArrayString CSerialLineController::getDevices()
-{
-	wxArrayString devices;
-
-	devices.Alloc(10);
-
-#if defined(__APPLE__) && defined(__MACH__)
-	mach_port_t masterPort;
-	kern_return_t ret = ::IOMasterPort(MACH_PORT_NULL, &masterPort);
-	if (ret != KERN_SUCCESS)
-		return devices;
-
-	CFMutableDictionaryRef match = ::IOServiceMatching(kIOSerialBSDServiceValue);
-	if (match == NULL)
-		wxLogWarning(wxT("IOServiceMatching() returned NULL"));
-	else
-		::CFDictionarySetValue(match, CFSTR(kIOSerialBSDTypeKey), CFSTR(kIOSerialBSDRS232Type));
-
-	io_iterator_t services;
-	ret = ::IOServiceGetMatchingServices(masterPort, match, &services);
-	if (ret != KERN_SUCCESS)
-		return devices;
-
-	io_object_t modem;
-	while ((modem = ::IOIteratorNext(services))) {
-		CFTypeRef filePath = ::IORegistryEntryCreateCFProperty(modem, CFSTR(kIOCalloutDeviceKey), kCFAllocatorDefault, 0);
-		if (filePath != NULL) {
-			char port[MAXPATHLEN];
-			Boolean result = ::CFStringGetCString((const __CFString*)filePath, port, MAXPATHLEN, kCFStringEncodingASCII);
-			::CFRelease(filePath);
-
-			if (result)
-				devices.Add(port);
-
-			::IOObjectRelease(modem);
-		}
-	}
-
-	::IOObjectRelease(services);
-#elif defined(__WINDOWS__)
-	devices.Add(wxT("\\\\.\\COM1"));
-	devices.Add(wxT("\\\\.\\COM2"));
-	devices.Add(wxT("\\\\.\\COM3"));
-	devices.Add(wxT("\\\\.\\COM4"));
-	devices.Add(wxT("\\\\.\\COM5"));
-	devices.Add(wxT("\\\\.\\COM6"));
-	devices.Add(wxT("\\\\.\\COM7"));
-	devices.Add(wxT("\\\\.\\COM8"));
-	devices.Add(wxT("\\\\.\\COM9"));
-	devices.Add(wxT("\\\\.\\COM10"));
-	devices.Add(wxT("\\\\.\\COM11"));
-	devices.Add(wxT("\\\\.\\COM12"));
-	devices.Add(wxT("\\\\.\\COM13"));
-	devices.Add(wxT("\\\\.\\COM14"));
-	devices.Add(wxT("\\\\.\\COM15"));
-	devices.Add(wxT("\\\\.\\COM16"));
-	devices.Add(wxT("\\\\.\\COM17"));
-	devices.Add(wxT("\\\\.\\COM18"));
-	devices.Add(wxT("\\\\.\\COM19"));
-#else
-	devices.Add(wxT("/dev/ttyS0"));
-	devices.Add(wxT("/dev/ttyS1"));
-	devices.Add(wxT("/dev/ttyS2"));
-	devices.Add(wxT("/dev/ttyS3"));
-	devices.Add(wxT("/dev/ttyS4"));
-	devices.Add(wxT("/dev/ttyUSB0"));
-	devices.Add(wxT("/dev/ttyUSB1"));
-	devices.Add(wxT("/dev/ttyUSB2"));
-	devices.Add(wxT("/dev/ttyUSB3"));
-	devices.Add(wxT("/dev/ttyUSB4"));
-#endif
-
-	return devices;
-}
 
 #if defined(__WINDOWS__)
 

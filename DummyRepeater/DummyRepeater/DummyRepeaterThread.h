@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2010,2011,2012,2014 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2010,2011,2012,2014,2015 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -46,7 +46,9 @@ public:
 	CDummyRepeaterThread();
 	virtual ~CDummyRepeaterThread();
 
-	virtual void callback(const wxFloat32* input, wxFloat32* output, unsigned int nSamples, int id);
+	virtual void readCallback(const wxFloat32* input, unsigned int nSamples, int id);
+	virtual void writeCallback(wxFloat32* input, unsigned int& nSamples, int id);
+
 	virtual void encodeCallback(const unsigned char* ambe, unsigned int length);
 	virtual void decodeCallback(const wxFloat32* audio, unsigned int length);
 

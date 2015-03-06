@@ -14,9 +14,9 @@ dummyrepeater:	DummyRepeaterApp.o DummyRepeaterBleepSet.o DummyRepeaterCallsignS
 DummyRepeaterApp.o:	DummyRepeaterApp.cpp DummyRepeaterApp.h DummyRepeaterThread.h DummyRepeaterFrame.h DummyRepeaterDefs.h ../Common/MessageData.h \
 					DummyRepeaterDongleSet.h ../Common/DStarDefines.h ../Common/Logger.h ../Common/HeaderData.h ../Common/RepeaterProtocolHandler.h \
 					../Common/SoundCardReaderWriter.h ../Common/SerialLineController.h ../Common/K8055Controller.h \
-					../Common/URIUSBController.h ../Common/ExternalController.h ../Common/DummyController.h ../Common/RaspberryController.h \
-					../Common/ArduinoController.h ../Common/Version.h ../Common/DV3000Controller.h ../Common/AMBE3000Thread.h ../Common/DVDongleController.h \
-					../Common/DVDongleThread.h
+					../Common/URIUSBController.h ../Common/ExternalController.h ../Common/DummyController.h ../Common/GPIOController.h \
+					../Common/ArduinoController.h ../Common/Version.h ../Common/DV3000Controller.h ../Common/DV3000Thread.h ../Common/DVDongleController.h \
+					../Common/DVDongleThread.h ../Common/DV3000NetworkController.h ../Common/DV3000SerialController.h
 				$(CC) $(CFLAGS) -c DummyRepeaterApp.cpp
 
 DummyRepeaterBleepSet.o:	DummyRepeaterBleepSet.cpp DummyRepeaterBleepSet.h
@@ -25,10 +25,10 @@ DummyRepeaterBleepSet.o:	DummyRepeaterBleepSet.cpp DummyRepeaterBleepSet.h
 DummyRepeaterCallsignSet.o:	DummyRepeaterCallsignSet.cpp DummyRepeaterCallsignSet.h ../Common/CallsignTextCtrl.h
 				$(CC) $(CFLAGS) -c DummyRepeaterCallsignSet.cpp
 
-DummyRepeaterControllerSet.o:	DummyRepeaterControllerSet.cpp DummyRepeaterControllerSet.h ../Common/SerialLineController.h
+DummyRepeaterControllerSet.o:	DummyRepeaterControllerSet.cpp DummyRepeaterControllerSet.h ../Common/SerialPortSelector.h
 				$(CC) $(CFLAGS) -c DummyRepeaterControllerSet.cpp
 
-DummyRepeaterDongleSet.o:	DummyRepeaterDongleSet.cpp DummyRepeaterDongleSet.h DummyRepeaterDefs.h ../Common/SerialDataController.h \
+DummyRepeaterDongleSet.o:	DummyRepeaterDongleSet.cpp DummyRepeaterDongleSet.h DummyRepeaterDefs.h ../Common/SerialPortSelector.h \
 						../Common/AddressTextCtrl.h ../Common/PortTextCtrl.h
 				$(CC) $(CFLAGS) -c DummyRepeaterDongleSet.cpp
 

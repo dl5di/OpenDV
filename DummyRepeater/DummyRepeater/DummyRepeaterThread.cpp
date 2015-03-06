@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2010-2014 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2010-2015 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -45,8 +45,8 @@ m_frameCount(0U),
 m_networkSeqNo(0U),
 m_killed(false),
 m_started(false),
-m_watchdog(DSTAR_TICKS_PER_SEC, 2U),
-m_poll(DSTAR_TICKS_PER_SEC, 60U),
+m_watchdog(1000U, 2U),
+m_poll(1000U, 60U),
 m_clockCount(0U),
 m_busy(false),
 m_localTX(false),
@@ -532,20 +532,16 @@ bool CDummyRepeaterThread::processFrame(const unsigned char* buffer, unsigned ch
 	return false;
 }
 
-void CDummyRepeaterThread::callback(const wxFloat32* input, wxFloat32* output, unsigned int nSamples, int)
+void CDummyRepeaterThread::readCallback(const wxFloat32* input, unsigned int nSamples, int)
 {
-	::memset(output, 0x00, nSamples * sizeof(wxFloat32));
-
 	if (m_stopped)
 		return;
 
 	if (m_transmit != CLIENT_RECEIVE)
 		m_dongle->writeEncode(input, nSamples);
 
-	m_decodeAudio.getData(output, nSamples);
-
-	m_poll.clock();
-	m_watchdog.clock();
+	m_poll.clock(20U);
+	m_watchdog.clock(20U);
 
 	// Send the network poll if needed and restart the timer
 	if (m_poll.hasExpired()) {
@@ -556,6 +552,15 @@ void CDummyRepeaterThread::callback(const wxFloat32* input, wxFloat32* output, u
 #endif
 		m_poll.reset();
 	}
+}
+
+void CDummyRepeaterThread::writeCallback(wxFloat32* output, unsigned int& nSamples, int)
+{
+	if (m_stopped)
+		return;
+
+	if (nSamples > 0U)
+		nSamples = m_decodeAudio.getData(output, nSamples);
 }
 
 void CDummyRepeaterThread::resetReceiver()

@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2002-2004,2007-2009,2011-2013 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2002-2004,2007-2009,2011-2013,2015 by Jonathan Naylor G4KLX
  *   Copyright (C) 1999-2001 by Thomas Sailor HB9JNX
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -40,7 +40,7 @@ enum SERIAL_SPEED {
 
 class CSerialDataController {
 public:
-	CSerialDataController(const wxString& device, SERIAL_SPEED speed);
+	CSerialDataController(const wxString& device, SERIAL_SPEED speed, bool assertRTS = false);
 	~CSerialDataController();
 
 	bool open();
@@ -50,11 +50,10 @@ public:
 
 	void close();
 
-	static wxArrayString getDevices();
-
 private:
 	wxString       m_device;
 	SERIAL_SPEED   m_speed;
+	bool           m_assertRTS;
 #if defined(__WINDOWS__)
 	HANDLE         m_handle;
 	OVERLAPPED     m_readOverlapped;

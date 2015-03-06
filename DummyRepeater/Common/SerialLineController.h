@@ -58,8 +58,6 @@ public:
 
 	virtual void close();
 
-	static wxArrayString getDevices();
-
 private:
 	wxString     m_device;
 	unsigned int m_config;

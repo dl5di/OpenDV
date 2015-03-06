@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2011-2014 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2011-2015 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -23,9 +23,6 @@
 #include "DStarRepeaterTXThread.h"
 #include "SerialLineController.h"
 #include "DStarRepeaterConfig.h"
-#if defined(RASPBERRY_PI)
-#include "RaspberryController.h"
-#endif
 #include "SoundCardController.h"
 #include "DVRPTRV1Controller.h"
 #include "DVRPTRV2Controller.h"
@@ -38,6 +35,9 @@
 #include "DStarRepeaterD.h"
 #include "DVAPController.h"
 #include "GMSKController.h"
+#if defined(GPIO)
+#include "GPIOController.h"
+#endif
 #include "CallsignList.h"
 #include "DStarDefines.h"
 #include "Version.h"
@@ -219,8 +219,7 @@ bool CDStarRepeaterD::init()
 
 	wxLogInfo(wxT("Starting ") + APPLICATION_NAME + wxT(" daemon - ") + VERSION);
 
-	// Log the SVN revsion and the version of wxWidgets and the Operating System
-	wxLogInfo(SVNREV);
+	// Log the version of wxWidgets and the Operating System
 	wxLogInfo(wxT("Using wxWidgets %d.%d.%d on %s"), wxMAJOR_VERSION, wxMINOR_VERSION, wxRELEASE_NUMBER, ::wxGetOsDescription().c_str());
 
 	return createThread();
@@ -372,15 +371,17 @@ bool CDStarRepeaterD::createThread()
 		wxString port;
 		DVMEGA_VARIANT variant;
 		bool rxInvert, txInvert;
-		unsigned int txDelay, frequency, power;
-		config.getDVMEGA(port, variant, rxInvert, txInvert, txDelay, frequency, power);
-		wxLogInfo(wxT("DVMEGA, port: %s, variant: %d, RX invert: %d, TX invert: %d, TX delay: %u ms, frequency: %u Hz, power: %u %%"), port.c_str(), int(variant), int(rxInvert), int(txInvert), txDelay, frequency, power);
+		unsigned int txDelay, rxFrequency, txFrequency, power;
+		config.getDVMEGA(port, variant, rxInvert, txInvert, txDelay, rxFrequency, txFrequency, power);
+		wxLogInfo(wxT("DVMEGA, port: %s, variant: %d, RX invert: %d, TX invert: %d, TX delay: %u ms, rx frequency: %u Hz, tx frequency: %u Hz, power: %u %%"), port.c_str(), int(variant), int(rxInvert), int(txInvert), txDelay, rxFrequency, txFrequency, power);
 		switch (variant) {
-			case DVMV_NODE:
+			case DVMV_MODEM:
 				modem = new CDVMegaController(port, wxEmptyString, rxInvert, txInvert, txDelay);
 				break;
-			case DVMV_RADIO:
-				modem = new CDVMegaController(port, wxEmptyString, txDelay, frequency, power);
+			case DVMV_RADIO_2M:
+			case DVMV_RADIO_70CM:
+			case DVMV_RADIO_2M_70CM:
+				modem = new CDVMegaController(port, wxEmptyString, txDelay, rxFrequency, txFrequency, power);
 				break;
 			default:
 				wxLogError(wxT("Unknown DVMEGA variant - %d"), int(variant));
@@ -431,10 +432,10 @@ bool CDStarRepeaterD::createThread()
 	}
 
 	wxString controllerType;
-	unsigned int serialConfig, activeHangTime;
+	unsigned int portConfig, activeHangTime;
 	bool pttInvert;
-	config.getController(controllerType, serialConfig, pttInvert, activeHangTime);
-	wxLogInfo(wxT("Controller set to %s, config: %u, PTT invert: %d, active hang time: %u ms"), controllerType.c_str(), serialConfig, int(pttInvert), activeHangTime);
+	config.getController(controllerType, portConfig, pttInvert, activeHangTime);
+	wxLogInfo(wxT("Controller set to %s, config: %u, PTT invert: %d, active hang time: %u ms"), controllerType.c_str(), portConfig, int(pttInvert), activeHangTime);
 
 	CExternalController* controller = NULL;
 
@@ -444,12 +445,12 @@ bool CDStarRepeaterD::createThread()
 		port.ToULong(&num);
 		controller = new CExternalController(new CK8055Controller(num), pttInvert);
 	} else if (controllerType.StartsWith(wxT("Serial - "), &port)) {
-		controller = new CExternalController(new CSerialLineController(port, serialConfig), pttInvert);
+		controller = new CExternalController(new CSerialLineController(port, portConfig), pttInvert);
 	} else if (controllerType.StartsWith(wxT("Arduino - "), &port)) {
 		controller = new CExternalController(new CArduinoController(port), pttInvert);
-#if defined(RASPBERRY_PI)
-	} else if (controllerType.IsSameAs(wxT("Raspberry Pi"))) {
-		controller = new CExternalController(new CRaspberryController, pttInvert);
+#if defined(GPIO)
+	} else if (controllerType.IsSameAs(wxT("GPIO"))) {
+		controller = new CExternalController(new CGPIOController(portConfig), pttInvert);
 #endif
 	} else {
 		controller = new CExternalController(new CDummyController, pttInvert);

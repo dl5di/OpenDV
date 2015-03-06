@@ -158,10 +158,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\AMBE3000Thread.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\ArduinoController.cpp"
 				>
 			</File>
@@ -190,6 +186,18 @@
 				>
 			</File>
 			<File
+				RelativePath=".\DV3000NetworkController.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\DV3000SerialController.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\DV3000Thread.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\DVDongleController.cpp"
 				>
 			</File>
@@ -203,6 +211,10 @@
 			</File>
 			<File
 				RelativePath=".\FIRFilter.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\GPIOController.cpp"
 				>
 			</File>
 			<File
@@ -234,10 +246,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\RaspberryController.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\RepeaterProtocolHandler.cpp"
 				>
 			</File>
@@ -251,6 +259,10 @@
 			</File>
 			<File
 				RelativePath=".\SerialLineController.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\SerialPortSelector.cpp"
 				>
 			</File>
 			<File
@@ -289,10 +301,6 @@
 			>
 			<File
 				RelativePath=".\AddressTextCtrl.h"
-				>
-			</File>
-			<File
-				RelativePath=".\AMBE3000Thread.h"
 				>
 			</File>
 			<File
@@ -336,6 +344,18 @@
 				>
 			</File>
 			<File
+				RelativePath=".\DV3000NetworkController.h"
+				>
+			</File>
+			<File
+				RelativePath=".\DV3000SerialController.h"
+				>
+			</File>
+			<File
+				RelativePath=".\DV3000Thread.h"
+				>
+			</File>
+			<File
 				RelativePath=".\DVDongleController.h"
 				>
 			</File>
@@ -353,6 +373,10 @@
 			</File>
 			<File
 				RelativePath=".\FIRFilter.h"
+				>
+			</File>
+			<File
+				RelativePath=".\GPIOController.h"
 				>
 			</File>
 			<File
@@ -384,10 +408,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\RaspberryController.h"
-				>
-			</File>
-			<File
 				RelativePath=".\RepeaterProtocolHandler.h"
 				>
 			</File>
@@ -405,6 +425,10 @@
 			</File>
 			<File
 				RelativePath=".\SerialLineController.h"
+				>
+			</File>
+			<File
+				RelativePath=".\SerialPortSelector.h"
 				>
 			</File>
 			<File

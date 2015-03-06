@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2009-2014 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2009-2015 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -171,7 +171,7 @@ m_firstTime(false),
 m_sendOpen(false),
 m_sendClose(false),
 m_sendBeacon1(false),
-m_sendBeacon2(SB2S_NONE),
+m_sendBeacon2(false),
 m_sendAck(ACK_NONE),
 m_radioDTMF(NULL),
 m_extDTMF(NULL),
@@ -191,8 +191,7 @@ m_externalCount(0U),
 m_relayCount(0U),
 m_transmitCount(0U),
 m_timeCount(0U),
-m_lastHour(0U),
-m_aprsTx(NULL)
+m_lastHour(0U)
 {
 }
 
@@ -276,7 +275,7 @@ void CAnalogueRepeaterThread::run()
 				continue;
 
 			// Set the output state
-			if (m_state != ARS_LISTENING || m_sendBeacon2 != SB2S_NONE || m_sendOpen || m_sendClose || m_sendBeacon1 || m_callsignStartTimer.isRunning() || (m_activeHangTimer.isRunning() && !m_activeHangTimer.hasExpired())) {
+			if (m_state != ARS_LISTENING || m_sendBeacon2 || m_sendOpen || m_sendClose || m_sendBeacon1 || m_callsignStartTimer.isRunning() || (m_activeHangTimer.isRunning() && !m_activeHangTimer.hasExpired())) {
 				m_controller->setActive(true);
 			} else {
 				m_controller->setActive(false);
@@ -310,15 +309,12 @@ void CAnalogueRepeaterThread::run()
 			m_radioTransmit = m_state == ARS_RELAYING_RADIO  || m_state == ARS_RELAYING_EXTERNAL ||
 							  m_state == ARS_WAITING_RADIO   || m_state == ARS_WAITING_EXTERNAL  ||
 							  m_state == ARS_TIMEOUT_RADIO   || m_state == ARS_TIMEOUT_EXTERNAL  ||
-							  m_sendBeacon1 || m_sendBeacon2 != SB2S_NONE || m_sendOpen || m_sendClose || m_callsignStartTimer.isRunning();
+							  m_sendBeacon1 || m_sendBeacon2 || m_sendOpen || m_sendClose || m_callsignStartTimer.isRunning();
 
 			// The audio is chosen depending on the squelch and state
 			unsigned int nAudio;
 			wxFloat32 audio[ANALOGUE_RADIO_BLOCK_SIZE];
 			if (m_state == ARS_RELAYING_RADIO && m_squelch != AS_CLOSED) {
-				// if (m_aprsRx != NULL)						XXX
-				//	m_aprsRx->process(radioAudio, nRadio);		XXX
-
 				nAudio = nRadio;
 				m_radioAudioVOGAD.process(radioAudio, audio, nAudio);
 			} else if (m_state == ARS_RELAYING_EXTERNAL && m_squelch != AS_CLOSED) {
@@ -369,9 +365,6 @@ void CAnalogueRepeaterThread::run()
 
 			// Add tones
 			sendTones(audio, nAudio);
-
-			// if (m_aprsRx != NULL)
-			//	m_aprsRx->process(audio, nAudio);
 
 			// Filter the audio
 			filterAudio(audio, nAudio);
@@ -450,7 +443,6 @@ void CAnalogueRepeaterThread::run()
 	delete m_radioAck;
 	delete m_extAck;
 	delete m_batteryAck;
-	delete m_aprsTx;
 }
 
 void CAnalogueRepeaterThread::kill()
@@ -626,13 +618,6 @@ void CAnalogueRepeaterThread::setActiveHang(unsigned int time)
 	m_activeHangTimer.setTimeout(time);
 }
 
-void CAnalogueRepeaterThread::setAPRSTX(CAPRSTX* aprsTx)
-{
-	wxASSERT(aprsTx != NULL);
-
-	m_aprsTx = aprsTx;
-}
-
 #if defined(__WXDEBUG__)
 void CAnalogueRepeaterThread::setReader(CWAVFileReader* reader)
 {
@@ -697,10 +682,8 @@ void CAnalogueRepeaterThread::setCTCSSLevel(wxFloat32 level)
 	m_ctcssLevel = level * MAX_AUDIO_LEVEL / 5.0F;			// Max of 20% of full deviation
 }
 
-void CAnalogueRepeaterThread::callback(const wxFloat32* input, wxFloat32* output, unsigned int nSamples, int id)
+void CAnalogueRepeaterThread::readCallback(const wxFloat32* input, unsigned int nSamples, int id)
 {
-	::memset(output, 0x00, nSamples * sizeof(wxFloat32));
-
 	if (m_stopped)
 		return;
 
@@ -711,14 +694,31 @@ void CAnalogueRepeaterThread::callback(const wxFloat32* input, wxFloat32* output
 #else
 			m_radioInBuffer.addData(input, nSamples);
 #endif
-			if (m_radioOutBuffer.dataSpace() >= nSamples)
-				m_radioOutBuffer.getData(output, nSamples);
 			break;
 
 		case SOUNDCARD_EXTERNAL:
 			m_extInBuffer.addData(input, nSamples);
-			if (m_extOutBuffer.dataSpace() >= nSamples)
-				m_extOutBuffer.getData(output, nSamples);
+			break;
+	}
+}
+
+void CAnalogueRepeaterThread::writeCallback(wxFloat32* output, unsigned int& nSamples, int id)
+{
+	if (nSamples == 0U)
+		return;
+
+	::memset(output, 0x00, nSamples * sizeof(wxFloat32));
+
+	if (m_stopped)
+		return;
+
+	switch (id) {
+		case SOUNDCARD_RADIO:
+			nSamples = m_radioOutBuffer.getData(output, nSamples);
+			break;
+
+		case SOUNDCARD_EXTERNAL:
+			nSamples = m_extOutBuffer.getData(output, nSamples);
 			break;
 	}
 }
@@ -933,7 +933,7 @@ void CAnalogueRepeaterThread::sendTones(wxFloat32* audio, unsigned int length)
 		return;
 	}
 
-	if (m_sendBeacon2 == SB2S_ID) {
+	if (m_sendBeacon2) {
 		unsigned int len;
 		if (m_state == ARS_LISTENING)
 			len = m_beacon2->getAudio(audio, length, m_idLevel1);
@@ -942,33 +942,10 @@ void CAnalogueRepeaterThread::sendTones(wxFloat32* audio, unsigned int length)
 
 		if (len < length) {
 			m_beacon2->reset();
-
-			// Transmit the APRS beacon after the main beacon, if it exists and the repeater hasn't been opened
-			if (m_aprsTx == NULL || m_state != ARS_LISTENING) {
-				m_sendBeacon2 = SB2S_NONE;
-				m_callsignTimer.start();
-				return;
-			} else {
-				m_sendBeacon2 = SB2S_APRS;
-				length -= len;
-			}
-		}
-	}
-
-	if (m_sendBeacon2 == SB2S_APRS) {
-		unsigned int len;
-		if (m_state == ARS_LISTENING)
-			len = m_aprsTx->getAudio(audio, length, m_idLevel1);
-		else
-			len = m_aprsTx->getAudio(audio, length, m_idLevel2);
-
-		if (len < length) {
-			m_sendBeacon2 = SB2S_NONE;
-			m_aprsTx->reset();
+    		m_sendBeacon2 = false;
 			m_callsignTimer.start();
+			return;
 		}
-
-		return;
 	}
 
 	if (m_sendAck == ACK_RADIO_WAITING || m_sendAck == ACK_RADIO_SENDING) {
@@ -1062,10 +1039,8 @@ void CAnalogueRepeaterThread::clock(unsigned int ms)
 	m_callsignTimer.clock(ms);
 	if (m_callsignTimer.hasExpired()) {
 		if (m_state == ARS_LISTENING) {
-			if (!m_beacon2->isEmpty() && m_sendBeacon2 == SB2S_NONE)
-				m_sendBeacon2 = SB2S_ID;
-			else if (m_aprsTx != NULL && m_sendBeacon2 == SB2S_NONE)
-				m_sendBeacon2 = SB2S_APRS;
+			if (!m_beacon2->isEmpty() && !m_sendBeacon2)
+				m_sendBeacon2 = true;
 		} else {
 			if (!m_beacon1->isEmpty() && !m_sendBeacon1)
 				m_sendBeacon1 = true;
@@ -1240,7 +1215,7 @@ void CAnalogueRepeaterThread::setState(ANALOGUE_RPT_STATE state)
 			m_radioTransmit = false;
 			m_extTransmit   = false;
 			m_sendBeacon1   = false;
-			m_sendBeacon2   = SB2S_NONE;
+			m_sendBeacon2   = false;
 			m_sendOpen      = false;
 			m_sendClose     = false;
 			m_sendAck       = ACK_NONE;
@@ -1281,7 +1256,7 @@ void CAnalogueRepeaterThread::setState(ANALOGUE_RPT_STATE state)
 			m_radioTransmit = false;
 			m_extTransmit   = false;
 			m_sendBeacon1   = false;
-			m_sendBeacon2   = SB2S_NONE;
+			m_sendBeacon2   = false;
 			m_sendOpen      = false;
 			m_sendClose     = false;
 			m_sendAck       = ACK_NONE;
@@ -1579,7 +1554,7 @@ void CAnalogueRepeaterThread::command2()
 void CAnalogueRepeaterThread::sendOpen()
 {
 	// Already sending, or waiting to send, ignore request
-	if (m_sendBeacon1 || m_sendBeacon2 != SB2S_NONE || m_sendOpen || m_sendClose || m_callsignStartTimer.isRunning())
+	if (m_sendBeacon1 || m_sendBeacon2 || m_sendOpen || m_sendClose || m_callsignStartTimer.isRunning())
 		return;
 
 	unsigned int t1, t2;
@@ -1630,7 +1605,7 @@ void CAnalogueRepeaterThread::sendOpen()
 void CAnalogueRepeaterThread::sendClose()
 {
 	// Already sending, or waiting to send, ignore request
-	if (m_sendBeacon1 || m_sendBeacon2 != SB2S_NONE || m_sendOpen || m_sendClose || m_callsignStartTimer.isRunning())
+	if (m_sendBeacon1 || m_sendBeacon2 || m_sendOpen || m_sendClose || m_callsignStartTimer.isRunning())
 		return;
 
 	unsigned int t1, t2;
@@ -1666,7 +1641,7 @@ void CAnalogueRepeaterThread::sendClose()
 void CAnalogueRepeaterThread::sendCallsign()
 {
 	// Already sending, or waiting to send, ignore request
-	if (m_sendBeacon1 || m_sendBeacon2 != SB2S_NONE || m_sendOpen || m_sendClose || m_callsignStartTimer.isRunning())
+	if (m_sendBeacon1 || m_sendBeacon2 || m_sendOpen || m_sendClose || m_callsignStartTimer.isRunning())
 		return;
 
 	unsigned int t1, t2;

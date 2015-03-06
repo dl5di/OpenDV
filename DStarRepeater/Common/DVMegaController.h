@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2011-2014 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2011-2015 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -48,7 +48,7 @@ enum RESP_TYPE_MEGA {
 class CDVMegaController : public CModem {
 public:
 	CDVMegaController(const wxString& port, const wxString& path, bool rxInvert, bool txInvert, unsigned int txDelay);
-	CDVMegaController(const wxString& port, const wxString& path, unsigned int txDelay, unsigned int frequency, unsigned int power);
+	CDVMegaController(const wxString& port, const wxString& path, unsigned int txDelay, unsigned int rxFrequency, unsigned int txFrequency, unsigned int power);
 	virtual ~CDVMegaController();
 
 	virtual void* Entry();
@@ -69,7 +69,8 @@ private:
 	bool                       m_rxInvert;
 	bool                       m_txInvert;
 	unsigned int               m_txDelay;
-	unsigned int               m_frequency;
+	unsigned int               m_rxFrequency;
+	unsigned int               m_txFrequency;
 	unsigned int               m_power;
 	CSerialDataController      m_serial;
 	unsigned char*             m_buffer;

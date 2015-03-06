@@ -1,9 +1,9 @@
 all:		Common.a
 
-OBJS :=	ActiveHangSet.o AddressTextCtrl.o APRSTX.o ArduinoController.o AudioDelay.o AX25Checksum.o AX25TX.o CallsignTextCtrl.o CWKeyer.o CWTextCtrl.o \
-		DTMFController.o DTMFDecoder.o DTMFTextCtrl.o DummyController.o ExternalController.o FirstOrderIIR.o FIRFilter.o FixedAudioSource.o Goertzel.o \
-		HardwareController.o K8055Controller.o LogEvent.o Logger.o NCO.o NetworkController.o PTTDelay.o RaspberryController.o RestrictedTextCtrl.o \
-		SerialDataController.o SerialLineController.o SoundCardReaderWriter.o TimeoutTones.o Timer.o Utils.o VOGAD.o WAVFileReader.o WAVFileStore.o
+OBJS :=	ActiveHangSet.o AddressTextCtrl.o ArduinoController.o AudioDelay.o CallsignTextCtrl.o CWKeyer.o CWTextCtrl.o DTMFController.o DTMFDecoder.o \
+		DTMFTextCtrl.o DummyController.o ExternalController.o FirstOrderIIR.o FIRFilter.o FixedAudioSource.o Goertzel.o GPIOController.o \
+		HardwareController.o K8055Controller.o LogEvent.o Logger.o NCO.o NetworkController.o PTTDelay.o RestrictedTextCtrl.o SerialDataController.o \
+		SerialLineController.o SerialPortSelector.o SoundCardReaderWriter.o TimeoutTones.o Timer.o Utils.o VOGAD.o WAVFileReader.o WAVFileStore.o
 
 Common.a:	$(OBJS)
 		ar rcs Common.a $(OBJS)
@@ -14,20 +14,11 @@ ActiveHangSet.o:	ActiveHangSet.cpp ActiveHangSet.h
 AddressTextCtrl.o:	AddressTextCtrl.cpp AddressTextCtrl.h RestrictedTextCtrl.h
 		$(CC) $(CFLAGS) -c AddressTextCtrl.cpp
 
-APRSTX.o:	APRSTX.cpp APRSTX.h AnalogueDefines.h AX25Checksum.h AX25TX.h Utils.h
-		$(CC) $(CFLAGS) -c APRSTX.cpp
-
 ArduinoController.o:	ArduinoController.cpp ArduinoController.h SerialDataController.h HardwareController.h
 		$(CC) $(CFLAGS) -c ArduinoController.cpp
 
 AudioDelay.o:	AudioDelay.cpp AudioDelay.h
 		$(CC) $(CFLAGS) -c AudioDelay.cpp
-
-AX25Checksum.o:	AX25Checksum.cpp AX25Checksum.h
-		$(CC) $(CFLAGS) -c AX25Checksum.cpp
-
-AX25TX.o:	AX25TX.cpp AX25TX.h AnalogueDefines.h
-		$(CC) $(CFLAGS) -c AX25TX.cpp
 
 CallsignTextCtrl.o:	CallsignTextCtrl.cpp CallsignTextCtrl.h RestrictedTextCtrl.h
 		$(CC) $(CFLAGS) -c CallsignTextCtrl.cpp
@@ -65,6 +56,9 @@ FixedAudioSource.o:	FixedAudioSource.cpp FixedAudioSource.h
 Goertzel.o:	Goertzel.cpp Goertzel.h Utils.h
 		$(CC) $(CFLAGS) -c Goertzel.cpp
 
+GPIOController.o:	GPIOController.cpp GPIOController.h HardwareController.h
+		$(CC) $(CFLAGS) -c GPIOController.cpp
+
 HardwareController.o:	HardwareController.cpp HardwareController.h
 		$(CC) $(CFLAGS) -c HardwareController.cpp
 
@@ -86,9 +80,6 @@ NetworkController.o:	NetworkController.cpp NetworkController.h SerialLineControl
 PTTDelay.o:	PTTDelay.cpp PTTDelay.h
 		$(CC) $(CFLAGS) -c PTTDelay.cpp
 
-RaspberryController.o:	RaspberryController.cpp RaspberryController.h HardwareController.h
-		$(CC) $(CFLAGS) -c RaspberryController.cpp
-
 RestrictedTextCtrl.o:	RestrictedTextCtrl.cpp RestrictedTextCtrl.h
 		$(CC) $(CFLAGS) -c RestrictedTextCtrl.cpp
 
@@ -97,6 +88,9 @@ SerialDataController.o:	SerialDataController.cpp SerialDataController.h Hardware
 
 SerialLineController.o:	SerialLineController.cpp SerialLineController.h HardwareController.h
 		$(CC) $(CFLAGS) -c SerialLineController.cpp
+
+SerialPortSelector.o:	SerialPortSelector.cpp SerialPortSelector.h
+		$(CC) $(CFLAGS) -c SerialPortSelector.cpp
 
 SoundCardReaderWriter.o:	SoundCardReaderWriter.cpp SoundCardReaderWriter.h AudioCallback.h
 		$(CC) $(CFLAGS) -c SoundCardReaderWriter.cpp

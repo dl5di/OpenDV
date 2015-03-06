@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2009-2014 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2009-2015 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -586,16 +586,25 @@ bool CSoundCardController::isTX()
 	return m_txAudio.hasData();
 }
 
-void CSoundCardController::callback(const wxFloat32* input, wxFloat32* output, unsigned int n, int id)
+void CSoundCardController::readCallback(const wxFloat32* input, unsigned int n, int id)
 {
+#if !defined(AUDIO_LOOPBACK)
+	if (!m_stopped)
+		m_rxAudio.addData(input, n);
+#endif
+}
+
+void CSoundCardController::writeCallback(wxFloat32* output, unsigned int& n, int id)
+{
+        if (n == 0U)
+                return;
+
 	::memset(output, 0x00, n * sizeof(wxFloat32));
 
 	if (!m_stopped) {
-		m_txAudio.getData(output, n);
+		n = m_txAudio.getData(output, n);
 #if defined(AUDIO_LOOPBACK)
-		m_rxAudio.addData(output, n);
-#else
-		m_rxAudio.addData(input, n);
+		n = m_rxAudio.addData(output, n);
 #endif
 	}
 }

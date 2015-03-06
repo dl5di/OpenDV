@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2011-2014 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2011-2015 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -63,9 +63,10 @@ m_path(path),
 m_rxInvert(rxInvert),
 m_txInvert(txInvert),
 m_txDelay(txDelay),
-m_frequency(0U),
+m_rxFrequency(0U),
+m_txFrequency(0U),
 m_power(0U),
-m_serial(port, SERIAL_115200),
+m_serial(port, SERIAL_115200, true),
 m_buffer(NULL),
 m_txData(1000U),
 m_txCounter(0U),
@@ -80,16 +81,17 @@ m_checksum(false)
 	m_buffer = new unsigned char[BUFFER_LENGTH];
 }
 
-CDVMegaController::CDVMegaController(const wxString& port, const wxString& path, unsigned int txDelay, unsigned int frequency, unsigned int power) :
+CDVMegaController::CDVMegaController(const wxString& port, const wxString& path, unsigned int txDelay, unsigned int rxFrequency, unsigned int txFrequency, unsigned int power) :
 CModem(),
 m_port(port),
 m_path(path),
 m_rxInvert(false),
 m_txInvert(false),
 m_txDelay(txDelay),
-m_frequency(frequency),
+m_rxFrequency(rxFrequency),
+m_txFrequency(txFrequency),
 m_power(power),
-m_serial(port, SERIAL_115200),
+m_serial(port, SERIAL_115200, true),
 m_buffer(NULL),
 m_txData(1000U),
 m_txCounter(0U),
@@ -100,8 +102,10 @@ m_txEnabled(false),
 m_checksum(false)
 {
 	wxASSERT(!port.IsEmpty());
-	wxASSERT((frequency >= 144000000U && frequency <= 148000000U) ||
-			 (frequency >= 420000000U && frequency <= 450000000U));
+	wxASSERT((rxFrequency >= 144000000U && rxFrequency <= 148000000U) ||
+			 (rxFrequency >= 420000000U && rxFrequency <= 450000000U));
+	wxASSERT((txFrequency >= 144000000U && txFrequency <= 148000000U) ||
+			 (txFrequency >= 420000000U && txFrequency <= 450000000U));
 
 	m_buffer = new unsigned char[BUFFER_LENGTH];
 }
@@ -544,58 +548,57 @@ bool CDVMegaController::isTXReady()
 
 bool CDVMegaController::readVersion()
 {
-	unsigned char buffer[10U];
+	for (unsigned int i = 0U; i < 6U; i++) {
+		unsigned char buffer[10U];
 
-	buffer[0U] = DVRPTR_FRAME_START;
+		buffer[0U] = DVRPTR_FRAME_START;
 
-	buffer[1U] = 0x01U;
-	buffer[2U] = 0x00U;
+		buffer[1U] = 0x01U;
+		buffer[2U] = 0x00U;
 
-	buffer[3U] = DVRPTR_GET_VERSION;
+		buffer[3U] = DVRPTR_GET_VERSION;
 
-	if (m_checksum) {
-		CCCITTChecksum cksum;
-		cksum.update(buffer + 0U, 4U);
-		cksum.result(buffer + 4U);
-	} else {
-		buffer[4U] = 0x00U;
-		buffer[5U] = 0x0BU;
-	}
+		if (m_checksum) {
+			CCCITTChecksum cksum;
+			cksum.update(buffer + 0U, 4U);
+			cksum.result(buffer + 4U);
+		} else {
+			buffer[4U] = 0x00U;
+			buffer[5U] = 0x0BU;
+		}
 
-	// CUtils::dump(wxT("Written"), buffer, 6U);
+		// CUtils::dump(wxT("Written"), buffer, 6U);
 
-	int ret = m_serial.write(buffer, 6U);
-	if (ret != 6)
-		return false;
+		int ret = m_serial.write(buffer, 6U);
+		if (ret != 6)
+			return false;
 
-	unsigned int count = 0U;
-	unsigned int length;
-	RESP_TYPE_MEGA resp;
-	do {
-		::wxMilliSleep(10UL);
+		for (unsigned int count = 0U; count < MAX_RESPONSES; count++) {
+			::wxMilliSleep(10UL);
 
-		resp = getResponse(m_buffer, length);
+			unsigned int length;
+			RESP_TYPE_MEGA resp = getResponse(m_buffer, length);
+			if (resp == RTM_GET_VERSION) {
+				wxString firmware;
+				if ((m_buffer[4U] & 0x0FU) > 0x00U)
+					firmware.Printf(wxT("%u.%u%u%c"), (m_buffer[5U] & 0xF0U) >> 4, m_buffer[5U] & 0x0FU, (m_buffer[4U] & 0xF0U) >> 4, (m_buffer[4U] & 0x0FU) + wxT('a') - 1U);
+				else
+					firmware.Printf(wxT("%u.%u%u"), (m_buffer[5U] & 0xF0U) >> 4, m_buffer[5U] & 0x0FU, (m_buffer[4U] & 0xF0U) >> 4);
 
-		if (resp != RTM_GET_VERSION) {
-			count++;
-			if (count >= MAX_RESPONSES) {
-				wxLogError(wxT("The DVMEGA is not responding to the version command"));
-				return false;
+				wxString hardware((char*)(m_buffer + 6U), wxConvLocal, length - DVRPTR_HEADER_LENGTH - 3U);
+
+				wxLogInfo(wxT("DVMEGA Firmware version: %s, hardware: %s"), firmware.c_str(), hardware.c_str());
+
+				return true;
 			}
 		}
-	} while (resp != RTM_GET_VERSION);
 
-	wxString firmware;
-	if ((m_buffer[4U] & 0x0FU) > 0x00U)
-		firmware.Printf(wxT("%u.%u%u%c"), (m_buffer[5U] & 0xF0U) >> 4, m_buffer[5U] & 0x0FU, (m_buffer[4U] & 0xF0U) >> 4, (m_buffer[4U] & 0x0FU) + wxT('a') - 1U);
-	else
-		firmware.Printf(wxT("%u.%u%u"), (m_buffer[5U] & 0xF0U) >> 4, m_buffer[5U] & 0x0FU, (m_buffer[4U] & 0xF0U) >> 4);
+		::wxMilliSleep(500UL);
+	}
 
-	wxString hardware((char*)(m_buffer + 6U), wxConvLocal, length - DVRPTR_HEADER_LENGTH - 3U);
+	wxLogError(wxT("Unable to read the firmware version after six attempts"));
 
-	wxLogInfo(wxT("DVMEGA Firmware version: %s, hardware: %s"), firmware.c_str(), hardware.c_str());
-
-	return true;
+	return false;
 }
 
 bool CDVMegaController::readStatus()
@@ -706,11 +709,11 @@ bool CDVMegaController::setFrequencyAndPower()
 
 	buffer[5U] = 0x0CU;		// Block length
 
-	wxUint32 freq = wxUINT32_SWAP_ON_BE(wxUint32(m_frequency));
+	wxUint32 rxFreq = wxUINT32_SWAP_ON_BE(wxUint32(m_rxFrequency));
+	wxUint32 txFreq = wxUINT32_SWAP_ON_BE(wxUint32(m_txFrequency));
 
-	::memcpy(buffer + 7U, &freq, sizeof(wxUint32));
-
-	::memcpy(buffer + 11U, &freq, sizeof(wxUint32));
+	::memcpy(buffer + 7U,  &rxFreq, sizeof(wxUint32));
+	::memcpy(buffer + 11U, &txFreq, sizeof(wxUint32));
 
 	buffer[16U] = (m_power * 64U) / 100U;
 
@@ -847,6 +850,11 @@ RESP_TYPE_MEGA CDVMegaController::getResponse(unsigned char *buffer, unsigned in
 	}
 
 	length = buffer[1U] + buffer[2U] * 256U;
+
+	if (length >= 100U) {
+		wxLogError(wxT("Invalid data received from the DVMEGA"));
+		return RTM_ERROR;
+	}
 
 	// Remove the response bit
 	unsigned int type = buffer[3U] & 0x7FU;
@@ -1108,7 +1116,7 @@ bool CDVMegaController::openModem()
 		return false;
 	}
 
-	if (m_frequency != 0U) {
+	if (m_rxFrequency != 0U && m_txFrequency != 0U) {
 		ret = setFrequencyAndPower();
 		if (!ret) {
 			m_serial.close();

@@ -1,5 +1,5 @@
 /*
- *	Copyright (C) 2009 by Jonathan Naylor, G4KLX
+ *	Copyright (C) 2009,2015 by Jonathan Naylor, G4KLX
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -18,7 +18,8 @@
 
 class IAudioCallback {
 public:
-	virtual void callback(const wxFloat32* input, wxFloat32* output, unsigned int nSamples, int id) = 0;
+	virtual void readCallback(const wxFloat32* input, unsigned int nSamples, int id) = 0;
+	virtual void writeCallback(wxFloat32* output, unsigned int& nSamples, int id) = 0;
 
 private:
 };

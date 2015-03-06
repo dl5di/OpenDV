@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2009-2013 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2009-2013,2015 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -18,6 +18,7 @@
 
 #include "AnalogueRepeaterExternalSet.h"
 #include "SoundCardReaderWriter.h"
+#include "SerialPortSelector.h"
 
 const unsigned int BORDER_SIZE    = 5U;
 const unsigned int CONTROL_WIDTH1 = 300U;
@@ -153,7 +154,7 @@ m_background(NULL)
 	sizer->Add(m_vogad, 0, wxALL, BORDER_SIZE);
 	m_vogad->SetSelection(vogad ? 1 : 0);
 
-	wxArrayString devices = CSerialLineController::getDevices();
+	wxArrayString devices = CSerialPortSelector::getDevices();
 
 	wxStaticText* deviceLabel = new wxStaticText(this, -1, _("Device"));
 	sizer->Add(deviceLabel, 0, wxALL | wxALIGN_LEFT, BORDER_SIZE);

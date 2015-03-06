@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2009-2014 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2009-2015 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -67,9 +67,6 @@ public:
 		const wxString& timeReset, const wxString& command1, const wxString& command1Line, const wxString& command2,
 		const wxString& command2Line, const wxString& output1, const wxString& output2, const wxString& output3,
 		const wxString& output4, wxFloat32 threshold);
-
-	void getAPRS(bool& txEnabled, wxString& callsign, wxFloat32& latitude, wxFloat32& longitude, int& height, wxString& description) const;
-	void setAPRS(bool txEnabled, const wxString& callsign, wxFloat32 latitude, wxFloat32 longitude, int height, const wxString& description);
 
 	void getActiveHang(unsigned int& time) const;
 	void setActiveHang(unsigned int time);
@@ -169,12 +166,6 @@ private:
 	wxString      m_dtmfOutput4;
 	wxFloat32     m_dtmfThreshold;
 	unsigned int  m_activeHangTime;
-	bool          m_aprsTxEnabled;
-	wxString      m_aprsCallsign;
-	wxFloat32     m_aprsLatitude;
-	wxFloat32     m_aprsLongitude;
-	int           m_aprsHeight;
-	wxString      m_aprsDescription;
 	bool          m_output1;
 	bool          m_output2;
 	bool          m_output3;

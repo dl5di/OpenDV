@@ -1,5 +1,5 @@
 /*
- *	Copyright (C) 2009-2014 by Jonathan Naylor, G4KLX
+ *	Copyright (C) 2009-2015 by Jonathan Naylor, G4KLX
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -101,7 +101,7 @@ const unsigned int  DSTAR_BLEEP_FREQ   = 2000U;
 const unsigned int  DSTAR_BLEEP_LENGTH = 100U;
 const float         DSTAR_BLEEP_AMPL   = 0.5F;
 
-const unsigned int  NETWORK_TIMEOUT = 1U;
+const unsigned int  NETWORK_TIMEOUT = 2U;
 
 const unsigned int SPLIT_RX_GUI_COUNT = 5U;
 const unsigned int SPLIT_RX_COUNT     = 25U;
@@ -189,8 +189,10 @@ enum USB_INTERFACE {
 };
 
 enum DVMEGA_VARIANT {
-	DVMV_NODE,
-	DVMV_RADIO
+	DVMV_MODEM,
+	DVMV_RADIO_2M,
+	DVMV_RADIO_70CM,
+	DVMV_RADIO_2M_70CM
 };
 
 #endif
