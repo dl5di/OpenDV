@@ -101,7 +101,7 @@ const unsigned int  DSTAR_BLEEP_FREQ   = 2000U;
 const unsigned int  DSTAR_BLEEP_LENGTH = 100U;
 const float         DSTAR_BLEEP_AMPL   = 0.5F;
 
-const unsigned int  NETWORK_TIMEOUT = 1U;
+const unsigned int  NETWORK_TIMEOUT = 2U;
 
 const unsigned int SPLIT_RX_GUI_COUNT = 5U;
 const unsigned int SPLIT_RX_COUNT     = 25U;
