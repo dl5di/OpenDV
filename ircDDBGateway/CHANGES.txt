@@ -1,4 +1,4 @@
-ircDDB Gateway - 20150303
+ircDDB Gateway - 20150308
 =========================
 
 20101010
@@ -1428,3 +1428,9 @@ Slight modification to completely fix the multiple linking bug.
 
 A slightly less agressive fix for multiple linking.
 Updated the DExtra hosts file.
+
+20150308
+--------
+
+Include .mk file for the Pi2.
+Increased the network timeout from one second to two seconds.
