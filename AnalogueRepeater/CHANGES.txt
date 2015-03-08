@@ -1,4 +1,4 @@
-Analogue Repeater - 20150213
+Analogue Repeater - 20150308
 ============================
 
 20130702
@@ -39,3 +39,9 @@ Updated the ALSA handing.
 
 Updated the ALSA handling.
 Fixed a compile bug when defining GPIO.
+
+20150308
+--------
+
+More changes to the ALSA interface.
+Added a .mk for the Pi2.
