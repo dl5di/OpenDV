@@ -1,4 +1,4 @@
-Repeater - 20150213
+Repeater - 20150308
 ===================
 
 20090530
@@ -2035,3 +2035,10 @@ Updated the ALSA handing.
 
 Updated the ALSA handling once again.
 Fixed a compile bug when defining GPIO.
+
+20150308
+--------
+
+Added a .mk file for the Pi2.
+Increased the network timeout from one second to two seconds.
+More changes to the ALSA interface.
