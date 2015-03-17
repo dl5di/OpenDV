@@ -82,6 +82,8 @@ public:
 
 	virtual void kill();
 
+	virtual bool isBusy() const;
+
 private:
 	snd_pcm_t*      m_handle;
 	unsigned int    m_blockSize;
@@ -101,6 +103,8 @@ public:
 	void setCallback(IAudioCallback* callback, int id);
 	bool open();
 	void close();
+
+	bool isWriterBusy() const;
 
 	static wxArrayString getReadDevices();
 	static wxArrayString getWriteDevices();

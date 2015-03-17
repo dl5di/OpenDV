@@ -624,6 +624,11 @@ void CSoundCardReaderWriter::close()
 	m_writer->Wait();
 }
 
+bool CSoundCardReaderWriter::isWriterBusy() const
+{
+	return m_writer->isBusy();
+}
+
 CSoundCardReader::CSoundCardReader(snd_pcm_t* handle, unsigned int blockSize, unsigned int channels, IAudioCallback* callback, int id) :
 wxThread(wxTHREAD_JOINABLE),
 m_handle(handle),
@@ -765,6 +770,13 @@ void* CSoundCardWriter::Entry()
 void CSoundCardWriter::kill()
 {
 	m_killed = true;
+}
+
+bool CSoundCardWriter::isBusy() const
+{
+	snd_pcm_state_t state = ::snd_pcm_state(m_handle);
+
+	return state == SND_PCM_STATE_RUNNING || state == SND_PCM_STATE_DRAINING;
 }
 
 #endif
