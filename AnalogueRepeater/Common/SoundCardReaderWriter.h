@@ -118,6 +118,9 @@ private:
 	int                  m_id;
 	CSoundCardReader*    m_reader;
 	CSoundCardWriter*    m_writer;
+
+	static wxArrayString m_readDevices;
+	static wxArrayString m_writeDevices;
 };
 
 #endif

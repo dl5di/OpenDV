@@ -278,6 +278,9 @@ bool CSoundCardReaderWriter::convertNameToDevices(PaDeviceIndex& inDev, PaDevice
 
 #else
 
+wxArrayString CSoundCardReaderWriter::m_readDevices;
+wxArrayString CSoundCardReaderWriter::m_writeDevices;
+
 CSoundCardReaderWriter::CSoundCardReaderWriter(const wxString& readDevice, const wxString& writeDevice, unsigned int sampleRate, unsigned int blockSize) :
 m_readDevice(readDevice),
 m_writeDevice(writeDevice),
@@ -302,8 +305,7 @@ wxArrayString CSoundCardReaderWriter::getReadDevices()
 	snd_pcm_t *pcm = NULL;
 	char NameString[256];
 
-	wxArrayString devices;
-	devices.Alloc(10);
+	wxArrayString devices(m_readDevices);
 
 	snd_ctl_card_info_t* info;
 	snd_ctl_card_info_alloca(&info);
@@ -374,8 +376,7 @@ wxArrayString CSoundCardReaderWriter::getWriteDevices()
 	snd_pcm_t *pcm = NULL;
 	char NameString[256];
 
-	wxArrayString devices;
-	devices.Alloc(10);
+	wxArrayString devices(m_writeDevices);
 
 	snd_ctl_card_info_t* info;
 	snd_ctl_card_info_alloca(&info);
@@ -456,6 +457,10 @@ bool CSoundCardReaderWriter::open()
 	char buf1[100];
 	char buf2[100];
 	char* ptr;
+
+	// Store the opened devices because ALSA won't enumerate them
+	m_readDevices.Add(m_readDevice);
+	m_writeDevices.Add(m_writeDevice);
 
 	::strcpy(buf1, (const char*)m_writeDevice.mb_str(wxConvUTF8));
 	::strcpy(buf2, (const char*)m_readDevice.mb_str(wxConvUTF8));
