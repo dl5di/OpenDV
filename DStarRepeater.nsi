@@ -11,8 +11,8 @@
 ;Configuration
 
   ;General
-  Name "DStarRepeater 20150308"
-  OutFile "DStarRepeater-20150308.exe"
+  Name "DStarRepeater 20150404"
+  OutFile "DStarRepeater-20150404.exe"
 
   ;Folder selection page
   InstallDir "$PROGRAMFILES\D-Star Repeater"
