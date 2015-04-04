@@ -1,4 +1,4 @@
-Analogue Repeater - 20150308
+Analogue Repeater - 20150404
 ============================
 
 20130702
@@ -46,3 +46,7 @@ Fixed a compile bug when defining GPIO.
 More changes to the ALSA interface.
 Added a .mk for the Pi2.
 
+20150404
+--------
+
+Allow enumeration of the sound devices including the running one.

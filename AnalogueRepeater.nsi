@@ -11,8 +11,8 @@
 ;Configuration
 
   ;General
-  Name "Analogue Repeater 20150308"
-  OutFile "AnalogueRepeater-20150308.exe"
+  Name "Analogue Repeater 20150404"
+  OutFile "AnalogueRepeater-20150404.exe"
 
   ;Folder selection page
   InstallDir "$PROGRAMFILES\Analogue Repeater"
