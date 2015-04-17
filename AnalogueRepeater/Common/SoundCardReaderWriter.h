@@ -82,6 +82,8 @@ public:
 
 	virtual void kill();
 
+	virtual bool isBusy() const;
+
 private:
 	snd_pcm_t*      m_handle;
 	unsigned int    m_blockSize;
@@ -102,6 +104,8 @@ public:
 	bool open();
 	void close();
 
+	bool isWriterBusy() const;
+
 	static wxArrayString getReadDevices();
 	static wxArrayString getWriteDevices();
 
@@ -114,6 +118,9 @@ private:
 	int                  m_id;
 	CSoundCardReader*    m_reader;
 	CSoundCardWriter*    m_writer;
+
+	static wxArrayString m_readDevices;
+	static wxArrayString m_writeDevices;
 };
 
 #endif

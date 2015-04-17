@@ -583,7 +583,11 @@ bool CSoundCardController::isTXReady()
 
 bool CSoundCardController::isTX()
 {
+#if (defined(__APPLE__) && defined(__MACH__)) || defined(__WINDOWS__)
 	return m_txAudio.hasData();
+#else
+        return m_sound.isWriterBusy() || m_txAudio.hasData();
+#endif
 }
 
 void CSoundCardController::readCallback(const wxFloat32* input, unsigned int n, int id)

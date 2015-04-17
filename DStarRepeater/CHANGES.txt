@@ -1,4 +1,4 @@
-Repeater - 20150308
+Repeater - 20150404
 ===================
 
 20090530
@@ -2042,3 +2042,8 @@ Fixed a compile bug when defining GPIO.
 Added a .mk file for the Pi2.
 Increased the network timeout from one second to two seconds.
 More changes to the ALSA interface.
+
+20150404
+--------
+
+Added method to ALSA interface for TX control in the sound card controller.
