@@ -556,6 +556,8 @@ void CDummyRepeaterThread::readCallback(const wxFloat32* input, unsigned int nSa
 
 void CDummyRepeaterThread::writeCallback(wxFloat32* output, unsigned int& nSamples, int)
 {
+	::memset(output, 0x00U, nSamples * sizeof(wxFloat32));
+
 	if (m_stopped)
 		return;
 

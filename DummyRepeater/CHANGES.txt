@@ -1963,3 +1963,8 @@ Updated the ALSA handing.
 --------
 
 Updated the ALSA handling again.
+
+2015xxxx
+--------
+
+Fix the continuous bleeping at the end of reception.
