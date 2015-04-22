@@ -1434,3 +1434,8 @@ Updated the DExtra hosts file.
 
 Include .mk file for the Pi2.
 Increased the network timeout from one second to two seconds.
+
+2015xxxx
+--------
+
+Update the DExtra_Hosts.txt file.
