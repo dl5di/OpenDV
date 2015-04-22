@@ -1,4 +1,4 @@
-Repeater - 20150213
+Repeater - 20150422
 ===================
 
 20090530
@@ -1964,7 +1964,7 @@ Updated the ALSA handing.
 
 Updated the ALSA handling again.
 
-2015xxxx
+20150422
 --------
 
 Fix the continuous bleeping at the end of reception.
