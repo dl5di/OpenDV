@@ -4,19 +4,20 @@ CFLAGS :=		-I../Common $(CFLAGS)
 
 dummyrepeater:	DummyRepeaterApp.o DummyRepeaterBleepSet.o DummyRepeaterCallsignSet.o DummyRepeaterControllerSet.o DummyRepeaterDongleSet.o \
 				DummyRepeaterErrorEvent.o DummyRepeaterFrame.o DummyRepeaterHeaderEvent.o DummyRepeaterMessageEvent.o DummyRepeaterMessageSet.o DummyRepeaterNetworkSet.o \
-				DummyRepeaterPreferences.o DummyRepeaterSlowDataEvent.o DummyRepeaterSoundcardSet.o DummyRepeaterStatusEvent.o DummyRepeaterThread.o \
-				DummyRepeaterTimeoutSet.o ../Common/Common.a
+				DummyRepeaterPreferences.o DummyRepeaterSlowDataEvent.o DummyRepeaterTXEvent.o DummyRepeaterSoundcardSet.o DummyRepeaterStatusEvent.o DummyRepeaterThread.o \
+				DummyRepeaterTimeoutSet.o DummyRepeaterTXEvent.o ../Common/Common.a
 				$(CC) $(LDFLAGS) -o dummyrepeater DummyRepeaterApp.o DummyRepeaterBleepSet.o DummyRepeaterCallsignSet.o DummyRepeaterControllerSet.o \
 				DummyRepeaterDongleSet.o DummyRepeaterErrorEvent.o DummyRepeaterFrame.o DummyRepeaterHeaderEvent.o DummyRepeaterMessageEvent.o DummyRepeaterMessageSet.o \
-				DummyRepeaterNetworkSet.o DummyRepeaterPreferences.o DummyRepeaterSlowDataEvent.o DummyRepeaterSoundcardSet.o DummyRepeaterStatusEvent.o \
-				DummyRepeaterThread.o DummyRepeaterTimeoutSet.o ../Common/Common.a $(LIBS)
+				DummyRepeaterNetworkSet.o DummyRepeaterPreferences.o DummyRepeaterSlowDataEvent.o DummyRepeaterTXEvent.o DummyRepeaterSoundcardSet.o DummyRepeaterStatusEvent.o \
+				DummyRepeaterThread.o DummyRepeaterTimeoutSet.o DummyRepeaterTXEvent.o ../Common/Common.a $(LIBS)
 
 DummyRepeaterApp.o:	DummyRepeaterApp.cpp DummyRepeaterApp.h DummyRepeaterThread.h DummyRepeaterFrame.h DummyRepeaterDefs.h ../Common/MessageData.h \
 					DummyRepeaterDongleSet.h ../Common/DStarDefines.h ../Common/Logger.h ../Common/HeaderData.h ../Common/RepeaterProtocolHandler.h \
-					../Common/SoundCardReaderWriter.h ../Common/SerialLineController.h ../Common/K8055Controller.h \
+					../Common/SoundCardReaderWriter.h ../Common/SerialLineController.h ../Common/K8055Controller.h ../Common/StarDVController.h \
 					../Common/URIUSBController.h ../Common/ExternalController.h ../Common/DummyController.h ../Common/GPIOController.h \
 					../Common/ArduinoController.h ../Common/Version.h ../Common/DV3000Controller.h ../Common/DV3000Thread.h ../Common/DVDongleController.h \
-					../Common/DVDongleThread.h ../Common/DV3000NetworkController.h ../Common/DV3000SerialController.h
+					../Common/DVDongleThread.h ../Common/DV3000NetworkController.h ../Common/DV3000SerialController.h ../Common/StarDVThread.h \
+					../Common/StarDVNetworkController.h
 				$(CC) $(CFLAGS) -c DummyRepeaterApp.cpp
 
 DummyRepeaterBleepSet.o:	DummyRepeaterBleepSet.cpp DummyRepeaterBleepSet.h
@@ -34,10 +35,13 @@ DummyRepeaterDongleSet.o:	DummyRepeaterDongleSet.cpp DummyRepeaterDongleSet.h Du
 
 DummyRepeaterErrorEvent.o:	DummyRepeaterErrorEvent.cpp DummyRepeaterErrorEvent.h
 				$(CC) $(CFLAGS) -c DummyRepeaterErrorEvent.cpp
-
-DummyRepeaterFrame.o:	DummyRepeaterFrame.cpp DummyRepeaterFrame.h DummyRepeaterDefs.h DummyRepeaterApp.h ../Common/MessageData.h \
-						DummyRepeaterMessageEvent.h DummyRepeaterErrorEvent.h DummyRepeaterSlowDataEvent.h DummyRepeaterHeaderEvent.h \
-						DummyRepeaterStatusEvent.h DummyRepeaterPreferences.h ../Common/CallsignTextCtrl.h ../Common/DStarDefines.h \
+				
+DummyRepeaterTXEvent.o:		DummyRepeaterTXEvent.cpp DummyRepeaterTXEvent.h
+				$(CC) $(CFLAGS) -c DummyRepeaterTXEvent.cpp
+				
+DummyRepeaterFrame.o:		DummyRepeaterFrame.cpp DummyRepeaterFrame.h DummyRepeaterDefs.h DummyRepeaterApp.h ../Common/MessageData.h \
+				DummyRepeaterMessageEvent.h DummyRepeaterErrorEvent.h DummyRepeaterTXEvent.h DummyRepeaterSlowDataEvent.h DummyRepeaterHeaderEvent.h \
+				DummyRepeaterStatusEvent.h DummyRepeaterTXEvent.h DummyRepeaterPreferences.h ../Common/CallsignTextCtrl.h ../Common/DStarDefines.h \
 						../Common/HeaderData.h ../Common/Version.h
 				$(CC) $(CFLAGS) -c DummyRepeaterFrame.cpp
 
@@ -76,6 +80,9 @@ DummyRepeaterThread.o:	DummyRepeaterThread.cpp DummyRepeaterThread.h DummyRepeat
 
 DummyRepeaterTimeoutSet.o:	DummyRepeaterTimeoutSet.cpp DummyRepeaterTimeoutSet.h
 				$(CC) $(CFLAGS) -c DummyRepeaterTimeoutSet.cpp
+
+DummyRepeaterTXEvent.o:	DummyRepeaterTXEvent.cpp DummyRepeaterTXEvent.h
+				$(CC) $(CFLAGS) -c DummyRepeaterTXEvent.cpp
 
 install:	all
 				install -g bin -o root -m 0775 dummyrepeater $(BINDIR)

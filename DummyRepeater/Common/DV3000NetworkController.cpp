@@ -194,7 +194,7 @@ CDV3000NetworkController::RESP_TYPE CDV3000NetworkController::getResponse(unsign
 		return RESP_UNKNOWN;
 	}
 
-	unsigned int respLen = buffer[1U] * 256U + buffer[2U] + DV3000_HEADER_LEN;
+	unsigned int respLen = (buffer[1U] & 0x0FU) * 256U + buffer[2U] + DV3000_HEADER_LEN;
 
 	if (len != int(respLen)) {
 		wxLogError(wxT("Invalid DV3000 data, %d != %u"), len, respLen);

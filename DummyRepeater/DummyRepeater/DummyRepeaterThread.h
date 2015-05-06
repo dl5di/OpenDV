@@ -49,7 +49,7 @@ public:
 	virtual void readCallback(const wxFloat32* input, unsigned int nSamples, int id);
 	virtual void writeCallback(wxFloat32* input, unsigned int& nSamples, int id);
 
-	virtual void encodeCallback(const unsigned char* ambe, unsigned int length);
+	virtual void encodeCallback(const unsigned char* ambe, unsigned int length, int tx);
 	virtual void decodeCallback(const wxFloat32* audio, unsigned int length);
 
 	virtual void setCallsign(const wxString& callsign1, const wxString& callsign2);

@@ -1,5 +1,6 @@
 /*
- *   Copyright (C) 2014,2015 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2015 by Rick Schnicker KD0OSS
+ *   based on code by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -16,12 +17,12 @@
  *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include "DV3000Thread.h"
+#include "STARDVThread.h"
 #include "DStarDefines.h"
 
 const unsigned int MAX_PACKETS = 10U;
 
-CDV3000Thread::CDV3000Thread(IDV3000Controller* dongle) :
+CSTARDVThread::CSTARDVThread(ISTARDVController* dongle) :
 CDongleThread(),
 m_dongle(dongle),
 m_wantMode(A3_IDLE),
@@ -31,20 +32,20 @@ m_packets(0U)
 	wxASSERT(dongle != NULL);
 }
 
-CDV3000Thread::~CDV3000Thread()
+CSTARDVThread::~CSTARDVThread()
 {
 }
 
-bool CDV3000Thread::open()
+bool CSTARDVThread::open()
 {
-	m_mode = m_wantMode = A3_IDLE;
+	m_mode = m_wantMode = A3_ENCODE;
 
 	m_packets = 0U;
 
 	return m_dongle->open();
 }
 
-void* CDV3000Thread::Entry()
+void* CSTARDVThread::Entry()
 {
 	while (!m_killed) {
 		if (m_mode != m_wantMode) {
@@ -54,7 +55,7 @@ void* CDV3000Thread::Entry()
 
 				reset();
 				m_mode = m_wantMode;
-			} else if (m_mode == A3_ENCODE && m_packets == 0U && m_encodeAudio.isEmpty()) {
+			} else if (/*m_mode == A3_ENCODE && */m_packets == 0U/* && m_encodeAudio.isEmpty()*/) {
 				reset();
 				m_mode = m_wantMode;
 			} else if (m_mode == A3_IDLE) {
@@ -65,7 +66,7 @@ void* CDV3000Thread::Entry()
 		switch (m_mode) {
 			case A3_DECODE:
 				processDecodeIn();
-				processDecodeOut();
+			//	processDecodeOut();
 				break;
 
 			case A3_ENCODE:
@@ -86,7 +87,7 @@ void* CDV3000Thread::Entry()
 	return NULL;
 }
 
-void CDV3000Thread::setDecode()
+void CSTARDVThread::setDecode()
 {
 	if (m_mode != A3_DECODE && m_decodeCallback == NULL)
 		return;
@@ -94,7 +95,7 @@ void CDV3000Thread::setDecode()
 	m_wantMode = A3_DECODE;
 }
 
-void CDV3000Thread::setEncode()
+void CSTARDVThread::setEncode()
 {
 	if (m_mode != A3_ENCODE && m_encodeCallback == NULL)
 		return;
@@ -102,29 +103,28 @@ void CDV3000Thread::setEncode()
 	m_wantMode = A3_ENCODE;
 }
 
-void CDV3000Thread::setIdle()
+void CSTARDVThread::setIdle()
 {
-	m_wantMode = A3_IDLE;
+	m_wantMode = A3_ENCODE;
 }
 
-void CDV3000Thread::processDecodeIn()
+void CSTARDVThread::processDecodeIn() //************************
 {
 	if (m_packets >= MAX_PACKETS)
 		return;
 
 	unsigned char ambe[VOICE_FRAME_LENGTH_BYTES];
-
 	unsigned int len = m_decodeData.getData(ambe, VOICE_FRAME_LENGTH_BYTES);
 	if (len == 0U)
 		return;
-
+    
 	// Convert the AMBE data to real audio, even if it's nonsense
 	m_dongle->decodeIn(ambe, VOICE_FRAME_LENGTH_BYTES);
 
-	m_packets++;
+//	m_packets++;
 }
 
-void CDV3000Thread::processDecodeOut()
+void CSTARDVThread::processDecodeOut()
 {
 	wxFloat32 audioIn[DSTAR_AUDIO_BLOCK_SIZE];
 	bool res = m_dongle->decodeOut(audioIn, DSTAR_AUDIO_BLOCK_SIZE);
@@ -139,7 +139,7 @@ void CDV3000Thread::processDecodeOut()
 	}
 }
 
-void CDV3000Thread::processEncodeIn()
+void CSTARDVThread::processEncodeIn()
 {
 	if (m_packets >= MAX_PACKETS)
 		return;
@@ -151,23 +151,24 @@ void CDV3000Thread::processEncodeIn()
 	if (len == 0U)
 		return;
 
-	wxFloat32 audioOut[DSTAR_AUDIO_BLOCK_SIZE];
-	downSample(audioIn, audioOut);
+//	wxFloat32 audioOut[DSTAR_AUDIO_BLOCK_SIZE];
+//	downSample(audioIn, audioOut);
 
 	// Convert the audio into AMBE data
-	m_dongle->encodeIn(audioOut, DSTAR_AUDIO_BLOCK_SIZE);
+//	m_dongle->encodeIn(audioOut, DSTAR_AUDIO_BLOCK_SIZE);
 
-	m_packets++;
+//	m_packets++;
 }
 
-void CDV3000Thread::processEncodeOut()
+void CSTARDVThread::processEncodeOut()  // ******************************
 {
-	unsigned char ambe[VOICE_FRAME_LENGTH_BYTES];
-	bool res = m_dongle->encodeOut(ambe, VOICE_FRAME_LENGTH_BYTES);
+    unsigned char ambe[VOICE_FRAME_LENGTH_BYTES];
+    bool tx;
+	bool res = m_dongle->encodeOut(ambe, VOICE_FRAME_LENGTH_BYTES, tx);
 	if (res) {
-		m_encodeCallback->encodeCallback(ambe, VOICE_FRAME_LENGTH_BYTES, 2);
+		m_encodeCallback->encodeCallback(ambe, VOICE_FRAME_LENGTH_BYTES, tx ? 1 : 0);
 
 		if (m_packets > 0U)
 			m_packets--;
-	}
+    }
 }

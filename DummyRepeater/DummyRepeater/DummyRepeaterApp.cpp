@@ -17,6 +17,7 @@
  */
 
 #include "RepeaterProtocolHandler.h"
+#include "StarDVNetworkController.h"
 #include "DV3000NetworkController.h"
 #include "DV3000SerialController.h"
 #include "SoundCardReaderWriter.h"
@@ -27,6 +28,7 @@
 #include "DummyRepeaterApp.h"
 #include "URIUSBController.h"
 #include "DV3000Controller.h"
+#include "StarDVController.h"
 #include "K8055Controller.h"
 #include "DummyController.h"
 #if defined(GPIO)
@@ -34,6 +36,7 @@
 #endif
 #include "DVDongleThread.h"
 #include "DV3000Thread.h"
+#include "StarDVThread.h"
 #include "DStarDefines.h"
 #include "Version.h"
 #include "Logger.h"
@@ -253,6 +256,11 @@ void CDummyRepeaterApp::setRpt2(const wxString& rpt2)
 bool CDummyRepeaterApp::setTransmit(bool on)
 {
 	return m_thread->setTransmit(on);
+}
+
+void CDummyRepeaterApp::setGUITransmit(bool on)
+{
+	m_frame->setTX(on);
 }
 
 void CDummyRepeaterApp::getCallsign(wxString& callsign1, wxString& callsign2) const
@@ -708,8 +716,13 @@ void CDummyRepeaterApp::createThread()
 				dongle = new CDVDongleThread(new CDVDongleController(dongleDevice));
 			break;
 		case DT_DV3000_NETWORK:
+		case DT_STARDV_NETWORK2:
 			if (!dongleAddress.IsEmpty() && donglePort > 0U)
 				dongle = new CDV3000Thread(new CDV3000NetworkController(dongleAddress, donglePort));
+			break;
+		case DT_STARDV_NETWORK:
+			if (!dongleAddress.IsEmpty() && donglePort > 0U)
+				dongle = new CSTARDVThread(new CSTARDVNetworkController(dongleAddress, donglePort));
 			break;
 		case DT_DV3000_SERIAL:
 			if (!dongleDevice.IsEmpty())

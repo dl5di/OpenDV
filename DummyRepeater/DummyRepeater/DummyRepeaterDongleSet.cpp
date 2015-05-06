@@ -41,10 +41,12 @@ m_port(NULL)
 	wxStaticText* typeLabel = new wxStaticText(this, -1, _("Type"));
 	sizer->Add(typeLabel, 0, wxALL, BORDER_SIZE);
 
-	m_type = new wxChoice(this, CHOICE_TYPE, wxDefaultPosition, wxSize(CONTROL_WIDTH, -1));
+	m_type = new wxChoice(this, CHOICE_TYPE, wxDefaultPosition, wxSize(DEVICE_WIDTH, -1));
 	m_type->Append(wxT("DV-Dongle"));
 	m_type->Append(_("DV3000 Network"));
 	m_type->Append(_("DV3000 Serial"));
+	m_type->Append(_("Star*DV (SPKR/MIC) Network"));
+	m_type->Append(_("Star*DV (PC Audio) Network"));
 	sizer->Add(m_type, 0, wxALL, BORDER_SIZE);
 	m_type->SetSelection(int(type));
 
@@ -82,7 +84,7 @@ m_port(NULL)
 	m_port->SetMaxLength(PORT_LENGTH);
 	sizer->Add(m_port, 0, wxALL, BORDER_SIZE);
 
-	if (type == DT_DV3000_NETWORK) {
+	if (type == DT_DV3000_NETWORK || type == DT_STARDV_NETWORK || type == DT_STARDV_NETWORK2) {
 		m_device->Disable();
 	} else {
 		m_address->Disable();
@@ -179,6 +181,8 @@ void CDummyRepeaterDongleSet::onType(wxCommandEvent& event)
 			break;
 
 		case 1:		// DV3000 Network
+		case 3:		// STARDV Network
+		case 4:		// STARDV Network
 			m_device->Disable();
 			m_address->Enable();
 			m_port->Enable();

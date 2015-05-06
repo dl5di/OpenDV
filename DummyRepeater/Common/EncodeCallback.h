@@ -18,7 +18,7 @@
 
 class IEncodeCallback {
 public:
-	virtual void encodeCallback(const unsigned char* ambe, unsigned int length) = 0;
+	virtual void encodeCallback(const unsigned char* ambe, unsigned int length, int tx) = 0;
 
 private:
 };

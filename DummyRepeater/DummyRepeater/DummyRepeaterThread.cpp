@@ -103,8 +103,13 @@ void CDummyRepeaterThread::decodeCallback(const wxFloat32* audio, unsigned int l
 	m_decodeAudio.addData(audio, length);
 }
 
-void CDummyRepeaterThread::encodeCallback(const unsigned char* ambe, unsigned int length)
+void CDummyRepeaterThread::encodeCallback(const unsigned char* ambe, unsigned int length, int tx)
 {
+	if (tx == 1 && m_transmit != CLIENT_TRANSMIT)
+		::wxGetApp().setGUITransmit(true);
+	else if (tx == 0 && m_transmit == CLIENT_TRANSMIT)
+		::wxGetApp().setGUITransmit(false);
+
 	m_encodeData.addData(ambe, length);
 }
 

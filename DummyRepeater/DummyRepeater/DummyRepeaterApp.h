@@ -60,6 +60,7 @@ public:
 	virtual void setRpt2(const wxString& rpt2);
 
 	virtual bool setTransmit(bool on);
+	virtual void setGUITransmit(bool on);
 
 	virtual void getCallsign(wxString& callsign1, wxString& callsign2) const;
 	virtual void setCallsign(const wxString& callsign1, const wxString& callsign2) const;

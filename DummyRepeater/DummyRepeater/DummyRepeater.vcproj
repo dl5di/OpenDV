@@ -244,6 +244,10 @@
 				RelativePath=".\DummyRepeaterTimeoutSet.cpp"
 				>
 			</File>
+			<File
+				RelativePath=".\DummyRepeaterTXEvent.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -320,6 +324,10 @@
 			</File>
 			<File
 				RelativePath=".\DummyRepeaterTimeoutSet.h"
+				>
+			</File>
+			<File
+				RelativePath=".\DummyRepeaterTXEvent.h"
 				>
 			</File>
 		</Filter>

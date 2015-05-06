@@ -47,6 +47,7 @@ public:
 	virtual void onRpt1(wxCommandEvent& event);
 	virtual void onRpt2(wxCommandEvent& event);
 
+	virtual void onTransmit(wxEvent& event);
 	virtual void onTransmit(wxCommandEvent& event);
 	virtual void onOneTouchReply(wxCommandEvent& event);
 
@@ -66,6 +67,8 @@ public:
 	virtual void showStatus3(const wxString& text);
 	virtual void showStatus4(const wxString& text);
 	virtual void showStatus5(const wxString& text);
+
+	virtual void setTX(bool on);
 
 	virtual void error(const wxString& error);
 
@@ -99,6 +102,7 @@ private:
 	bool processYour(wxString& your);
 	bool processRpt1(wxString& rpt1);
 	bool processRpt2(wxString& rpt2);
+	void onTransmit(bool tx);
 };
 
 #endif

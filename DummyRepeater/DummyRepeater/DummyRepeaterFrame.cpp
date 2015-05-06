@@ -21,6 +21,7 @@
 #include "DummyRepeaterHeaderEvent.h"
 #include "DummyRepeaterStatusEvent.h"
 #include "DummyRepeaterPreferences.h"
+#include "DummyRepeaterTXEvent.h"
 #include "DummyRepeaterFrame.h"
 #include "DummyRepeaterApp.h"
 #include "DStarDefines.h"
@@ -47,6 +48,7 @@ DEFINE_EVENT_TYPE(HEADER_EVENT)
 DEFINE_EVENT_TYPE(SLOW_DATA_EVENT)
 DEFINE_EVENT_TYPE(STATUS_EVENT)
 DEFINE_EVENT_TYPE(ERROR_EVENT)
+DEFINE_EVENT_TYPE(TX_EVENT)
 
 BEGIN_EVENT_TABLE(CDummyRepeaterFrame, wxFrame)
 	EVT_MENU(wxID_EXIT, CDummyRepeaterFrame::onQuit)
@@ -75,6 +77,7 @@ BEGIN_EVENT_TABLE(CDummyRepeaterFrame, wxFrame)
 	EVT_CUSTOM(SLOW_DATA_EVENT, wxID_ANY, CDummyRepeaterFrame::onSlowData)
 	EVT_CUSTOM(STATUS_EVENT,    wxID_ANY, CDummyRepeaterFrame::onStatus)
 	EVT_CUSTOM(ERROR_EVENT,     wxID_ANY, CDummyRepeaterFrame::onError)
+	EVT_CUSTOM(TX_EVENT,        wxID_ANY, CDummyRepeaterFrame::onTransmit)
 END_EVENT_TABLE()
 
 CDummyRepeaterFrame::CDummyRepeaterFrame(const wxString& title, const wxPoint& position) :
@@ -354,6 +357,13 @@ void CDummyRepeaterFrame::showStatus5(const wxString& text)
 	AddPendingEvent(event);
 }
 
+void CDummyRepeaterFrame::setTX(bool on)
+{
+	CDummyRepeaterTXEvent event(on, TX_EVENT);
+
+	AddPendingEvent(event);
+}
+
 void CDummyRepeaterFrame::error(const wxString& error)
 {
 	CDummyRepeaterErrorEvent event(error, ERROR_EVENT);
@@ -468,7 +478,7 @@ void CDummyRepeaterFrame::onAbout(wxCommandEvent&)
 {
 	wxAboutDialogInfo info;
 	info.AddDeveloper(wxT("Jonathan Naylor, G4KLX"));
-	info.SetCopyright(wxT("(C) 2010-2014 using GPL v2 or later"));
+	info.SetCopyright(wxT("(C) 2010-2015 using GPL v2 or later"));
 	info.SetName(APPLICATION_NAME);
 	info.SetVersion(VERSION);
 	info.SetDescription(_("This program allows a computer with an AMBE Dongle\nto behave as a D-Star Repeater."));
@@ -596,11 +606,23 @@ bool CDummyRepeaterFrame::processRpt2(wxString& rpt2)
 	return true;
 }
 
+void CDummyRepeaterFrame::onTransmit(wxEvent& event)
+{
+	CDummyRepeaterTXEvent& txEvent = dynamic_cast<CDummyRepeaterTXEvent&>(event);
+	bool tx = txEvent.getState();
+
+	onTransmit(tx);
+}
+
 void CDummyRepeaterFrame::onTransmit(wxCommandEvent& event)
 {
-	bool state = event.IsChecked();
+	bool tx = event.IsChecked();
+	onTransmit(tx);
+}
 
-	if (state) {
+void CDummyRepeaterFrame::onTransmit(bool tx)
+{
+	if (tx) {
 		wxString your = m_your->GetValue();
 		bool ret = processYour(your);
 		if (!ret) {

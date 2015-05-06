@@ -234,7 +234,7 @@ CDV3000SerialController::RESP_TYPE CDV3000SerialController::getResponse(unsigned
 		}
 	}
 
-	unsigned int respLen = buffer[1U] * 256U + buffer[2U] + DV3000_HEADER_LEN;
+	unsigned int respLen = (buffer[1U] & 0x0FU) * 256U + buffer[2U] + DV3000_HEADER_LEN;
 
 	int len3 = m_serial.read(buffer + offset, respLen - offset);
 	if (len3 == 0)

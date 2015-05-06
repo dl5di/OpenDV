@@ -1,7 +1,7 @@
 all:		Common.a
 
-OBJS :=	AddressTextCtrl.o ArduinoController.o Bleeper.o CallsignTextCtrl.o CCITTChecksumReverse.o DongleThread.o DummyController.o DV3000Controller.o \
-		DV3000NetworkController.o DV3000SerialController.o DV3000Thread.o DVDongleController.o DVDongleThread.o ExternalController.o FIRFilter.o \
+OBJS :=	AddressTextCtrl.o ArduinoController.o Bleeper.o CallsignTextCtrl.o CCITTChecksumReverse.o DongleThread.o DummyController.o STARDVController.o  DV3000Controller.o \
+STARDVNetworkController.o DV3000NetworkController.o DV3000SerialController.o DV3000Thread.o STARDVThread.o DVDongleController.o DVDongleThread.o ExternalController.o FIRFilter.o \
 		GPIOController.o HardwareController.o HeaderData.o K8055Controller.o Logger.o MessageData.o MessageTextCtrl.o PortTextCtrl.o \
 		RepeaterProtocolHandler.o RestrictedTextCtrl.o SerialDataController.o SerialLineController.o SerialPortSelector.o SlowDataDecoder.o \
 		SlowDataEncoder.o SoundCardReaderWriter.o Timer.o UDPReaderWriter.o URIUSBController.o Utils.o
@@ -30,18 +30,27 @@ DongleThread.o:	DongleThread.cpp DongleThread.h FIRFilter.h Bleeper.h RingBuffer
 DummyController.o:	DummyController.cpp DummyController.h HardwareController.h
 		$(CC) $(CFLAGS) -c DummyController.cpp
 
+STARDVController.o:	STARDVController.cpp STARDVController.h
+		$(CC) $(CFLAGS) -c STARDVController.cpp
+		
+STARDVNetworkController.o:	STARDVNetworkController.cpp STARDVNetworkController.h STARDVController.h DStarDefines.h SerialDataController.h Utils.h
+		$(CC) $(CFLAGS) -c STARDVNetworkController.cpp
+		
 DV3000Controller.o:	DV3000Controller.cpp DV3000Controller.h
 		$(CC) $(CFLAGS) -c DV3000Controller.cpp
-
+		
 DV3000NetworkController.o:	DV3000NetworkController.cpp DV3000NetworkController.h DV3000Controller.h DStarDefines.h SerialDataController.h Utils.h
 		$(CC) $(CFLAGS) -c DV3000NetworkController.cpp
-
+		
 DV3000SerialController.o:	DV3000SerialController.cpp DV3000SerialController.h DV3000Controller.h DStarDefines.h UDPReaderWriter.h Utils.h
 		$(CC) $(CFLAGS) -c DV3000SerialController.cpp
 
 DV3000Thread.o:	DV3000Thread.cpp DV3000Thread.h DongleThread.h DV3000Controller.h DStarDefines.h
 		$(CC) $(CFLAGS) -c DV3000Thread.cpp
-
+		
+STARDVThread.o:	STARDVThread.cpp STARDVThread.h DongleThread.h STARDVController.h DStarDefines.h
+		$(CC) $(CFLAGS) -c STARDVThread.cpp
+		
 DVDongleController.o:	DVDongleController.cpp DVDongleController.h DStarDefines.h SerialDataController.h
 		$(CC) $(CFLAGS) -c DVDongleController.cpp
 

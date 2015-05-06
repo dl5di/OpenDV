@@ -134,7 +134,7 @@ void CDVDongleThread::processEncode()
 	if (!res)
 		wxLogError(wxT("An error occurred in encodeOut"));
 
-	m_encodeCallback->encodeCallback(ambe, VOICE_FRAME_LENGTH_BYTES);
+	m_encodeCallback->encodeCallback(ambe, VOICE_FRAME_LENGTH_BYTES, 2);
 }
 
 void CDVDongleThread::processIdle()

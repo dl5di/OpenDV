@@ -278,6 +278,18 @@
 				>
 			</File>
 			<File
+				RelativePath=".\STARDVController.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\STARDVNetworkController.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\STARDVThread.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Timer.cpp"
 				>
 			</File>
@@ -441,6 +453,18 @@
 			</File>
 			<File
 				RelativePath=".\SoundCardReaderWriter.h"
+				>
+			</File>
+			<File
+				RelativePath=".\STARDVController.h"
+				>
+			</File>
+			<File
+				RelativePath=".\STARDVNetworkController.h"
+				>
+			</File>
+			<File
+				RelativePath=".\STARDVThread.h"
 				>
 			</File>
 			<File
