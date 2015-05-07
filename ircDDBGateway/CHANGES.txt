@@ -1439,3 +1439,4 @@ Increased the network timeout from one second to two seconds.
 --------
 
 Update the DExtra_Hosts.txt file.
+Handle malformed D-Plus authentication packets better.

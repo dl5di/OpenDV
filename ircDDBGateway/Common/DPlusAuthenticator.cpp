@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2010-2014 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2010-2015 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -120,7 +120,7 @@ bool CDPlusAuthenticator::authenticate(const wxString& callsign, const wxString&
 	if (!ret)
 		return false;
 
-	unsigned char* buffer = new unsigned char[600U];
+	unsigned char* buffer = new unsigned char[4096U];
 	::memset(buffer, ' ', 56U);
 
 	buffer[0U] = 0x38U;
@@ -176,13 +176,12 @@ bool CDPlusAuthenticator::authenticate(const wxString& callsign, const wxString&
 		if ((buffer[1U] & 0xC0U) != 0xC0U || buffer[2U] != 0x01U) {
 			wxLogError(wxT("Invalid packet received from %s:%u"), hostname.c_str(), port);
 			CUtils::dump(wxT("Details:"), buffer, len);
-			ret = read(socket, buffer + 0U, 2U);
-			continue;
+			break;
 		}
 	
-		for (unsigned int i = 8U; i < len; i += 26U) {
-			wxString address = wxString((char*)(buffer + i + 0U),  wxConvLocal);
-			wxString    name = wxString((char*)(buffer + i + 16U), wxConvLocal);
+		for (unsigned int i = 8U; (i + 25U) < len; i += 26U) {
+			wxString address = wxString((char*)(buffer + i + 0U),  wxConvLocal, 16U);
+			wxString    name = wxString((char*)(buffer + i + 16U), wxConvLocal, LONG_CALLSIGN_LENGTH);
 
 			address.Trim();
 			name.Trim();
