@@ -1,4 +1,4 @@
-ircDDB Gateway - 20150308
+ircDDB Gateway - 20150507
 =========================
 
 20101010
@@ -1435,8 +1435,9 @@ Updated the DExtra hosts file.
 Include .mk file for the Pi2.
 Increased the network timeout from one second to two seconds.
 
-2015xxxx
+20150507
 --------
 
 Update the DExtra_Hosts.txt file.
 Handle malformed D-Plus authentication packets better.
+Update the copyright date in the GUI Help dialogue boxes.
