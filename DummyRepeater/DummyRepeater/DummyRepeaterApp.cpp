@@ -17,7 +17,7 @@
  */
 
 #include "RepeaterProtocolHandler.h"
-#include "StarDVNetworkController.h"
+#include "STARDVNetworkController.h"
 #include "DV3000NetworkController.h"
 #include "DV3000SerialController.h"
 #include "SoundCardReaderWriter.h"
@@ -28,7 +28,7 @@
 #include "DummyRepeaterApp.h"
 #include "URIUSBController.h"
 #include "DV3000Controller.h"
-#include "StarDVController.h"
+#include "STARDVController.h"
 #include "K8055Controller.h"
 #include "DummyController.h"
 #if defined(GPIO)
@@ -36,7 +36,7 @@
 #endif
 #include "DVDongleThread.h"
 #include "DV3000Thread.h"
-#include "StarDVThread.h"
+#include "STARDVThread.h"
 #include "DStarDefines.h"
 #include "Version.h"
 #include "Logger.h"

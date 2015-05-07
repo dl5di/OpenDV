@@ -57,7 +57,7 @@ int setNonblocking(int fd)
 }     
 
 
-void dump(char *text, unsigned char *data, unsigned int length)
+void dump(const char *text, const unsigned char *data, unsigned int length)
 {
 	unsigned int offset = 0U;
 	unsigned int i;

@@ -1,4 +1,4 @@
-Repeater - 20150422
+Repeater - 20150507
 ===================
 
 20090530
@@ -1969,7 +1969,7 @@ Updated the ALSA handling again.
 
 Fix the continuous bleeping at the end of reception.
 
-201505xx
+20150507
 --------
 
 Add Star*DV hardware support.

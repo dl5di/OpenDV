@@ -41,7 +41,7 @@ m_port(NULL)
 	wxStaticText* typeLabel = new wxStaticText(this, -1, _("Type"));
 	sizer->Add(typeLabel, 0, wxALL, BORDER_SIZE);
 
-	m_type = new wxChoice(this, CHOICE_TYPE, wxDefaultPosition, wxSize(DEVICE_WIDTH, -1));
+	m_type = new wxChoice(this, CHOICE_TYPE, wxDefaultPosition, wxSize(DONGLE_WIDTH, -1));
 	m_type->Append(wxT("DV-Dongle"));
 	m_type->Append(_("DV3000 Network"));
 	m_type->Append(_("DV3000 Serial"));
