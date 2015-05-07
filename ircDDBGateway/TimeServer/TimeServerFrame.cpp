@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2012-2014 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2012-2015 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -176,7 +176,7 @@ void CTimeServerFrame::onAbout(wxCommandEvent&)
 {
 	wxAboutDialogInfo info;
 	info.AddDeveloper(wxT("Jonathan Naylor, G4KLX"));
-	info.SetCopyright(wxT("(C) 2012-2014 using GPL v2 or later"));
+	info.SetCopyright(wxT("(C) 2012-2015 using GPL v2 or later"));
 	info.SetName(APPLICATION_NAME);
 	info.SetVersion(VERSION);
 	info.SetDescription(_("This program allows a computer running a gateway\nto have the time announced."));
