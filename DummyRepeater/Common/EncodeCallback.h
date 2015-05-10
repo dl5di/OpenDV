@@ -1,5 +1,5 @@
 /*
- *	Copyright (C) 2014 by Jonathan Naylor, G4KLX
+ *	Copyright (C) 2014,2015 by Jonathan Naylor, G4KLX
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -16,9 +16,15 @@
 
 #include <wx/wx.h>
 
+enum PTT_STATE {
+	PS_NONE,
+	PS_RECEIVE,
+	PS_TRANSMIT
+};
+
 class IEncodeCallback {
 public:
-	virtual void encodeCallback(const unsigned char* ambe, unsigned int length, int tx) = 0;
+	virtual void encodeCallback(const unsigned char* ambe, unsigned int length, PTT_STATE state) = 0;
 
 private:
 };

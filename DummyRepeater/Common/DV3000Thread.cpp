@@ -165,7 +165,7 @@ void CDV3000Thread::processEncodeOut()
 	unsigned char ambe[VOICE_FRAME_LENGTH_BYTES];
 	bool res = m_dongle->encodeOut(ambe, VOICE_FRAME_LENGTH_BYTES);
 	if (res) {
-		m_encodeCallback->encodeCallback(ambe, VOICE_FRAME_LENGTH_BYTES, 2);
+		m_encodeCallback->encodeCallback(ambe, VOICE_FRAME_LENGTH_BYTES, PS_NONE);
 
 		if (m_packets > 0U)
 			m_packets--;
