@@ -1,11 +1,11 @@
 all:			ircddbgatewayconfig
 
-CFLAGS :=		-I../Common ../GUICommon $(CFLAGS)
+CFLAGS :=		-I../Common -I../GUICommon $(CFLAGS)
 
 ircddbgatewayconfig:	IRCDDBGatewayConfigApp.o IRCDDBGatewayConfigFrame.o IRCDDBGatewayConfigGatewaySet.o IRCDDBGatewayConfigIrcDDBSet.o \
-				IRCDDBGatewayConfigMiscellaneousSet.o ../Common/Common.a ../GUICommon/GUICommon.a
+				IRCDDBGatewayConfigMiscellaneousSet.o ../GUICommon/GUICommon.a ../Common/Common.a
 				$(CC) $(LDFLAGS) -o ircddbgatewayconfig IRCDDBGatewayConfigApp.o IRCDDBGatewayConfigFrame.o IRCDDBGatewayConfigGatewaySet.o \
-				IRCDDBGatewayConfigIrcDDBSet.o IRCDDBGatewayConfigMiscellaneousSet.o ../Common/Common.a ../GUICommon/GUICommon.a $(LIBS)
+				IRCDDBGatewayConfigIrcDDBSet.o IRCDDBGatewayConfigMiscellaneousSet.o ../GUICommon/GUICommon.a ../Common/Common.a $(LIBS)
 
 IRCDDBGatewayConfigApp.o:	IRCDDBGatewayConfigApp.cpp IRCDDBGatewayConfigApp.h IRCDDBGatewayConfigFrame.h IRCDDBGatewayConfigDefs.h ../Common/Defs.h \
 				../Common/Version.h ../Common/Utils.h

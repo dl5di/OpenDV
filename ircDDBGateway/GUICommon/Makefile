@@ -16,13 +16,13 @@ CallsignTextCtrl.o:	CallsignTextCtrl.cpp CallsignTextCtrl.h RestrictedTextCtrl.h
 DescriptionTextCtrl.o:	DescriptionTextCtrl.cpp DescriptionTextCtrl.h RestrictedTextCtrl.h
 				$(CC) $(CFLAGS) -c DescriptionTextCtrl.cpp
 
-DCSSet.o:		DCSSet.cpp DCSSet.h HostFile.h Defs.h
+DCSSet.o:		DCSSet.cpp DCSSet.h ../Common/HostFile.h ../Common/Defs.h
 				$(CC) $(CFLAGS) -c DCSSet.cpp
 
 DExtraSet.o:	DExtraSet.cpp DExtraSet.h
 				$(CC) $(CFLAGS) -c DExtraSet.cpp
 
-DPlusSet.o:		DPlusSet.cpp DPlusSet.h Defs.h CallsignTextCtrl.h DStarDefines.h
+DPlusSet.o:		DPlusSet.cpp DPlusSet.h ../Common/Defs.h CallsignTextCtrl.h ../Common/DStarDefines.h
 				$(CC) $(CFLAGS) -c DPlusSet.cpp
 
 DPRSSet.o:		DPRSSet.cpp DPRSSet.h PortTextCtrl.h
@@ -31,19 +31,19 @@ DPRSSet.o:		DPRSSet.cpp DPRSSet.h PortTextCtrl.h
 PortTextCtrl.o:	PortTextCtrl.cpp PortTextCtrl.h RestrictedTextCtrl.h
 				$(CC) $(CFLAGS) -c PortTextCtrl.cpp
 
-RemoteSet.o:	RemoteSet.cpp RemoteSet.h PortTextCtrl.h DStarDefines.h
+RemoteSet.o:	RemoteSet.cpp RemoteSet.h PortTextCtrl.h ../Common/DStarDefines.h
 				$(CC) $(CFLAGS) -c RemoteSet.cpp
 
-RepeaterDataSet.o:	RepeaterDataSet.cpp RepeaterDataSet.h Defs.h DStarDefines.h AddressTextCtrl.h PortTextCtrl.h HostFile.h
+RepeaterDataSet.o:	RepeaterDataSet.cpp RepeaterDataSet.h ../Common/Defs.h ../Common/DStarDefines.h AddressTextCtrl.h PortTextCtrl.h ../Common/HostFile.h
 				$(CC) $(CFLAGS) -c RepeaterDataSet.cpp
 
-RepeaterInfoSet.o:	RepeaterInfoSet.cpp RepeaterInfoSet.h Defs.h DStarDefines.h DescriptionTextCtrl.h
+RepeaterInfoSet.o:	RepeaterInfoSet.cpp RepeaterInfoSet.h ../Common/Defs.h ../Common/DStarDefines.h DescriptionTextCtrl.h
 				$(CC) $(CFLAGS) -c RepeaterInfoSet.cpp
 
 RestrictedTextCtrl.o:	RestrictedTextCtrl.cpp RestrictedTextCtrl.h
 				$(CC) $(CFLAGS) -c RestrictedTextCtrl.cpp
 
-StarNetSet.o:	StarNetSet.cpp StarNetSet.h CallsignTextCtrl.h DStarDefines.h Defs.h
+StarNetSet.o:	StarNetSet.cpp StarNetSet.h CallsignTextCtrl.h ../Common/DStarDefines.h ../Common/Defs.h
 				$(CC) $(CFLAGS) -c StarNetSet.cpp
 
 clean:

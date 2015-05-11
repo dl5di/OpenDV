@@ -1,6 +1,6 @@
 all:			starnetserver starnetserverd
 
-CFLAGS :=		-I../ircDDB -I../Common ../GUICommon $(CFLAGS)
+CFLAGS :=		-I../ircDDB -I../Common -I../GUICommon $(CFLAGS)
 
 starnetserver:	StarNetServerApp.o StarNetServerCallsignSet.o StarNetServerConfig.o StarNetServerFrame.o StarNetServerIrcDDBSet.o StarNetServerLogRedirect.o \
 				StarNetServerMiscellaneousSet.o StarNetServerPreferences.o StarNetServerThread.o StarNetServerThreadHelper.o ../ircDDB/libircDDB.a ../Common/Common.a \

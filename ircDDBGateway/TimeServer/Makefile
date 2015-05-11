@@ -1,6 +1,6 @@
 all:			timeserver timeserverd
 
-CFLAGS :=		-I../Common ../GUICommon $(CFLAGS)
+CFLAGS :=		-I../Common -I../GUICommon $(CFLAGS)
 
 timeserver:		TimeServerAnnouncementsSet.o TimeServerApp.o TimeServerConfig.o TimeServerFrame.o TimeServerGatewaySet.o TimeServerLogRedirect.o \
 				TimeServerPreferences.o TimeServerThread.o TimeServerThreadHelper.o ../Common/Common.a ../GUICommon/GUICommon.a

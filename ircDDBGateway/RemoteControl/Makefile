@@ -1,6 +1,6 @@
 all:			remotecontrol remotecontrold
 
-CFLAGS :=		-I../Common ../GUICommon $(CFLAGS)
+CFLAGS :=		-I../Common -I../GUICommon $(CFLAGS)
 
 remotecontrol:	RemoteControlApp.o RemoteControlCallsignData.o RemoteControlConfig.o RemoteControlFrame.o RemoteControlLinkData.o \
 				RemoteControlPreferences.o RemoteControlRemoteControlHandler.o RemoteControlRemoteSet.o RemoteControlRepeaterData.o \
