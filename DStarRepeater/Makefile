@@ -7,14 +7,17 @@ include settings.mk
 
 all:	DStarRepeater/dstarrepeater DStarRepeaterConfig/dstarrepeaterconfig
 
-DStarRepeater/dstarrepeater:	Common/Common.a
+DStarRepeater/dstarrepeater:	Common/Common.a GUICommon/GUICommon.a
 		make -C DStarRepeater
 
-DStarRepeaterConfig/dstarrepeaterconfig:	Common/Common.a
+DStarRepeaterConfig/dstarrepeaterconfig:	Common/Common.a GUICommon/GUICommon.a
 		make -C DStarRepeaterConfig
 
 Common/Common.a:
 		make -C Common
+
+GUICommon/GUICommon.a:
+		make -C GUICommon
 
 install:	all
 		install -d -g bin -o root -m 0775 $(BINDIR)
@@ -25,6 +28,7 @@ install:	all
 clean:
 		rm -f core *~ *.bak
 		make -C Common clean
+		make -C GUICommon clean
 		make -C DStarRepeater clean
 		make -C DStarRepeaterConfig clean
 

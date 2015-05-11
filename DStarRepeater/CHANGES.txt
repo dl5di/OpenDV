@@ -2047,3 +2047,8 @@ More changes to the ALSA interface.
 --------
 
 Added method to ALSA interface for TX control in the sound card controller.
+
+2015xxxx
+--------
+
+Rearrange the source code slightly.

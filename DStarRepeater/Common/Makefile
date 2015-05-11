@@ -1,17 +1,14 @@
 all:		Common.a
 
-OBJS :=	AddressTextCtrl.o AMBEFEC.o AnnouncementUnit.o ArduinoController.o BeaconUnit.o CallsignList.o CallsignTextCtrl.o CCITTChecksum.o CCITTChecksumReverse.o \
-		DStarGMSKDemodulator.o DStarGMSKModulator.o DStarRepeaterConfig.o DummyController.o DVAPController.o DVMegaController.o DVRPTRV1Controller.o \
-		DVRPTRV2Controller.o DVRPTRV3Controller.o DVTOOLFileReader.o DVTOOLFileWriter.o ExternalController.o FIRFilter.o GatewayProtocolHandler.o GMSKController.o \
-		GMSKModem.o GMSKModemLibUsb.o Golay.o GPIOController.o HardwareController.o HeaderData.o K8055Controller.o LogEvent.o Logger.o MessageTextCtrl.o Modem.o \
-		OutputQueue.o PortTextCtrl.o RepeaterProtocolHandler.o RestrictedTextCtrl.o SerialDataController.o SerialLineController.o SerialPortSelector.o \
-		SlowDataDecoder.o SlowDataEncoder.o SoundCardController.o SoundCardReaderWriter.o SplitController.o TCPReaderWriter.o Timer.o UDPReaderWriter.o Utils.o
+OBJS :=	AMBEFEC.o AnnouncementUnit.o ArduinoController.o BeaconUnit.o CallsignList.o CCITTChecksum.o CCITTChecksumReverse.o DStarGMSKDemodulator.o \
+		DStarGMSKModulator.o DStarRepeaterConfig.o DummyController.o DVAPController.o DVMegaController.o DVRPTRV1Controller.o DVRPTRV2Controller.o \
+		DVRPTRV3Controller.o DVTOOLFileReader.o DVTOOLFileWriter.o ExternalController.o FIRFilter.o GatewayProtocolHandler.o GMSKController.o GMSKModem.o \
+		GMSKModemLibUsb.o Golay.o GPIOController.o HardwareController.o HeaderData.o K8055Controller.o LogEvent.o Logger.o Modem.o OutputQueue.o \
+		RepeaterProtocolHandler.o SerialDataController.o SerialLineController.o SerialPortSelector.o SlowDataDecoder.o SlowDataEncoder.o SoundCardController.o \
+		SoundCardReaderWriter.o SplitController.o TCPReaderWriter.o Timer.o UDPReaderWriter.o Utils.o
 
 Common.a:	$(OBJS)
 		ar rcs Common.a $(OBJS)
-
-AddressTextCtrl.o:	AddressTextCtrl.cpp AddressTextCtrl.h RestrictedTextCtrl.h
-		$(CC) $(CFLAGS) -c AddressTextCtrl.cpp
 
 AMBEFEC.o:	AMBEFEC.cpp AMBEFEC.h Golay.h
 		$(CC) $(CFLAGS) -c AMBEFEC.cpp
@@ -27,9 +24,6 @@ BeaconUnit.o:	BeaconUnit.cpp BeaconUnit.h BeaconCallback.h SlowDataEncoder.h DSt
 
 CallsignList.o:	CallsignList.cpp CallsignList.h DStarDefines.h
 		$(CC) $(CFLAGS) -c CallsignList.cpp
-
-CallsignTextCtrl.o:	CallsignTextCtrl.cpp CallsignTextCtrl.h RestrictedTextCtrl.h
-		$(CC) $(CFLAGS) -c CallsignTextCtrl.cpp
 
 CCITTChecksum.o:	CCITTChecksum.cpp CCITTChecksum.h Utils.h
 		$(CC) $(CFLAGS) -c CCITTChecksum.cpp
@@ -114,23 +108,14 @@ LogEvent.o:	LogEvent.cpp LogEvent.h
 Logger.o:	Logger.cpp Logger.h
 		$(CC) $(CFLAGS) -c Logger.cpp
 
-MessageTextCtrl.o:	MessageTextCtrl.cpp MessageTextCtrl.h RestrictedTextCtrl.h
-		$(CC) $(CFLAGS) -c MessageTextCtrl.cpp
-
 Modem.o:	Modem.cpp Modem.h RingBuffer.h HeaderData.h DStarDefines.h
 		$(CC) $(CFLAGS) -c Modem.cpp
 
 OutputQueue.o:	OutputQueue.cpp OutputQueue.h RingBuffer.h HeaderData.h
 		$(CC) $(CFLAGS) -c OutputQueue.cpp
 
-PortTextCtrl.o:	PortTextCtrl.cpp PortTextCtrl.h RestrictedTextCtrl.h
-		$(CC) $(CFLAGS) -c PortTextCtrl.cpp
-
 RepeaterProtocolHandler.o:	RepeaterProtocolHandler.cpp RepeaterProtocolHandler.h DStarDefines.h HeaderData.h UDPReaderWriter.h CCITTChecksumReverse.h Utils.h
 		$(CC) $(CFLAGS) -c RepeaterProtocolHandler.cpp
-
-RestrictedTextCtrl.o:	RestrictedTextCtrl.cpp RestrictedTextCtrl.h
-		$(CC) $(CFLAGS) -c RestrictedTextCtrl.cpp
 
 SerialDataController.o:	SerialDataController.cpp SerialDataController.h HardwareController.h
 		$(CC) $(CFLAGS) -c SerialDataController.cpp

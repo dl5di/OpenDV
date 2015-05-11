@@ -154,10 +154,6 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\AddressTextCtrl.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\AMBEFEC.cpp"
 				>
 			</File>
@@ -175,10 +171,6 @@
 			</File>
 			<File
 				RelativePath=".\CallsignList.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\CallsignTextCtrl.cpp"
 				>
 			</File>
 			<File
@@ -290,10 +282,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\MessageTextCtrl.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\Modem.cpp"
 				>
 			</File>
@@ -302,15 +290,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\PortTextCtrl.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\RepeaterProtocolHandler.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\RestrictedTextCtrl.cpp"
 				>
 			</File>
 			<File
@@ -368,10 +348,6 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath=".\AddressTextCtrl.h"
-				>
-			</File>
-			<File
 				RelativePath=".\AMBEFEC.h"
 				>
 			</File>
@@ -401,10 +377,6 @@
 			</File>
 			<File
 				RelativePath=".\CallsignList.h"
-				>
-			</File>
-			<File
-				RelativePath=".\CallsignTextCtrl.h"
 				>
 			</File>
 			<File
@@ -524,10 +496,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\MessageTextCtrl.h"
-				>
-			</File>
-			<File
 				RelativePath=".\Modem.h"
 				>
 			</File>
@@ -536,15 +504,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\PortTextCtrl.h"
-				>
-			</File>
-			<File
 				RelativePath=".\RepeaterProtocolHandler.h"
-				>
-			</File>
-			<File
-				RelativePath=".\RestrictedTextCtrl.h"
 				>
 			</File>
 			<File
