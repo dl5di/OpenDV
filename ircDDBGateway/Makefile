@@ -11,22 +11,22 @@ all:	ircDDBGateway/ircddbgateway ircDDBGatewayConfig/ircddbgatewayconfig RemoteC
 ircDDBGateway/ircddbgateway:	ircDDB/libircDDB.a Common/Common.a
 		make -C ircDDBGateway
 
-ircDDBGatewayConfig/ircddbgatewayconfig:	Common/Common.a
+ircDDBGatewayConfig/ircddbgatewayconfig:	Common/Common.a GUICommon/GUICommon.a
 		make -C ircDDBGatewayConfig
 
-RemoteControl/remotecontrol:	Common/Common.a
+RemoteControl/remotecontrol:	Common/Common.a GUICommon/GUICommon.a
 		make -C RemoteControl
 
-StarNetServer/starnetserver:	ircDDB/libircDDB.a Common/Common.a
+StarNetServer/starnetserver:	ircDDB/libircDDB.a Common/Common.a GUICommon/GUICommon.a
 		make -C StarNetServer
 
 TextTransmit/texttransmit:	Common/Common.a
 		make -C TextTransmit
 
-TimerControl/timercontrol:	Common/Common.a
+TimerControl/timercontrol:	Common/Common.a GUICommon/GUICommon.a
 		make -C TimerControl
 
-TimeServer/timeserver:	Common/Common.a
+TimeServer/timeserver:	Common/Common.a GUICommon/GUICommon.a
 		make -C TimeServer
 
 VoiceTransmit/voicetransmit:	Common/Common.a
@@ -34,6 +34,9 @@ VoiceTransmit/voicetransmit:	Common/Common.a
 
 Common/Common.a:
 		make -C Common
+
+GUICommon/GUICommon.a:
+		make -C GUICommon
 
 ircDDB/libircDDB.a:
 		make -C ircDDB
@@ -53,6 +56,7 @@ clean:
 		rm -f core *~ *.bak
 		make -C ircDDB clean
 		make -C Common clean
+		make -C GUICommon clean
 		make -C ircDDBGateway clean
 		make -C ircDDBGatewayConfig clean
 		make -C RemoteControl clean

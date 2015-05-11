@@ -153,10 +153,6 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\AddressTextCtrl.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\AMBEData.cpp"
 				>
 			</File>
@@ -193,10 +189,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\CallsignTextCtrl.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\CCITTChecksum.cpp"
 				>
 			</File>
@@ -229,19 +221,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\DCSSet.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\DDData.cpp"
 				>
 			</File>
 			<File
 				RelativePath=".\DDHandler.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\DescriptionTextCtrl.cpp"
 				>
 			</File>
 			<File
@@ -254,10 +238,6 @@
 			</File>
 			<File
 				RelativePath=".\DExtraProtocolHandlerPool.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\DExtraSet.cpp"
 				>
 			</File>
 			<File
@@ -274,14 +254,6 @@
 			</File>
 			<File
 				RelativePath=".\DPlusProtocolHandlerPool.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\DPlusSet.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\DPRSSet.cpp"
 				>
 			</File>
 			<File
@@ -357,10 +329,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\PortTextCtrl.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\RemoteHandler.cpp"
 				>
 			</File>
@@ -377,10 +345,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\RemoteSet.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\RemoteStarNetGroup.cpp"
 				>
 			</File>
@@ -393,19 +357,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\RepeaterDataSet.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\RepeaterHandler.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\RepeaterInfoSet.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\RestrictedTextCtrl.cpp"
 				>
 			</File>
 			<File
@@ -418,10 +370,6 @@
 			</File>
 			<File
 				RelativePath=".\StarNetHandler.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\StarNetSet.cpp"
 				>
 			</File>
 			<File
@@ -471,10 +419,6 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath=".\AddressTextCtrl.h"
-				>
-			</File>
-			<File
 				RelativePath=".\AMBEData.h"
 				>
 			</File>
@@ -508,10 +452,6 @@
 			</File>
 			<File
 				RelativePath=".\CallsignServer.h"
-				>
-			</File>
-			<File
-				RelativePath=".\CallsignTextCtrl.h"
 				>
 			</File>
 			<File
@@ -551,10 +491,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\DCSSet.h"
-				>
-			</File>
-			<File
 				RelativePath=".\DDData.h"
 				>
 			</File>
@@ -567,10 +503,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\DescriptionTextCtrl.h"
-				>
-			</File>
-			<File
 				RelativePath=".\DExtraHandler.h"
 				>
 			</File>
@@ -580,10 +512,6 @@
 			</File>
 			<File
 				RelativePath=".\DExtraProtocolHandlerPool.h"
-				>
-			</File>
-			<File
-				RelativePath=".\DExtraSet.h"
 				>
 			</File>
 			<File
@@ -600,14 +528,6 @@
 			</File>
 			<File
 				RelativePath=".\DPlusProtocolHandlerPool.h"
-				>
-			</File>
-			<File
-				RelativePath=".\DPlusSet.h"
-				>
-			</File>
-			<File
-				RelativePath=".\DPRSSet.h"
 				>
 			</File>
 			<File
@@ -687,10 +607,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\PortTextCtrl.h"
-				>
-			</File>
-			<File
 				RelativePath=".\ReflectorCallback.h"
 				>
 			</File>
@@ -711,10 +627,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\RemoteSet.h"
-				>
-			</File>
-			<File
 				RelativePath=".\RemoteStarNetGroup.h"
 				>
 			</File>
@@ -731,23 +643,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\RepeaterDataSet.h"
-				>
-			</File>
-			<File
 				RelativePath=".\RepeaterHandler.h"
 				>
 			</File>
 			<File
-				RelativePath=".\RepeaterInfoSet.h"
-				>
-			</File>
-			<File
 				RelativePath=".\RepeaterProtocolHandler.h"
-				>
-			</File>
-			<File
-				RelativePath=".\RestrictedTextCtrl.h"
 				>
 			</File>
 			<File
@@ -764,10 +664,6 @@
 			</File>
 			<File
 				RelativePath=".\StarNetHandler.h"
-				>
-			</File>
-			<File
-				RelativePath=".\StarNetSet.h"
 				>
 			</File>
 			<File

@@ -7,7 +7,7 @@ include settings.mk
 
 all:	DStarRepeater/dstarrepeater DStarRepeaterConfig/dstarrepeaterconfig
 
-DStarRepeater/dstarrepeater:	Common/Common.a GUICommon/GUICommon.a
+DStarRepeater/dstarrepeater:	Common/Common.a
 		make -C DStarRepeater
 
 DStarRepeaterConfig/dstarrepeaterconfig:	Common/Common.a GUICommon/GUICommon.a

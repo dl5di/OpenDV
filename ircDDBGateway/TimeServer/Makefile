@@ -1,11 +1,11 @@
 all:			timeserver timeserverd
 
-CFLAGS :=		-I../Common $(CFLAGS)
+CFLAGS :=		-I../Common ../GUICommon $(CFLAGS)
 
 timeserver:		TimeServerAnnouncementsSet.o TimeServerApp.o TimeServerConfig.o TimeServerFrame.o TimeServerGatewaySet.o TimeServerLogRedirect.o \
-				TimeServerPreferences.o TimeServerThread.o TimeServerThreadHelper.o ../Common/Common.a
+				TimeServerPreferences.o TimeServerThread.o TimeServerThreadHelper.o ../Common/Common.a ../GUICommon/GUICommon.a
 				$(CC) $(LDFLAGS) -o timeserver TimeServerAnnouncementsSet.o TimeServerApp.o TimeServerConfig.o TimeServerFrame.o TimeServerGatewaySet.o \
-				TimeServerLogRedirect.o TimeServerPreferences.o TimeServerThread.o TimeServerThreadHelper.o ../Common/Common.a $(LIBS)
+				TimeServerLogRedirect.o TimeServerPreferences.o TimeServerThread.o TimeServerThreadHelper.o ../Common/Common.a ../GUICommon/GUICommon.a $(LIBS)
 
 timeserverd:	TimeServerD.o TimeServerConfig.o TimeServerThread.o ../Common/Common.a
 				$(CC) $(LDFLAGS) -o timeserverd TimeServerD.o TimeServerConfig.o TimeServerThread.o ../Common/Common.a $(LIBS)
@@ -26,7 +26,7 @@ TimeServerConfig.o:	TimeServerConfig.cpp TimeServerConfig.h TimeServerDefs.h
 TimeServerFrame.o:	TimeServerFrame.cpp TimeServerFrame.h TimeServerPreferences.h TimeServerDefs.h TimeServerApp.h ../Common/Version.h
 				$(CC) $(CFLAGS) -c TimeServerFrame.cpp
 
-TimeServerGatewaySet.o:	TimeServerGatewaySet.cpp TimeServerGatewaySet.h TimeServerDefs.h ../Common/AddressTextCtrl.h ../Common/CallsignTextCtrl.h \
+TimeServerGatewaySet.o:	TimeServerGatewaySet.cpp TimeServerGatewaySet.h TimeServerDefs.h ../GUICommon/AddressTextCtrl.h ../GUICommon/CallsignTextCtrl.h \
 						../Common/DStarDefines.h
 				$(CC) $(CFLAGS) -c TimeServerGatewaySet.cpp
 

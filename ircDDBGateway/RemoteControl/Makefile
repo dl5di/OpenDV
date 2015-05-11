@@ -1,14 +1,15 @@
 all:			remotecontrol remotecontrold
 
-CFLAGS :=		-I../Common $(CFLAGS)
+CFLAGS :=		-I../Common ../GUICommon $(CFLAGS)
 
 remotecontrol:	RemoteControlApp.o RemoteControlCallsignData.o RemoteControlConfig.o RemoteControlFrame.o RemoteControlLinkData.o \
 				RemoteControlPreferences.o RemoteControlRemoteControlHandler.o RemoteControlRemoteSet.o RemoteControlRepeaterData.o \
-				RemoteControlRepeaterPanel.o RemoteControlStarNetGroup.o RemoteControlStarNetPanel.o RemoteControlStarNetUser.o ../Common/Common.a
+				RemoteControlRepeaterPanel.o RemoteControlStarNetGroup.o RemoteControlStarNetPanel.o RemoteControlStarNetUser.o ../Common/Common.a \
+				../GUICommon/GUICommon.a
 				$(CC) $(LDFLAGS) -o remotecontrol RemoteControlApp.o RemoteControlCallsignData.o RemoteControlConfig.o RemoteControlFrame.o \
 				RemoteControlLinkData.o RemoteControlPreferences.o RemoteControlRemoteControlHandler.o RemoteControlRemoteSet.o \
 				RemoteControlRepeaterData.o RemoteControlRepeaterPanel.o RemoteControlStarNetGroup.o RemoteControlStarNetPanel.o \
-				RemoteControlStarNetUser.o ../Common/Common.a $(LIBS)
+				RemoteControlStarNetUser.o ../Common/Common.a ../GUICommon/GUICommon.a $(LIBS)
 
 remotecontrold:	RemoteControlAppD.o RemoteControlCallsignData.o RemoteControlConfig.o RemoteControlLinkData.o RemoteControlRemoteControlHandler.o \
 				RemoteControlRepeaterData.o RemoteControlStarNetGroup.o RemoteControlStarNetUser.o ../Common/Common.a
@@ -43,7 +44,7 @@ RemoteControlRemoteControlHandler.o:		RemoteControlRemoteControlHandler.cpp Remo
 				RemoteControlRepeaterData.h RemoteControlStarNetGroup.h ../Common/UDPReaderWriter.h ../Common/DStarDefines.h
 				$(CC) $(CFLAGS) -c RemoteControlRemoteControlHandler.cpp
 
-RemoteControlRemoteSet.o:	RemoteControlRemoteSet.cpp RemoteControlRemoteSet.h ../Common/PortTextCtrl.h ../Common/DStarDefines.h
+RemoteControlRemoteSet.o:	RemoteControlRemoteSet.cpp RemoteControlRemoteSet.h ../GUICommon/PortTextCtrl.h ../Common/DStarDefines.h
 				$(CC) $(CFLAGS) -c RemoteControlRemoteSet.cpp
 
 RemoteControlRepeaterData.o:	RemoteControlRepeaterData.cpp RemoteControlRepeaterData.h RemoteControlLinkData.h

@@ -1,13 +1,13 @@
 all:			timercontrol timercontrold
 
-CFLAGS :=		-I../Common $(CFLAGS)
+CFLAGS :=		-I../Common -I../GUICommon $(CFLAGS)
 
 timercontrol:	TimerControlApp.o TimerControlConfig.o TimerControlFrame.o TimerControlItemFile.o TimerControlPreferences.o \
 				TimerControlRemoteControlHandler.o TimerControlRemoteSet.o TimerControlRepeaterPanel.o TimerControlThread.o TimerControlThreadHelper.o \
-				../Common/Common.a
+				../Common/Common.a ../GUICommon/GUICommon.a
 				$(CC) $(LDFLAGS) -o timercontrol TimerControlApp.o TimerControlConfig.o TimerControlFrame.o TimerControlItemFile.o \
 				TimerControlPreferences.o TimerControlRemoteControlHandler.o TimerControlRemoteSet.o TimerControlRepeaterPanel.o \
-				TimerControlThread.o TimerControlThreadHelper.o ../Common/Common.a $(LIBS)
+				TimerControlThread.o TimerControlThreadHelper.o ../Common/Common.a ../GUICommon/GUICommon.a $(LIBS)
 
 timercontrold:	TimerControlAppD.o TimerControlConfig.o TimerControlItemFile.o TimerControlRemoteControlHandler.o TimerControlThread.o \
 				../Common/Common.a
@@ -40,7 +40,7 @@ TimerControlRemoteControlHandler.o:		TimerControlRemoteControlHandler.cpp TimerC
 				../Common/UDPReaderWriter.h ../Common/DStarDefines.h ../Common/Defs.h
 				$(CC) $(CFLAGS) -c TimerControlRemoteControlHandler.cpp
 
-TimerControlRemoteSet.o:	TimerControlRemoteSet.cpp TimerControlRemoteSet.h ../Common/PortTextCtrl.h ../Common/DStarDefines.h
+TimerControlRemoteSet.o:	TimerControlRemoteSet.cpp TimerControlRemoteSet.h ../GUICommon/PortTextCtrl.h ../Common/DStarDefines.h
 				$(CC) $(CFLAGS) -c TimerControlRemoteSet.cpp
 
 TimerControlRepeaterPanel.o:	TimerControlRepeaterPanel.cpp TimerControlRepeaterPanel.h TimerControlApp.h TimerControlItem.h \

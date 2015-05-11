@@ -1,12 +1,13 @@
 all:			starnetserver starnetserverd
 
-CFLAGS :=		-I../ircDDB -I../Common $(CFLAGS)
+CFLAGS :=		-I../ircDDB -I../Common ../GUICommon $(CFLAGS)
 
 starnetserver:	StarNetServerApp.o StarNetServerCallsignSet.o StarNetServerConfig.o StarNetServerFrame.o StarNetServerIrcDDBSet.o StarNetServerLogRedirect.o \
-				StarNetServerMiscellaneousSet.o StarNetServerPreferences.o StarNetServerThread.o StarNetServerThreadHelper.o ../ircDDB/libircDDB.a ../Common/Common.a
+				StarNetServerMiscellaneousSet.o StarNetServerPreferences.o StarNetServerThread.o StarNetServerThreadHelper.o ../ircDDB/libircDDB.a ../Common/Common.a \
+				../GUICommon/GUICommon.a
 				$(CC) $(LDFLAGS) -o starnetserver StarNetServerApp.o StarNetServerCallsignSet.o StarNetServerConfig.o StarNetServerFrame.o StarNetServerIrcDDBSet.o \
 				StarNetServerLogRedirect.o StarNetServerMiscellaneousSet.o StarNetServerPreferences.o StarNetServerThread.o StarNetServerThreadHelper.o \
-				../ircDDB/libircDDB.a ../Common/Common.a $(LIBS)
+				../ircDDB/libircDDB.a ../Common/Common.a ../GUICommon/GUICommon.a $(LIBS)
 
 starnetserverd:	StarNetServerAppD.o StarNetServerConfig.o StarNetServerThread.o ../ircDDB/libircDDB.a ../Common/Common.a
 				$(CC) $(LDFLAGS) -o starnetserverd StarNetServerAppD.o StarNetServerConfig.o StarNetServerThread.o ../ircDDB/libircDDB.a ../Common/Common.a \
@@ -27,8 +28,8 @@ StarNetServerFrame.o:	StarNetServerFrame.cpp StarNetServerFrame.h StarNetServerP
 						../Common/LogEvent.h ../Common/Defs.h
 				$(CC) $(CFLAGS) -c StarNetServerFrame.cpp
 
-StarNetServerCallsignSet.o:	StarNetServerCallsignSet.cpp StarNetServerCallsignSet.h ../Common/DStarDefines.h ../Common/CallsignTextCtrl.h \
-							../Common/AddressTextCtrl.h ../Common/Defs.h
+StarNetServerCallsignSet.o:	StarNetServerCallsignSet.cpp StarNetServerCallsignSet.h ../Common/DStarDefines.h ../GUICommon/CallsignTextCtrl.h \
+							../GUICommon/AddressTextCtrl.h ../Common/Defs.h
 				$(CC) $(CFLAGS) -c StarNetServerCallsignSet.cpp
 
 StarNetServerIrcDDBSet.o:	StarNetServerIrcDDBSet.cpp StarNetServerIrcDDBSet.h
@@ -41,7 +42,7 @@ StarNetServerMiscellaneousSet.o:	StarNetServerMiscellaneousSet.cpp StarNetServer
 				$(CC) $(CFLAGS) -c StarNetServerMiscellaneousSet.cpp
 
 StarNetServerPreferences.o:	StarNetServerPreferences.cpp StarNetServerPreferences.h StarNetServerMiscellaneousSet.h StarNetServerCallsignSet.h \
-							StarNetServerIrcDDBSet.h ../Common/Defs.h ../Common/RemoteSet.h ../Common/StarNetSet.h
+							StarNetServerIrcDDBSet.h ../Common/Defs.h ../GUICommon/RemoteSet.h ../GUICommon/StarNetSet.h
 				$(CC) $(CFLAGS) -c StarNetServerPreferences.cpp
 
 StarNetServerThreadHelper.o:		StarNetServerThreadHelper.cpp StarNetServerThreadHelper.h StarNetServerThread.h
