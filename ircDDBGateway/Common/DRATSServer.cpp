@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2011-2014 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2011-2015 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -78,7 +78,7 @@ void CDRATSServer::writeHeader(const CHeaderData&)
 	m_writeState = SS_FIRST;
 
 	if (m_writeLength > 0U && m_socket != NULL) {
-		// CUtils::dump(wxT("From RF"), m_writeBuffer, m_writeLength);
+		CUtils::dump(wxT("From RF"), m_writeBuffer, m_writeLength);
 		m_socket->write(m_writeBuffer, m_writeLength);
 	}
 
@@ -95,7 +95,7 @@ void CDRATSServer::writeData(const CAMBEData& data)
 
 	if (data.isEnd()) {
 		if (m_writeLength > 0U && m_socket != NULL) {
-			// CUtils::dump(wxT("From RF"), m_writeBuffer, m_writeLength);
+			CUtils::dump(wxT("From RF"), m_writeBuffer, m_writeLength);
 			m_socket->write(m_writeBuffer, m_writeLength);
 		}
 
@@ -145,7 +145,7 @@ void CDRATSServer::writeData(const CAMBEData& data)
 
 		if (::strstr((char*)m_writeBuffer, "[EOB]") != NULL) {
 			if (m_socket != NULL) {
-				// CUtils::dump(wxT("From RF"), m_writeBuffer, m_writeLength);
+				CUtils::dump(wxT("From RF"), m_writeBuffer, m_writeLength);
 				m_socket->write(m_writeBuffer, m_writeLength);
 			}
 
@@ -157,7 +157,7 @@ void CDRATSServer::writeData(const CAMBEData& data)
 void CDRATSServer::writeEnd()
 {
 	if (m_writeLength > 0U && m_socket != NULL) {
-		// CUtils::dump(wxT("From RF"), m_writeBuffer, m_writeLength);
+		CUtils::dump(wxT("From RF"), m_writeBuffer, m_writeLength);
 		m_socket->write(m_writeBuffer, m_writeLength);
 	}
 
@@ -268,7 +268,6 @@ void* CDRATSServer::Entry()
 #else
 					m_handler->process(data, DIR_INCOMING, AS_DRATS);
 #endif
-
 					if (m_readPos == m_readLength) {
 						if (m_readState == SS_SECOND) {
 							seqNo++;
@@ -285,7 +284,6 @@ void* CDRATSServer::Entry()
 							data.setSeq(seqNo);
 							data.setData(buffer, DV_FRAME_LENGTH_BYTES);
 							sent++;
-
 #if defined(LOOPBACK)
 							writeData(data);
 #else
@@ -306,13 +304,11 @@ void* CDRATSServer::Entry()
 						data.setSeq(seqNo);
 						data.setEnd(true);
 						sent++;
-
 #if defined(LOOPBACK)
 						writeData(data);
 #else
 						m_handler->process(data, DIR_INCOMING, AS_DRATS);
 #endif
-
 						m_readLength = 0U;
 						m_readPos    = 0U;
 						m_readEnd    = false;
@@ -371,7 +367,7 @@ void CDRATSServer::serviceSocket()
 			m_readBuffer[m_readLength] = 0x00U;
 
 			if (::strstr((char*)m_readBuffer, "[EOB]") != NULL) {
-				// CUtils::dump(wxT("To RF"), m_readBuffer, m_readLength);
+				CUtils::dump(wxT("To RF"), m_readBuffer, m_readLength);
 				m_readEnd = true;
 			}
 		}
