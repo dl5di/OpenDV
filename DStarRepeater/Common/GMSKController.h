@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2011-2014 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2011-2015 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -25,14 +25,12 @@
 #include "Modem.h"
 #include "Utils.h"
 
-#include <wx/wx.h>
-
 class CGMSKController : public CModem {
 public:
 	CGMSKController(USB_INTERFACE iface, unsigned int address, bool duplex);
 	virtual ~CGMSKController();
 
-	virtual void* Entry();
+	virtual void entry();
 
 	virtual bool start();
 

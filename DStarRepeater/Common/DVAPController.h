@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2011-2014 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2011-2015 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -26,8 +26,7 @@
 #include "HeaderData.h"
 #include "Modem.h"
 #include "Utils.h"
-
-#include <wx/wx.h>
+#include "Types.h"
 
 enum RESP_TYPE {
 	RT_TIMEOUT,
@@ -55,10 +54,10 @@ enum RESP_TYPE {
 
 class CDVAPController : public CModem {
 public:
-	CDVAPController(const wxString& port, unsigned int frequency, int power, int squelch);
+	CDVAPController(const std::string& port, unsigned int frequency, int power, int squelch);
 	virtual ~CDVAPController();
 
-	virtual void* Entry();
+	virtual void entry();
 
 	virtual bool start();
 
@@ -73,15 +72,15 @@ public:
 
 private:
 	CSerialDataController      m_serial;
-	wxUint32                   m_frequency;
-	wxInt16                    m_power;
-	wxInt8                     m_squelch;
+	uint32_t                   m_frequency;
+	int16_t                    m_power;
+	int8_t                     m_squelch;
 	bool                       m_squelchOpen;
 	int                        m_signal;
 	unsigned char*             m_buffer;
-	wxUint16                   m_streamId;
-	wxUint8                    m_framePos;
-	wxUint8                    m_seq;
+	uint16_t                   m_streamId;
+	uint8_t                    m_framePos;
+	uint8_t                    m_seq;
 	CRingBuffer<unsigned char> m_txData;
 #if defined(DVAP_DUMP)
 	unsigned char**            m_dvapData;

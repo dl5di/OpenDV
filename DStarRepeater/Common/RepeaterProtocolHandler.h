@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2009-2014 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2009-2015 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -22,12 +22,13 @@
 #include "UDPReaderWriter.h"
 #include "DStarDefines.h"
 #include "HeaderData.h"
+#include "Types.h"
 
-#include <wx/wx.h>
+#include <string>
 
 class CRepeaterProtocolHandler {
 public:
-	CRepeaterProtocolHandler(const wxString& gatewayAddress, unsigned int gatewayPort, const wxString& localAddress, unsigned int localPort, const wxString& name);
+	CRepeaterProtocolHandler(const std::string& gatewayAddress, unsigned int gatewayPort, const std::string& localAddress, unsigned int localPort, const std::string& name);
 	~CRepeaterProtocolHandler();
 
 	bool open();
@@ -36,17 +37,17 @@ public:
 	bool writeBusyHeader(const CHeaderData& header);
 	bool writeData(const unsigned char* data, unsigned int length, unsigned int errors, bool end);
 	bool writeBusyData(const unsigned char* data, unsigned int length, unsigned int errors, bool end);
-	bool writePoll(const wxString& text);
+	bool writePoll(const std::string& text);
 	bool writeRegister();
 
 	NETWORK_TYPE read();
-	void         readText(wxString& text, LINK_STATUS& status, wxString& reflector);
-	void         readTempText(wxString& text);
-	wxString     readStatus1();
-	wxString     readStatus2();
-	wxString     readStatus3();
-	wxString     readStatus4();
-	wxString     readStatus5();
+	void         readText(std::string& text, LINK_STATUS& status, std::string& reflector);
+	void         readTempText(std::string& text);
+	std::string  readStatus1();
+	std::string  readStatus2();
+	std::string  readStatus3();
+	std::string  readStatus4();
+	std::string  readStatus5();
 	CHeaderData* readHeader();
 	unsigned int readData(unsigned char* data, unsigned int length, unsigned char& seqNo);
 
@@ -58,11 +59,11 @@ private:
 	CUDPReaderWriter m_socket;
 	in_addr          m_address;
 	unsigned int     m_port;
-	wxString         m_name;
-	wxUint16         m_outId;
-	wxUint8          m_outSeq;
+	std::string      m_name;
+	uint16_t         m_outId;
+	uint8_t          m_outSeq;
 	NETWORK_TYPE     m_type;
-	wxUint16         m_inId;
+	uint16_t         m_inId;
 	unsigned char*   m_buffer;
 	unsigned int     m_length;
 

@@ -1,5 +1,5 @@
 /*
- *	Copyright (C) 2009,2010,2013,2014 by Jonathan Naylor, G4KLX
+ *	Copyright (C) 2009,2010,2013,2014,2015 by Jonathan Naylor, G4KLX
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -15,10 +15,9 @@
 #define	ExternalController_H
 
 #include "HardwareController.h"
+#include "Thread.h"
 
-#include <wx/wx.h>
-
-class CExternalController : public wxThread {
+class CExternalController : public CThread {
 public:
 	CExternalController(IHardwareController* controller, bool pttInvert);
 	virtual ~CExternalController();
@@ -37,7 +36,7 @@ public:
 
 	virtual void close();
 
-	virtual void* Entry();
+	virtual void entry();
 
 private:
 	IHardwareController* m_controller;

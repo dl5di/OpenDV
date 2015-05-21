@@ -1,5 +1,5 @@
 /*
- *	Copyright (C) 2009,2010 by Jonathan Naylor, G4KLX
+ *	Copyright (C) 2009,2010,2015 by Jonathan Naylor, G4KLX
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -15,8 +15,6 @@
 #define	SlowDataDecoder_H
 
 #include "HeaderData.h"
-
-#include <wx/wx.h>
 
 enum SDD_STATE {
 	SDD_FIRST,

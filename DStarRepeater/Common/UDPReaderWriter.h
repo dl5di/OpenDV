@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2009-2011,2013 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2009-2011,2013,2015 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -19,9 +19,11 @@
 #ifndef UDPReaderWriter_H
 #define UDPReaderWriter_H
 
-#include <wx/wx.h>
+#include <string>
 
-#if !defined(__WINDOWS__)
+#if defined(WIN32)
+#include <winsock.h>
+#else
 #include <netdb.h>
 #include <sys/time.h>
 #include <sys/types.h>
@@ -34,10 +36,10 @@
 
 class CUDPReaderWriter {
 public:
-	CUDPReaderWriter(const wxString& address, unsigned int port);
+	CUDPReaderWriter(const std::string& address, unsigned int port);
 	~CUDPReaderWriter();
 
-	static in_addr lookup(const wxString& hostName);
+	static in_addr lookup(const std::string& hostName);
 
 	bool open();
 
@@ -49,10 +51,14 @@ public:
 	unsigned int getPort() const;
 
 private:
-	wxString       m_address;
+	std::string    m_address;
 	unsigned short m_port;
 	in_addr        m_addr;
+#if defined(WIN32)
+	SOCKET         m_fd;
+#else
 	int            m_fd;
+#endif
 };
 
 #endif

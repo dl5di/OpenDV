@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2012-2014 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2012-2015 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -25,8 +25,10 @@
 #include "Timer.h"
 #include "Modem.h"
 #include "Utils.h"
+#include "Types.h"
 
-#include <wx/wx.h>
+#include <string>
+#include <vector>
 
 class CAMBESlot {
 public:
@@ -51,10 +53,10 @@ private:
 
 class CSplitController : public CModem {
 public:
-	CSplitController(const wxString& localAddress, unsigned int localPort, const wxArrayString& transmitterNames, const wxArrayString& receiverNames, unsigned int timeout);
+	CSplitController(const std::string& localAddress, unsigned int localPort, const std::vector<std::string>& transmitterNames, const std::vector<std::string>& receiverNames, unsigned int timeout);
 	virtual ~CSplitController();
 
-	virtual void* Entry();
+	virtual void entry();
 
 	virtual bool start();
 
@@ -66,8 +68,8 @@ public:
 
 private:
 	CGatewayProtocolHandler    m_handler;
-	wxArrayString              m_transmitterNames;
-	wxArrayString              m_receiverNames;
+	std::vector<std::string>   m_transmitterNames;
+	std::vector<std::string>   m_receiverNames;
 	unsigned int               m_timeout;
 	unsigned int               m_txCount;
 	unsigned int               m_rxCount;
@@ -78,14 +80,14 @@ private:
 	unsigned int*              m_rxPorts;
 	CTimer**                   m_rxTimers;
 	CRingBuffer<unsigned char> m_txData;
-	wxUint16                   m_outId;
-	wxUint8                    m_outSeq;
+	uint16_t                   m_outId;
+	uint8_t                    m_outSeq;
 	CTimer                     m_endTimer;
 	bool                       m_listening;
-	wxUint8                    m_inSeqNo;
-	wxUint8                    m_outSeqNo;
+	uint8_t                    m_inSeqNo;
+	uint8_t                    m_outSeqNo;
 	unsigned char*             m_header;
-	wxUint16*                  m_id;
+	uint16_t*                  m_id;
 	bool*                      m_valid;
 	CAMBESlot**                m_slots;
 	bool                       m_headerSent;
@@ -97,8 +99,8 @@ private:
 	void transmit();
 	void receive();
 	void timers(unsigned int ms);
-	void processHeader(unsigned int n, wxUint16 id, const unsigned char* header, unsigned int length);
-	void processAMBE(unsigned int n, wxUint16 id, const unsigned char* ambe, unsigned int length, wxUint8 seqNo, unsigned char errors);
+	void processHeader(unsigned int n, uint16_t id, const unsigned char* header, unsigned int length);
+	void processAMBE(unsigned int n, uint16_t id, const unsigned char* ambe, unsigned int length, uint8_t seqNo, unsigned char errors);
 	bool isEnd(const CAMBESlot& slot) const;
 	void sendHeader();
 	void printStats() const;

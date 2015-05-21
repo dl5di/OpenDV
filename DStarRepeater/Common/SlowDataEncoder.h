@@ -1,5 +1,5 @@
 /*
- *	Copyright (C) 2010 by Jonathan Naylor, G4KLX
+ *	Copyright (C) 2010,2015 by Jonathan Naylor, G4KLX
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
 
 #include "HeaderData.h"
 
-#include <wx/wx.h>
+#include <string>
 
 class CSlowDataEncoder {
 public:
@@ -24,7 +24,7 @@ public:
 	~CSlowDataEncoder();
 
 	void setHeaderData(const CHeaderData& header);
-	void setTextData(const wxString& text);
+	void setTextData(const std::string& text);
 
 	void getHeaderData(unsigned char* data);
 	void getTextData(unsigned char* data);

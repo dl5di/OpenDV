@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2011,2013 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2011,2013,2015 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -19,22 +19,23 @@
 #ifndef	CallsignList_H
 #define	CallsignList_H
 
-#include <wx/wx.h>
+#include <string>
+#include <vector>
 
 class CCallsignList {
 public:
-	CCallsignList(const wxString& filename);
+	CCallsignList(const std::string& filename);
 	~CCallsignList();
 
 	bool load();
 
 	unsigned int getCount() const;
 
-	bool isInList(const wxString& callsign) const;
+	bool isInList(const std::string& callsign) const;
 
 private:
-	wxString      m_filename;
-	wxArrayString m_callsigns;
+	std::string              m_filename;
+	std::vector<std::string> m_callsigns;
 };
 
 #endif

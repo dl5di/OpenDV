@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006-2009,2012,2013 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006-2009,2012,2013,2015 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -19,7 +19,8 @@
 #ifndef RingBuffer_H
 #define RingBuffer_H
 
-#include <wx/wx.h>
+#include <cstdio>
+#include <cassert>
 
 template<class T> class CRingBuffer {
 public:
@@ -29,7 +30,7 @@ public:
 	m_iPtr(0U),
 	m_oPtr(0U)
 	{
-		wxASSERT(length > 0U);
+		assert(length > 0U);
 
 		m_buffer = new T[length];
 

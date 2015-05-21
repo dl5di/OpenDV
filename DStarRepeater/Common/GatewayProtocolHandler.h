@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2009-2014 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2009-2015 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -21,23 +21,24 @@
 
 #include "UDPReaderWriter.h"
 #include "DStarDefines.h"
+#include "Types.h"
 
-#include <wx/wx.h>
+#include <string>
 
 class CGatewayProtocolHandler {
 public:
-	CGatewayProtocolHandler(const wxString& localAddress, unsigned int localPort);
+	CGatewayProtocolHandler(const std::string& localAddress, unsigned int localPort);
 	~CGatewayProtocolHandler();
 
 	bool open();
 
-	bool writeHeader(const unsigned char* header, wxUint16 id, const in_addr& address, unsigned int port);
-	bool writeData(const unsigned char* data, unsigned int length, wxUint16 id, wxUint8 seqNo, const in_addr& address, unsigned int port);
+	bool writeHeader(const unsigned char* header, uint16_t id, const in_addr& address, unsigned int port);
+	bool writeData(const unsigned char* data, unsigned int length, uint16_t id, uint8_t seqNo, const in_addr& address, unsigned int port);
 
-	NETWORK_TYPE read(wxUint16& id, in_addr& address, unsigned int& port);
+	NETWORK_TYPE read(uint16_t& id, in_addr& address, unsigned int& port);
 	unsigned int readHeader(unsigned char* data, unsigned int length);
-	unsigned int readData(unsigned char* data, unsigned int length, wxUint8& seqNo, unsigned int& errors);
-	unsigned int readRegister(wxString& name);
+	unsigned int readData(unsigned char* data, unsigned int length, uint8_t& seqNo, unsigned int& errors);
+	unsigned int readRegister(std::string& name);
 
 	void close();
 
@@ -47,7 +48,7 @@ private:
 	unsigned char*   m_buffer;
 	unsigned int     m_length;
 
-	bool readPackets(wxUint16& id, in_addr& address, unsigned int& port);
+	bool readPackets(uint16_t& id, in_addr& address, unsigned int& port);
 };
 
 #endif

@@ -19,14 +19,14 @@
 #ifndef	Version_H
 #define	Version_H
 
-#include <wx/wx.h>
+#include <string>
 
-const wxString VENDOR_NAME = wxT("G4KLX");
+const std::string VENDOR_NAME = "G4KLX";
 
-#if defined(__WXDEBUG__)
-const wxString VERSION = wxT("20150404 - DEBUG");
+#if defined(_DEBUG)
+const std::string VERSION = "20150404 - DEBUG";
 #else
-const wxString VERSION = wxT("20150404");
+const std::string VERSION = "20150404";
 #endif
 
 #endif

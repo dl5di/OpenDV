@@ -22,9 +22,9 @@
 
 #include "HardwareController.h"
 
-#include <wx/wx.h>
+#include <string>
 
-#if defined(__WINDOWS__)
+#if defined(WIN32)
 #include <windows.h>
 #endif
 
@@ -41,7 +41,7 @@ const unsigned int MAX_DEVICE_NAME = 255U;
 
 class CSerialLineController : public IHardwareController {
 public:
-	CSerialLineController(const wxString& device, unsigned int config = 1U);
+	CSerialLineController(const std::string& device, unsigned int config = 1U);
 	virtual ~CSerialLineController();
 
 	virtual bool open();
@@ -59,11 +59,11 @@ public:
 	virtual void close();
 
 private:
-	wxString     m_device;
+	std::string  m_device;
 	unsigned int m_config;
 	bool         m_rts;
 	bool         m_dtr;
-#if defined(__WINDOWS__)
+#if defined(WIN32)
 	HANDLE       m_handle;
 #else
 	int          m_fd;

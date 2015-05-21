@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2010,2011,2012 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2010,2011,2012,2015 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -18,26 +18,33 @@
 
 #include "TCPReaderWriter.h"
 #include "UDPReaderWriter.h"
+#include "Log.h"
 
-#if !defined(__WINDOWS__)
+#include <cassert>
+
+#if !defined(WIN32)
 #include <cerrno>
 #endif
 
 
-CTCPReaderWriter::CTCPReaderWriter(const wxString& address, unsigned int port, const wxString& localAddress) :
+CTCPReaderWriter::CTCPReaderWriter(const std::string& address, unsigned int port, const std::string& localAddress) :
 m_address(address),
 m_port(port),
 m_localAddress(localAddress),
+#if defined(WIN32)
+m_fd(0U)
+#else
 m_fd(-1)
+#endif
 {
-	wxASSERT(!address.IsEmpty());
-	wxASSERT(port > 0U);
+	assert(!address.empty());
+	assert(port > 0U);
 
-#if defined(__WINDOWS__)
+#if defined(WIN32)
 	WSAData data;
 	int wsaRet = ::WSAStartup(MAKEWORD(2, 2), &data);
 	if (wsaRet != 0)
-		wxLogError(wxT("Error from WSAStartup"));
+		LogError("Error from WSAStartup");
 #endif
 }
 
@@ -45,24 +52,28 @@ CTCPReaderWriter::CTCPReaderWriter() :
 m_address(),
 m_port(0U),
 m_localAddress(),
+#if defined(WIN32)
+m_fd(0U)
+#else
 m_fd(-1)
+#endif
 {
-#if defined(__WINDOWS__)
+#if defined(WIN32)
 	WSAData data;
 	int wsaRet = ::WSAStartup(MAKEWORD(2, 2), &data);
 	if (wsaRet != 0)
-		wxLogError(wxT("Error from WSAStartup"));
+		LogError("Error from WSAStartup");
 #endif
 }
 
 CTCPReaderWriter::~CTCPReaderWriter()
 {
-#if defined(__WINDOWS__)
+#if defined(WIN32)
 	::WSACleanup();
 #endif
 }
 
-bool CTCPReaderWriter::open(const wxString& address, unsigned int port, const wxString& localAddress)
+bool CTCPReaderWriter::open(const std::string& address, unsigned int port, const std::string& localAddress)
 {
 	m_address      = address;
 	m_port         = port;
@@ -73,43 +84,48 @@ bool CTCPReaderWriter::open(const wxString& address, unsigned int port, const wx
 
 bool CTCPReaderWriter::open()
 {
+#if defined(WIN32)
+	if (m_fd != 0U)
+		return true;
+#else
 	if (m_fd != -1)
 		return true;
+#endif
 
-	if (m_address.IsEmpty() || m_port == 0U)
+	if (m_address.empty() || m_port == 0U)
 		return false;
 
 	m_fd = ::socket(PF_INET, SOCK_STREAM, 0);
 	if (m_fd < 0) {
-#if defined(__WINDOWS__)
-		wxLogError(wxT("Cannot create the TCP  socket, err=%d"), ::GetLastError());
+#if defined(WIN32)
+		LogError("Cannot create the TCP  socket, err=%d", ::GetLastError());
 #else
-		wxLogError(wxT("Cannot create the TCP  socket, err=%d"), errno);
+		LogError("Cannot create the TCP  socket, err=%d", errno);
 #endif
 		return false;
 	}
 
-	if (!m_localAddress.IsEmpty()) {
+	if (!m_localAddress.empty()) {
 		sockaddr_in addr;
 		::memset(&addr, 0x00, sizeof(struct sockaddr_in));
 		addr.sin_family = AF_INET;
 		addr.sin_port   = 0U;
-#if defined(__WINDOWS__)
-		addr.sin_addr.s_addr = ::inet_addr(m_localAddress.mb_str());
+#if defined(WIN32)
+		addr.sin_addr.s_addr = ::inet_addr(m_localAddress.c_str());
 #else
-		addr.sin_addr.s_addr = ::inet_addr(m_localAddress.mb_str());
+		addr.sin_addr.s_addr = ::inet_addr(m_localAddress.c_str());
 #endif
 		if (addr.sin_addr.s_addr == INADDR_NONE) {
-			wxLogError(wxT("The address is invalid - %s"), m_localAddress.c_str());
+			LogError("The address is invalid - %s", m_localAddress.c_str());
 			close();
 			return false;
 		}
 
 		if (::bind(m_fd, (sockaddr*)&addr, sizeof(sockaddr_in)) == -1) {
-#if defined(__WINDOWS__)
-		wxLogError(wxT("Cannot bind the TCP  address, err=%d"), ::GetLastError());
+#if defined(WIN32)
+			LogError("Cannot bind the TCP  address, err=%d", ::GetLastError());
 #else
-		wxLogError(wxT("Cannot bind the TCP  address, err=%d"), errno);
+			LogError("Cannot bind the TCP  address, err=%d", errno);
 #endif
 			close();
 			return false;
@@ -128,10 +144,10 @@ bool CTCPReaderWriter::open()
 	}
 
 	if (::connect(m_fd, (sockaddr*)&addr, sizeof(struct sockaddr_in)) == -1) {
-#if defined(__WINDOWS__)
-		wxLogError(wxT("Cannot connect the TCP  socket, err=%d"), ::GetLastError());
+#if defined(WIN32)
+		LogError("Cannot connect the TCP  socket, err=%d", ::GetLastError());
 #else
-		wxLogError(wxT("Cannot connect the TCP  socket, err=%d"), errno);
+		LogError("Cannot connect the TCP  socket, err=%d", errno);
 #endif
 		close();
 		return false;
@@ -139,10 +155,10 @@ bool CTCPReaderWriter::open()
 
 	int noDelay = 1;
 	if (::setsockopt(m_fd, IPPROTO_TCP, TCP_NODELAY, (char *)&noDelay, sizeof(noDelay)) == -1) {
-#if defined(__WINDOWS__)
-		wxLogError(wxT("Cannot set the TCP  socket option, err=%d"), ::GetLastError());
+#if defined(WIN32)
+		LogError("Cannot set the TCP  socket option, err=%d", ::GetLastError());
 #else
-		wxLogError(wxT("Cannot set the TCP  socket option, err=%d"), errno);
+		LogError("Cannot set the TCP  socket option, err=%d", errno);
 #endif
 		close();
 		return false;
@@ -153,18 +169,13 @@ bool CTCPReaderWriter::open()
 
 int CTCPReaderWriter::read(unsigned char* buffer, unsigned int length, unsigned int secs, unsigned int msecs)
 {
-	wxASSERT(buffer != NULL);
-	wxASSERT(length > 0U);
-	wxASSERT(m_fd != -1);
+	assert(buffer != NULL);
+	assert(length > 0U);
 
 	// Check that the recv() won't block
 	fd_set readFds;
 	FD_ZERO(&readFds);
-#if defined(__WINDOWS__)
-	FD_SET((unsigned int)m_fd, &readFds);
-#else
 	FD_SET(m_fd, &readFds);
-#endif
 
 	// Return after timeout
 	timeval tv;
@@ -173,62 +184,67 @@ int CTCPReaderWriter::read(unsigned char* buffer, unsigned int length, unsigned 
 
 	int ret = ::select(m_fd + 1, &readFds, NULL, NULL, &tv);
 	if (ret < 0) {
-#if defined(__WINDOWS__)
-		wxLogError(wxT("Error returned from TCP  select, err=%d"), ::GetLastError());
+#if defined(WIN32)
+		LogError("Error returned from TCP  select, err=%d", ::GetLastError());
 #else
-		wxLogError(wxT("Error returned from TCP  select, err=%d"), errno);
+		LogError("Error returned from TCP  select, err=%d", errno);
 #endif
 		return -1;
 	}
 
-#if defined(__WINDOWS__)
-	if (!FD_ISSET((unsigned int)m_fd, &readFds))
-		return 0;
-#else
 	if (!FD_ISSET(m_fd, &readFds))
 		return 0;
-#endif
 
-	ssize_t len = ::recv(m_fd, (char*)buffer, length, 0);
+#if defined(WIN32)
+	int len = ::recv(m_fd, (char*)buffer, length, 0);
 	if (len < 0) {
-#if defined(__WINDOWS__)
-		wxLogError(wxT("Error returned from recv, err=%d"), ::GetLastError());
-#else
-		wxLogError(wxT("Error returned from recv, err=%d"), errno);
-#endif
+		LogError("Error returned from recv, err=%d", ::GetLastError());
 		return -1;
 	}
+#else
+	ssize_t len = ::recv(m_fd, (char*)buffer, length, 0);
+	if (len < 0) {
+		LogError("Error returned from recv, err=%d", errno);
+		return -1;
+	}
+#endif
 
 	return len;
 }
 
 bool CTCPReaderWriter::write(const unsigned char* buffer, unsigned int length)
 {
-	wxASSERT(buffer != NULL);
-	wxASSERT(length > 0U);
-	wxASSERT(m_fd != -1);
+	assert(buffer != NULL);
+	assert(length > 0U);
 
-	ssize_t ret = ::send(m_fd, (char *)buffer, length, 0);
-	if (ret != ssize_t(length)) {
-#if defined(__WINDOWS__)
-		wxLogError(wxT("Error returned from send, err=%d"), ::GetLastError());
-#else
-		wxLogError(wxT("Error returned from send, err=%d"), errno);
-#endif
+#if defined(WIN32)
+	int ret = ::send(m_fd, (char *)buffer, length, 0);
+	if (ret != length) {
+		LogError("Error returned from send, err=%d", ::GetLastError());
 		return false;
 	}
+#else
+	ssize_t ret = ::send(m_fd, (char *)buffer, length, 0);
+	if (ret != ssize_t(length)) {
+		LogError("Error returned from send, err=%d", errno);
+		return false;
+	}
+#endif
 
 	return true;
 }
 
 void CTCPReaderWriter::close()
 {
-	if (m_fd != -1) {
-#if defined(__WINDOWS__)
+#if defined(WIN32)
+	if (m_fd != 0U) {
 		::closesocket(m_fd);
+		m_fd = 0U;
+	}
 #else
+	if (m_fd != -1) {
 		::close(m_fd);
-#endif
 		m_fd = -1;
 	}
+#endif
 }

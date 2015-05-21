@@ -14,8 +14,6 @@
 #ifndef	DStarDefines_H
 #define	DStarDefines_H
 
-#include <wx/wx.h>
-
 const unsigned int DSTAR_GMSK_SYMBOL_RATE = 4800U;
 const float        DSTAR_GMSK_BT          = 0.5F;
 

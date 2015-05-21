@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2014 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2014,2015 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -17,12 +17,13 @@
  */
 
 #include "DStarDefines.h"
+#include "MutexLocker.h"
 #include "Modem.h"
 
 const unsigned int BUFFER_LENGTH = 200U;
 
 CModem::CModem() :
-wxThread(wxTHREAD_JOINABLE),
+CThread(),
 m_rxData(1000U),
 m_mutex(),
 m_tx(false),
@@ -51,7 +52,7 @@ DSMT_TYPE CModem::read()
 	if (m_rxData.isEmpty())
 		return DSMTT_NONE;
 
-	wxMutexLocker locker(m_mutex);
+	CMutexLocker locker(m_mutex);
 
 	unsigned char hdr[2U];
 	m_rxData.getData(hdr, 2U);
@@ -89,6 +90,5 @@ void CModem::stop()
 {
 	m_stopped = true;
 
-	Wait();
+	wait();
 }
-

@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2013 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2013,2015 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -24,12 +24,13 @@
 #include "DVTOOLFileReader.h"
 #include "DStarDefines.h"
 #include "HeaderData.h"
+#include "StopWatch.h"
 
-#include <wx/wx.h>
+#include <string>
 
 class CAnnouncementUnit {
 public:
-	CAnnouncementUnit(IAnnouncementCallback* handler, const wxString& callsign);
+	CAnnouncementUnit(IAnnouncementCallback* handler, const std::string& callsign);
 	~CAnnouncementUnit();
 
 	bool writeHeader(const CHeaderData& header);
@@ -43,10 +44,10 @@ public:
 
 private:
 	IAnnouncementCallback* m_handler;
-	wxString               m_localFileName;
+	std::string            m_localFileName;
 	CDVTOOLFileReader      m_reader;
 	CDVTOOLFileWriter      m_writer;
-	wxStopWatch            m_time;
+	CStopWatch             m_time;
 	unsigned int           m_out;
 	bool                   m_sending;
 };

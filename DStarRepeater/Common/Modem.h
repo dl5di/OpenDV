@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2013,2014 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2013,2014,2015 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -21,8 +21,8 @@
 
 #include "HeaderData.h"
 #include "RingBuffer.h"
-
-#include <wx/wx.h>
+#include "Thread.h"
+#include "Mutex.h"
 
 enum DSMT_TYPE {
 	DSMTT_NONE,
@@ -33,7 +33,7 @@ enum DSMT_TYPE {
 	DSMTT_LOST
 };
 
-class CModem : public wxThread {
+class CModem : public CThread {
 public:
 	CModem();
 	virtual ~CModem();
@@ -55,7 +55,7 @@ public:
 
 protected:
 	CRingBuffer<unsigned char> m_rxData;
-	wxMutex                    m_mutex;
+	CMutex                     m_mutex;
 	bool                       m_tx;
 	bool                       m_stopped;
 

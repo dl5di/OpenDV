@@ -20,8 +20,11 @@
 #include "DVTOOLFileWriter.h"
 #include "DStarDefines.h"
 
-#include <wx/wx.h>
-#include <wx/filename.h>
+#include <algorithm>
+
+#include <cstdio>
+#include <cassert>
+#include <ctime>
 
 static const char        DVTOOL_SIGNATURE[] = "DVTOOL";
 static unsigned int DVTOOL_SIGNATURE_LENGTH = 6U;
@@ -41,14 +44,14 @@ static unsigned int   TRAILER_DATA_LENGTH = 12U;
 static const unsigned char HEADER_MASK   = 0x80;
 static const unsigned char TRAILER_MASK  = 0x40;
 
-wxString CDVTOOLFileWriter::m_dirName = wxEmptyString;
+std::string CDVTOOLFileWriter::m_dirName;
 
 CDVTOOLFileWriter::CDVTOOLFileWriter() :
 m_fileName(),
-m_file(),
+m_file(NULL),
 m_count(0U),
 m_sequence(0U),
-m_offset(0)
+m_offset(0L)
 {
 }
 
@@ -56,54 +59,57 @@ CDVTOOLFileWriter::~CDVTOOLFileWriter()
 {
 }
 
-void CDVTOOLFileWriter::setDirectory(const wxString& dirName)
+void CDVTOOLFileWriter::setDirectory(const std::string& dirName)
 {
 	m_dirName = dirName;
 }
 
-wxString CDVTOOLFileWriter::getFileName() const
+std::string CDVTOOLFileWriter::getFileName() const
 {
 	return m_fileName;
 }
 
-bool CDVTOOLFileWriter::open(const wxString& filename, const CHeaderData& header)
+bool CDVTOOLFileWriter::open(const std::string& filename, const CHeaderData& header)
 {
-	if (m_file.IsOpened())
+	if (m_file != NULL)
 		close();
 
-	wxString name = filename;
-#if !defined(__WINDOWS__)
-	name.Replace(wxT(" "), wxT("_"));
+	std::string name = filename;
+#if defined(WIN32)
+	m_fileName = m_dirName + "\\" + name + ".dvtool";
+#else
+	std::replace(name.begin{}, name.end{}, ' ', '_');
+	m_fileName = m_dirName + "/" + name + ".dvtool";
 #endif
 
-	wxFileName fileName(m_dirName, name, wxT("dvtool"));
-	m_fileName = fileName.GetFullPath();
-
-	bool res = m_file.Open(m_fileName, wxT("wb"));
-	if (!res)
+	m_file = ::fopen(m_fileName.c_str(), "wb");
+	if (m_file == NULL)
 		return false;
 
-	size_t n = m_file.Write(DVTOOL_SIGNATURE, DVTOOL_SIGNATURE_LENGTH);
+	size_t n = ::fwrite(DVTOOL_SIGNATURE, 1, DVTOOL_SIGNATURE_LENGTH, m_file);
 	if (n != DVTOOL_SIGNATURE_LENGTH) {
-		m_file.Close();
+		::fclose(m_file);
+		m_file = NULL;
 		return false;
 	}
 
-	m_offset = m_file.Tell();
+	m_offset = ::ftell(m_file);
 
-	wxUint32 dummy = 0U;
-	n = m_file.Write(&dummy, sizeof(wxUint32));
-	if (n != sizeof(wxUint32)) {
-		m_file.Close();
+	uint32_t dummy = 0U;
+	n = ::fwrite(&dummy, 1, sizeof(uint32_t), m_file);
+	if (n != sizeof(uint32_t)) {
+		::fclose(m_file);
+		m_file = NULL;
 		return false;
 	}
 
 	m_sequence = 0U;
 	m_count = 0U;
 
-	res = writeHeader(header);
+	bool res = writeHeader(header);
 	if (!res) {
-		m_file.Close();
+		::fclose(m_file);
+		m_file = NULL;
 		return false;
 	}
 
@@ -112,53 +118,61 @@ bool CDVTOOLFileWriter::open(const wxString& filename, const CHeaderData& header
 
 bool CDVTOOLFileWriter::open(const CHeaderData& header)
 {
-	if (m_file.IsOpened())
+	if (m_file != NULL)
 		close();
 
-	wxDateTime time;
-	time.SetToCurrent();
+	time_t now;
+	::time(&now);
+	struct tm* tm = ::gmtime(&now);
 
-	wxString name = time.Format(wxT("%Y%m%d-%H%M%S-"));
+	char buffer[50U];
+	::strftime(buffer, 50U, "%Y%m%d-%H%M%S-", tm);
 
-	name.Append(header.getRptCall1());
-	name.Append(header.getRptCall2());
-	name.Append(header.getYourCall());
-	name.Append(header.getMyCall1());
-	name.Append(header.getMyCall2());
+	std::string name(buffer);
 
-#if !defined(__WINDOWS__)
-	name.Replace(wxT(" "), wxT("_"));
+	name += header.getRptCall1();
+	name += header.getRptCall2();
+	name += header.getYourCall();
+	name += header.getMyCall1();
+	name += header.getMyCall2();
+
+#if defined(WIN32)
+	std::replace(name.begin(), name.end(), '/', '-');
+	m_fileName = m_dirName + "\\" + name + ".dvtool";
+#else
+	std::replace(name.begin{}, name.end{}, ' ', '_');
+	std::replace(name.begin(), name.end(), '/', '-');
+	m_fileName = m_dirName + "/" + name + ".dvtool";
 #endif
-	name.Replace(wxT("/"), wxT("-"));
 
-	wxFileName fileName(m_dirName, name, wxT("dvtool"));
-	m_fileName = fileName.GetFullPath();
-
-	bool res = m_file.Open(m_fileName, wxT("wb"));
-	if (!res)
+	m_file = ::fopen(m_fileName.c_str(), "wb");
+	if (m_file == NULL)
 		return false;
 
-	size_t n = m_file.Write(DVTOOL_SIGNATURE, DVTOOL_SIGNATURE_LENGTH);
+	size_t n = ::fwrite(DVTOOL_SIGNATURE, 1, DVTOOL_SIGNATURE_LENGTH, m_file);
 	if (n != DVTOOL_SIGNATURE_LENGTH) {
-		m_file.Close();
+		::fclose(m_file);
+		m_file = NULL;
 		return false;
 	}
 
-	m_offset = m_file.Tell();
+	m_offset = ::ftell(m_file);
 
-	wxUint32 dummy = 0U;
-	n = m_file.Write(&dummy, sizeof(wxUint32));
-	if (n != sizeof(wxUint32)) {
-		m_file.Close();
+	uint32_t dummy = 0U;
+	n = ::fwrite(&dummy, 1, sizeof(uint32_t), m_file);
+	if (n != sizeof(uint32_t)) {
+		::fclose(m_file);
+		m_file = NULL;
 		return false;
 	}
 
 	m_sequence = 0U;
 	m_count = 0U;
 
-	res = writeHeader(header);
+	bool res = writeHeader(header);
 	if (!res) {
-		m_file.Close();
+		::fclose(m_file);
+		m_file = NULL;
 		return false;
 	}
 
@@ -167,45 +181,51 @@ bool CDVTOOLFileWriter::open(const CHeaderData& header)
 
 bool CDVTOOLFileWriter::write(const unsigned char* buffer, unsigned int length)
 {
-	wxASSERT(buffer != 0);
-	wxASSERT(length > 0U);
+	assert(buffer != 0);
+	assert(length > 0U);
 
-	wxUint16 len = wxUINT16_SWAP_ON_BE(length + 15U);
-	size_t n = m_file.Write(&len, sizeof(wxUint16));
-	if (n != sizeof(wxUint16)) {
-		m_file.Close();
+	uint16_t len = (buffer[15U] << 0) + (buffer[16U] << 8);
+	size_t n = ::fwrite(&len, 1, sizeof(uint16_t), m_file);
+	if (n != sizeof(uint16_t)) {
+		::fclose(m_file);
+		m_file = NULL;
 		return false;
 	}
 
-	n = m_file.Write(DSVT_SIGNATURE, DSVT_SIGNATURE_LENGTH);
+	n = ::fwrite(DSVT_SIGNATURE, 1, DSVT_SIGNATURE_LENGTH, m_file);
 	if (n != DSVT_SIGNATURE_LENGTH) {
-		m_file.Close();
+		::fclose(m_file);
+		m_file = NULL;
 		return false;
 	}
 
 	char byte = DATA_FLAG;
-	n = m_file.Write(&byte, 1U);
+	n = ::fwrite(&byte, 1, 1, m_file);
 	if (n != 1U) {
-		m_file.Close();
+		::fclose(m_file);
+		m_file = NULL;
 		return false;
 	}
 
-	n = m_file.Write(FIXED_DATA, FIXED_DATA_LENGTH);
+	n = ::fwrite(FIXED_DATA, 1, FIXED_DATA_LENGTH, m_file);
 	if (n != FIXED_DATA_LENGTH) {
-		m_file.Close();
+		::fclose(m_file);
+		m_file = NULL;
 		return false;
 	}
 
 	byte = m_sequence;
-	n = m_file.Write(&byte, 1U);
+	n = ::fwrite(&byte, 1, 1, m_file);
 	if (n != 1U) {
-		m_file.Close();
+		::fclose(m_file);
+		m_file = NULL;
 		return false;
 	}
 
-	n = m_file.Write(buffer, length);
+	n = ::fwrite(buffer, 1, length, m_file);
 	if (n != length) {
-		m_file.Close();
+		::fclose(m_file);
+		m_file = NULL;
 		return false;
 	}
 
@@ -221,12 +241,15 @@ void CDVTOOLFileWriter::close()
 {
 	writeTrailer();
 
-	m_file.Seek(m_offset);
+	::fseek(m_file, m_offset, SEEK_SET);
 
-	wxUint32 count = wxUINT32_SWAP_ON_LE(m_count);
-	m_file.Write(&count, sizeof(wxUint32));
+	unsigned char buffer[2U];
+	buffer[0U] = m_count << 8;
+	buffer[1U] = m_count << 0;
+	::fwrite(buffer, 1, sizeof(uint32_t), m_file);
 
-	m_file.Close();
+	::fclose(m_file);
+	m_file = NULL;
 }
 
 bool CDVTOOLFileWriter::writeHeader(const CHeaderData& header)
@@ -238,61 +261,72 @@ bool CDVTOOLFileWriter::writeHeader(const CHeaderData& header)
 	buffer[2] = header.getFlag3();
 
 	for (unsigned int i = 0U; i < LONG_CALLSIGN_LENGTH; i++)
-		buffer[3 + i] = header.getRptCall1().GetChar(i);
+		buffer[3 + i] = header.getRptCall1().at(i);
 
 	for (unsigned int i = 0U; i < LONG_CALLSIGN_LENGTH; i++)
-		buffer[11 + i] = header.getRptCall2().GetChar(i);
+		buffer[11 + i] = header.getRptCall2().at(i);
 
 	for (unsigned int i = 0U; i < LONG_CALLSIGN_LENGTH; i++)
-		buffer[19 + i] = header.getYourCall().GetChar(i);
+		buffer[19 + i] = header.getYourCall().at(i);
 
 	for (unsigned int i = 0U; i < LONG_CALLSIGN_LENGTH; i++)
-		buffer[27 + i] = header.getMyCall1().GetChar(i);
+		buffer[27 + i] = header.getMyCall1().at(i);
 
 	for (unsigned int i = 0U; i < SHORT_CALLSIGN_LENGTH; i++)
-		buffer[35 + i] = header.getMyCall2().GetChar(i);
+		buffer[35 + i] = header.getMyCall2().at(i);
 
 	// Get the checksum for the header
 	CCCITTChecksumReverse csum;
 	csum.update(buffer, RADIO_HEADER_LENGTH_BYTES - 2U);
 	csum.result(buffer + 39U);
 
-	wxUint16 len = wxUINT16_SWAP_ON_BE(RADIO_HEADER_LENGTH_BYTES + 15U);
-	size_t n = m_file.Write(&len, sizeof(wxUint16));
-	if (n != sizeof(wxUint16)) {
-		m_file.Close();
+	uint16_t len = RADIO_HEADER_LENGTH_BYTES + 15U;
+
+	unsigned char buf[2U];
+	buf[0U] = len << 0;
+	buf[1U] = len << 8;
+
+	size_t n = ::fwrite(buf, 1, sizeof(uint16_t), m_file);
+	if (n != sizeof(uint16_t)) {
+		::fclose(m_file);
+		m_file = NULL;
 		return false;
 	}
 
-	n = m_file.Write(DSVT_SIGNATURE, DSVT_SIGNATURE_LENGTH);
+	n = ::fwrite(DSVT_SIGNATURE, 1, DSVT_SIGNATURE_LENGTH, m_file);
 	if (n != DSVT_SIGNATURE_LENGTH) {
-		m_file.Close();
+		::fclose(m_file);
+		m_file = NULL;
 		return false;
 	}
 
 	char byte = HEADER_FLAG;
-	n = m_file.Write(&byte, 1U);
+	n = ::fwrite(&byte, 1, 1, m_file);
 	if (n != 1U) {
-		m_file.Close();
+		::fclose(m_file);
+		m_file = NULL;
 		return false;
 	}
 
-	n = m_file.Write(FIXED_DATA, FIXED_DATA_LENGTH);
+	n = ::fwrite(FIXED_DATA, 1, FIXED_DATA_LENGTH, m_file);
 	if (n != FIXED_DATA_LENGTH) {
-		m_file.Close();
+		::fclose(m_file);
+		m_file = NULL;
 		return false;
 	}
 
 	byte = HEADER_MASK;
-	n = m_file.Write(&byte, 1U);
+	n = ::fwrite(&byte, 1, 1, m_file);
 	if (n != 1U) {
-		m_file.Close();
+		::fclose(m_file);
+		m_file = NULL;
 		return false;
 	}
 
-	n = m_file.Write(buffer, RADIO_HEADER_LENGTH_BYTES);
+	n = ::fwrite(buffer, 1, RADIO_HEADER_LENGTH_BYTES, m_file);
 	if (n != RADIO_HEADER_LENGTH_BYTES) {
-		m_file.Close();
+		::fclose(m_file);
+		m_file = NULL;
 		return false;
 	}
 
@@ -303,42 +337,53 @@ bool CDVTOOLFileWriter::writeHeader(const CHeaderData& header)
 
 bool CDVTOOLFileWriter::writeTrailer()
 {
-	wxUint16 len = wxUINT16_SWAP_ON_BE(27U);
-	size_t n = m_file.Write(&len, sizeof(wxUint16));
-	if (n != sizeof(wxUint16)) {
-		m_file.Close();
+	uint16_t len = 27U;
+
+	unsigned char buffer[2U];
+	buffer[0U] = len << 0;
+	buffer[1U] = len << 8;
+
+	size_t n = ::fwrite(buffer, 1, sizeof(uint16_t), m_file);
+	if (n != sizeof(uint16_t)) {
+		::fclose(m_file);
+		m_file = NULL;
 		return false;
 	}
 
-	n = m_file.Write(DSVT_SIGNATURE, DSVT_SIGNATURE_LENGTH);
+	n = ::fwrite(DSVT_SIGNATURE, 1, DSVT_SIGNATURE_LENGTH, m_file);
 	if (n != DSVT_SIGNATURE_LENGTH) {
-		m_file.Close();
+		::fclose(m_file);
+		m_file = NULL;
 		return false;
 	}
 
 	char byte = DATA_FLAG;
-	n = m_file.Write(&byte, 1U);
+	n = ::fwrite(&byte, 1, 1, m_file);
 	if (n != 1U) {
-		m_file.Close();
+		::fclose(m_file);
+		m_file = NULL;
 		return false;
 	}
 
-	n = m_file.Write(FIXED_DATA, FIXED_DATA_LENGTH);
+	n = ::fwrite(FIXED_DATA, 1, FIXED_DATA_LENGTH, m_file);
 	if (n != FIXED_DATA_LENGTH) {
-		m_file.Close();
+		::fclose(m_file);
+		m_file = NULL;
 		return false;
 	}
 
 	byte = TRAILER_MASK | m_sequence;
-	n = m_file.Write(&byte, 1U);
+	n = ::fwrite(&byte, 1, 1, m_file);
 	if (n != 1U) {
-		m_file.Close();
+		::fclose(m_file);
+		m_file = NULL;
 		return false;
 	}
 
-	n = m_file.Write(TRAILER_DATA, TRAILER_DATA_LENGTH);
+	n = ::fwrite(TRAILER_DATA, 1, TRAILER_DATA_LENGTH, m_file);
 	if (n != TRAILER_DATA_LENGTH) {
-		m_file.Close();
+		::fclose(m_file);
+		m_file = NULL;
 		return false;
 	}
 

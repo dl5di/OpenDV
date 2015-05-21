@@ -24,10 +24,11 @@
 #include "DStarGMSKModulator.h"
 #include "AudioCallback.h"
 #include "RingBuffer.h"
+#include "Types.h"
 #include "Modem.h"
 #include "Utils.h"
 
-#include <wx/wx.h>
+#include <string>
 
 enum DSRSCC_STATE {
 	DSRSCCS_NONE,
@@ -37,10 +38,10 @@ enum DSRSCC_STATE {
 
 class CSoundCardController : public CModem, public IAudioCallback {
 public:
-	CSoundCardController(const wxString& rxDevice, const wxString& txDevice, bool rxInvert, bool txInvert, wxFloat32 rxLevel, wxFloat32 txLevel, unsigned int txDelay, unsigned int txTail);
+	CSoundCardController(const std::string& rxDevice, const std::string& txDevice, bool rxInvert, bool txInvert, float rxLevel, float txLevel, unsigned int txDelay, unsigned int txTail);
 	virtual ~CSoundCardController();
 
-	virtual void* Entry();
+	virtual void entry();
 
 	virtual bool start();
 
@@ -51,19 +52,19 @@ public:
 	virtual bool writeHeader(const CHeaderData& header);
 	virtual bool writeData(const unsigned char* data, unsigned int length, bool end);
 
-	virtual void readCallback(const wxFloat32* input, unsigned int n, int id);
-	virtual void writeCallback(wxFloat32* output, unsigned int& n, int id);
+	virtual void readCallback(const float* input, unsigned int n, int id);
+	virtual void writeCallback(float* output, unsigned int& n, int id);
 
 private:
 	CSoundCardReaderWriter     m_sound;
-	wxFloat32                  m_rxLevel;
-	wxFloat32                  m_txLevel;
+	float                      m_rxLevel;
+	float                      m_txLevel;
 	unsigned int               m_txDelay;
 	unsigned int               m_txTail;
-	CRingBuffer<wxFloat32>     m_txAudio;
-	CRingBuffer<wxFloat32>     m_rxAudio;
+	CRingBuffer<float>         m_txAudio;
+	CRingBuffer<float>         m_rxAudio;
 	DSRSCC_STATE               m_rxState;
-	wxUint32                   m_patternBuffer;
+	uint32_t                   m_patternBuffer;
 	CDStarGMSKDemodulator      m_demodulator;
 	CDStarGMSKModulator        m_modulator;
 	unsigned int               m_preambleCount;
@@ -91,8 +92,7 @@ private:
 	void txHeader(const unsigned char* in, unsigned char* out);
 	void writeBits(unsigned char c);
 
-	unsigned int countBits(wxUint32 num);
+	unsigned int countBits(uint32_t num);
 };
 
 #endif
-

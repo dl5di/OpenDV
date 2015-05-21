@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2011-2014 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2011-2015 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -23,7 +23,7 @@
 #include "RepeaterProtocolHandler.h"
 #include "AnnouncementCallback.h"
 #include "DStarRepeaterThread.h"
-#include "DStarRepeaterDefs.h"
+#include "DStarRepeaterWindowsefs.h"
 #include "DVTOOLFileWriter.h"
 #include "AnnouncementUnit.h"
 #include "SlowDataDecoder.h"
@@ -37,24 +37,23 @@
 #include "Timer.h"
 #include "Utils.h"
 
-#include <wx/wx.h>
-#include <wx/regex.h>
+#include <string>
 
 class CDStarRepeaterTRXThread : public IDStarRepeaterThread, public IBeaconCallback, public IAnnouncementCallback {
 public:
-	CDStarRepeaterTRXThread(const wxString& type);
+	CDStarRepeaterTRXThread(const std::string& type);
 	virtual ~CDStarRepeaterTRXThread();
 
-	virtual void setCallsign(const wxString& callsign, const wxString& gateway, DSTAR_MODE mode, ACK_TYPE ack, bool restriction, bool rpt1Validation, bool dtmfBlanking, bool errorReply);
+	virtual void setCallsign(const std::string& callsign, const std::string& gateway, DSTAR_MODE mode, ACK_TYPE ack, bool restriction, bool rpt1Validation, bool dtmfBlanking, bool errorReply);
 	virtual void setProtocolHandler(CRepeaterProtocolHandler* handler, bool local);
 	virtual void setModem(CModem* modem);
 	virtual void setController(CExternalController* controller, unsigned int activeHangTime);
 	virtual void setTimes(unsigned int timeout, unsigned int ackTime);
-	virtual void setBeacon(unsigned int time, const wxString& text, bool voice, TEXT_LANG language);
-	virtual void setAnnouncement(bool enabled, unsigned int time, const wxString& recordRPT1, const wxString& recordRPT2, const wxString& deleteRPT1, const wxString& deleteRPT2);
-	virtual void setControl(bool enabled, const wxString& rpt1Callsign, const wxString& rpt2Callsign, const wxString& shutdown, const wxString& startup, const wxString& status1, const wxString& status2, const wxString& status3, const wxString& status4, const wxString& status5, const wxString& command1, const wxString& command1Line, const wxString& command2, const wxString& command2Line, const wxString& command3, const wxString& command3Line, const wxString& command4, const wxString& command4Line, const wxString& command5, const wxString& command5Line, const wxString& command6, const wxString& command6Line, const wxString& output1, const wxString& output2, const wxString& output3, const wxString& output4);
+	virtual void setBeacon(unsigned int time, const std::string& text, bool voice, TEXT_LANG language);
+	virtual void setAnnouncement(bool enabled, unsigned int time, const std::string& recordRPT1, const std::string& recordRPT2, const std::string& deleteRPT1, const std::string& deleteRPT2);
+	virtual void setControl(bool enabled, const std::string& rpt1Callsign, const std::string& rpt2Callsign, const std::string& shutdown, const std::string& startup, const std::string& status1, const std::string& status2, const std::string& status3, const std::string& status4, const std::string& status5, const std::string& command1, const std::string& command1Line, const std::string& command2, const std::string& command2Line, const std::string& command3, const std::string& command3Line, const std::string& command4, const std::string& command4Line, const std::string& command5, const std::string& command5Line, const std::string& command6, const std::string& command6Line, const std::string& output1, const std::string& output2, const std::string& output3, const std::string& output4);
 	virtual void setOutputs(bool out1, bool out2, bool out3, bool out4);
-	virtual void setLogging(bool logging, const wxString& dir);
+	virtual void setLogging(bool logging, const std::string& dir);
 	virtual void setBlackList(CCallsignList* list);
 	virtual void setGreyList(CCallsignList* list);
 
@@ -80,19 +79,19 @@ public:
 	virtual void transmitAnnouncementData(const unsigned char* data, unsigned int length, bool end);
 
 private:
-	wxString                   m_type;
+	std::string                m_type;
 	CModem*                    m_modem;
 	CRepeaterProtocolHandler*  m_protocolHandler;
 	CExternalController*       m_controller;
 	bool                       m_stopped;
-	wxString                   m_rptCallsign;
-	wxString                   m_gwyCallsign;
+	std::string                m_rptCallsign;
+	std::string                m_gwyCallsign;
 	CBeaconUnit*               m_beacon;
 	CAnnouncementUnit*         m_announcement;
-	wxString                   m_recordRPT1;
-	wxString                   m_recordRPT2;
-	wxString                   m_deleteRPT1;
-	wxString                   m_deleteRPT2;
+	std::string                m_recordRPT1;
+	std::string                m_recordRPT2;
+	std::string                m_deleteRPT1;
+	std::string                m_deleteRPT2;
 	CHeaderData*               m_rxHeader;
 	COutputQueue               m_localQueue;
 	COutputQueue               m_radioQueue;
@@ -134,31 +133,31 @@ private:
 	bool                       m_rpt1Validation;
 	bool                       m_errorReply;
 	bool                       m_controlEnabled;
-	wxString                   m_controlRPT1;
-	wxString                   m_controlRPT2;
-	wxString                   m_controlShutdown;
-	wxString                   m_controlStartup;
-	wxString                   m_controlStatus1;
-	wxString                   m_controlStatus2;
-	wxString                   m_controlStatus3;
-	wxString                   m_controlStatus4;
-	wxString                   m_controlStatus5;
-	wxString                   m_controlCommand1;
-	wxString                   m_controlCommand1Line;
-	wxString                   m_controlCommand2;
-	wxString                   m_controlCommand2Line;
-	wxString                   m_controlCommand3;
-	wxString                   m_controlCommand3Line;
-	wxString                   m_controlCommand4;
-	wxString                   m_controlCommand4Line;
-	wxString                   m_controlCommand5;
-	wxString                   m_controlCommand5Line;
-	wxString                   m_controlCommand6;
-	wxString                   m_controlCommand6Line;
-	wxString                   m_controlOutput1;
-	wxString                   m_controlOutput2;
-	wxString                   m_controlOutput3;
-	wxString                   m_controlOutput4;
+	std::string                m_controlRPT1;
+	std::string                m_controlRPT2;
+	std::string                m_controlShutdown;
+	std::string                m_controlStartup;
+	std::string                m_controlStatus1;
+	std::string                m_controlStatus2;
+	std::string                m_controlStatus3;
+	std::string                m_controlStatus4;
+	std::string                m_controlStatus5;
+	std::string                m_controlCommand1;
+	std::string                m_controlCommand1Line;
+	std::string                m_controlCommand2;
+	std::string                m_controlCommand2Line;
+	std::string                m_controlCommand3;
+	std::string                m_controlCommand3Line;
+	std::string                m_controlCommand4;
+	std::string                m_controlCommand4Line;
+	std::string                m_controlCommand5;
+	std::string                m_controlCommand5Line;
+	std::string                m_controlCommand6;
+	std::string                m_controlCommand6Line;
+	std::string                m_controlOutput1;
+	std::string                m_controlOutput2;
+	std::string                m_controlOutput3;
+	std::string                m_controlOutput4;
 	bool                       m_output1;
 	bool                       m_output2;
 	bool                       m_output3;
@@ -175,18 +174,18 @@ private:
 	unsigned int               m_ambeErrors;
 	unsigned int               m_lastAMBEBits;
 	unsigned int               m_lastAMBEErrors;
-	wxString                   m_ackText;
-	wxString                   m_tempAckText;
+	std::string                m_ackText;
+	std::string                m_tempAckText;
 	LINK_STATUS                m_linkStatus;
-	wxString                   m_reflector;
-	wxString                   m_status1Text;
-	wxString                   m_status2Text;
-	wxString                   m_status3Text;
-	wxString                   m_status4Text;
-	wxString                   m_status5Text;
+	std::string                m_reflector;
+	std::string                m_status1Text;
+	std::string                m_status2Text;
+	std::string                m_status3Text;
+	std::string                m_status4Text;
+	std::string                m_status5Text;
 	wxRegEx                    m_regEx;
-	wxStopWatch                m_headerTime;
-	wxStopWatch                m_packetTime;
+	CStopWatch                 m_headerTime;
+	CStopWatch                 m_packetTime;
 	unsigned int               m_packetCount;
 	unsigned int               m_packetSilence;
 	CCallsignList*             m_blackList;

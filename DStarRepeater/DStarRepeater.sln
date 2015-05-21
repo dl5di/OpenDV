@@ -4,17 +4,27 @@ Microsoft Visual Studio Solution File, Format Version 10.00
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DStarRepeater", "DStarRepeater\DStarRepeater.vcproj", "{E3458953-FC3D-47AF-A245-A1A87DC2BC7E}"
 	ProjectSection(ProjectDependencies) = postProject
 		{3753EF20-2330-415E-B933-2560A474498B} = {3753EF20-2330-415E-B933-2560A474498B}
+		{6A0DF532-D419-46EC-96AE-C295707C91C8} = {6A0DF532-D419-46EC-96AE-C295707C91C8}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DStarRepeaterConfig", "DStarRepeaterConfig\DStarRepeaterConfig.vcproj", "{FBAE8201-11CC-4256-BF39-A860B9DF963C}"
 	ProjectSection(ProjectDependencies) = postProject
-		{3753EF20-2330-415E-B933-2560A474498B} = {3753EF20-2330-415E-B933-2560A474498B}
 		{2C548AAB-A9F7-496F-BCF5-6185BDA304D2} = {2C548AAB-A9F7-496F-BCF5-6185BDA304D2}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Common", "Common\Common.vcproj", "{3753EF20-2330-415E-B933-2560A474498B}"
+	ProjectSection(ProjectDependencies) = postProject
+		{6A0DF532-D419-46EC-96AE-C295707C91C8} = {6A0DF532-D419-46EC-96AE-C295707C91C8}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GUICommon", "GUICommon\GUICommon.vcproj", "{2C548AAB-A9F7-496F-BCF5-6185BDA304D2}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Framework", "Framework\Framework.vcproj", "{6A0DF532-D419-46EC-96AE-C295707C91C8}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DStarRepeaterGUI", "DStarRepeaterGUI\DStarRepeaterGUI.vcproj", "{D8C92677-FC08-47DE-B5ED-51F9011C2423}"
+	ProjectSection(ProjectDependencies) = postProject
+		{2C548AAB-A9F7-496F-BCF5-6185BDA304D2} = {2C548AAB-A9F7-496F-BCF5-6185BDA304D2}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -38,6 +48,14 @@ Global
 		{2C548AAB-A9F7-496F-BCF5-6185BDA304D2}.Debug|Win32.Build.0 = Debug|Win32
 		{2C548AAB-A9F7-496F-BCF5-6185BDA304D2}.Release|Win32.ActiveCfg = Release|Win32
 		{2C548AAB-A9F7-496F-BCF5-6185BDA304D2}.Release|Win32.Build.0 = Release|Win32
+		{6A0DF532-D419-46EC-96AE-C295707C91C8}.Debug|Win32.ActiveCfg = Debug|Win32
+		{6A0DF532-D419-46EC-96AE-C295707C91C8}.Debug|Win32.Build.0 = Debug|Win32
+		{6A0DF532-D419-46EC-96AE-C295707C91C8}.Release|Win32.ActiveCfg = Release|Win32
+		{6A0DF532-D419-46EC-96AE-C295707C91C8}.Release|Win32.Build.0 = Release|Win32
+		{D8C92677-FC08-47DE-B5ED-51F9011C2423}.Debug|Win32.ActiveCfg = Debug|Win32
+		{D8C92677-FC08-47DE-B5ED-51F9011C2423}.Debug|Win32.Build.0 = Debug|Win32
+		{D8C92677-FC08-47DE-B5ED-51F9011C2423}.Release|Win32.ActiveCfg = Release|Win32
+		{D8C92677-FC08-47DE-B5ED-51F9011C2423}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2010-2014 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2010-2015 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -22,9 +22,8 @@
 #include "GMSKModem.h"
 #include "Utils.h"
 
-#include <wx/wx.h>
 #if defined(WIN32)
-#include <wx/dynlib.h>
+#include <Windows.h>
 #include "lusb0_usb.h"
 #else
 #include <libusb-1.0/libusb.h>
@@ -55,7 +54,7 @@ private:
 #if defined(WIN32)
 	usb_dev_handle*          m_dev;
 
-	static wxDynamicLibrary* m_library;
+	static HMODULE           m_library;
 	static bool              m_loaded;
 
 	static void            (*m_usbInit)();

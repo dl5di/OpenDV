@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2011-2014 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2011-2015 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -19,14 +19,14 @@
 #ifndef	DStarRepeaterDefs_H
 #define	DStarRepeaterDefs_H
 
-#include <wx/wx.h>
+#include <string>
 
-const wxString APPLICATION_NAME = wxT("D-Star Repeater");
-const wxString LOG_BASE_NAME    = wxT("DStarRepeater");
-const wxString CONFIG_FILE_NAME = wxT("dstarrepeater");
+const std::string APPLICATION_NAME = "D-Star Repeater";
+const std::string LOG_BASE_NAME    = "DStarRepeater";
+const std::string CONFIG_FILE_NAME = "dstarrepeater";
 
-const wxString BLACKLIST_FILE_NAME = wxT("blacklist.dat");
-const wxString GREYLIST_FILE_NAME  = wxT("greylist.dat");
+const std::string BLACKLIST_FILE_NAME = "blacklist.dat";
+const std::string GREYLIST_FILE_NAME  = "greylist.dat";
 
 enum DSTAR_RX_STATE {
 	DSRXS_LISTENING,

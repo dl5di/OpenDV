@@ -1,5 +1,5 @@
 /*
- *	Copyright (C) 2009,2010 by Jonathan Naylor, G4KLX
+ *	Copyright (C) 2009,2010,2015 by Jonathan Naylor, G4KLX
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -12,6 +12,10 @@
  */
 
 #include "K8055Controller.h"
+
+#include "Log.h"
+
+#include <cassert>
 
 const unsigned int VELLEMAN_VENDOR_ID  = 0x10CFU;
 const unsigned int VELLEMAN_PRODUCT_ID = 0x5500U;
@@ -36,7 +40,7 @@ const char OUT_PORT6 = 0x20U;
 const char OUT_PORT7 = 0x40U;
 const char OUT_PORT8 = 0x80U;
 
-#if defined(__WINDOWS__)
+#if defined(WIN32)
 
 #include <Setupapi.h>
 #include "HID.h"
@@ -63,14 +67,14 @@ CK8055Controller::~CK8055Controller()
 
 bool CK8055Controller::open()
 {
-	wxASSERT(m_handle == INVALID_HANDLE_VALUE);
+	assert(m_handle == INVALID_HANDLE_VALUE);
 
 	GUID guid;
 	::HidD_GetHidGuid(&guid);
 
 	HDEVINFO devInfo = ::SetupDiGetClassDevs(&guid, NULL, NULL, DIGCF_DEVICEINTERFACE | DIGCF_PRESENT);
 	if (devInfo == INVALID_HANDLE_VALUE) {
-		wxLogError(wxT("Error from SetupDiGetClassDevs: err=%u"), ::GetLastError());
+		LogError("Error from SetupDiGetClassDevs: err=%u", ::GetLastError());
 		return false;
 	}
 
@@ -89,7 +93,7 @@ bool CK8055Controller::open()
 		DWORD required;
 		BOOL res = ::SetupDiGetDeviceInterfaceDetail(devInfo, &devInfoData, detailData, length, &required, NULL);
 		if (!res) {
-			wxLogError(wxT("Error from SetupDiGetDeviceInterfaceDetail: err=%u"), ::GetLastError());
+			LogError("Error from SetupDiGetDeviceInterfaceDetail: err=%u", ::GetLastError());
 			::SetupDiDestroyDeviceInfoList(devInfo);
 			::free(detailData);
 			return false;
@@ -98,7 +102,7 @@ bool CK8055Controller::open()
 		// Get the handle for getting the attributes
 		HANDLE handle = ::CreateFile(detailData->DevicePath, 0, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, 0, NULL);
 		if (handle == INVALID_HANDLE_VALUE) {
-			wxLogError(wxT("Error from CreateFile: err=%u"), ::GetLastError());
+			LogError("Error from CreateFile: err=%u", ::GetLastError());
 			::SetupDiDestroyDeviceInfoList(devInfo);
 			::free(detailData);
 			return false;
@@ -108,7 +112,7 @@ bool CK8055Controller::open()
 		attributes.Size = sizeof(HIDD_ATTRIBUTES);
 		res = ::HidD_GetAttributes(handle, &attributes);
 		if (!res) {
-			wxLogError(wxT("Error from HidD_GetAttributes: err=%u"), ::GetLastError());
+			LogError("Error from HidD_GetAttributes: err=%u", ::GetLastError());
 			::CloseHandle(handle);
 			::SetupDiDestroyDeviceInfoList(devInfo);
 			::free(detailData);
@@ -121,7 +125,7 @@ bool CK8055Controller::open()
 		if (attributes.VendorID  == VELLEMAN_VENDOR_ID && attributes.ProductID == (VELLEMAN_PRODUCT_ID + m_address)) {
 			m_handle = ::CreateFile(detailData->DevicePath, GENERIC_WRITE | GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, 0, NULL);
 			if (m_handle == INVALID_HANDLE_VALUE) {
-				wxLogError(wxT("Error from CreateFile: err=%u"), ::GetLastError());
+				LogError("Error from CreateFile: err=%u", ::GetLastError());
 				::SetupDiDestroyDeviceInfoList(devInfo);
 				::free(detailData);
 				return false;
@@ -145,7 +149,7 @@ bool CK8055Controller::open()
 
 void CK8055Controller::getDigitalInputs(bool& inp1, bool& inp2, bool& inp3, bool& inp4, bool& inp5)
 {
-	wxASSERT(m_handle != INVALID_HANDLE_VALUE);
+	assert(m_handle != INVALID_HANDLE_VALUE);
 
 	char buffer[USB_BUFSIZE];
 	buffer[0] = REPORT_ID;
@@ -161,7 +165,7 @@ void CK8055Controller::getDigitalInputs(bool& inp1, bool& inp2, bool& inp3, bool
 	DWORD read;
 	BOOL res = ::ReadFile(m_handle, buffer, USB_BUFSIZE, &read, NULL);
 	if (!res) {
-		wxLogError(wxT("Error from ReadFile: err=%u, read=%u"), ::GetLastError(), read);
+		LogError("Error from ReadFile: err=%u, read=%u", ::GetLastError(), read);
 		return;
 	}
 
@@ -177,7 +181,7 @@ void CK8055Controller::getDigitalInputs(bool& inp1, bool& inp2, bool& inp3, bool
 
 void CK8055Controller::setDigitalOutputs(bool outp1, bool outp2, bool outp3, bool outp4, bool outp5, bool outp6, bool outp7, bool outp8)
 {
-	wxASSERT(m_handle != INVALID_HANDLE_VALUE);
+	assert(m_handle != INVALID_HANDLE_VALUE);
 
 	if (outp1 == m_outp1 && outp2 == m_outp2 && outp3 == m_outp3 && outp4 == m_outp4 &&
 		outp5 == m_outp5 && outp6 == m_outp6 && outp7 == m_outp7 && outp8 == m_outp8)
@@ -214,7 +218,7 @@ void CK8055Controller::setDigitalOutputs(bool outp1, bool outp2, bool outp3, boo
 	DWORD written;
 	BOOL res = ::WriteFile(m_handle, buffer, USB_BUFSIZE, &written, NULL);
 	if (!res || written != USB_BUFSIZE)
-		wxLogError(wxT("Error from WriteFile: err=%u, written=%u"), ::GetLastError(), written);
+		LogError("Error from WriteFile: err=%u, written=%u", ::GetLastError(), written);
 
 	m_outp1 = outp1;
 	m_outp2 = outp2;
@@ -228,7 +232,7 @@ void CK8055Controller::setDigitalOutputs(bool outp1, bool outp2, bool outp3, boo
 
 void CK8055Controller::close()
 {
-	wxASSERT(m_handle != INVALID_HANDLE_VALUE);
+	assert(m_handle != INVALID_HANDLE_VALUE);
 
 	setDigitalOutputs(false, false, false, false, false, false, false, false);
 
@@ -265,19 +269,19 @@ m_handle(NULL)
 
 CK8055Controller::~CK8055Controller()
 {
-	wxASSERT(m_context != NULL);
+	assert(m_context != NULL);
 
 	::libusb_exit(m_context);
 }
 
 bool CK8055Controller::open()
 {
-	wxASSERT(m_context != NULL);
-	wxASSERT(m_handle == NULL);
+	assert(m_context != NULL);
+	assert(m_handle == NULL);
 
 	m_handle = ::libusb_open_device_with_vid_pid(m_context, VELLEMAN_VENDOR_ID, VELLEMAN_PRODUCT_ID + m_address);
 	if (m_handle == NULL) {
-		wxLogError(wxT("Could not open the Velleman K8055"));
+		LogError("Could not open the Velleman K8055");
 		return false;
 	}
 
@@ -285,7 +289,7 @@ bool CK8055Controller::open()
 	if (res != 0) {
 		res = ::libusb_detach_kernel_driver(m_handle, VELLEMAN_HID_INTERFACE);
 		if (res != 0) {
-			wxLogError(wxT("Error from libusb_detach_kernel_driver: err=%d"), res);
+			LogError("Error from libusb_detach_kernel_driver: err=%d", res);
 			::libusb_close(m_handle);
 			m_handle = NULL;
 			return false;
@@ -293,7 +297,7 @@ bool CK8055Controller::open()
 
 		res = ::libusb_claim_interface(m_handle, VELLEMAN_HID_INTERFACE);
 		if (res != 0) {
-			wxLogError(wxT("Error from libusb_claim_interface: err=%d"), res);
+			LogError("Error from libusb_claim_interface: err=%d", res);
 			::libusb_close(m_handle);
 			m_handle = NULL;
 			return false;
@@ -309,7 +313,7 @@ bool CK8055Controller::open()
 
 void CK8055Controller::getDigitalInputs(bool& inp1, bool& inp2, bool& inp3, bool& inp4, bool& inp5)
 {
-	wxASSERT(m_handle != NULL);
+	assert(m_handle != NULL);
 
 	unsigned char buffer[USB_BUFSIZE];
 	buffer[0] = 0x00;
@@ -324,7 +328,7 @@ void CK8055Controller::getDigitalInputs(bool& inp1, bool& inp2, bool& inp3, bool
 	int written;
 	int res = ::libusb_interrupt_transfer(m_handle, USB_INPUT_ENDPOINT, buffer, USB_BUFSIZE, &written, USB_TIMEOUT);
 	if (res != 0) {
-		wxLogError(wxT("Error from libusb_interrupt_transfer: err=%d"), res);
+		LogError("Error from libusb_interrupt_transfer: err=%d", res);
 		return;
 	}
 
@@ -343,7 +347,7 @@ void CK8055Controller::getDigitalInputs(bool& inp1, bool& inp2, bool& inp3, bool
 
 void CK8055Controller::setDigitalOutputs(bool outp1, bool outp2, bool outp3, bool outp4, bool outp5, bool outp6, bool outp7, bool outp8)
 {
-	wxASSERT(m_handle != NULL);
+	assert(m_handle != NULL);
 
 	if (outp1 == m_outp1 && outp2 == m_outp2 && outp3 == m_outp3 && outp4 == m_outp4 &&
 		outp5 == m_outp5 && outp6 == m_outp6 && outp7 == m_outp7 && outp8 == m_outp8)
@@ -379,7 +383,7 @@ void CK8055Controller::setDigitalOutputs(bool outp1, bool outp2, bool outp3, boo
 	int written;
 	int res = ::libusb_interrupt_transfer(m_handle, USB_OUTPUT_ENDPOINT, buffer, USB_BUFSIZE, &written, USB_TIMEOUT);
 	if (res != 0) {
-		wxLogError(wxT("Error from libusb_interrupt_transfer: err=%d"), res);
+		LogError("Error from libusb_interrupt_transfer: err=%d", res);
 		return;
 	}
 
@@ -398,7 +402,7 @@ void CK8055Controller::setDigitalOutputs(bool outp1, bool outp2, bool outp3, boo
 
 void CK8055Controller::close()
 {
-	wxASSERT(m_handle != NULL);
+	assert(m_handle != NULL);
 
 	setDigitalOutputs(false, false, false, false, false, false, false, false);
 
@@ -409,4 +413,3 @@ void CK8055Controller::close()
 }
 
 #endif
-

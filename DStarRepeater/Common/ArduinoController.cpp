@@ -1,5 +1,5 @@
 /*
- *	Copyright (C) 2013 by Jonathan Naylor, G4KLX
+ *	Copyright (C) 2013,2015 by Jonathan Naylor, G4KLX
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -30,7 +30,7 @@ const char OUT_PORT7 = 0x40U;
 const char OUT_PORT8 = 0x80U;
 
 
-CArduinoController::CArduinoController(const wxString& port) :
+CArduinoController::CArduinoController(const std::string& port) :
 m_serial(port, SERIAL_19200),
 m_out(0x00U),
 m_in(0x00U)

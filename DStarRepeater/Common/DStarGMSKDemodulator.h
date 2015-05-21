@@ -1,5 +1,5 @@
 /*
- *	Copyright (C) 2009,2010,2013,2014 by Jonathan Naylor, G4KLX
+ *	Copyright (C) 2009,2010,2013,2014,2015 by Jonathan Naylor, G4KLX
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -23,7 +23,7 @@ public:
 	CDStarGMSKDemodulator();
 	~CDStarGMSKDemodulator();
 
-	TRISTATE decode(wxFloat32 val);
+	TRISTATE decode(float val);
 
 	void setInvert(bool set);
 
@@ -38,8 +38,8 @@ private:
 	bool           m_prev;
 	unsigned int   m_inc;
 	bool           m_locked;
-	wxFloat32      m_offset;
-	wxFloat32      m_accum;
+	float          m_offset;
+	float          m_accum;
 	unsigned int   m_count;
 };
 

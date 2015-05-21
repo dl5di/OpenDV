@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2012,2014 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2012,2014,2015 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -22,22 +22,21 @@
 #include "DStarRepeaterStatusData.h"
 #include "DStarRepeaterThread.h"
 
-#include <wx/wx.h>
+#include "Thread.h"
 
-class CDStarRepeaterThreadHelper : public wxThread {
-
+class CDStarRepeaterThreadHelper : public CThread {
 public:
 	CDStarRepeaterThreadHelper(IDStarRepeaterThread* thread);
 	virtual ~CDStarRepeaterThreadHelper();
 
 	virtual void start();
 
-	virtual void* Entry();
+	virtual void entry();
 
 	virtual void kill();
 
 	virtual void setOutputs(bool out1, bool out2, bool out3, bool out4);
-	virtual void setLogging(bool logging, const wxString& dir);
+	virtual void setLogging(bool logging, const std::string& dir);
 
 	virtual void shutdown();
 	virtual void startup();

@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2012-2014 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2012-2015 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -18,6 +18,14 @@
 
 #include "SplitController.h"
 
+#include "MutexLocker.h"
+#include "StopWatch.h"
+#include "Log.h"
+
+#include <algorithm>
+
+#include <cassert>
+
 const unsigned int REGISTRATION_TIMEOUT = 200U;
 
 const unsigned int BUFFER_LENGTH = 200U;
@@ -32,7 +40,7 @@ m_end(NULL),
 m_timer(1000U),
 m_rxCount(rxCount)
 {
-	wxASSERT(rxCount > 0U);
+	assert(rxCount > 0U);
 
 	m_ambe  = new unsigned char[DV_FRAME_MAX_LENGTH_BYTES];
 	m_valid = new bool[rxCount];
@@ -67,7 +75,7 @@ bool CAMBESlot::isFirst() const
 	return m_length == 0U;
 }
 
-CSplitController::CSplitController(const wxString& localAddress, unsigned int localPort, const wxArrayString& transmitterNames, const wxArrayString& receiverNames, unsigned int timeout) :
+CSplitController::CSplitController(const std::string& localAddress, unsigned int localPort, const std::vector<std::string>& transmitterNames, const std::vector<std::string>& receiverNames, unsigned int timeout) :
 CModem(),
 m_handler(localAddress, localPort),
 m_transmitterNames(transmitterNames),
@@ -98,11 +106,11 @@ m_best(NULL),
 m_missed(NULL),
 m_silence(0U)
 {
-	m_txCount = transmitterNames.GetCount();
-	m_rxCount = receiverNames.GetCount();
+	m_txCount = transmitterNames.size();
+	m_rxCount = receiverNames.size();
 
-	wxASSERT(m_txCount > 0U);
-	wxASSERT(m_rxCount > 0U);
+	assert(m_txCount > 0U);
+	assert(m_rxCount > 0U);
 
 	m_txAddresses = new in_addr[m_txCount];
 	m_txPorts     = new unsigned int[m_txCount];
@@ -114,7 +122,7 @@ m_silence(0U)
 
 	m_header = new unsigned char[RADIO_HEADER_LENGTH_BYTES];
 
-	m_id      = new wxUint16[m_rxCount];
+	m_id      = new uint16_t[m_rxCount];
 	m_valid   = new bool[m_rxCount];
 	m_packets = new unsigned int[m_rxCount];
 	m_best    = new unsigned int[m_rxCount];
@@ -172,21 +180,19 @@ bool CSplitController::start()
 	if (!ret)
 		return false;
 
-	Create();
-	SetPriority(100U);
-	Run();
+	run();
 
 	return true;
 }
 
-void* CSplitController::Entry()
+void CSplitController::entry()
 {
-	wxLogMessage(wxT("Starting Split Controller thread"));
+	LogMessage("Starting Split Controller thread");
 
-	wxStopWatch stopWatch;
+	CStopWatch stopWatch;
 
 	while (!m_stopped) {
-		stopWatch.Start();
+		stopWatch.start();
 
 		transmit();
 
@@ -194,22 +200,20 @@ void* CSplitController::Entry()
 
 		Sleep(10UL);
 
-		unsigned int ms = stopWatch.Time();
+		unsigned int ms = stopWatch.elapsed();
 		timers(ms);
 	}
 
-	wxLogMessage(wxT("Stopping Split Controller thread"));
+	LogMessage("Stopping Split Controller thread");
 
 	m_handler.close();
-
-	return NULL;
 }
 
 bool CSplitController::writeHeader(const CHeaderData& header)
 {
 	bool ret = m_txData.hasSpace(RADIO_HEADER_LENGTH_BYTES);
 	if (!ret) {
-		wxLogWarning(wxT("No space to write the header"));
+		LogWarning("No space to write the header");
 		return false;
 	}
 
@@ -221,27 +225,27 @@ bool CSplitController::writeHeader(const CHeaderData& header)
 	buffer[1U] = header.getFlag2();
 	buffer[2U] = header.getFlag3();
 
-	wxString rpt2 = header.getRptCall2();
-	for (unsigned int i = 0U; i < rpt2.Len() && i < LONG_CALLSIGN_LENGTH; i++)
-		buffer[i + 3U]  = rpt2.GetChar(i);
+	std::string rpt2 = header.getRptCall2();
+	for (unsigned int i = 0U; i < rpt2.length() && i < LONG_CALLSIGN_LENGTH; i++)
+		buffer[i + 3U]  = rpt2.at(i);
 
-	wxString rpt1 = header.getRptCall1();
-	for (unsigned int i = 0U; i < rpt1.Len() && i < LONG_CALLSIGN_LENGTH; i++)
-		buffer[i + 11U] = rpt1.GetChar(i);
+	std::string rpt1 = header.getRptCall1();
+	for (unsigned int i = 0U; i < rpt1.length() && i < LONG_CALLSIGN_LENGTH; i++)
+		buffer[i + 11U] = rpt1.at(i);
 
-	wxString your = header.getYourCall();
-	for (unsigned int i = 0U; i < your.Len() && i < LONG_CALLSIGN_LENGTH; i++)
-		buffer[i + 19U] = your.GetChar(i);
+	std::string your = header.getYourCall();
+	for (unsigned int i = 0U; i < your.length() && i < LONG_CALLSIGN_LENGTH; i++)
+		buffer[i + 19U] = your.at(i);
 
-	wxString my1 = header.getMyCall1();
-	for (unsigned int i = 0U; i < my1.Len() && i < LONG_CALLSIGN_LENGTH; i++)
-		buffer[i + 27U] = my1.GetChar(i);
+	std::string my1 = header.getMyCall1();
+	for (unsigned int i = 0U; i < my1.length() && i < LONG_CALLSIGN_LENGTH; i++)
+		buffer[i + 27U] = my1.at(i);
 
-	wxString my2 = header.getMyCall2();
-	for (unsigned int i = 0U; i < my2.Len() && i < SHORT_CALLSIGN_LENGTH; i++)
-		buffer[i + 35U] = my2.GetChar(i);
+	std::string my2 = header.getMyCall2();
+	for (unsigned int i = 0U; i < my2.length() && i < SHORT_CALLSIGN_LENGTH; i++)
+		buffer[i + 35U] = my2.at(i);
 
-	wxMutexLocker locker(m_mutex);
+	CMutexLocker locker(m_mutex);
 
 	unsigned char data[2U];
 	data[0U] = DSMTT_HEADER;
@@ -257,11 +261,11 @@ bool CSplitController::writeData(const unsigned char* data, unsigned int length,
 {
 	bool ret = m_txData.hasSpace(DV_FRAME_LENGTH_BYTES + 2U);
 	if (!ret) {
-		wxLogWarning(wxT("No space to write data"));
+		LogWarning("No space to write data");
 		return false;
 	}
 
-	wxMutexLocker locker(m_mutex);
+	CMutexLocker locker(m_mutex);
 
 	unsigned char buffer[2U];
 	buffer[0U] = end ? DSMTT_EOT : DSMTT_DATA;
@@ -292,7 +296,7 @@ void CSplitController::transmit()
 	unsigned char length = 0U;
 	unsigned char buffer[RADIO_HEADER_LENGTH_BYTES];
 	{
-		wxMutexLocker locker(m_mutex);
+		CMutexLocker locker(m_mutex);
 
 		m_txData.getData(&type, 1U);
 		m_txData.getData(&length, 1U);
@@ -334,7 +338,7 @@ void CSplitController::receive()
 	NETWORK_TYPE type = NETWORK_DATA;
 
 	while (type != NETWORK_NONE) {
-		wxUint16 id;
+		uint16_t id;
 		in_addr address;
 		unsigned int port;
 
@@ -359,13 +363,13 @@ void CSplitController::receive()
 				}
 
 				if (!found) {
-					wxString addr(::inet_ntoa(address), wxConvLocal);
-					wxLogError(wxT("Header received from unknown repeater - %s:%u"), addr.c_str(), port);
+					std::string addr(::inet_ntoa(address));
+					LogError("Header received from unknown repeater - %s:%u", addr.c_str(), port);
 				}
 			}
 		} else if (type == NETWORK_DATA) {
 			unsigned char ambe[DV_FRAME_MAX_LENGTH_BYTES];
-			wxUint8 seqNo;
+			uint8_t seqNo;
 			unsigned int errors;
 			unsigned int length = m_handler.readData(ambe, DV_FRAME_MAX_LENGTH_BYTES, seqNo, errors);
 
@@ -378,55 +382,54 @@ void CSplitController::receive()
 			}
 		} else if (type == NETWORK_REGISTER) {
 			// These can be from transmitters and receivers
-			wxString name;
+			std::string name;
 			m_handler.readRegister(name);
 
-			int n1 = m_receiverNames.Index(name);
-			int n2 = m_transmitterNames.Index(name);
+			std::vector<std::string>::iterator n1 = std::find(m_receiverNames.begin(), m_receiverNames.end(), name);
+			std::vector<std::string>::iterator n2 = std::find(m_transmitterNames.begin(), m_transmitterNames.end(), name);
 
-			if (n1 != wxNOT_FOUND) {
-				wxASSERT(n1 < int(m_rxCount));
+			if (n1 != m_receiverNames.end()) {
 				m_rxTimers[n1]->start();
 
 				if (m_rxAddresses[n1].s_addr != address.s_addr || m_rxPorts[n1] != port) {
-					wxString addr1(::inet_ntoa(m_rxAddresses[n1]), wxConvLocal);
-					wxString addr2(::inet_ntoa(address), wxConvLocal);
+					std::string addr1(::inet_ntoa(m_rxAddresses[n1]));
+					std::string addr2(::inet_ntoa(address));
 
 					if (m_rxPorts[n1] == 0U)
-						wxLogMessage(wxT("Registration of RX %d \"%s\" set to %s:%u"), n1 + 1, name.c_str(), addr2.c_str(), port);
+						LogMessage("Registration of RX %d \"%s\" set to %s:%u", n1 + 1, name.c_str(), addr2.c_str(), port);
 					else
-						wxLogMessage(wxT("Registration of RX %d \"%s\" changed from %s:%u to %s:%u"), n1 + 1, name.c_str(), addr1.c_str(), m_rxPorts[n1], addr2.c_str(), port);
+						LogMessage("Registration of RX %d \"%s\" changed from %s:%u to %s:%u", n1 + 1, name.c_str(), addr1.c_str(), m_rxPorts[n1], addr2.c_str(), port);
 
 					m_rxAddresses[n1].s_addr = address.s_addr;
 					m_rxPorts[n1] = port;
 				}
 			}
 
-			if (n2 != wxNOT_FOUND) {
-				wxASSERT(n2 < int(m_txCount));
+			if (n2 != std::string::npos) {
+				assert(n2 < int(m_txCount));
 				m_txTimers[n2]->start();
 
 				if (m_txAddresses[n2].s_addr != address.s_addr || m_txPorts[n2] != port) {
-					wxString addr1(::inet_ntoa(m_txAddresses[n2]), wxConvLocal);
-					wxString addr2(::inet_ntoa(address), wxConvLocal);
+					std::string addr1(::inet_ntoa(m_txAddresses[n2]));
+					std::string addr2(::inet_ntoa(address));
 
 					if (m_txPorts[n2] == 0U)
-						wxLogMessage(wxT("Registration of TX %d \"%s\" set to %s:%u"), n2 + 1, name.c_str(), addr2.c_str(), port);
+						LogMessage("Registration of TX %d \"%s\" set to %s:%u", n2 + 1, name.c_str(), addr2.c_str(), port);
 					else
-						wxLogMessage(wxT("Registration of TX %d \"%s\" changed from %s:%u to %s:%u"), n2 + 1, name.c_str(), addr1.c_str(), m_txPorts[n2], addr2.c_str(), port);
+						LogMessage("Registration of TX %d \"%s\" changed from %s:%u to %s:%u", n2 + 1, name.c_str(), addr1.c_str(), m_txPorts[n2], addr2.c_str(), port);
 
 					m_txAddresses[n2].s_addr = address.s_addr;
 					m_txPorts[n2] = port;
 				}
 			}
 
-			if (n1 == wxNOT_FOUND && n2 == wxNOT_FOUND) {
-				wxString addr(::inet_ntoa(address), wxConvLocal);
-				wxLogError(wxT("Registration of \"%s\" received from unknown repeater - %s:%u"), name.c_str(), addr.c_str(), port);
+			if (n1 == std::string::npos && n2 == std::string::npos) {
+				std::string addr(::inet_ntoa(address));
+				LogError("Registration of \"%s\" received from unknown repeater - %s:%u", name.c_str(), addr.c_str(), port);
 			}
 		} else {
-			wxString addr(::inet_ntoa(address), wxConvLocal);
-			wxLogError(wxT("Received invalid frame type %d from %s:%u"), int(type), addr.c_str(), port);
+			std::string addr(::inet_ntoa(address));
+			LogError("Received invalid frame type %d from %s:%u", int(type), addr.c_str(), port);
 		}
 	}
 }
@@ -437,7 +440,7 @@ void CSplitController::timers(unsigned int ms)
 	if (m_endTimer.isRunning() && m_endTimer.hasExpired()) {
 		printStats();
 
-		wxMutexLocker locker(m_mutex);
+		CMutexLocker locker(m_mutex);
 		unsigned char data[2U];
 		data[0U] = DSMTT_EOT;
 		data[1U] = 0U;
@@ -453,7 +456,7 @@ void CSplitController::timers(unsigned int ms)
 	for (unsigned int i = 0U; i < m_txCount; i++) {
 		m_txTimers[i]->clock(ms);
 		if (m_txTimers[i]->isRunning() && m_txTimers[i]->hasExpired()) {
-			wxLogWarning(wxT("TX %u registration has expired"), i + 1U);
+			LogWarning("TX %u registration has expired", i + 1U);
 			m_txTimers[i]->stop();
 			m_txPorts[i] = 0U;
 		}
@@ -462,7 +465,7 @@ void CSplitController::timers(unsigned int ms)
 	for (unsigned int i = 0U; i < m_rxCount; i++) {
 		m_rxTimers[i]->clock(ms);
 		if (m_rxTimers[i]->isRunning() && m_rxTimers[i]->hasExpired()) {
-			wxLogWarning(wxT("RX %u registration has expired"), i + 1U);
+			LogWarning("RX %u registration has expired", i + 1U);
 			m_rxTimers[i]->stop();
 			m_rxPorts[i] = 0U;
 		}
@@ -488,7 +491,7 @@ void CSplitController::timers(unsigned int ms)
 		if (isEnd(*slot)) {
 			printStats();
 
-			wxMutexLocker locker(m_mutex);
+			CMutexLocker locker(m_mutex);
 
 			if (!m_headerSent)
 				sendHeader();
@@ -508,7 +511,7 @@ void CSplitController::timers(unsigned int ms)
 		if (slot->m_length > 0U) {
 			m_best[slot->m_best]++;
 
-			wxMutexLocker locker(m_mutex);
+			CMutexLocker locker(m_mutex);
 
 			if (!m_headerSent)
 				sendHeader();
@@ -523,7 +526,7 @@ void CSplitController::timers(unsigned int ms)
 			m_silence++;
 
 			// Send a silence frame to the repeater
-			wxMutexLocker locker(m_mutex);
+			CMutexLocker locker(m_mutex);
 
 			if (!m_headerSent)
 				sendHeader();
@@ -545,7 +548,7 @@ void CSplitController::timers(unsigned int ms)
 	}
 }
 
-void CSplitController::processHeader(unsigned int n, wxUint16 id, const unsigned char* header, unsigned int length)
+void CSplitController::processHeader(unsigned int n, uint16_t id, const unsigned char* header, unsigned int length)
 {
 	if (m_listening) {
 		::memcpy(m_header, header, RADIO_HEADER_LENGTH_BYTES - 2U);
@@ -579,7 +582,7 @@ void CSplitController::processHeader(unsigned int n, wxUint16 id, const unsigned
 	}
 }
 
-void CSplitController::processAMBE(unsigned int n, wxUint16 id, const unsigned char* ambe, unsigned int length, wxUint8 seqNo, unsigned char errors)
+void CSplitController::processAMBE(unsigned int n, uint16_t id, const unsigned char* ambe, unsigned int length, uint8_t seqNo, unsigned char errors)
 {
 	if (m_listening)
 		return;
@@ -673,75 +676,75 @@ void CSplitController::printStats() const
 			total += m_best[i];
 	}
 
-	wxString temp;
-	wxString text = wxT("Packets: total/");
+	char temp[50U];
+	std::string text = "Packets: total/";
 
 	for (unsigned int i = 0U; i < m_rxCount; i++) {
 		if (m_rxPorts[i] > 0U) {
-			temp.Printf(wxT("rx%u/"), i + 1U);
-			text.Append(temp);
+			::sprintf(temp, "rx%u/", i + 1U);
+			text += temp;
 		}
 	}
 
-	temp.Printf(wxT("silence %u/"), total);
-	text.Append(temp);
+	::sprintf(temp, "silence %u/", total);
+	text += temp;
 
 	for (unsigned int i = 0U; i < m_rxCount; i++) {
 		if (m_rxPorts[i] > 0U) {
-			temp.Printf(wxT("%u/"), m_packets[i]);
-			text.Append(temp);
+			::sprintf(temp, "%u/", m_packets[i]);
+			text += temp;
 		}
 	}
 
-	temp.Printf(wxT("%u, Proportion: "), m_silence);
-	text.Append(temp);
+	::sprintf(temp, "%u, Proportion: ", m_silence);
+	text += temp;
 
 	for (unsigned int i = 0U; i < m_rxCount; i++) {
 		if (m_rxPorts[i] > 0U) {
-			temp.Printf(wxT("rx%u/"), i + 1U);
-			text.Append(temp);
+			::sprintf(temp, "rx%u/", i + 1U);
+			text += temp;
 		}
 	}
 
-	text.Append(wxT("silence "));
+	text += "silence ";
 
 	for (unsigned int i = 0U; i < m_rxCount; i++) {
 		if (m_rxPorts[i] > 0U) {
-			temp.Printf(wxT("%u%%%%/"), (100U * m_best[i]) / total);
-			text.Append(temp);
+			::sprintf(temp, "%u%%%%/", (100U * m_best[i]) / total);
+			text += temp;
 		}
 	}
 
-	temp.Printf(wxT("%u%%%%, Missed: "), (100U * m_silence) / total);
-	text.Append(temp);
+	::sprintf(temp, "%u%%%%, Missed: ", (100U * m_silence) / total);
+	text += temp;
 
 	unsigned int n = 0U;
 	for (unsigned int i = 0U; i < m_rxCount; i++) {
 		if (m_rxPorts[i] > 0U) {
 			if (n > 0U)
-				temp.Printf(wxT("/rx%u"), i + 1U);
+				::sprintf(temp, "/rx%u", i + 1U);
 			else
-				temp.Printf(wxT("rx%u"), i + 1U);
+				::sprintf(temp, "rx%u", i + 1U);
 
 			n++;
-			text.Append(temp);
+			text += temp;
 		}
 	}
 
-	text.Append(wxT(" "));
+	text += " ";
 
 	n = 0U;
 	for (unsigned int i = 0U; i < m_rxCount; i++) {
 		if (m_rxPorts[i] > 0U) {
 			if (n > 0U)
-				temp.Printf(wxT("/%u%%%%"), (100U * m_missed[i]) / total);
+				::sprintf(temp, "/%u%%%%", (100U * m_missed[i]) / total);
 			else
-				temp.Printf(wxT("%u%%%%"), (100U * m_missed[i]) / total);
+				::sprintf(temp, "%u%%%%", (100U * m_missed[i]) / total);
 
 			n++;
-			text.Append(temp);
+			text += temp;
 		}
 	}
 
-	wxLogMessage(text);
+	LogMessage("%s", text.c_str());
 }

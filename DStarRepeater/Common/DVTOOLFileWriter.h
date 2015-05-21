@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2009,2013 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2009,2013,2015 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -20,32 +20,32 @@
 #define DVTOOLFileWriter_H
 
 #include "HeaderData.h"
+#include "Types.h"
 
-#include <wx/wx.h>
-#include <wx/ffile.h>
+#include <string>
 
 class CDVTOOLFileWriter {
 public:
 	CDVTOOLFileWriter();
 	~CDVTOOLFileWriter();
 
-	static void setDirectory(const wxString& dirName);
+	static void setDirectory(const std::string& dirName);
 
-	wxString getFileName() const;
+	std::string getFileName() const;
 
 	bool open(const CHeaderData& header);
-	bool open(const wxString& filename, const CHeaderData& header);
+	bool open(const std::string& filename, const CHeaderData& header);
 	bool write(const unsigned char* buffer, unsigned int length);
 	void close();
 
 private:
-	static wxString m_dirName;
+	static std::string m_dirName;
 
-	wxString     m_fileName;
-	wxFFile      m_file;
-	wxUint32     m_count;
+	std::string  m_fileName;
+	FILE*        m_file;
+	uint32_t     m_count;
 	unsigned int m_sequence;
-	wxFileOffset m_offset;
+	long         m_offset;
 
 	bool writeHeader(const CHeaderData& header);
 	bool writeTrailer();

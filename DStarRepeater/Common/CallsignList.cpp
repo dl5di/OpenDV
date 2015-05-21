@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2011 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2011,2015 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -19,9 +19,11 @@
 #include "CallsignList.h"
 #include "DStarDefines.h"
 
-#include <wx/textfile.h>
+#include <algorithm>
 
-CCallsignList::CCallsignList(const wxString& filename) :
+#include <cctype>
+
+CCallsignList::CCallsignList(const std::string& filename) :
 m_filename(filename),
 m_callsigns()
 {
@@ -34,43 +36,32 @@ CCallsignList::~CCallsignList()
 
 bool CCallsignList::load()
 {
-	wxTextFile file;
-
-	bool res = file.Open(m_filename);
-	if (!res)
+	FILE* fp = ::fopen(m_filename.c_str(), "rt");
+	if (fp == NULL)
 		return false;
 
-	unsigned int lines = file.GetLineCount();
-	if (lines == 0U) {
-		file.Close();
-		return true;
+	char line[80U];
+	while (::fgets(line, 80U, fp) != NULL) {
+		for (unsigned int i = 0U; line[i] != '\0'; i++)
+			line[i] = char(::toupper(line[i]));
+
+		std::string callsign(line);
+		callsign.resize(LONG_CALLSIGN_LENGTH, ' ');
+
+		m_callsigns.push_back(callsign);
 	}
 
-	m_callsigns.Alloc(lines);
-
-	wxString callsign = file.GetFirstLine();
-
-	while (!file.Eof()) {
-		callsign.MakeUpper();
-		callsign.Append(wxT("        "));
-		callsign.Truncate(LONG_CALLSIGN_LENGTH);
-
-		m_callsigns.Add(callsign);
-
-		callsign = file.GetNextLine();
-	}
-
-	file.Close();
+	::fclose(fp);
 
 	return true;
 }
 
 unsigned int CCallsignList::getCount() const
 {
-	return m_callsigns.GetCount();
+	return m_callsigns.size();
 }
 
-bool CCallsignList::isInList(const wxString& callsign) const
+bool CCallsignList::isInList(const std::string& callsign) const
 {
-	return m_callsigns.Index(callsign) != wxNOT_FOUND;
+	return std::find(m_callsigns.begin(), m_callsigns.end(), callsign) != m_callsigns.end();
 }

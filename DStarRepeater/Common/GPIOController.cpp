@@ -57,7 +57,7 @@ bool CGPIOController::open()
 {
 	bool ret = ::wiringPiSetup() != -1;
 	if (!ret) {
-		wxLogError(wxT("Unable to initialise wiringPi"));
+		LogError("Unable to initialise wiringPi");
 		return false;
 	}
 

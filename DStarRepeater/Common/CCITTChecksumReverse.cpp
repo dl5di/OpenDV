@@ -1,5 +1,5 @@
 /*
- *	Copyright (C) 2009,2011,2014 by Jonathan Naylor, G4KLX
+ *	Copyright (C) 2009,2011,2014,2015 by Jonathan Naylor, G4KLX
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -14,6 +14,9 @@
 #include "CCITTChecksumReverse.h"
 
 #include "Utils.h"
+
+#include <cstdio>
+#include <cassert>
 
 static const unsigned short ccittTab[] = {
 	0x0000,0x1189,0x2312,0x329b,0x4624,0x57ad,0x6536,0x74bf,
@@ -60,15 +63,15 @@ CCCITTChecksumReverse::~CCCITTChecksumReverse()
 
 void CCCITTChecksumReverse::update(const unsigned char* data, unsigned int length)
 {
-	wxASSERT(data != NULL);
+	assert(data != NULL);
 
 	for (unsigned int i = 0U; i < length; i++)
-		m_crc16 = wxUint16(m_crc8[1U]) ^ ccittTab[m_crc8[0U] ^ data[i]];
+		m_crc16 = uint16_t(m_crc8[1U]) ^ ccittTab[m_crc8[0U] ^ data[i]];
 }
 
 void CCCITTChecksumReverse::result(unsigned char* data)
 {
-	wxASSERT(data != NULL);
+	assert(data != NULL);
 
 	m_crc16 = ~m_crc16;
 
@@ -78,7 +81,7 @@ void CCCITTChecksumReverse::result(unsigned char* data)
 
 bool CCCITTChecksumReverse::check(const unsigned char* data)
 {
-	wxASSERT(data != NULL);
+	assert(data != NULL);
 
 	unsigned char sum[2U];
 	result(sum);

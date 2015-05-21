@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2009,2013 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2009,2013,2015 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -20,7 +20,8 @@
 #include "DStarDefines.h"
 #include "Utils.h"
 
-#include <wx/wx.h>
+#include <cstdio>
+#include <cassert>
 
 static const char              DVTOOL_SIGNATURE[] = "DVTOOL";
 static const unsigned int DVTOOL_SIGNATURE_LENGTH = 6U;
@@ -41,7 +42,7 @@ const unsigned int BUFFER_LENGTH = 255U;
 
 CDVTOOLFileReader::CDVTOOLFileReader() :
 m_fileName(),
-m_file(),
+m_file(NULL),
 m_records(0U),
 m_type(DVTFR_NONE),
 m_buffer(NULL),
@@ -56,7 +57,7 @@ CDVTOOLFileReader::~CDVTOOLFileReader()
 	delete[] m_buffer;
 }
 
-wxString CDVTOOLFileReader::getFileName() const
+std::string CDVTOOLFileReader::getFileName() const
 {
 	return m_fileName;
 }
@@ -66,34 +67,36 @@ unsigned int CDVTOOLFileReader::getRecords() const
 	return m_records;
 }
 
-bool CDVTOOLFileReader::open(const wxString& fileName)
+bool CDVTOOLFileReader::open(const std::string& fileName)
 {
 	m_fileName = fileName;
 
-	bool res = m_file.Open(fileName, wxT("rb"));
-	if (!res)
+	m_file = ::fopen(fileName.c_str(), "rb");
+	if (m_file == NULL)
 		return false;
 
 	unsigned char buffer[DVTOOL_SIGNATURE_LENGTH];
-	size_t n = m_file.Read(buffer, DVTOOL_SIGNATURE_LENGTH);
+	size_t n = ::fread(buffer, 1, DVTOOL_SIGNATURE_LENGTH, m_file);
 	if (n != DVTOOL_SIGNATURE_LENGTH) {
-		m_file.Close();
+		::fclose(m_file);
+		m_file = NULL;
 		return false;
 	}
 
 	if (::memcmp(buffer, DVTOOL_SIGNATURE, DVTOOL_SIGNATURE_LENGTH) != 0) {
-		m_file.Close();
+		::fclose(m_file);
+		m_file = NULL;
 		return false;
 	}
 
-	wxUint32 uint32;
-	n = m_file.Read(&uint32, sizeof(wxUint32));
-	if (n != sizeof(wxUint32)) {
-		m_file.Close();
+	n = ::fread(buffer, 1, sizeof(uint32_t), m_file);
+	if (n != sizeof(uint32_t)) {
+		::fclose(m_file);
+		m_file = NULL;
 		return false;
 	}
 
-	m_records = wxUINT32_SWAP_ON_LE(uint32);
+	m_records = (buffer[0U] << 24) + (buffer[1U] << 16) + (buffer[2U] << 8) + (buffer[3U] << 0);
 	m_end     = false;
 
 	return true;
@@ -101,15 +104,14 @@ bool CDVTOOLFileReader::open(const wxString& fileName)
 
 DVTFR_TYPE CDVTOOLFileReader::read()
 {
-	wxUint16 uint16;
-	size_t n = m_file.Read(&uint16, sizeof(wxUint16));
-	if (n != sizeof(wxUint16))
+	unsigned char bytes[FIXED_DATA_LENGTH];
+	size_t n = ::fread(bytes, 1, sizeof(uint16_t), m_file);
+	if (n != sizeof(uint16_t))
 		return DVTFR_NONE;
 
-	m_length = wxUINT16_SWAP_ON_BE(uint16) - 15U;
+	m_length = (bytes[0U] << 0) + (bytes[1U] << 8) - 15U;
 
-	unsigned char bytes[FIXED_DATA_LENGTH];
-	n = m_file.Read(bytes, DSVT_SIGNATURE_LENGTH);
+	n = ::fread(bytes, 1, DSVT_SIGNATURE_LENGTH, m_file);
 	if (n != DSVT_SIGNATURE_LENGTH)
 		return DVTFR_NONE;
 
@@ -117,17 +119,17 @@ DVTFR_TYPE CDVTOOLFileReader::read()
 		return DVTFR_NONE;
 
 	char flag;
-	n = m_file.Read(&flag, 1U);
+	n = ::fread(&flag, 1, 1, m_file);
 	if (n != 1U)
 		return DVTFR_NONE;
 
 	m_type = (flag == HEADER_FLAG) ? DVTFR_HEADER : DVTFR_DATA;
 
-	n = m_file.Read(bytes, FIXED_DATA_LENGTH);
+	n = ::fread(bytes, 1, FIXED_DATA_LENGTH, m_file);
 	if (n != FIXED_DATA_LENGTH)
 		return DVTFR_NONE;
 
-	n = m_file.Read(&flag, 1U);
+	n = ::fread(&flag, 1, 1, m_file);
 	if (n != 1U)
 		return DVTFR_NONE;
 
@@ -136,7 +138,7 @@ DVTFR_TYPE CDVTOOLFileReader::read()
 			m_end = true;
 	}
 
-	n = m_file.Read(m_buffer, m_length);
+	n = ::fread(m_buffer, 1, m_length, m_file);
 	if (n != m_length)
 		return DVTFR_NONE;
 
@@ -155,7 +157,7 @@ CHeaderData* CDVTOOLFileReader::readHeader()
 	CHeaderData* header = new CHeaderData(m_buffer, RADIO_HEADER_LENGTH_BYTES, true);
 
 	if (!header->isValid()) {
-		CUtils::dump(wxT("Header checksum failure"), m_buffer, RADIO_HEADER_LENGTH_BYTES);
+		CUtils::dump("Header checksum failure", m_buffer, RADIO_HEADER_LENGTH_BYTES);
 		delete header;
 		return NULL;
 	}
@@ -165,8 +167,8 @@ CHeaderData* CDVTOOLFileReader::readHeader()
 
 unsigned int CDVTOOLFileReader::readData(unsigned char* buffer, unsigned int length, bool& end)
 {
-	wxASSERT(buffer != NULL);
-	wxASSERT(length > 0U);
+	assert(buffer != NULL);
+	assert(length > 0U);
 
 	if (m_type != DVTFR_DATA)
 		return 0U;
@@ -183,5 +185,6 @@ unsigned int CDVTOOLFileReader::readData(unsigned char* buffer, unsigned int len
 
 void CDVTOOLFileReader::close()
 {
-	m_file.Close();
+	::fclose(m_file);
+	m_file = NULL;
 }

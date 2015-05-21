@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2011,2013,2014 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2011,2013,2014,2015 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -17,6 +17,9 @@
  */
 
 #include "OutputQueue.h"
+#include "Log.h"
+
+#include <cassert>
 
 COutputQueue::COutputQueue(unsigned int space, unsigned int threshold) :
 m_data(space),
@@ -24,8 +27,8 @@ m_threshold(threshold),
 m_header(NULL),
 m_count(0U)
 {
-	wxASSERT(space > 0U);
-	wxASSERT(threshold > 0U);
+	assert(space > 0U);
+	assert(threshold > 0U);
 }
 
 COutputQueue::~COutputQueue()
@@ -35,7 +38,7 @@ COutputQueue::~COutputQueue()
 
 void COutputQueue::setHeader(CHeaderData* header)
 {
-	wxASSERT(header != NULL);
+	assert(header != NULL);
 
 	delete m_header;
 
@@ -53,7 +56,7 @@ CHeaderData* COutputQueue::getHeader()
 
 unsigned int COutputQueue::getData(unsigned char *data, unsigned int length, bool& end)
 {
-	wxASSERT(data != NULL);
+	assert(data != NULL);
 
 	if (m_data.isEmpty()) {
 		end = false;
@@ -66,7 +69,7 @@ unsigned int COutputQueue::getData(unsigned char *data, unsigned int length, boo
 	end = hdr[0U] == 1U;
 
 	if (length < hdr[1U]) {
-		wxLogWarning(wxT("Output buffer is too short, %u < %u"), length, hdr[1U]);
+		LogWarning("Output buffer is too short, %u < %u", length, hdr[1U]);
 
 		unsigned int len = m_data.getData(data, length);
 
@@ -84,11 +87,11 @@ unsigned int COutputQueue::getData(unsigned char *data, unsigned int length, boo
 
 unsigned int COutputQueue::addData(const unsigned char *data, unsigned int length, bool end)
 {
-	wxASSERT(data != NULL);
+	assert(data != NULL);
 
 	bool ret = m_data.hasSpace(length + 2U);
 	if (!ret) {
-		// XXX wxLogWarning(wxT("Not enough space in the output queue"));
+		// XXX LogWarning("Not enough space in the output queue");
 		return 0U;
 	}
 
@@ -132,7 +135,7 @@ void COutputQueue::reset()
 
 void COutputQueue::setThreshold(unsigned int threshold)
 {
-	wxASSERT(threshold > 0U);
+	assert(threshold > 0U);
 
 	m_threshold = threshold;
 }

@@ -1,5 +1,5 @@
 /*
- *	Copyright (C) 2009,2011 by Jonathan Naylor, G4KLX
+ *	Copyright (C) 2009,2011,2015 by Jonathan Naylor, G4KLX
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -14,7 +14,7 @@
 #ifndef	CCITTChecksum_H
 #define	CCITTChecksum_H
 
-#include <wx/wx.h>
+#include "Types.h"
 
 class CCCITTChecksum {
 public:
@@ -31,8 +31,8 @@ public:
 
 private:
 	union {
-		wxUint16 m_crc16;
-		wxUint8  m_crc8[2U];
+		uint16_t m_crc16;
+		uint8_t  m_crc8[2U];
 	};
 };
 

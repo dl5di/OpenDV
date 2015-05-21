@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2009,2013 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2009,2013,2015 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -19,24 +19,23 @@
 #ifndef	HeaderData_H
 #define	HeaderData_H
 
-#include <wx/wx.h>
+#include <string>
 
 class CHeaderData {
 public:
 	CHeaderData();
 	CHeaderData(const CHeaderData& header);
 	CHeaderData(const unsigned char* data, unsigned int length, bool check);
-	CHeaderData(const wxString& myCall1,  const wxString& myCall2, const wxString& yourCall,
-				const wxString& rptCall1, const wxString& rptCall2, unsigned char flag1 = 0x00,
+	CHeaderData(const std::string& myCall1,  const std::string& myCall2, const std::string& yourCall,
+				const std::string& rptCall1, const std::string& rptCall2, unsigned char flag1 = 0x00,
 				unsigned char flag2 = 0x00, unsigned char flag3 = 0x00);
 	~CHeaderData();
 
-	wxDateTime getTime() const;
-	wxString   getMyCall1() const;
-	wxString   getMyCall2() const;
-	wxString   getYourCall() const;
-	wxString   getRptCall1() const;
-	wxString   getRptCall2() const;
+	std::string getMyCall1() const;
+	std::string getMyCall2() const;
+	std::string getYourCall() const;
+	std::string getRptCall1() const;
+	std::string getRptCall2() const;
 
 	unsigned char getFlag1() const;
 	unsigned char getFlag2() const;
@@ -56,11 +55,11 @@ public:
 	void setFlag2(unsigned char flag);
 	void setFlag3(unsigned char flag);
 
-	void setMyCall1(const wxString& callsign);
-	void setMyCall2(const wxString& callsign);
-	void setYourCall(const wxString& callsign);
-	void setRptCall1(const wxString& callsign);
-	void setRptCall2(const wxString& callsign);
+	void setMyCall1(const std::string& callsign);
+	void setMyCall2(const std::string& callsign);
+	void setYourCall(const std::string& callsign);
+	void setRptCall1(const std::string& callsign);
+	void setRptCall2(const std::string& callsign);
 
 	void setRepeaterMode(bool set);
 	void setDataPacket(bool set);
@@ -76,12 +75,11 @@ public:
 	CHeaderData& operator=(const CHeaderData& header);
 
 private:
-	wxDateTime    m_time;
-	wxString      m_myCall1;
-	wxString      m_myCall2;
-	wxString      m_yourCall;
-	wxString      m_rptCall1;
-	wxString      m_rptCall2;
+	std::string   m_myCall1;
+	std::string   m_myCall2;
+	std::string   m_yourCall;
+	std::string   m_rptCall1;
+	std::string   m_rptCall2;
 	unsigned char m_flag1;
 	unsigned char m_flag2;
 	unsigned char m_flag3;

@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2011-2014 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2011-2015 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -23,6 +23,8 @@
 #include "DStarDefines.h"
 #include "HeaderData.h"
 #include "Version.h"
+#include "Thread.h"
+#include "Log.h"
 
 const unsigned char DTMF_MASK[] = {0x82U, 0x08U, 0x20U, 0x82U, 0x00U, 0x00U, 0x82U, 0x00U, 0x00U};
 const unsigned char DTMF_SIG[]  = {0x82U, 0x08U, 0x20U, 0x82U, 0x00U, 0x00U, 0x00U, 0x00U, 0x00U};
@@ -35,7 +37,7 @@ const unsigned int SILENCE_THRESHOLD = 2U;
 
 const unsigned int CYCLE_TIME = 9U;
 
-CDStarRepeaterTRXThread::CDStarRepeaterTRXThread(const wxString& type) :
+CDStarRepeaterTRXThread::CDStarRepeaterTRXThread(const std::string& type) :
 m_type(type),
 m_modem(NULL),
 m_protocolHandler(NULL),
@@ -140,7 +142,7 @@ m_status2Text(),
 m_status3Text(),
 m_status4Text(),
 m_status5Text(),
-m_regEx(wxT("^[A-Z0-9]{1}[A-Z0-9]{0,1}[0-9]{1,2}[A-Z]{1,4} {0,4}[ A-Z]{1}$")),
+m_regEx("^[A-Z0-9]{1}[A-Z0-9]{0,1}[0-9]{1,2}[A-Z]{1,4} {0,4}[ A-Z]{1}$"),
 m_headerTime(),
 m_packetTime(),
 m_packetCount(0U),
@@ -175,8 +177,8 @@ CDStarRepeaterTRXThread::~CDStarRepeaterTRXThread()
 void CDStarRepeaterTRXThread::run()
 {
 	// Wait here until we have the essentials to run
-	while (!m_killed && (m_modem == NULL || m_controller == NULL || m_rptCallsign.IsEmpty() || m_rptCallsign.IsSameAs(wxT("        "))))
-		::wxMilliSleep(500UL);		// 1/2 sec
+	while (!m_killed && (m_modem == NULL || m_controller == NULL || m_rptCallsign.empty() || m_rptCallsign.IsSameAs == "        "))
+		CThread::milliSleep(500U);		// 1/2 sec
 
 	if (m_killed)
 		return;
@@ -193,22 +195,22 @@ void CDStarRepeaterTRXThread::run()
 	if (m_protocolHandler != NULL)
 		m_pollTimer.start();
 
-	wxString hardware = m_type;
-	int n = hardware.Find(wxT(' '));
-	if (n != wxNOT_FOUND)
+	std::string hardware = m_type;
+	int n = hardware.find_first_of(' ');
+	if (n != std::string::npos)
 		hardware = m_type.Left(n);
 
-	wxString pollText;
+	std::string pollText;
 #if defined(__WINDOWS__)
-	pollText.Printf(wxT("win_%s-%s"), hardware.c_str(), VERSION.c_str());
+	pollText.Printf("win_%s-%s", hardware.c_str(), VERSION.c_str());
 #else
-	pollText.Printf(wxT("linux_%s-%s"), hardware.c_str(), VERSION.c_str());
+	pollText.Printf("linux_%s-%s", hardware.c_str(), VERSION.c_str());
 #endif
-	pollText.Replace(wxT(" "), wxT("-"));
+	std::replace(pollText.begin(), pollText.end(), ' ', '-');
 	pollText.MakeLower();
-	wxLogMessage(wxT("Poll text set to \"%s\""), pollText.c_str());
+	LogMessage("Poll text set to \"%s\"", pollText.c_str());
 
-	wxLogMessage(wxT("Starting the D-Star repeater thread"));
+	LogMessage("Starting the D-Star repeater thread");
 
 	wxStopWatch stopWatch;
 
@@ -354,14 +356,13 @@ void CDStarRepeaterTRXThread::run()
 		}
 	}
 	catch (std::exception& e) {
-		wxString message(e.what(), wxConvLocal);
-		wxLogError(wxT("Exception raised - \"%s\""), message.c_str());
+		LogError(wxT("Exception raised - \"%s\"", e.what());
 	}
 	catch (...) {
-		wxLogError(wxT("Unknown exception raised"));
+		LogError("Unknown exception raised");
 	}
 
-	wxLogMessage(wxT("Stopping the D-Star repeater thread"));
+	LogMessage("Stopping the D-Star repeater thread");
 
 	m_modem->stop();
 
@@ -392,19 +393,19 @@ void CDStarRepeaterTRXThread::kill()
 	m_killed = true;
 }
 
-void CDStarRepeaterTRXThread::setCallsign(const wxString& callsign, const wxString& gateway, DSTAR_MODE mode, ACK_TYPE ack, bool restriction, bool rpt1Validation, bool dtmfBlanking, bool errorReply)
+void CDStarRepeaterTRXThread::setCallsign(const std::string& callsign, const std::string& gateway, DSTAR_MODE mode, ACK_TYPE ack, bool restriction, bool rpt1Validation, bool dtmfBlanking, bool errorReply)
 {
 	// Pad the callsign up to eight characters
 	m_rptCallsign = callsign;
-	m_rptCallsign.resize(LONG_CALLSIGN_LENGTH, wxT(' '));
+	m_rptCallsign.resize(LONG_CALLSIGN_LENGTH, ' ');
 
 	if (gateway.IsEmpty()) {
 		m_gwyCallsign = callsign;
-		m_gwyCallsign.resize(LONG_CALLSIGN_LENGTH - 1U, wxT(' '));
+		m_gwyCallsign.resize(LONG_CALLSIGN_LENGTH - 1U, ' ');
 		m_gwyCallsign.Append(wxT("G"));
 	} else {
 		m_gwyCallsign = gateway;
-		m_gwyCallsign.resize(LONG_CALLSIGN_LENGTH, wxT(' '));
+		m_gwyCallsign.resize(LONG_CALLSIGN_LENGTH, ' ');
 	}
 
 	m_mode           = mode;
@@ -417,14 +418,14 @@ void CDStarRepeaterTRXThread::setCallsign(const wxString& callsign, const wxStri
 
 void CDStarRepeaterTRXThread::setProtocolHandler(CRepeaterProtocolHandler* handler, bool local)
 {
-	wxASSERT(handler != NULL);
+	assert(handler != NULL);
 
 	m_protocolHandler = handler;
 }
 
 void CDStarRepeaterTRXThread::setModem(CModem* modem)
 {
-	wxASSERT(modem != NULL);
+	assert(modem != NULL);
 
 	m_modem = modem;
 }
@@ -435,7 +436,7 @@ void CDStarRepeaterTRXThread::setTimes(unsigned int timeout, unsigned int ackTim
 	m_ackTimer.setTimeout(0U, ackTime);
 }
 
-void CDStarRepeaterTRXThread::setBeacon(unsigned int time, const wxString& text, bool voice, TEXT_LANG language)
+void CDStarRepeaterTRXThread::setBeacon(unsigned int time, const std::string& text, bool voice, TEXT_LANG language)
 {
 	m_beaconTimer.setTimeout(time);
 
@@ -443,7 +444,7 @@ void CDStarRepeaterTRXThread::setBeacon(unsigned int time, const wxString& text,
 		m_beacon = new CBeaconUnit(this, m_rptCallsign, text, voice, language);
 }
 
-void CDStarRepeaterTRXThread::setAnnouncement(bool enabled, unsigned int time, const wxString& recordRPT1, const wxString& recordRPT2, const wxString& deleteRPT1, const wxString& deleteRPT2)
+void CDStarRepeaterTRXThread::setAnnouncement(bool enabled, unsigned int time, const std::string& recordRPT1, const std::string& recordRPT2, const std::string& deleteRPT1, const std::string& deleteRPT2)
 {
 	if (enabled && time > 0U) {
 		m_announcement = new CAnnouncementUnit(this, m_rptCallsign);
@@ -455,27 +456,22 @@ void CDStarRepeaterTRXThread::setAnnouncement(bool enabled, unsigned int time, c
 		m_deleteRPT1 = deleteRPT1;
 		m_deleteRPT2 = deleteRPT2;
 
-		m_recordRPT1.Append(wxT(' '), LONG_CALLSIGN_LENGTH);
-		m_recordRPT2.Append(wxT(' '), LONG_CALLSIGN_LENGTH);
-		m_deleteRPT1.Append(wxT(' '), LONG_CALLSIGN_LENGTH);
-		m_deleteRPT2.Append(wxT(' '), LONG_CALLSIGN_LENGTH);
-
-		m_recordRPT1.Truncate(LONG_CALLSIGN_LENGTH);
-		m_recordRPT2.Truncate(LONG_CALLSIGN_LENGTH);
-		m_deleteRPT1.Truncate(LONG_CALLSIGN_LENGTH);
-		m_deleteRPT2.Truncate(LONG_CALLSIGN_LENGTH);
+		m_recordRPT1.resize(LONG_CALLSIGN_LENGTH, ' ');
+		m_recordRPT2.resize(LONG_CALLSIGN_LENGTH, ' ');
+		m_deleteRPT1.resize(LONG_CALLSIGN_LENGTH, ' ');
+		m_deleteRPT2.resize(LONG_CALLSIGN_LENGTH, ' ');
 	}
 }
 
 void CDStarRepeaterTRXThread::setController(CExternalController* controller, unsigned int activeHangTime)
 {
-	wxASSERT(controller != NULL);
+	assert(controller != NULL);
 
 	m_controller = controller;
 	m_activeHangTimer.setTimeout(activeHangTime);
 }
 
-void CDStarRepeaterTRXThread::setControl(bool enabled, const wxString& rpt1Callsign, const wxString& rpt2Callsign, const wxString& shutdown, const wxString& startup, const wxString& status1, const wxString& status2, const wxString& status3, const wxString& status4, const wxString& status5, const wxString& command1, const wxString& command1Line, const wxString& command2, const wxString& command2Line, const wxString& command3, const wxString& command3Line, const wxString& command4, const wxString& command4Line, const wxString& command5, const wxString& command5Line, const wxString& command6, const wxString& command6Line, const wxString& output1, const wxString& output2, const wxString& output3, const wxString& output4)
+void CDStarRepeaterTRXThread::setControl(bool enabled, const std::string& rpt1Callsign, const std::string& rpt2Callsign, const std::string& shutdown, const std::string& startup, const std::string& status1, const std::string& status2, const std::string& status3, const std::string& status4, const std::string& status5, const std::string& command1, const std::string& command1Line, const std::string& command2, const std::string& command2Line, const std::string& command3, const std::string& command3Line, const std::string& command4, const std::string& command4Line, const std::string& command5, const std::string& command5Line, const std::string& command6, const std::string& command6Line, const std::string& output1, const std::string& output2, const std::string& output3, const std::string& output4)
 {
 	m_controlEnabled      = enabled;
 	m_controlRPT1         = rpt1Callsign;
@@ -504,45 +500,25 @@ void CDStarRepeaterTRXThread::setControl(bool enabled, const wxString& rpt1Calls
 	m_controlOutput3      = output3;
 	m_controlOutput4      = output4;
 
-	m_controlRPT1.Append(wxT(' '), LONG_CALLSIGN_LENGTH);
-	m_controlRPT2.Append(wxT(' '), LONG_CALLSIGN_LENGTH);
-	m_controlShutdown.Append(wxT(' '), LONG_CALLSIGN_LENGTH);
-	m_controlStartup.Append(wxT(' '), LONG_CALLSIGN_LENGTH);
-	m_controlStatus1.Append(wxT(' '), LONG_CALLSIGN_LENGTH);
-	m_controlStatus2.Append(wxT(' '), LONG_CALLSIGN_LENGTH);
-	m_controlStatus3.Append(wxT(' '), LONG_CALLSIGN_LENGTH);
-	m_controlStatus4.Append(wxT(' '), LONG_CALLSIGN_LENGTH);
-	m_controlStatus5.Append(wxT(' '), LONG_CALLSIGN_LENGTH);
-	m_controlCommand1.Append(wxT(' '), LONG_CALLSIGN_LENGTH);
-	m_controlCommand2.Append(wxT(' '), LONG_CALLSIGN_LENGTH);
-	m_controlCommand3.Append(wxT(' '), LONG_CALLSIGN_LENGTH);
-	m_controlCommand4.Append(wxT(' '), LONG_CALLSIGN_LENGTH);
-	m_controlCommand5.Append(wxT(' '), LONG_CALLSIGN_LENGTH);
-	m_controlCommand6.Append(wxT(' '), LONG_CALLSIGN_LENGTH);
-	m_controlOutput1.Append(wxT(' '), LONG_CALLSIGN_LENGTH);
-	m_controlOutput2.Append(wxT(' '), LONG_CALLSIGN_LENGTH);
-	m_controlOutput3.Append(wxT(' '), LONG_CALLSIGN_LENGTH);
-	m_controlOutput4.Append(wxT(' '), LONG_CALLSIGN_LENGTH);
-
-	m_controlRPT1.Truncate(LONG_CALLSIGN_LENGTH);
-	m_controlRPT2.Truncate(LONG_CALLSIGN_LENGTH);
-	m_controlShutdown.Truncate(LONG_CALLSIGN_LENGTH);
-	m_controlStartup.Truncate(LONG_CALLSIGN_LENGTH);
-	m_controlStatus1.Truncate(LONG_CALLSIGN_LENGTH);
-	m_controlStatus2.Truncate(LONG_CALLSIGN_LENGTH);
-	m_controlStatus3.Truncate(LONG_CALLSIGN_LENGTH);
-	m_controlStatus4.Truncate(LONG_CALLSIGN_LENGTH);
-	m_controlStatus5.Truncate(LONG_CALLSIGN_LENGTH);
-	m_controlCommand1.Truncate(LONG_CALLSIGN_LENGTH);
-	m_controlCommand2.Truncate(LONG_CALLSIGN_LENGTH);
-	m_controlCommand3.Truncate(LONG_CALLSIGN_LENGTH);
-	m_controlCommand4.Truncate(LONG_CALLSIGN_LENGTH);
-	m_controlCommand5.Truncate(LONG_CALLSIGN_LENGTH);
-	m_controlCommand6.Truncate(LONG_CALLSIGN_LENGTH);
-	m_controlOutput1.Truncate(LONG_CALLSIGN_LENGTH);
-	m_controlOutput2.Truncate(LONG_CALLSIGN_LENGTH);
-	m_controlOutput3.Truncate(LONG_CALLSIGN_LENGTH);
-	m_controlOutput4.Truncate(LONG_CALLSIGN_LENGTH);
+	m_controlRPT1.resize(LONG_CALLSIGN_LENGTH, ' ');
+	m_controlRPT2.resize(LONG_CALLSIGN_LENGTH, ' ');
+	m_controlShutdown.resize(LONG_CALLSIGN_LENGTH, ' ');
+	m_controlStartup.resize(LONG_CALLSIGN_LENGTH, ' ');
+	m_controlStatus1.resize(LONG_CALLSIGN_LENGTH, ' ');
+	m_controlStatus2.resize(LONG_CALLSIGN_LENGTH, ' ');
+	m_controlStatus3.resize(LONG_CALLSIGN_LENGTH, ' ');
+	m_controlStatus4.resize(LONG_CALLSIGN_LENGTH, ' ');
+	m_controlStatus5.resize(LONG_CALLSIGN_LENGTH, ' ');
+	m_controlCommand1.resize(LONG_CALLSIGN_LENGTH, ' ');
+	m_controlCommand2.resize(LONG_CALLSIGN_LENGTH, ' ');
+	m_controlCommand3.resize(LONG_CALLSIGN_LENGTH, ' ');
+	m_controlCommand4.resize(LONG_CALLSIGN_LENGTH, ' ');
+	m_controlCommand5.resize(LONG_CALLSIGN_LENGTH, ' ');
+	m_controlCommand6.resize(LONG_CALLSIGN_LENGTH, ' ');
+	m_controlOutput1.resize(LONG_CALLSIGN_LENGTH, ' ');
+	m_controlOutput2.resize(LONG_CALLSIGN_LENGTH, ' ');
+	m_controlOutput3.resize(LONG_CALLSIGN_LENGTH, ' ');
+	m_controlOutput4.resize(LONG_CALLSIGN_LENGTH, ' ');
 }
 
 void CDStarRepeaterTRXThread::setOutputs(bool out1, bool out2, bool out3, bool out4)
@@ -561,7 +537,7 @@ void CDStarRepeaterTRXThread::setOutputs(bool out1, bool out2, bool out3, bool o
 	m_controller->setOutput4(m_output4);
 }
 
-void CDStarRepeaterTRXThread::setLogging(bool logging, const wxString& dir)
+void CDStarRepeaterTRXThread::setLogging(bool logging, const std::string& dir)
 {
 	if (logging && m_logging == NULL) {
 		m_logging = new CDVTOOLFileWriter;
@@ -578,14 +554,14 @@ void CDStarRepeaterTRXThread::setLogging(bool logging, const wxString& dir)
 
 void CDStarRepeaterTRXThread::setBlackList(CCallsignList* list)
 {
-	wxASSERT(list != NULL);
+	assert(list != NULL);
 
 	m_blackList = list;
 }
 
 void CDStarRepeaterTRXThread::setGreyList(CCallsignList* list)
 {
-	wxASSERT(list != NULL);
+	assert(list != NULL);
 
 	m_greyList = list;
 }
@@ -639,9 +615,9 @@ void CDStarRepeaterTRXThread::receiveModem()
 
 void CDStarRepeaterTRXThread::receiveHeader(CHeaderData* header)
 {
-	wxASSERT(header != NULL);
+	assert(header != NULL);
 
-	wxLogMessage(wxT("Radio header decoded - My: %s/%s  Your: %s  Rpt1: %s  Rpt2: %s  Flags: %02X %02X %02X"), header->getMyCall1().c_str(), header->getMyCall2().c_str(), header->getYourCall().c_str(), header->getRptCall1().c_str(), header->getRptCall2().c_str(), header->getFlag1(), header->getFlag2(), header->getFlag3());
+	LogMessage("Radio header decoded - My: %s/%s  Your: %s  Rpt1: %s  Rpt2: %s  Flags: %02X %02X %02X", header->getMyCall1().c_str(), header->getMyCall2().c_str(), header->getYourCall().c_str(), header->getRptCall1().c_str(), header->getRptCall2().c_str(), header->getFlag1(), header->getFlag2(), header->getFlag3());
 
 	bool res = processRadioHeader(header);
 	if (res) {
@@ -650,7 +626,7 @@ void CDStarRepeaterTRXThread::receiveHeader(CHeaderData* header)
 		setRadioState(DSRXS_PROCESS_DATA);
 	} else {
 		// This is a DD packet or some other problem
-		// wxLogMessage(wxT("Invalid header"));
+		// LogMessage("Invalid header");
 	}
 }
 
@@ -663,11 +639,11 @@ void CDStarRepeaterTRXThread::receiveSlowData(unsigned char* data, unsigned int)
 
 	// The data sync has been seen, a fuzzy match is used, two bit errors or less
 	if (errs <= MAX_DATA_SYNC_BIT_ERRS) {
-		// wxLogMessage(wxT("Found data sync at frame %u, errs: %u"), m_radioSeqNo, errs);
+		// LogMessage("Found data sync at frame %u, errs: %u", m_radioSeqNo, errs);
 		m_radioSeqNo     = 0U;
 		m_slowDataDecoder.sync();
 	} else if (m_radioSeqNo == 20U) {
-		// wxLogMessage(wxT("Assuming data sync"));
+		// LogMessage("Assuming data sync");
 		m_radioSeqNo = 0U;
 		m_slowDataDecoder.sync();
 	} else {
@@ -678,7 +654,7 @@ void CDStarRepeaterTRXThread::receiveSlowData(unsigned char* data, unsigned int)
 		if (header == NULL)
 			return;
 
-		wxLogMessage(wxT("Radio header from slow data - My: %s/%s  Your: %s  Rpt1: %s  Rpt2: %s  Flags: %02X %02X %02X  BER: 0%%"), header->getMyCall1().c_str(), header->getMyCall2().c_str(), header->getYourCall().c_str(), header->getRptCall1().c_str(), header->getRptCall2().c_str(), header->getFlag1(), header->getFlag2(), header->getFlag3());
+		LogMessage("Radio header from slow data - My: %s/%s  Your: %s  Rpt1: %s  Rpt2: %s  Flags: %02X %02X %02X  BER: 0%%", header->getMyCall1().c_str(), header->getMyCall2().c_str(), header->getYourCall().c_str(), header->getRptCall1().c_str(), header->getRptCall2().c_str(), header->getFlag1(), header->getFlag2(), header->getFlag3());
 
 		if (header != NULL) {
 			bool res = processRadioHeader(header);
@@ -687,7 +663,7 @@ void CDStarRepeaterTRXThread::receiveSlowData(unsigned char* data, unsigned int)
 				setRadioState(DSRXS_PROCESS_DATA);
 			} else {
 				// This is a DD packet or some other problem
-				// wxLogMessage(wxT("Invalid header"));
+				// LogMessage("Invalid header");
 			}
 		}
 	}
@@ -702,11 +678,11 @@ void CDStarRepeaterTRXThread::receiveRadioData(unsigned char* data, unsigned int
 
 	// The data sync has been seen, a fuzzy match is used, two bit errors or less
 	if (errs <= MAX_DATA_SYNC_BIT_ERRS) {
-		// wxLogMessage(wxT("Found data sync at frame %u, errs: %u"), m_radioSeqNo, errs);
+		// LogMessage("Found data sync at frame %u, errs: %u", m_radioSeqNo, errs);
 		m_radioSeqNo = 0U;
 		processRadioFrame(data, FRAME_SYNC);
 	} else if (m_radioSeqNo == 20U) {
-		// wxLogMessage(wxT("Regenerating data sync"));
+		// LogMessage("Regenerating data sync");
 		m_radioSeqNo = 0U;
 		processRadioFrame(data, FRAME_SYNC);
 	} else {
@@ -754,30 +730,30 @@ void CDStarRepeaterTRXThread::receiveNetwork()
 		} else if (type == NETWORK_TEXT) {			// Slow data text for the Ack
 			m_protocolHandler->readText(m_ackText, m_linkStatus, m_reflector);
 			m_linkEncoder.setTextData(m_ackText);
-			wxLogMessage(wxT("Slow data set to \"%s\""), m_ackText.c_str());
+			LogMessage("Slow data set to \"%s\"", m_ackText.c_str());
 		} else if (type == NETWORK_TEMPTEXT) {			// Temporary slow data text for the Ack
 			m_protocolHandler->readTempText(m_tempAckText);
-			wxLogMessage(wxT("Temporary slow data set to \"%s\""), m_tempAckText.c_str());
+			LogMessage("Temporary slow data set to \"%s\"", m_tempAckText.c_str());
 		} else if (type == NETWORK_STATUS1) {		// Status 1 data text
 			m_status1Text = m_protocolHandler->readStatus1();
 			m_status1Encoder.setTextData(m_status1Text);
-			wxLogMessage(wxT("Status 1 data set to \"%s\""), m_status1Text.c_str());
+			LogMessage("Status 1 data set to \"%s\"", m_status1Text.c_str());
 		} else if (type == NETWORK_STATUS2) {		// Status 2 data text
 			m_status2Text = m_protocolHandler->readStatus2();
 			m_status2Encoder.setTextData(m_status2Text);
-			wxLogMessage(wxT("Status 2 data set to \"%s\""), m_status2Text.c_str());
+			LogMessage("Status 2 data set to \"%s\"", m_status2Text.c_str());
 		} else if (type == NETWORK_STATUS3) {		// Status 3 data text
 			m_status3Text = m_protocolHandler->readStatus3();
 			m_status3Encoder.setTextData(m_status3Text);
-			wxLogMessage(wxT("Status 3 data set to \"%s\""), m_status3Text.c_str());
+			LogMessage("Status 3 data set to \"%s\"", m_status3Text.c_str());
 		} else if (type == NETWORK_STATUS4) {		// Status 4 data text
 			m_status4Text = m_protocolHandler->readStatus4();
 			m_status4Encoder.setTextData(m_status4Text);
-			wxLogMessage(wxT("Status 4 data set to \"%s\""), m_status4Text.c_str());
+			LogMessage("Status 4 data set to \"%s\"", m_status4Text.c_str());
 		} else if (type == NETWORK_STATUS5) {		// Status 5 data text
 			m_status5Text = m_protocolHandler->readStatus5();
 			m_status5Encoder.setTextData(m_status5Text);
-			wxLogMessage(wxT("Status 5 data set to \"%s\""), m_status5Text.c_str());
+			LogMessage("Status 5 data set to \"%s\"", m_status5Text.c_str());
 		}
 	}
 
@@ -785,7 +761,7 @@ void CDStarRepeaterTRXThread::receiveNetwork()
 	if (m_rptState == DSRS_NETWORK && m_packetTime.Time() > 200L) {
 		unsigned int packetsNeeded = m_headerTime.Time() / DSTAR_FRAME_TIME_MS;
 
-		// wxLogMessage(wxT("Time: %u ms, need %u packets and received %u packets"), ms - m_headerMS, packetsNeeded, m_packetCount);
+		// LogMessage("Time: %u ms, need %u packets and received %u packets", ms - m_headerMS, packetsNeeded, m_packetCount);
 
 		if (packetsNeeded > m_packetCount) {
 			unsigned int count = packetsNeeded - m_packetCount;
@@ -793,7 +769,7 @@ void CDStarRepeaterTRXThread::receiveNetwork()
 			if (count > 5U) {
 				count -= 2U;
 
-				// wxLogMessage(wxT("Inserting %u silence frames into the network data stream"), count);
+				// LogMessage("Inserting %u silence frames into the network data stream", count);
 
 				// Create silence frames
 				for (unsigned int i = 0U; i < count; i++) {
@@ -811,7 +787,7 @@ void CDStarRepeaterTRXThread::receiveNetwork()
 
 void CDStarRepeaterTRXThread::transmitLocalHeader(CHeaderData* header)
 {
-	wxLogMessage(wxT("Transmitting to - My: %s/%s  Your: %s  Rpt1: %s  Rpt2: %s  Flags: %02X %02X %02X"), header->getMyCall1().c_str(), header->getMyCall2().c_str(), header->getYourCall().c_str(), header->getRptCall1().c_str(), header->getRptCall2().c_str(), header->getFlag1(), header->getFlag2(), header->getFlag3());
+	LogMessage("Transmitting to - My: %s/%s  Your: %s  Rpt1: %s  Rpt2: %s  Flags: %02X %02X %02X", header->getMyCall1().c_str(), header->getMyCall2().c_str(), header->getYourCall().c_str(), header->getRptCall1().c_str(), header->getRptCall2().c_str(), header->getFlag1(), header->getFlag2(), header->getFlag3());
 
 	m_headerEncoder.setHeaderData(*header);
 
@@ -821,7 +797,7 @@ void CDStarRepeaterTRXThread::transmitLocalHeader(CHeaderData* header)
 
 void CDStarRepeaterTRXThread::transmitBeaconHeader()
 {
-	CHeaderData* header = new CHeaderData(m_rptCallsign, wxT("RPTR"), wxT("CQCQCQ  "), m_gwyCallsign, m_rptCallsign);
+	CHeaderData* header = new CHeaderData(m_rptCallsign, "RPTR", "CQCQCQ  ", m_gwyCallsign, m_rptCallsign);
 	transmitLocalHeader(header);
 }
 
@@ -845,7 +821,7 @@ void CDStarRepeaterTRXThread::transmitAnnouncementData(const unsigned char* data
 
 void CDStarRepeaterTRXThread::transmitRadioHeader(CHeaderData* header)
 {
-	wxLogMessage(wxT("Transmitting to - My: %s/%s  Your: %s  Rpt1: %s  Rpt2: %s  Flags: %02X %02X %02X"), header->getMyCall1().c_str(), header->getMyCall2().c_str(), header->getYourCall().c_str(), header->getRptCall1().c_str(), header->getRptCall2().c_str(), header->getFlag1(), header->getFlag2(), header->getFlag3());
+	LogMessage("Transmitting to - My: %s/%s  Your: %s  Rpt1: %s  Rpt2: %s  Flags: %02X %02X %02X", header->getMyCall1().c_str(), header->getMyCall2().c_str(), header->getYourCall().c_str(), header->getRptCall1().c_str(), header->getRptCall2().c_str(), header->getFlag1(), header->getFlag2(), header->getFlag3());
 
 	m_headerEncoder.setHeaderData(*header);
 
@@ -855,7 +831,7 @@ void CDStarRepeaterTRXThread::transmitRadioHeader(CHeaderData* header)
 
 void CDStarRepeaterTRXThread::transmitNetworkHeader(CHeaderData* header)
 {
-	wxLogMessage(wxT("Transmitting to - My: %s/%s  Your: %s  Rpt1: %s  Rpt2: %s  Flags: %02X %02X %02X"), header->getMyCall1().c_str(), header->getMyCall2().c_str(), header->getYourCall().c_str(), header->getRptCall1().c_str(), header->getRptCall2().c_str(), header->getFlag1(), header->getFlag2(), header->getFlag3());
+	LogMessage("Transmitting to - My: %s/%s  Your: %s  Rpt1: %s  Rpt2: %s  Flags: %02X %02X %02X", header->getMyCall1().c_str(), header->getMyCall2().c_str(), header->getYourCall().c_str(), header->getRptCall1().c_str(), header->getRptCall2().c_str(), header->getFlag1(), header->getFlag2(), header->getFlag3());
 
 	m_headerEncoder.setHeaderData(*header);
 
@@ -882,7 +858,7 @@ void CDStarRepeaterTRXThread::transmitNetworkHeader(CHeaderData* header)
 
 void CDStarRepeaterTRXThread::transmitStatus()
 {
-	CHeaderData* header = new CHeaderData(m_rptCallsign, wxT("    "), m_rxHeader->getMyCall1(), m_gwyCallsign, m_rptCallsign, RELAY_UNAVAILABLE);
+	CHeaderData* header = new CHeaderData(m_rptCallsign, "    ", m_rxHeader->getMyCall1(), m_gwyCallsign, m_rptCallsign, RELAY_UNAVAILABLE);
 	transmitLocalHeader(header);
 
 	// Filler data
@@ -910,7 +886,7 @@ void CDStarRepeaterTRXThread::transmitStatus()
 
 void CDStarRepeaterTRXThread::transmitErrorStatus()
 {
-	CHeaderData* header = new CHeaderData(m_rptCallsign, wxT("    "), m_rxHeader->getMyCall1(), m_rptCallsign, m_rptCallsign, RELAY_UNAVAILABLE);
+	CHeaderData* header = new CHeaderData(m_rptCallsign, "    ", m_rxHeader->getMyCall1(), m_rptCallsign, m_rptCallsign, RELAY_UNAVAILABLE);
 	transmitLocalHeader(header);
 
 	// Filler data
@@ -942,27 +918,27 @@ void CDStarRepeaterTRXThread::transmitUserStatus(unsigned int n)
 	CHeaderData* header = NULL;
 	switch (n) {
 		case 0U:
-			header = new CHeaderData(m_rptCallsign, wxT("    "), wxT("STATUS 1"), m_gwyCallsign, m_rptCallsign);
+			header = new CHeaderData(m_rptCallsign, "    ", "STATUS 1", m_gwyCallsign, m_rptCallsign);
 			encoder = &m_status1Encoder;
 			break;
 		case 1U:
-			header = new CHeaderData(m_rptCallsign, wxT("    "), wxT("STATUS 2"), m_gwyCallsign, m_rptCallsign);
+			header = new CHeaderData(m_rptCallsign, "    ", "STATUS 2", m_gwyCallsign, m_rptCallsign);
 			encoder = &m_status2Encoder;
 			break;
 		case 2U:
-			header = new CHeaderData(m_rptCallsign, wxT("    "), wxT("STATUS 3"), m_gwyCallsign, m_rptCallsign);
+			header = new CHeaderData(m_rptCallsign, "    ", "STATUS 3", m_gwyCallsign, m_rptCallsign);
 			encoder = &m_status3Encoder;
 			break;
 		case 3U:
-			header = new CHeaderData(m_rptCallsign, wxT("    "), wxT("STATUS 4"), m_gwyCallsign, m_rptCallsign);
+			header = new CHeaderData(m_rptCallsign, "    ", "STATUS 4", m_gwyCallsign, m_rptCallsign);
 			encoder = &m_status4Encoder;
 			break;
 		case 4U:
-			header = new CHeaderData(m_rptCallsign, wxT("    "), wxT("STATUS 5"), m_gwyCallsign, m_rptCallsign);
+			header = new CHeaderData(m_rptCallsign, "    ", "STATUS 5", m_gwyCallsign, m_rptCallsign);
 			encoder = &m_status5Encoder;
 			break;
 		default:
-			wxLogWarning(wxT("Invalid status number - %u"), n);
+			LogWarning("Invalid status number - %u", n);
 			return;
 	}
 
@@ -1103,7 +1079,7 @@ void CDStarRepeaterTRXThread::repeaterStateMachine()
 	switch (m_rptState) {
 		case DSRS_VALID:
 			if (m_timeoutTimer.isRunning() && m_timeoutTimer.hasExpired()) {
-				wxLogMessage(wxT("User has timed out"));
+				LogMessage("User has timed out");
 				setRepeaterState(DSRS_TIMEOUT);
 			}
 			break;
@@ -1137,7 +1113,7 @@ void CDStarRepeaterTRXThread::repeaterStateMachine()
 
 		case DSRS_NETWORK:
 			if (m_watchdogTimer.hasExpired()) {
-				wxLogMessage(wxT("Network watchdog has expired"));
+				LogMessage("Network watchdog has expired");
 				// Send end of transmission data to the radio
 				m_networkQueue[m_writeNum]->addData(END_PATTERN_BYTES, DV_FRAME_LENGTH_BYTES, true);
 				endOfNetworkData();
@@ -1293,7 +1269,7 @@ bool CDStarRepeaterTRXThread::setRepeaterState(DSTAR_RPT_STATE state)
 
 bool CDStarRepeaterTRXThread::processRadioHeader(CHeaderData* header)
 {
-	wxASSERT(header != NULL);
+	assert(header != NULL);
 
 	// Check control messages
 	bool res = checkControl(*header);
@@ -1324,7 +1300,7 @@ bool CDStarRepeaterTRXThread::processRadioHeader(CHeaderData* header)
 	if (m_blackList != NULL) {
 		bool res = m_blackList->isInList(header->getMyCall1());
 		if (res) {
-			wxLogMessage(wxT("%s rejected due to being in the black list"), header->getMyCall1().c_str());
+			LogMessage("%s rejected due to being in the black list", header->getMyCall1().c_str());
 			delete header;
 			return true;
 		}
@@ -1334,7 +1310,7 @@ bool CDStarRepeaterTRXThread::processRadioHeader(CHeaderData* header)
 	if (m_greyList != NULL) {
 		bool res = m_greyList->isInList(header->getMyCall1());
 		if (res) {
-			wxLogMessage(wxT("%s blocked from the network due to being in the grey list"), header->getMyCall1().c_str());
+			LogMessage("%s blocked from the network due to being in the grey list", header->getMyCall1().c_str());
 			m_blocked = true;
 		}
 	}
@@ -1342,7 +1318,7 @@ bool CDStarRepeaterTRXThread::processRadioHeader(CHeaderData* header)
 	// Check for receiving our own gateway data, and ignore it
 	if (m_mode == MODE_GATEWAY) {
 		if (header->getFlag2() == 0x01U) {
-			wxLogMessage(wxT("Receiving a gateway header, ignoring"));
+			LogMessage("Receiving a gateway header, ignoring");
 			delete header;
 			return true;
 		}
@@ -1352,7 +1328,7 @@ bool CDStarRepeaterTRXThread::processRadioHeader(CHeaderData* header)
 
 	// We don't handle DD data packets
 	if (header->isDataPacket()) {
-		wxLogMessage(wxT("Received a DD packet, ignoring"));
+		LogMessage("Received a DD packet, ignoring");
 		delete header;
 		return false;
 	}
@@ -1382,7 +1358,7 @@ bool CDStarRepeaterTRXThread::processRadioHeader(CHeaderData* header)
 	// command
 	if (m_rptState == DSRS_NETWORK) {
 		// Only send on the network if the user isn't blocked we have one and RPT2 is not blank or the repeater callsign
-		if (!header->getRptCall2().IsSameAs(wxT("        ")) && !header->getRptCall2().IsSameAs(m_rptCallsign)) {
+		if (!header->getRptCall2() == "        ") && !header->getRptCall2() == m_rptCallsign) {
 			if (!m_blocked && m_protocolHandler != NULL) {
 				CHeaderData netHeader(*header);
 				netHeader.setRptCall1(header->getRptCall2());
@@ -1409,7 +1385,7 @@ bool CDStarRepeaterTRXThread::processRadioHeader(CHeaderData* header)
 			m_logging->open(*m_rxHeader);
 
 		// Only send on the network if the user isn't blocked and we have one and RPT2 is not blank or the repeater callsign
-		if (!m_blocked && m_protocolHandler != NULL && !m_rxHeader->getRptCall2().IsSameAs(wxT("        ")) && !m_rxHeader->getRptCall2().IsSameAs(m_rptCallsign)) {
+		if (!m_blocked && m_protocolHandler != NULL && !m_rxHeader->getRptCall2() == "        ") && !m_rxHeader->getRptCall2() == m_rptCallsign) {
 			CHeaderData netHeader(*m_rxHeader);
 			netHeader.setRptCall1(m_rxHeader->getRptCall2());
 			netHeader.setRptCall2(m_rxHeader->getRptCall1());
@@ -1432,7 +1408,7 @@ bool CDStarRepeaterTRXThread::processRadioHeader(CHeaderData* header)
 
 void CDStarRepeaterTRXThread::processNetworkHeader(CHeaderData* header)
 {
-	wxASSERT(header != NULL);
+	assert(header != NULL);
 
 	// If shutdown we ignore incoming headers
 	if (m_rptState == DSRS_SHUTDOWN) {
@@ -1440,7 +1416,7 @@ void CDStarRepeaterTRXThread::processNetworkHeader(CHeaderData* header)
 		return;
 	}
 
-	wxLogMessage(wxT("Network header received - My: %s/%s  Your: %s  Rpt1: %s  Rpt2: %s  Flags: %02X %02X %02X"), header->getMyCall1().c_str(), header->getMyCall2().c_str(), header->getYourCall().c_str(), header->getRptCall1().c_str(), header->getRptCall2().c_str(), header->getFlag1(), header->getFlag2(), header->getFlag3());
+	LogMessage("Network header received - My: %s/%s  Your: %s  Rpt1: %s  Rpt2: %s  Flags: %02X %02X %02X", header->getMyCall1().c_str(), header->getMyCall2().c_str(), header->getYourCall().c_str(), header->getRptCall1().c_str(), header->getRptCall2().c_str(), header->getFlag1(), header->getFlag2(), header->getFlag3());
 
 	// Is it for us?
 	if (!header->getRptCall2().IsSameAs(m_rptCallsign)) {
@@ -1568,8 +1544,8 @@ void CDStarRepeaterTRXThread::processRadioFrame(unsigned char* data, FRAME_TYPE 
 
 unsigned int CDStarRepeaterTRXThread::processNetworkFrame(unsigned char* data, unsigned int length, unsigned char seqNo)
 {
-	wxASSERT(data != NULL);
-	wxASSERT(length > 0U);
+	assert(data != NULL);
+	assert(length > 0U);
 
 	if (m_rptState != DSRS_NETWORK)
 		return 0U;
@@ -1654,16 +1630,16 @@ void CDStarRepeaterTRXThread::endOfRadioData()
 {
 	switch (m_rptState) {
 		case DSRS_VALID:
-			wxLogMessage(wxT("AMBE for %s  Frames: %.1fs, Silence: %.1f%%, BER: %.1f%%"), m_rxHeader->getMyCall1().c_str(), float(m_ambeFrames) / 50.0F, float(m_ambeSilence * 100U) / float(m_ambeFrames), float(m_ambeErrors * 100U) / float(m_ambeBits));
+			LogMessage("AMBE for %s  Frames: %.1fs, Silence: %.1f%%, BER: %.1f%%", m_rxHeader->getMyCall1().c_str(), float(m_ambeFrames) / 50.0F, float(m_ambeSilence * 100U) / float(m_ambeFrames), float(m_ambeErrors * 100U) / float(m_ambeBits));
 
 			if (m_tempAckText.IsEmpty()) {
 				if (m_ack == AT_BER) {
 					// Create the ack text with the linked reflector and BER
-					wxString ackText;
+					std::string ackText;
 					if (m_linkStatus == LS_LINKED_DEXTRA || m_linkStatus == LS_LINKED_DPLUS || m_linkStatus == LS_LINKED_DCS || m_linkStatus == LS_LINKED_CCS || m_linkStatus == LS_LINKED_LOOPBACK)
-						ackText.Printf(wxT("%-8s  BER: %.1f%%   "), m_reflector.c_str(), float(m_ambeErrors * 100U) / float(m_ambeBits));
+						ackText.Printf("%-8s  BER: %.1f%%   ", m_reflector.c_str(), float(m_ambeErrors * 100U) / float(m_ambeBits));
 					else
-						ackText.Printf(wxT("BER: %.1f%%            "), float(m_ambeErrors * 100U) / float(m_ambeBits));
+						ackText.Printf("BER: %.1f%%            ", float(m_ambeErrors * 100U) / float(m_ambeBits));
 					m_ackEncoder.setTextData(ackText);
 				} else {
 					m_ackEncoder.setTextData(m_ackText);
@@ -1682,7 +1658,7 @@ void CDStarRepeaterTRXThread::endOfRadioData()
 			break;
 
 		case DSRS_INVALID:
-			wxLogMessage(wxT("AMBE for %s  Frames: %.1fs, Silence: %.1f%%, BER: %.1f%%"), m_rxHeader->getMyCall1().c_str(), float(m_ambeFrames) / 50.0F, float(m_ambeSilence * 100U) / float(m_ambeFrames), float(m_ambeErrors * 100U) / float(m_ambeBits));
+			LogMessage("AMBE for %s  Frames: %.1fs, Silence: %.1f%%, BER: %.1f%%", m_rxHeader->getMyCall1().c_str(), float(m_ambeFrames) / 50.0F, float(m_ambeSilence * 100U) / float(m_ambeFrames), float(m_ambeErrors * 100U) / float(m_ambeBits));
 
 			if (m_ack != AT_NONE || m_mode == MODE_GATEWAY) {
 				setRepeaterState(DSRS_INVALID_WAIT);
@@ -1693,16 +1669,16 @@ void CDStarRepeaterTRXThread::endOfRadioData()
 			break;
 
 		case DSRS_TIMEOUT:
-			wxLogMessage(wxT("AMBE for %s  Frames: %.1fs, Silence: %.1f%%, BER: %.1f%%"), m_rxHeader->getMyCall1().c_str(), float(m_ambeFrames) / 50.0F, float(m_ambeSilence * 100U) / float(m_ambeFrames), float(m_ambeErrors * 100U) / float(m_ambeBits));
+			LogMessage("AMBE for %s  Frames: %.1fs, Silence: %.1f%%, BER: %.1f%%", m_rxHeader->getMyCall1().c_str(), float(m_ambeFrames) / 50.0F, float(m_ambeSilence * 100U) / float(m_ambeFrames), float(m_ambeErrors * 100U) / float(m_ambeBits));
 
 			if (m_tempAckText.IsEmpty()) {
 				if (m_ack == AT_BER) {
 					// Create the ack text with the linked reflector and BER
-					wxString ackText;
+					std::string ackText;
 					if (m_linkStatus == LS_LINKED_DEXTRA || m_linkStatus == LS_LINKED_DPLUS || m_linkStatus == LS_LINKED_DCS || m_linkStatus == LS_LINKED_CCS || m_linkStatus == LS_LINKED_LOOPBACK)
-						ackText.Printf(wxT("%-8s  BER: %.1f%%   "), m_reflector.c_str(), float(m_ambeErrors * 100U) / float(m_ambeBits));
+						ackText.Printf("%-8s  BER: %.1f%%   ", m_reflector.c_str(), float(m_ambeErrors * 100U) / float(m_ambeBits));
 					else
-						ackText.Printf(wxT("BER: %.1f%%            "), float(m_ambeErrors * 100U) / float(m_ambeBits));
+						ackText.Printf("BER: %.1f%%            ", float(m_ambeErrors * 100U) / float(m_ambeBits));
 					m_ackEncoder.setTextData(ackText);
 				} else {
 					m_ackEncoder.setTextData(m_ackText);
@@ -1731,7 +1707,7 @@ void CDStarRepeaterTRXThread::endOfNetworkData()
 	if (m_packetCount != 0U)
 		loss = float(m_packetSilence) / float(m_packetCount);
 
-	wxLogMessage(wxT("Stats for %s  Frames: %.1fs, Loss: %.1f%%, Packets: %u/%u"), m_rxHeader->getMyCall1().c_str(), float(m_packetCount) / 50.0F, loss * 100.0F, m_packetSilence, m_packetCount);
+	LogMessage("Stats for %s  Frames: %.1fs, Loss: %.1f%%, Packets: %u/%u", m_rxHeader->getMyCall1().c_str(), float(m_packetCount) / 50.0F, loss * 100.0F, m_packetSilence, m_packetCount);
 
 	setRepeaterState(DSRS_LISTENING);
 	m_activeHangTimer.start();
@@ -1779,7 +1755,7 @@ CDStarRepeaterStatusData* CDStarRepeaterTRXThread::getStatus()
 					m_status5Text);
 	}
 
-	if (m_type.IsSameAs(wxT("DVAP")) && m_modem != NULL) {
+	if (m_type.IsSameAs == "DVAP") && m_modem != NULL) {
 		CDVAPController* dvap = static_cast<CDVAPController*>(m_modem);
 		bool squelch = dvap->getSquelch();
 		int signal   = dvap->getSignal();
@@ -1823,38 +1799,38 @@ void CDStarRepeaterTRXThread::startup()
 
 void CDStarRepeaterTRXThread::command1()
 {
-	if (!m_controlCommand1Line.IsEmpty())
-		::wxShell(m_controlCommand1Line);
+	if (!m_controlCommand1Line.empty())
+		::system(m_controlCommand1Line.c_str());
 }
 
 void CDStarRepeaterTRXThread::command2()
 {
-	if (!m_controlCommand2Line.IsEmpty())
-		::wxShell(m_controlCommand2Line);
+	if (!m_controlCommand2Line.empty())
+		::system(m_controlCommand2Line.c_str());
 }
 
 void CDStarRepeaterTRXThread::command3()
 {
-	if (!m_controlCommand3Line.IsEmpty())
-		::wxShell(m_controlCommand3Line);
+	if (!m_controlCommand3Line.empty())
+		::system(m_controlCommand3Line.c_str());
 }
 
 void CDStarRepeaterTRXThread::command4()
 {
-	if (!m_controlCommand4Line.IsEmpty())
-		::wxShell(m_controlCommand4Line);
+	if (!m_controlCommand4Line.empty())
+		::system(m_controlCommand4Line.c_str());
 }
 
 void CDStarRepeaterTRXThread::command5()
 {
-	if (!m_controlCommand5Line.IsEmpty())
-		::wxShell(m_controlCommand5Line);
+	if (!m_controlCommand5Line.empty())
+		::system(m_controlCommand5Line.c_str());
 }
 
 void CDStarRepeaterTRXThread::command6()
 {
-	if (!m_controlCommand6Line.IsEmpty())
-		::wxShell(m_controlCommand6Line);
+	if (!m_controlCommand6Line.empty())
+		::system(m_controlCommand6Line.c_str());
 }
 
 bool CDStarRepeaterTRXThread::checkControl(const CHeaderData& header)
@@ -1862,66 +1838,66 @@ bool CDStarRepeaterTRXThread::checkControl(const CHeaderData& header)
 	if (!m_controlEnabled)
 		return false;
 
-	if (!m_controlRPT1.IsSameAs(header.getRptCall1()) || !m_controlRPT2.IsSameAs(header.getRptCall2()))
+	if (m_controlRPT1 != header.getRptCall1()) || m_controlRPT2 != header.getRptCall2())
 		return false;
 
-	if (m_controlShutdown.IsSameAs(header.getYourCall())) {
-		wxLogMessage(wxT("Shutdown requested by %s/%s"), header.getMyCall1().c_str(), header.getMyCall2().c_str());
+	if (m_controlShutdown == header.getYourCall()) {
+		LogMessage("Shutdown requested by %s/%s", header.getMyCall1().c_str(), header.getMyCall2().c_str());
 		shutdown();
-	} else if (m_controlStartup.IsSameAs(header.getYourCall())) {
-		wxLogMessage(wxT("Startup requested by %s/%s"), header.getMyCall1().c_str(), header.getMyCall2().c_str());
+	} else if (m_controlStartup == header.getYourCall()) {
+		LogMessage("Startup requested by %s/%s", header.getMyCall1().c_str(), header.getMyCall2().c_str());
 		startup();
-	} else if (m_controlStatus1.IsSameAs(header.getYourCall())) {
-		wxLogMessage(wxT("Status 1 requested by %s/%s"), header.getMyCall1().c_str(), header.getMyCall2().c_str());
+	} else if (m_controlStatus1 == header.getYourCall()) {
+		LogMessage(wxT("Status 1 requested by %s/%s", header.getMyCall1().c_str(), header.getMyCall2().c_str());
 		m_status1Timer.start();
-	} else if (m_controlStatus2.IsSameAs(header.getYourCall())) {
-		wxLogMessage(wxT("Status 2 requested by %s/%s"), header.getMyCall1().c_str(), header.getMyCall2().c_str());
+	} else if (m_controlStatus2 == header.getYourCall()) {
+		LogMessage("Status 2 requested by %s/%s", header.getMyCall1().c_str(), header.getMyCall2().c_str());
 		m_status2Timer.start();
-	} else if (m_controlStatus3.IsSameAs(header.getYourCall())) {
-		wxLogMessage(wxT("Status 3 requested by %s/%s"), header.getMyCall1().c_str(), header.getMyCall2().c_str());
+	} else if (m_controlStatus3 == header.getYourCall()) {
+		LogMessage("Status 3 requested by %s/%s", header.getMyCall1().c_str(), header.getMyCall2().c_str());
 		m_status3Timer.start();
-	} else if (m_controlStatus4.IsSameAs(header.getYourCall())) {
-		wxLogMessage(wxT("Status 4 requested by %s/%s"), header.getMyCall1().c_str(), header.getMyCall2().c_str());
+	} else if (m_controlStatus4 == header.getYourCall()) {
+		LogMessage("Status 4 requested by %s/%s", header.getMyCall1().c_str(), header.getMyCall2().c_str());
 		m_status4Timer.start();
-	} else if (m_controlStatus5.IsSameAs(header.getYourCall())) {
-		wxLogMessage(wxT("Status 5 requested by %s/%s"), header.getMyCall1().c_str(), header.getMyCall2().c_str());
+	} else if (m_controlStatus5 == header.getYourCall()) {
+		LogMessage("Status 5 requested by %s/%s", header.getMyCall1().c_str(), header.getMyCall2().c_str());
 		m_status5Timer.start();
-	} else if (m_controlCommand1.IsSameAs(header.getYourCall())) {
-		wxLogMessage(wxT("Command 1 requested by %s/%s"), header.getMyCall1().c_str(), header.getMyCall2().c_str());
+	} else if (m_controlCommand1 == header.getYourCall()) {
+		LogMessage(wxT("Command 1 requested by %s/%s", header.getMyCall1().c_str(), header.getMyCall2().c_str());
 		command1();
-	} else if (m_controlCommand2.IsSameAs(header.getYourCall())) {
-		wxLogMessage(wxT("Command 2 requested by %s/%s"), header.getMyCall1().c_str(), header.getMyCall2().c_str());
+	} else if (m_controlCommand2 == header.getYourCall()) {
+		LogMessage("Command 2 requested by %s/%s", header.getMyCall1().c_str(), header.getMyCall2().c_str());
 		command2();
-	} else if (m_controlCommand3.IsSameAs(header.getYourCall())) {
-		wxLogMessage(wxT("Command 3 requested by %s/%s"), header.getMyCall1().c_str(), header.getMyCall2().c_str());
+	} else if (m_controlCommand3 == header.getYourCall()) {
+		LogMessage("Command 3 requested by %s/%s", header.getMyCall1().c_str(), header.getMyCall2().c_str());
 		command3();
-	} else if (m_controlCommand4.IsSameAs(header.getYourCall())) {
-		wxLogMessage(wxT("Command 4 requested by %s/%s"), header.getMyCall1().c_str(), header.getMyCall2().c_str());
+	} else if (m_controlCommand4 == header.getYourCall()) {
+		LogMessage("Command 4 requested by %s/%s", header.getMyCall1().c_str(), header.getMyCall2().c_str());
 		command4();
-	} else if (m_controlCommand5.IsSameAs(header.getYourCall())) {
-		wxLogMessage(wxT("Command 5 requested by %s/%s"), header.getMyCall1().c_str(), header.getMyCall2().c_str());
+	} else if (m_controlCommand5 == header.getYourCall()) {
+		LogMessage("Command 5 requested by %s/%s", header.getMyCall1().c_str(), header.getMyCall2().c_str());
 		command5();
-	} else if (m_controlCommand6.IsSameAs(header.getYourCall())) {
-		wxLogMessage(wxT("Command 6 requested by %s/%s"), header.getMyCall1().c_str(), header.getMyCall2().c_str());
+	} else if (m_controlCommand6 == header.getYourCall()) {
+		LogMessage("Command 6 requested by %s/%s", header.getMyCall1().c_str(), header.getMyCall2().c_str());
 		command6();
-	} else if (m_controlOutput1.IsSameAs(header.getYourCall())) {
-		wxLogMessage(wxT("Output 1 requested by %s/%s"), header.getMyCall1().c_str(), header.getMyCall2().c_str());
+	} else if (m_controlOutput1 == header.getYourCall()) {
+		LogMessage("Output 1 requested by %s/%s", header.getMyCall1().c_str(), header.getMyCall2().c_str());
 		m_output1 = !m_output1;
 		m_controller->setOutput1(m_output1);
-	} else if (m_controlOutput2.IsSameAs(header.getYourCall())) {
-		wxLogMessage(wxT("Output 2 requested by %s/%s"), header.getMyCall1().c_str(), header.getMyCall2().c_str());
+	} else if (m_controlOutput2 == header.getYourCall()) {
+		LogMessage("Output 2 requested by %s/%s", header.getMyCall1().c_str(), header.getMyCall2().c_str());
 		m_output2 = !m_output2;
 		m_controller->setOutput2(m_output2);
-	} else if (m_controlOutput3.IsSameAs(header.getYourCall())) {
-		wxLogMessage(wxT("Output 3 requested by %s/%s"), header.getMyCall1().c_str(), header.getMyCall2().c_str());
+	} else if (m_controlOutput3 == header.getYourCall()) {
+		LogMessage("Output 3 requested by %s/%s", header.getMyCall1().c_str(), header.getMyCall2().c_str());
 		m_output3 = !m_output3;
 		m_controller->setOutput3(m_output3);
-	} else if (m_controlOutput4.IsSameAs(header.getYourCall())) {
-		wxLogMessage(wxT("Output 4 requested by %s/%s"), header.getMyCall1().c_str(), header.getMyCall2().c_str());
+	} else if (m_controlOutput4 == header.getYourCall()) {
+		LogMessage("Output 4 requested by %s/%s", header.getMyCall1().c_str(), header.getMyCall2().c_str());
 		m_output4 = !m_output4;
 		m_controller->setOutput4(m_output4);
 	} else {
-		wxLogMessage(wxT("Invalid command of %s sent by %s/%s"), header.getYourCall().c_str(), header.getMyCall1().c_str(), header.getMyCall2().c_str());
+		LogMessage("Invalid command of %s sent by %s/%s", header.getYourCall().c_str(), header.getMyCall1().c_str(), header.getMyCall2().c_str());
 	}
 
 	return true;
@@ -1932,15 +1908,15 @@ bool CDStarRepeaterTRXThread::checkAnnouncements(const CHeaderData& header)
 	if (m_announcement == NULL)
 		return false;
 
-	if (m_recordRPT1.IsSameAs(header.getRptCall1()) && m_recordRPT2.IsSameAs(header.getRptCall2())) {
-		wxLogMessage(wxT("Announcement creation requested by %s/%s"), header.getMyCall1().c_str(), header.getMyCall2().c_str());
+	if (m_recordRPT1 == header.getRptCall1() && m_recordRPT2 == header.getRptCall2()) {
+		LogMessage("Announcement creation requested by %s/%s", header.getMyCall1().c_str(), header.getMyCall2().c_str());
 		m_announcement->writeHeader(header);
 		m_recording = true;
 		return true;
 	}
 
-	if (m_deleteRPT1.IsSameAs(header.getRptCall1()) && m_deleteRPT2.IsSameAs(header.getRptCall2())) {
-		wxLogMessage(wxT("Announcement deletion requested by %s/%s"), header.getMyCall1().c_str(), header.getMyCall2().c_str());
+	if (m_deleteRPT1 == header.getRptCall1() && m_deleteRPT2 == header.getRptCall2()) {
+		LogMessage("Announcement deletion requested by %s/%s", header.getMyCall1().c_str(), header.getMyCall2().c_str());
 		m_announcement->deleteAnnouncement();
 		m_deleting = true;
 		return true;
@@ -1964,7 +1940,7 @@ TRISTATE CDStarRepeaterTRXThread::checkHeader(CHeaderData& header)
 	// The repeater bit must be set when not in gateway mode
 	if (m_mode != MODE_GATEWAY) {
 		if (!header.isRepeaterMode()) {
-			wxLogMessage(wxT("Received a non-repeater packet, ignoring"));
+			LogMessage("Received a non-repeater packet, ignoring");
 			return STATE_FALSE;
 		}
 	} else {
@@ -1973,7 +1949,7 @@ TRISTATE CDStarRepeaterTRXThread::checkHeader(CHeaderData& header)
 			return STATE_UNKNOWN;
 
 		// As a second check, reject on own UR call
-		wxString ur = header.getYourCall();
+		std::string ur = header.getYourCall();
 		if (ur.IsSameAs(m_rptCallsign) || ur.IsSameAs(m_gwyCallsign))
 			return STATE_UNKNOWN;
 
@@ -1981,52 +1957,52 @@ TRISTATE CDStarRepeaterTRXThread::checkHeader(CHeaderData& header)
 		header.setRptCall2(m_gwyCallsign);
 	}
 
-	wxString my = header.getMyCall1();
+	std::string my = header.getMyCall1();
 
 	// Make sure MyCall is not empty, a silly value, or the repeater or gateway callsigns, STN* is a special case
-	if (!my.Left(3U).IsSameAs(wxT("STN"))) {
-		if (my.IsSameAs(m_rptCallsign) ||
-			my.IsSameAs(m_gwyCallsign) ||
-			my.IsSameAs(wxT("        ")) ||
-			my.Left(6U).IsSameAs(wxT("NOCALL")) ||
-			my.Left(6U).IsSameAs(wxT("N0CALL")) ||
-			my.Left(6U).IsSameAs(wxT("MYCALL"))) {
-			wxLogMessage(wxT("Invalid MYCALL value of %s, ignoring"), my.c_str());
+	if (!my.Left(3U).IsSameAs("STN")) {
+		if (my == m_rptCallsign ||
+			my == m_gwyCallsign ||
+			my == "        ") ||
+			my.Left(6U).IsSameAs("NOCALL") ||
+			my.Left(6U).IsSameAs("N0CALL") ||
+			my.Left(6U).IsSameAs("MYCALL")) {
+			LogMessage("Invalid MYCALL value of %s, ignoring", my.c_str());
 			return STATE_UNKNOWN;
 		}
 	}
 
 	// Check for a French class 3 novice callsign, and reject
 	// Of the form F0xxx
-	if (my.Left(2U).IsSameAs(wxT("F0"))) {
-		wxLogMessage(wxT("French novice class licence callsign found, %s, ignoring"), my.c_str());
+	if (my.Left(2U).IsSameAs("F0")) {
+		LogMessage("French novice class licence callsign found, %s, ignoring", my.c_str());
 		return STATE_UNKNOWN;
 	}
 
 	// Check for an Australian foundation class licence callsign, and reject
 	// Of the form VKnFxxx
-	if (my.Left(2U).IsSameAs(wxT("VK")) && my.GetChar(3U) == wxT('F') && my.GetChar(6U) != wxT(' ')) {
-		wxLogMessage(wxT("Australian foundation class licence callsign found, %s, ignoring"), my.c_str());
+	if (my.Left(2U).IsSameAs("VK") && my.at(3U) == 'F' && my.at(6U) != ' ') {
+		LogMessage("Australian foundation class licence callsign found, %s, ignoring", my.c_str());
 		return STATE_UNKNOWN;
 	}
 
 	// Check the MyCall value against the regular expression
 	bool ok = m_regEx.Matches(my);
 	if (!ok) {
-		wxLogMessage(wxT("Invalid MYCALL value of %s, ignoring"), my.c_str());
+		LogMessage("Invalid MYCALL value of %s, ignoring", my.c_str());
 		return STATE_UNKNOWN;
 	}
 
 	// Is it for us?
 	if (!header.getRptCall1().IsSameAs(m_rptCallsign)) {
-		wxLogMessage(wxT("Invalid RPT1 value %s, ignoring"), header.getRptCall1().c_str());
+		LogMessage("Invalid RPT1 value %s, ignoring", header.getRptCall1().c_str());
 		return STATE_FALSE;
 	}
 
 	// If using callsign restriction, validate the my callsign
 	if (m_restriction) {
 		if (!my.Left(LONG_CALLSIGN_LENGTH - 1U).IsSameAs(m_rptCallsign.Left(LONG_CALLSIGN_LENGTH - 1U))) {
-			wxLogMessage(wxT("Unauthorised user %s tried to access the repeater"), my.c_str());
+			LogMessage("Unauthorised user %s tried to access the repeater", my.c_str());
 			return STATE_UNKNOWN;
 		}
 	}
@@ -2060,7 +2036,7 @@ unsigned int CDStarRepeaterTRXThread::countBits(unsigned char byte)
 
 void CDStarRepeaterTRXThread::blankDTMF(unsigned char* data)
 {
-	wxASSERT(data != NULL);
+	assert(data != NULL);
 
 	// DTMF begins with these byte values
 	if ((data[0] & DTMF_MASK[0]) == DTMF_SIG[0] && (data[1] & DTMF_MASK[1]) == DTMF_SIG[1] &&

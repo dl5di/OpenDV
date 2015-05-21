@@ -1,5 +1,5 @@
 /*
- *	Copyright (C) 2009,2013 by Jonathan Naylor, G4KLX
+ *	Copyright (C) 2009,2013,2015 by Jonathan Naylor, G4KLX
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -21,7 +21,7 @@ public:
 	CDStarGMSKModulator();
 	~CDStarGMSKModulator();
 
-	unsigned int code(bool bit, wxFloat32* buffer, unsigned int length);
+	unsigned int code(bool bit, float* buffer, unsigned int length);
 
 	void setInvert(bool set);
 

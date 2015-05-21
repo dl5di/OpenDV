@@ -1,5 +1,5 @@
 /*
- *	Copyright (C) 2009,2010,2013,2014 by Jonathan Naylor, G4KLX
+ *	Copyright (C) 2009,2010,2013,2014,2015 by Jonathan Naylor, G4KLX
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -13,7 +13,9 @@
 
 #include "DStarGMSKDemodulator.h"
 
-const wxFloat32 FILTER_COEFFS_TABLE[] = {
+#include "Log.h"
+
+const float FILTER_COEFFS_TABLE[] = {
 	/* 2400 Hz */
 	-0.000153959924563F,  0.000000000000000F,  0.000167227768379F,  0.000341615513437F,
 	 0.000513334449696F,  0.000667493753523F,  0.000783901543032F,  0.000838293462576F,
@@ -68,7 +70,7 @@ CDStarGMSKDemodulator::~CDStarGMSKDemodulator()
 {
 }
 
-TRISTATE CDStarGMSKDemodulator::decode(wxFloat32 val)
+TRISTATE CDStarGMSKDemodulator::decode(float val)
 {
 	TRISTATE state = STATE_UNKNOWN;
 
@@ -78,7 +80,7 @@ TRISTATE CDStarGMSKDemodulator::decode(wxFloat32 val)
 		m_count++;
 
 		if (m_count >= DCOFFSET_COUNT) {
-			m_accum /= wxFloat32(DCOFFSET_COUNT);
+			m_accum /= float(DCOFFSET_COUNT);
 
 			m_offset = m_offset * 0.9F + m_accum * 0.1F;
 
@@ -87,7 +89,7 @@ TRISTATE CDStarGMSKDemodulator::decode(wxFloat32 val)
 		}
 	}
 
-	wxFloat32 out = m_filter.process(val - m_offset);
+	float out = m_filter.process(val - m_offset);
 
 	bool bit = out > 0.0F;
 
@@ -130,7 +132,7 @@ void CDStarGMSKDemodulator::setInvert(bool set)
 void CDStarGMSKDemodulator::lock(bool on)
 {
 	// Debugging only XXX
-	wxLogMessage(wxT("Current DC offset: %f"), m_offset);
+	LogMessage("Current DC offset: %f", m_offset);
 
 	m_locked = on;
 

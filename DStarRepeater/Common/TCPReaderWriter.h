@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2010,2011,2012 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2010,2011,2012,2015 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -19,9 +19,11 @@
 #ifndef TCPReaderWriter_H
 #define TCPReaderWriter_H
 
-#include <wx/wx.h>
+#include <string>
 
-#if !defined(__WINDOWS__)
+#if defined(WIN32)
+#include <winsock.h>
+#else
 #include <netdb.h>
 #include <sys/time.h>
 #include <sys/types.h>
@@ -35,11 +37,11 @@
 
 class CTCPReaderWriter {
 public:
-	CTCPReaderWriter(const wxString& address, unsigned int port, const wxString& localAddress = wxEmptyString);
+	CTCPReaderWriter(const std::string& address, unsigned int port, const std::string& localAddress = "");
 	CTCPReaderWriter();
 	~CTCPReaderWriter();
 
-	bool open(const wxString& address, unsigned int port, const wxString& localAddress = wxEmptyString);
+	bool open(const std::string& address, unsigned int port, const std::string& localAddress = "");
 	bool open();
 
 	int  read(unsigned char* buffer, unsigned int length, unsigned int secs, unsigned int msecs = 0U);
@@ -48,10 +50,14 @@ public:
 	void close();
 
 private:
-	wxString       m_address;
+	std::string    m_address;
 	unsigned short m_port;
-	wxString       m_localAddress;
+	std::string    m_localAddress;
+#if defined(WIN32)
+	SOCKET         m_fd;
+#else
 	int            m_fd;
+#endif
 };
 
 #endif

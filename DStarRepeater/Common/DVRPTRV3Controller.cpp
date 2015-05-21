@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2011-2014 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2011-2015 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -18,19 +18,24 @@
 
 #include "DVRPTRV3Controller.h"
 #include "DStarDefines.h"
+#include "MutexLocker.h"
+#include "Types.h"
 #include "Timer.h"
+#include "Log.h"
 
-#if defined(__WINDOWS__)
+#if defined(WIN32)
 #include <setupapi.h>
 #else
-#include <wx/dir.h>
+#include <sys/types.h>
+#include <dirent.h>
+#include <unistd.h>
 #endif
 
 const unsigned int MAX_RESPONSES = 30U;
 
 const unsigned int BUFFER_LENGTH = 200U;
 
-CDVRPTRV3Controller::CDVRPTRV3Controller(const wxString& port, const wxString& path, bool txInvert, unsigned int modLevel, bool duplex, const wxString& callsign, unsigned int txDelay) :
+CDVRPTRV3Controller::CDVRPTRV3Controller(const std::string& port, const std::string& path, bool txInvert, unsigned int modLevel, bool duplex, const std::string& callsign, unsigned int txDelay) :
 CModem(),
 m_connection(CT_USB),
 m_usbPort(port),
@@ -48,14 +53,14 @@ m_buffer(NULL),
 m_txData(1000U),
 m_rx(false)
 {
-	wxASSERT(!port.IsEmpty());
+	assert(!port.empty());
 
 	m_usb = new CSerialDataController(port, SERIAL_115200);
 
 	m_buffer = new unsigned char[BUFFER_LENGTH];
 }
 
-CDVRPTRV3Controller::CDVRPTRV3Controller(const wxString& address, unsigned int port, bool txInvert, unsigned int modLevel, bool duplex, const wxString& callsign, unsigned int txDelay) :
+CDVRPTRV3Controller::CDVRPTRV3Controller(const std::string& address, unsigned int port, bool txInvert, unsigned int modLevel, bool duplex, const std::string& callsign, unsigned int txDelay) :
 CModem(),
 m_connection(CT_NETWORK),
 m_usbPort(),
@@ -73,8 +78,8 @@ m_buffer(NULL),
 m_txData(1000U),
 m_rx(false)
 {
-	wxASSERT(!address.IsEmpty());
-	wxASSERT(port > 0U);
+	assert(!address.empty());
+	assert(port > 0U);
 
 	m_network = new CTCPReaderWriter(address, port);
 
@@ -99,16 +104,14 @@ bool CDVRPTRV3Controller::start()
 
 	findPath();
 
-	Create();
-	SetPriority(100U);
-	Run();
+	run();
 
 	return true;
 }
 
-void* CDVRPTRV3Controller::Entry()
+void CDVRPTRV3Controller::entry()
 {
-	wxLogMessage(wxT("Starting DV-RPTR3 Modem Controller thread"));
+	LogMessage("Starting DV-RPTR3 Modem Controller thread");
 
 	// Clock every 5ms-ish
 	CTimer pollTimer(200U, 0U, 250U);
@@ -123,8 +126,8 @@ void* CDVRPTRV3Controller::Entry()
 			if (!ret) {
 				ret = findModem();
 				if (!ret) {
-					wxLogMessage(wxT("Stopping DV-RPTR3 Modem Controller thread"));
-					return NULL;
+					LogMessage("Stopping DV-RPTR3 Modem Controller thread");
+					return;
 				}
 			}
 
@@ -141,15 +144,15 @@ void* CDVRPTRV3Controller::Entry()
 			case RT3_ERROR: {
 					bool ret = findModem();
 					if (!ret) {
-						wxLogMessage(wxT("Stopping DV-RPTR3 Modem Controller thread"));
-						return NULL;
+						LogMessage("Stopping DV-RPTR3 Modem Controller thread");
+						return;
 					}
 				}
 				break;
 
 			case RT3_HEADER: {
-					// CUtils::dump(wxT("RT3_HEADER"), m_buffer, length);
-					wxMutexLocker locker(m_mutex);
+					// CUtils::dump("RT3_HEADER", m_buffer, length);
+					CMutexLocker locker(m_mutex);
 
 					unsigned char data[2U];
 					data[0U] = DSMTT_HEADER;
@@ -174,8 +177,8 @@ void* CDVRPTRV3Controller::Entry()
 				break;
 
 			case RT3_DATA: {
-					// CUtils::dump(wxT("RT3_DATA"), m_buffer, length);
-					wxMutexLocker locker(m_mutex);
+					// CUtils::dump("RT3_DATA", m_buffer, length);
+					CMutexLocker locker(m_mutex);
 
 					unsigned char data[2U];
 					data[0U] = DSMTT_DATA;
@@ -200,7 +203,7 @@ void* CDVRPTRV3Controller::Entry()
 
 			case RT3_SPACE:
 				space = m_buffer[9U];
-				// CUtils::dump(wxT("RT3_SPACE"), m_buffer, length);
+				// CUtils::dump("RT3_SPACE", m_buffer, length);
 				break;
 
 			// These should not be received in this loop, but don't complain if we do
@@ -209,8 +212,8 @@ void* CDVRPTRV3Controller::Entry()
 				break;
 
 			default:
-				wxLogMessage(wxT("Unknown DV-RPTR3 message, type"));
-				CUtils::dump(wxT("Buffer dump"), m_buffer, length);
+				LogMessage("Unknown DV-RPTR3 message, type");
+				CUtils::dump("Buffer dump", m_buffer, length);
 				break;
 		}
 
@@ -220,20 +223,20 @@ void* CDVRPTRV3Controller::Entry()
 				unsigned char data[200U];
 
 				{
-					wxMutexLocker locker(m_mutex);
+					CMutexLocker locker(m_mutex);
 
 					m_txData.getData(&len, 1U);
 					m_txData.getData(data, len);
 				}
 
-				// CUtils::dump(wxT("Write"), data, len);
+				// CUtils::dump("Write", data, len);
 
 				bool ret = writeModem(data, len);
 				if (!ret) {
 					bool ret = findModem();
 					if (!ret) {
-						wxLogMessage(wxT("Stopping DV-RPTR3 Modem Controller thread"));
-						return NULL;
+						LogMessage("Stopping DV-RPTR3 Modem Controller thread");
+						return;
 					}
 				} else {
 					space--;
@@ -246,18 +249,16 @@ void* CDVRPTRV3Controller::Entry()
 		pollTimer.clock();
 	}
 
-	wxLogMessage(wxT("Stopping DV-RPTR3 Modem Controller thread"));
+	LogMessage("Stopping DV-RPTR3 Modem Controller thread");
 
 	closeModem();
-
-	return NULL;
 }
 
 bool CDVRPTRV3Controller::writeHeader(const CHeaderData& header)
 {
 	bool ret = m_txData.hasSpace(106U);
 	if (!ret) {
-		wxLogWarning(wxT("No space to write the header"));
+		LogWarning("No space to write the header");
 		return false;
 	}
 
@@ -281,27 +282,27 @@ bool CDVRPTRV3Controller::writeHeader(const CHeaderData& header)
 	buffer[10U] = header.getFlag2();
 	buffer[11U] = header.getFlag3();
 
-	wxString rpt2 = header.getRptCall2();
-	for (unsigned int i = 0U; i < rpt2.Len() && i < LONG_CALLSIGN_LENGTH; i++)
-		buffer[i + 12U]  = rpt2.GetChar(i);
+	std::string rpt2 = header.getRptCall2();
+	for (unsigned int i = 0U; i < rpt2.length() && i < LONG_CALLSIGN_LENGTH; i++)
+		buffer[i + 12U]  = rpt2.at(i);
 
-	wxString rpt1 = header.getRptCall1();
-	for (unsigned int i = 0U; i < rpt1.Len() && i < LONG_CALLSIGN_LENGTH; i++)
-		buffer[i + 20U] = rpt1.GetChar(i);
+	std::string rpt1 = header.getRptCall1();
+	for (unsigned int i = 0U; i < rpt1.length() && i < LONG_CALLSIGN_LENGTH; i++)
+		buffer[i + 20U] = rpt1.at(i);
 
-	wxString your = header.getYourCall();
-	for (unsigned int i = 0U; i < your.Len() && i < LONG_CALLSIGN_LENGTH; i++)
-		buffer[i + 28U] = your.GetChar(i);
+	std::string your = header.getYourCall();
+	for (unsigned int i = 0U; i < your.length() && i < LONG_CALLSIGN_LENGTH; i++)
+		buffer[i + 28U] = your.at(i);
 
-	wxString my1 = header.getMyCall1();
-	for (unsigned int i = 0U; i < my1.Len() && i < LONG_CALLSIGN_LENGTH; i++)
-		buffer[i + 36U] = my1.GetChar(i);
+	std::string my1 = header.getMyCall1();
+	for (unsigned int i = 0U; i < my1.length() && i < LONG_CALLSIGN_LENGTH; i++)
+		buffer[i + 36U] = my1.at(i);
 
-	wxString my2 = header.getMyCall2();
-	for (unsigned int i = 0U; i < my2.Len() && i < SHORT_CALLSIGN_LENGTH; i++)
-		buffer[i + 44U] = my2.GetChar(i);
+	std::string my2 = header.getMyCall2();
+	for (unsigned int i = 0U; i < my2.length() && i < SHORT_CALLSIGN_LENGTH; i++)
+		buffer[i + 44U] = my2.at(i);
 
-	wxMutexLocker locker(m_mutex);
+	CMutexLocker locker(m_mutex);
 
 	unsigned char len = 105U;
 	m_txData.addData(&len, 1U);
@@ -317,7 +318,7 @@ bool CDVRPTRV3Controller::writeData(const unsigned char* data, unsigned int leng
 {
 	bool ret = m_txData.hasSpace(18U);
 	if (!ret) {
-		wxLogWarning(wxT("No space to write data"));
+		LogWarning("No space to write data");
 		return false;
 	}
 
@@ -341,7 +342,7 @@ bool CDVRPTRV3Controller::writeData(const unsigned char* data, unsigned int leng
 		m_tx = false;
 	}
 
-	wxMutexLocker locker(m_mutex);
+	CMutexLocker locker(m_mutex);
 
 	unsigned char len = 17U;
 	m_txData.addData(&len, 1U);
@@ -377,7 +378,7 @@ bool CDVRPTRV3Controller::readSerial()
 	buffer[7U] = '0';
 	buffer[8U] = '0';
 
-	// CUtils::dump(wxT("Written"), buffer, 105U);
+	// CUtils::dump("Written", buffer, 105U);
 
 	bool ret = writeModem(buffer, 105U);
 	if (!ret)
@@ -387,20 +388,20 @@ bool CDVRPTRV3Controller::readSerial()
 	unsigned int length;
 	RESP_TYPE_V3 resp;
 	do {
-		::wxMilliSleep(10UL);
+		milliSleep(10U);
 
 		resp = getResponse(m_buffer, length);
 
 		if (resp != RT3_QUERY) {
 			count++;
 			if (count >= MAX_RESPONSES) {
-				wxLogError(wxT("The DV-RPTR modem is not responding to the query command"));
+				LogError("The DV-RPTR modem is not responding to the query command");
 				return false;
 			}
 		}
 	} while (resp != RT3_QUERY);
 
-	wxLogInfo(wxT("DV-RPTR Modem Hardware serial: 0x%02X%02X%02x%02X"), m_buffer[9U], m_buffer[10U], m_buffer[11U], m_buffer[12U]);
+	LogInfo("DV-RPTR Modem Hardware serial: 0x%02X%02X%02x%02X", m_buffer[9U], m_buffer[10U], m_buffer[11U], m_buffer[12U]);
 
 	return true;
 }
@@ -420,7 +421,7 @@ bool CDVRPTRV3Controller::readSpace()
 	buffer[8U] = '1';
 	buffer[9U] = 0x00U;
 
-	// CUtils::dump(wxT("Written"), buffer, 10U);
+	// CUtils::dump("Written", buffer, 10U);
 
 	return writeModem(buffer, 10U);
 }
@@ -442,8 +443,8 @@ bool CDVRPTRV3Controller::setConfig()
 	buffer[8U] = '1';
 
 	::memset(buffer + 9U, ' ', LONG_CALLSIGN_LENGTH);
-	for (unsigned int i = 0U; i < LONG_CALLSIGN_LENGTH && i < m_callsign.Len(); i++)
-		buffer[9U + i] = m_callsign.GetChar(i);
+	for (unsigned int i = 0U; i < LONG_CALLSIGN_LENGTH && i < m_callsign.length(); i++)
+		buffer[9U + i] = m_callsign.at(i);
 
 	buffer[65U] = m_duplex ? 0x03U : 0x00U;
 
@@ -463,7 +464,7 @@ bool CDVRPTRV3Controller::setConfig()
 
 	buffer[89U] = m_txDelay / 10U;
 
-	// CUtils::dump(wxT("Written"), buffer, 105U);
+	// CUtils::dump("Written", buffer, 105U);
 
 	bool ret = writeModem(buffer, 105U);
 	if (!ret)
@@ -473,24 +474,24 @@ bool CDVRPTRV3Controller::setConfig()
 	unsigned int length;
 	RESP_TYPE_V3 resp;
 	do {
-		::wxMilliSleep(10UL);
+		milliSleep(10U);
 
 		resp = getResponse(m_buffer, length);
 
 		if (resp != RT3_CONFIG) {
 			count++;
 			if (count >= MAX_RESPONSES) {
-				wxLogError(wxT("The DV-RPTR modem is not responding to the configure command"));
+				LogError("The DV-RPTR modem is not responding to the configure command");
 				return false;
 			}
 		}
 	} while (resp != RT3_CONFIG);
 
-	// CUtils::dump(wxT("Response"), m_buffer, length);
+	// CUtils::dump("Response", m_buffer, length);
 
-	wxString firmware((char*)(m_buffer + 9U), wxConvLocal);
+	std::string firmware((char*)(m_buffer + 9U));
 
-	wxLogInfo(wxT("DV-RPTR Modem Firmware version: %s"), firmware.c_str());
+	LogInfo("DV-RPTR Modem Firmware version: %s", firmware.c_str());
 
 	return true;
 }
@@ -500,7 +501,7 @@ RESP_TYPE_V3 CDVRPTRV3Controller::getResponse(unsigned char *buffer, unsigned in
 	// Get the start of the frame or nothing at all
 	int ret = readModem(buffer + 0U, 5U);
 	if (ret < 0) {
-		wxLogError(wxT("Error when reading from the DV-RPTR"));
+		LogError("Error when reading from the DV-RPTR");
 		return RT3_ERROR;
 	}
 
@@ -515,7 +516,7 @@ RESP_TYPE_V3 CDVRPTRV3Controller::getResponse(unsigned char *buffer, unsigned in
 
 		ret = readModem(buffer + 4U, 1U);
 		if (ret < 0) {
-			wxLogError(wxT("Error when reading from the DV-RPTR"));
+			LogError("Error when reading from the DV-RPTR");
 			return RT3_ERROR;
 		}
 
@@ -534,7 +535,7 @@ RESP_TYPE_V3 CDVRPTRV3Controller::getResponse(unsigned char *buffer, unsigned in
 			length = 20U;
 			break;
 		default:
-			wxLogError(wxT("DV-RPTR frame type is incorrect - 0x%02X"), buffer[4U]);
+			LogError("DV-RPTR frame type is incorrect - 0x%02X", buffer[4U]);
 			return RT3_UNKNOWN;
 	}
 
@@ -543,7 +544,7 @@ RESP_TYPE_V3 CDVRPTRV3Controller::getResponse(unsigned char *buffer, unsigned in
 	while (offset < length) {
 		int ret = readModem(buffer + offset, length - offset);
 		if (ret < 0) {
-			wxLogError(wxT("Error when reading from the DV-RPTR"));
+			LogError("Error when reading from the DV-RPTR");
 			return RT3_ERROR;
 		}
 
@@ -554,7 +555,7 @@ RESP_TYPE_V3 CDVRPTRV3Controller::getResponse(unsigned char *buffer, unsigned in
 			Sleep(5UL);
 	}
 
-	// CUtils::dump(wxT("Received"), buffer, length);
+	// CUtils::dump("Received"), buffer, length);
 
 	if (::memcmp(buffer + 0U, "HEADZ", 5U) == 0) {
 		return RT3_DATA;
@@ -574,7 +575,7 @@ RESP_TYPE_V3 CDVRPTRV3Controller::getResponse(unsigned char *buffer, unsigned in
 	return RT3_UNKNOWN;
 }
 
-wxString CDVRPTRV3Controller::getPath() const
+std::string CDVRPTRV3Controller::getPath() const
 {
 	return m_usbPath;
 }
@@ -584,56 +585,55 @@ bool CDVRPTRV3Controller::findPort()
 	if (m_connection != CT_USB)
 		return true;
 
-	if (m_usbPath.IsEmpty())
+	if (m_usbPath.empty())
 		return false;
 
-#if defined(__WINDOWS__)
-#else
-	wxDir dir;
-	bool ret1 = dir.Open(wxT("/sys/class/tty"));
-	if (!ret1) {
-		wxLogError(wxT("Cannot open directory /sys/class/tty"));
+#if !defined(WIN32)
+	DIR* dir = ::opendir("/sys/class/tty");
+	if (dir == NULL) {
+		LogError("Cannot open directory /sys/class/tty");
 		return false;
 	}
 
-	wxString fileName;
-	ret1 = dir.GetFirst(&fileName, wxT("ttyACM*"));
-	while (ret1) {
-		wxString path;
-		path.Printf(wxT("/sys/class/tty/%s"), fileName.c_str());
+	dirent* entry = ::readdir(dir);
+	while (entry != NULL) {
+		if (::strncmp(entry->d_name, "ttyACM", 6U) != 0) {
+			entry = ::readdir(dir);
+			continue;
+		}
 
 		char cpath[255U];
-		::memset(cpath, 0x00U, 255U);
-
-		for (unsigned int i = 0U; i < path.Len(); i++)
-			cpath[i] = path.GetChar(i);
+		::sprintf(cpath, "/sys/class/tty/%s", entry->d_name);
 
 		char symlink[255U];
-		int ret2 = ::readlink(cpath, symlink, 255U);
-		if (ret2 < 0) {
+		int ret = ::readlink(cpath, symlink, 255U);
+		if (ret < 0) {
 			::strcat(cpath, "/device");
-			ret2 = ::readlink(cpath, symlink, 255U);
-			if (ret2 < 0) {
-				wxLogError(wxT("Error from readlink()"));
+			ret = ::readlink(cpath, symlink, 255U);
+			if (ret < 0) {
+				LogError("Error from readlink()");
 				return false;
 			}
 
-			path = wxString(symlink, wxConvLocal, ret2);
+			path = std::string(symlink, ret);
 		} else {
 			// Get all but the last section
-			wxString fullPath = wxString(symlink, wxConvLocal, ret2);
-			path = fullPath.BeforeLast(wxT('/'));
+			int n = ::strrchr(symlink, '/');
+			if (n != -1)
+				path = std::string(symlink, n);
+			else
+				path = std::string(symlink);
 		}
 
-		if (path.IsSameAs(m_usbPath)) {
-			m_usbPort.Printf(wxT("/dev/%s"), fileName.c_str());
-
-			wxLogMessage(wxT("Found modem port of %s based on the path"), m_usbPort.c_str());
-
+		if (path == m_usbPath)) {
+			char device[50U];
+			::sprintf(device, "/dev/%s", entry->d_name);
+			m_usbPort = std::string(device);
+			LogMessage("Found modem port of %s based on the path", device);
 			return true;
 		}
 
-		ret1 = dir.GetNext(&fileName);
+		entry = ::readdir(dir);
 	}
 #endif
 
@@ -645,62 +645,9 @@ bool CDVRPTRV3Controller::findPath()
 	if (m_connection != CT_USB)
 		return true;
 
-#if defined(__WINDOWS__)
-#ifdef notdef
-	GUID guids[5U];
-
-	DWORD count;
-	BOOL res = ::SetupDiClassGuidsFromName(L"Multifunction", guids, 5U, &count);
-	if (!res) {
-		wxLogError(wxT("Error from SetupDiClassGuidsFromName: err=%u"), ::GetLastError());
-		return false;
-	}
-
-	for (DWORD i = 0U; i < count; i++) {
-		HDEVINFO devInfo = ::SetupDiGetClassDevs(&guids[i], NULL, NULL, DIGCF_DEVICEINTERFACE | DIGCF_PRESENT);
-		if (devInfo == INVALID_HANDLE_VALUE) {
-			wxLogError(wxT("Error from SetupDiGetClassDevs: err=%u"), ::GetLastError());
-			return false;
-		}
-
-		SP_DEVICE_INTERFACE_DATA devInfoData;
-		devInfoData.cbSize = sizeof(SP_DEVICE_INTERFACE_DATA);
-
-		for (DWORD index = 0U; ::SetupDiEnumDeviceInterfaces(devInfo, NULL, &guids[i], index, &devInfoData); index++) {
-			// Find the required length of the device structure
-			DWORD length;
-			::SetupDiGetDeviceInterfaceDetail(devInfo, &devInfoData, NULL, 0U, &length, NULL);
-
-			PSP_DEVICE_INTERFACE_DETAIL_DATA detailData = PSP_DEVICE_INTERFACE_DETAIL_DATA(::malloc(length));
-			detailData->cbSize = sizeof(SP_DEVICE_INTERFACE_DETAIL_DATA);
-
-			// Get the detailed data into the newly allocated device structure
-			DWORD required;
-			res = ::SetupDiGetDeviceInterfaceDetail(devInfo, &devInfoData, detailData, length, &required, NULL);
-			if (!res) {
-				wxLogError(wxT("Error from SetupDiGetDeviceInterfaceDetail: err=%u"), ::GetLastError());
-				::SetupDiDestroyDeviceInfoList(devInfo);
-				::free(detailData);
-				return false;
-			}
-
-			::free(detailData);
-		}
-
-		::SetupDiDestroyDeviceInfoList(devInfo);
-	}
-
-	return false;
-#endif
-#else
-	wxString path;
-	path.Printf(wxT("/sys/class/tty/%s"), m_usbPort.Mid(5U).c_str());	
-
+#if !defined(WIN32)
 	char cpath[255U];
-	::memset(cpath, 0x00U, 255U);
-
-	for (unsigned int i = 0U; i < path.Len(); i++)
-		cpath[i] = path.GetChar(i);
+	::sprintf(cpath, "/sys/class/tty/%s", m_port.substr(5U).c_str());
 
 	char symlink[255U];
 	int ret = ::readlink(cpath, symlink, 255U);
@@ -708,20 +655,24 @@ bool CDVRPTRV3Controller::findPath()
 		::strcat(cpath, "/device");
 		ret = ::readlink(cpath, symlink, 255U);
 		if (ret < 0) {
-			wxLogError(wxT("Error from readlink()"));
+			LogError("Error from readlink()");
 			return false;
 		}
 
-		path = wxString(symlink, wxConvLocal, ret);
+		path = std::string(symlink, ret);
 	} else {
-		wxString fullPath = wxString(symlink, wxConvLocal, ret);
-		path = fullPath.BeforeLast(wxT('/'));
+		// Get all but the last section
+		int n = ::strrchr(symlink, '/');
+		if (n != -1)
+			path = std::string(symlink, n);
+		else
+			path = std::string(symlink);
 	}
 
-	if (m_usbPath.IsEmpty())
-		wxLogMessage(wxT("Found modem path of %s"), path.c_str());
+	if (m_path.empty())
+		LogMessage("Found modem path of %s", path.c_str());
 
-	m_usbPath = path;
+	m_path = path;
 #endif
 
 	return true;
@@ -733,7 +684,7 @@ bool CDVRPTRV3Controller::findModem()
 
 	// Tell the repeater that the signal has gone away
 	if (m_rx) {
-		wxMutexLocker locker(m_mutex);
+		CMutexLocker locker(m_mutex);
 
 		unsigned char data[2U];
 		data[0U] = DSMTT_EOT;
@@ -749,7 +700,7 @@ bool CDVRPTRV3Controller::findModem()
 	while (!m_stopped) {
 		count++;
 		if (count >= 4U) {
-			wxLogMessage(wxT("Trying to reopen the modem"));
+			LogMessage("Trying to reopen the modem");
 
 			bool ret = findPort();
 			if (ret) {
@@ -779,7 +730,7 @@ bool CDVRPTRV3Controller::openModem()
 			ret = m_network->open();
 			break;
 		default:
-			wxLogError(wxT("Invalid connection type: %d"), int(m_connection));
+			LogError("Invalid connection type: %d", int(m_connection));
 			break;
 	}
 

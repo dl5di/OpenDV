@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2011,2012 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2011,2012,2015 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -22,19 +22,21 @@
 #include "SlowDataEncoder.h"
 #include "BeaconCallback.h"
 #include "DStarDefines.h"
+#include "StopWatch.h"
 
-#include <wx/wx.h>
+#include <string>
+#include <map>
 
 class CIndexRecord {
 public:
-	CIndexRecord(const wxString& name, unsigned int start, unsigned int length) :
+	CIndexRecord(const std::string& name, unsigned int start, unsigned int length) :
 	m_name(name),
 	m_start(start),
 	m_length(length)
 	{
 	}
 
-	wxString getName() const
+	std::string getName() const
 	{
 		return m_name;
 	}
@@ -50,16 +52,14 @@ public:
 	}
 
 private:
-	wxString     m_name;
+	std::string  m_name;
 	unsigned int m_start;
 	unsigned int m_length;
 };
 
-WX_DECLARE_STRING_HASH_MAP(CIndexRecord*, CIndexList_t);
-
 class CBeaconUnit {
 public:
-	CBeaconUnit(IBeaconCallback* handler, const wxString& callsign, const wxString& text, bool voice, TEXT_LANG language);
+	CBeaconUnit(IBeaconCallback* handler, const std::string& callsign, const std::string& text, bool voice, TEXT_LANG language);
 	~CBeaconUnit();
 
 	void sendBeacon();
@@ -67,26 +67,26 @@ public:
 	void clock();
 
 private:
-	unsigned char*   m_ambe;
-	unsigned int     m_ambeLength;
-	unsigned char*   m_data;
-	unsigned int     m_dataLength;
-	CIndexList_t     m_index;
-	TEXT_LANG        m_language;
-	IBeaconCallback* m_handler;
-	wxString         m_callsign;
-	CSlowDataEncoder m_encoder;
-	unsigned int     m_in;
-	unsigned int     m_out;
-	unsigned int     m_seqNo;
-	wxStopWatch      m_time;
-	bool             m_sending;
+	unsigned char*                       m_ambe;
+	unsigned int                         m_ambeLength;
+	unsigned char*                       m_data;
+	unsigned int                         m_dataLength;
+	std::map<std::string, CIndexRecord*> m_index;
+	TEXT_LANG                            m_language;
+	IBeaconCallback*                     m_handler;
+	std::string                          m_callsign;
+	CSlowDataEncoder                     m_encoder;
+	unsigned int                         m_in;
+	unsigned int                         m_out;
+	unsigned int                         m_seqNo;
+	CStopWatch                           m_time;
+	bool                                 m_sending;
 
-	bool lookup(const wxString& id);
-	void spellCallsign(const wxString& callsign);
+	bool lookup(const std::string& id);
+	void spellCallsign(const std::string& callsign);
 
-	bool readAMBE(const wxString& name);
-	bool readIndex(const wxString& name);
+	bool readAMBE(const std::string& name);
+	bool readIndex(const std::string& name);
 };
 
 #endif

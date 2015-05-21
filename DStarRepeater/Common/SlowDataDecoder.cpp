@@ -1,5 +1,5 @@
 /*
- *	Copyright (C) 2009,2010,2011 by Jonathan Naylor, G4KLX
+ *	Copyright (C) 2009,2010,2011,2015 by Jonathan Naylor, G4KLX
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -11,9 +11,12 @@
  *	GNU General Public License for more details.
  */
 
-#include "CCITTChecksumReverse.h"
 #include "SlowDataDecoder.h"
+
+#include "CCITTChecksumReverse.h"
 #include "DStarDefines.h"
+
+#include <cassert>
 
 const unsigned int  SLOW_DATA_BLOCK_SIZE = 6U;
 
@@ -40,7 +43,7 @@ CSlowDataDecoder::~CSlowDataDecoder()
 
 void CSlowDataDecoder::addData(const unsigned char* data)
 {
-	wxASSERT(data != NULL);
+	assert(data != NULL);
 
 	switch (m_state) {
 		case SDD_FIRST:

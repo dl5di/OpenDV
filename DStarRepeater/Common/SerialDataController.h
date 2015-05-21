@@ -20,9 +20,9 @@
 #ifndef SerialDataController_H
 #define SerialDataController_H
 
-#include <wx/wx.h>
+#include <string>
 
-#if defined(__WINDOWS__)
+#if defined(WIN32)
 #include <windows.h>
 #endif
 
@@ -40,7 +40,7 @@ enum SERIAL_SPEED {
 
 class CSerialDataController {
 public:
-	CSerialDataController(const wxString& device, SERIAL_SPEED speed, bool assertRTS = false);
+	CSerialDataController(const std::string& device, SERIAL_SPEED speed, bool assertRTS = false);
 	~CSerialDataController();
 
 	bool open();
@@ -51,10 +51,10 @@ public:
 	void close();
 
 private:
-	wxString       m_device;
+	std::string    m_device;
 	SERIAL_SPEED   m_speed;
 	bool           m_assertRTS;
-#if defined(__WINDOWS__)
+#if defined(WIN32)
 	HANDLE         m_handle;
 	OVERLAPPED     m_readOverlapped;
 	OVERLAPPED     m_writeOverlapped;
@@ -65,7 +65,7 @@ private:
 	int            m_fd;
 #endif
 
-#if defined(__WINDOWS__)
+#if defined(WIN32)
 	int readNonblock(unsigned char* buffer, unsigned int length);
 #endif
 };

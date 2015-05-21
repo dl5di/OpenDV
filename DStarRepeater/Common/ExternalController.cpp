@@ -1,5 +1,5 @@
 /*
- *	Copyright (C) 2009,2010,2014 by Jonathan Naylor, G4KLX
+ *	Copyright (C) 2009,2010,2014,2015 by Jonathan Naylor, G4KLX
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -15,8 +15,10 @@
 
 #include "DStarDefines.h"
 
+#include <cassert>
+
 CExternalController::CExternalController(IHardwareController* controller, bool pttInvert) :
-wxThread(wxTHREAD_JOINABLE),
+CThread(),
 m_controller(controller),
 m_pttInvert(pttInvert),
 m_disable(false),
@@ -29,7 +31,7 @@ m_out3(false),
 m_out4(false),
 m_kill(false)
 {
-	wxASSERT(controller != NULL);
+	assert(controller != NULL);
 
 	if (m_pttInvert)
 		m_radioTX = true;
@@ -46,15 +48,14 @@ bool CExternalController::open()
 	if (!res)
 		return false;
 
-	Create();
-	Run();
+	run();
 
 	return true;
 }
 
-void* CExternalController::Entry()
+void CExternalController::entry()
 {
-	wxASSERT(m_controller != NULL);
+	assert(m_controller != NULL);
 
 	bool dummy1, dummy2, dummy3, dummy4;
 
@@ -80,8 +81,6 @@ void* CExternalController::Entry()
 	m_controller->getDigitalInputs(dummy1, dummy2, dummy3, dummy4, m_disable);
 
 	m_controller->close();
-
-	return NULL;
 }
 
 bool CExternalController::getDisable() const
@@ -131,5 +130,5 @@ void CExternalController::close()
 {
 	m_kill = true;
 
-	Wait();
+	wait();
 }

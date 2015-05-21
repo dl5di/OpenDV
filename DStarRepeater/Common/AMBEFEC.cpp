@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2010,2014 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2010,2014,2015 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -18,7 +18,8 @@
 
 #include "AMBEFEC.h"
 
-#include <wx/wx.h>
+#include <cstdio>
+#include <cassert>
 
 static const unsigned int PRNG_TABLE[] = {
 	0x42CC47U, 0x19D6FEU, 0x304729U, 0x6B2CD0U, 0x60BF47U, 0x39650EU, 0x7354F1U, 0xEACF60U, 0x819C9FU, 0xDE25CEU, 
@@ -442,7 +443,7 @@ CAMBEFEC::~CAMBEFEC()
 
 unsigned int CAMBEFEC::regenerate(unsigned char* bytes) const
 {
-	wxASSERT(bytes != NULL);
+	assert(bytes != NULL);
 
 	unsigned int a = ((bytes[0] & 0x80) ? 0x800000 : 0x000000) | ((bytes[0] & 0x02) ? 0x400000 : 0x000000) |
 					 ((bytes[1] & 0x08) ? 0x200000 : 0x000000) | ((bytes[2] & 0x20) ? 0x100000 : 0x000000) |
@@ -526,7 +527,7 @@ unsigned int CAMBEFEC::regenerate(unsigned char* bytes) const
 
 unsigned int CAMBEFEC::count(const unsigned char* bytes) const
 {
-	wxASSERT(bytes != NULL);
+	assert(bytes != NULL);
 
 	unsigned int a = ((bytes[0] & 0x80) ? 0x800000 : 0x000000) | ((bytes[0] & 0x02) ? 0x400000 : 0x000000) |
 					 ((bytes[1] & 0x08) ? 0x200000 : 0x000000) | ((bytes[2] & 0x20) ? 0x100000 : 0x000000) |

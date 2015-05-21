@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2009,2011,2013 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2009,2011,2013,2015 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -16,12 +16,14 @@
  *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include "CCITTChecksumReverse.h"
 #include "HeaderData.h"
+
+#include "CCITTChecksumReverse.h"
 #include "DStarDefines.h"
 
+#include <cassert>
+
 CHeaderData::CHeaderData() :
-m_time(),
 m_myCall1(),
 m_myCall2(),
 m_yourCall(),
@@ -35,7 +37,6 @@ m_valid(false)
 }
 
 CHeaderData::CHeaderData(const CHeaderData& header) :
-m_time(header.m_time),
 m_myCall1(header.m_myCall1),
 m_myCall2(header.m_myCall2),
 m_yourCall(header.m_yourCall),
@@ -49,7 +50,6 @@ m_valid(header.m_valid)
 }
 
 CHeaderData::CHeaderData(const unsigned char* data, unsigned int length, bool check) :
-m_time(),
 m_myCall1(),
 m_myCall2(),
 m_yourCall(),
@@ -60,29 +60,27 @@ m_flag2(0x00),
 m_flag3(0x00),
 m_valid(true)
 {
-	wxASSERT(data != NULL);
-	wxASSERT(length >= (RADIO_HEADER_LENGTH_BYTES - 2U));
+	assert(data != NULL);
+	assert(length >= (RADIO_HEADER_LENGTH_BYTES - 2U));
 
 	const unsigned char* p = data;
 	m_flag1 = *p++;
 	m_flag2 = *p++;
 	m_flag3 = *p++;
 
-	m_rptCall2 = wxString((const char*)p, wxConvLocal, LONG_CALLSIGN_LENGTH);
+	m_rptCall2 = std::string((const char*)p, LONG_CALLSIGN_LENGTH);
 	p += LONG_CALLSIGN_LENGTH;
 
-	m_rptCall1 = wxString((const char*)p, wxConvLocal, LONG_CALLSIGN_LENGTH);
+	m_rptCall1 = std::string((const char*)p, LONG_CALLSIGN_LENGTH);
 	p += LONG_CALLSIGN_LENGTH;
 
-	m_yourCall = wxString((const char*)p, wxConvLocal, LONG_CALLSIGN_LENGTH);
+	m_yourCall = std::string((const char*)p, LONG_CALLSIGN_LENGTH);
 	p += LONG_CALLSIGN_LENGTH;
 
-	m_myCall1  = wxString((const char*)p,  wxConvLocal, LONG_CALLSIGN_LENGTH);
+	m_myCall1  = std::string((const char*)p, LONG_CALLSIGN_LENGTH);
 	p += LONG_CALLSIGN_LENGTH;
 
-	m_myCall2  = wxString((const char*)p,  wxConvLocal, SHORT_CALLSIGN_LENGTH);
-
-	m_time.SetToCurrent();
+	m_myCall2  = std::string((const char*)p, SHORT_CALLSIGN_LENGTH);
 
 	// We have a checksum, check it if asked
 	if (length >= RADIO_HEADER_LENGTH_BYTES && check) {
@@ -94,10 +92,9 @@ m_valid(true)
 	}
 }
 
-CHeaderData::CHeaderData(const wxString& myCall1,  const wxString& myCall2, const wxString& yourCall,
-						 const wxString& rptCall1, const wxString& rptCall2, unsigned char flag1,
+CHeaderData::CHeaderData(const std::string& myCall1,  const std::string& myCall2, const std::string& yourCall,
+						 const std::string& rptCall1, const std::string& rptCall2, unsigned char flag1,
 						 unsigned char flag2, unsigned char flag3) :
-m_time(),
 m_myCall1(myCall1),
 m_myCall2(myCall2),
 m_yourCall(yourCall),
@@ -108,51 +105,38 @@ m_flag2(flag2),
 m_flag3(flag3),
 m_valid(true)
 {
-	m_time.SetToCurrent();
-
-	m_myCall1.Append(wxT(' '),  LONG_CALLSIGN_LENGTH);
-	m_myCall2.Append(wxT(' '),  SHORT_CALLSIGN_LENGTH);
-	m_yourCall.Append(wxT(' '), LONG_CALLSIGN_LENGTH);
-	m_rptCall1.Append(wxT(' '), LONG_CALLSIGN_LENGTH);
-	m_rptCall2.Append(wxT(' '), LONG_CALLSIGN_LENGTH);
-
-	m_myCall1.Truncate(LONG_CALLSIGN_LENGTH);
-	m_myCall2.Truncate(SHORT_CALLSIGN_LENGTH);
-	m_yourCall.Truncate(LONG_CALLSIGN_LENGTH);
-	m_rptCall1.Truncate(LONG_CALLSIGN_LENGTH);
-	m_rptCall2.Truncate(LONG_CALLSIGN_LENGTH);
+	m_myCall1.resize(LONG_CALLSIGN_LENGTH,  ' ');
+	m_myCall2.resize(SHORT_CALLSIGN_LENGTH, ' ');
+	m_yourCall.resize(LONG_CALLSIGN_LENGTH, ' ');
+	m_rptCall1.resize(LONG_CALLSIGN_LENGTH, ' ');
+	m_rptCall2.resize(LONG_CALLSIGN_LENGTH, ' ');
 }
 
 CHeaderData::~CHeaderData()
 {
 }
 
-wxDateTime CHeaderData::getTime() const
-{
-	return m_time;
-}
-
-wxString CHeaderData::getMyCall1() const
+std::string CHeaderData::getMyCall1() const
 {
 	return m_myCall1;
 }
 
-wxString CHeaderData::getMyCall2() const
+std::string CHeaderData::getMyCall2() const
 {
 	return m_myCall2;
 }
 
-wxString CHeaderData::getYourCall() const
+std::string CHeaderData::getYourCall() const
 {
 	return m_yourCall;
 }
 
-wxString CHeaderData::getRptCall1() const
+std::string CHeaderData::getRptCall1() const
 {
 	return m_rptCall1;
 }
 
-wxString CHeaderData::getRptCall2() const
+std::string CHeaderData::getRptCall2() const
 {
 	return m_rptCall2;
 }
@@ -172,39 +156,34 @@ unsigned char CHeaderData::getFlag3() const
 	return m_flag3;
 }
 
-void CHeaderData::setMyCall1(const wxString& callsign)
+void CHeaderData::setMyCall1(const std::string& callsign)
 {
 	m_myCall1 = callsign;
-	m_myCall1.Append(wxT(' '), LONG_CALLSIGN_LENGTH);
-	m_myCall1.Truncate(LONG_CALLSIGN_LENGTH);
+	m_myCall1.resize(LONG_CALLSIGN_LENGTH, ' ');
 }
 
-void CHeaderData::setMyCall2(const wxString& callsign)
+void CHeaderData::setMyCall2(const std::string& callsign)
 {
 	m_myCall2 = callsign;
-	m_myCall2.Append(wxT(' '), SHORT_CALLSIGN_LENGTH);
-	m_myCall2.Truncate(SHORT_CALLSIGN_LENGTH);
+	m_myCall2.resize(SHORT_CALLSIGN_LENGTH, ' ');
 }
 
-void CHeaderData::setYourCall(const wxString& callsign)
+void CHeaderData::setYourCall(const std::string& callsign)
 {
 	m_yourCall = callsign;
-	m_yourCall.Append(wxT(' '), LONG_CALLSIGN_LENGTH);
-	m_yourCall.Truncate(LONG_CALLSIGN_LENGTH);
+	m_yourCall.resize(LONG_CALLSIGN_LENGTH, ' ');
 }
 
-void CHeaderData::setRptCall1(const wxString& callsign)
+void CHeaderData::setRptCall1(const std::string& callsign)
 {
 	m_rptCall1 = callsign;
-	m_rptCall1.Append(wxT(' '), LONG_CALLSIGN_LENGTH);
-	m_rptCall1.Truncate(LONG_CALLSIGN_LENGTH);
+	m_rptCall1.resize(LONG_CALLSIGN_LENGTH, ' ');
 }
 
-void CHeaderData::setRptCall2(const wxString& callsign)
+void CHeaderData::setRptCall2(const std::string& callsign)
 {
 	m_rptCall2 = callsign;
-	m_rptCall2.Append(wxT(' '), LONG_CALLSIGN_LENGTH);
-	m_rptCall2.Truncate(LONG_CALLSIGN_LENGTH);
+	m_rptCall2.resize(LONG_CALLSIGN_LENGTH, ' ');
 }
 
 bool CHeaderData::isAck() const
@@ -320,11 +299,11 @@ bool CHeaderData::isValid() const
 
 void CHeaderData::reset()
 {
-	m_myCall1  = wxT("        ");
-	m_myCall2  = wxT("    ");
-	m_yourCall = wxT("CQCQCQ  ");
-	m_rptCall1 = wxT("DIRECT  ");
-	m_rptCall2 = wxT("DIRECT  ");
+	m_myCall1  = "        ";
+	m_myCall2  = "    ";
+	m_yourCall = "CQCQCQ  ";
+	m_rptCall1 = "DIRECT  ";
+	m_rptCall2 = "DIRECT  ";
 
 	m_flag1 = 0x00;
 	m_flag2 = 0x00;
@@ -334,7 +313,6 @@ void CHeaderData::reset()
 CHeaderData& CHeaderData::operator=(const CHeaderData& header)
 {
 	if (&header != this) {
-		m_time     = header.m_time;
 		m_myCall1  = header.m_myCall1;
 		m_myCall2  = header.m_myCall2;
 		m_yourCall = header.m_yourCall;

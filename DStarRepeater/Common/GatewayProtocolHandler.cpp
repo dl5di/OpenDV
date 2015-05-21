@@ -21,11 +21,15 @@
 #include "DStarDefines.h"
 #include "Utils.h"
 
+#include <cstdio>
+#include <ctime>
+#include <cassert>
+
 // #define	DUMP_TX
 
 const unsigned int BUFFER_LENGTH = 255U;
 
-CGatewayProtocolHandler::CGatewayProtocolHandler(const wxString& localAddress, unsigned int localPort) :
+CGatewayProtocolHandler::CGatewayProtocolHandler(const std::string& localAddress, unsigned int localPort) :
 m_socket(localAddress, localPort),
 m_type(NETWORK_NONE),
 m_buffer(NULL),
@@ -33,8 +37,9 @@ m_length(0U)
 {
 	m_buffer = new unsigned char[BUFFER_LENGTH];
 
-	wxDateTime now = wxDateTime::UNow();
-	::srand(now.GetMillisecond());
+	time_t now;
+	::time(&now);
+	::srand(now);
 }
 
 CGatewayProtocolHandler::~CGatewayProtocolHandler()
@@ -47,7 +52,7 @@ bool CGatewayProtocolHandler::open()
 	return m_socket.open();
 }
 
-bool CGatewayProtocolHandler::writeHeader(const unsigned char* header, wxUint16 id, const in_addr& address, unsigned int port)
+bool CGatewayProtocolHandler::writeHeader(const unsigned char* header, uint16_t id, const in_addr& address, unsigned int port)
 {
 	unsigned char buffer[50U];
 
@@ -71,7 +76,7 @@ bool CGatewayProtocolHandler::writeHeader(const unsigned char* header, wxUint16 
 	csum.result(buffer + 8U + RADIO_HEADER_LENGTH_BYTES - 2U);
 
 #if defined(DUMP_TX)
-	CUtils::dump(wxT("Sending Header"), buffer, 49U);
+	CUtils::dump("Sending Header", buffer, 49U);
 #endif
 
 	for (unsigned int i = 0U; i < 4U; i++) {
@@ -83,10 +88,10 @@ bool CGatewayProtocolHandler::writeHeader(const unsigned char* header, wxUint16 
 	return true;
 }
 
-bool CGatewayProtocolHandler::writeData(const unsigned char* data, unsigned int length, wxUint16 id, wxUint8 seqNo, const in_addr& address, unsigned int port)
+bool CGatewayProtocolHandler::writeData(const unsigned char* data, unsigned int length, uint16_t id, uint8_t seqNo, const in_addr& address, unsigned int port)
 {
-	wxASSERT(data != NULL);
-	wxASSERT(length == DV_FRAME_LENGTH_BYTES || length == DV_FRAME_MAX_LENGTH_BYTES);
+	assert(data != NULL);
+	assert(length == DV_FRAME_LENGTH_BYTES || length == DV_FRAME_MAX_LENGTH_BYTES);
 
 	unsigned char buffer[30U];
 
@@ -107,13 +112,13 @@ bool CGatewayProtocolHandler::writeData(const unsigned char* data, unsigned int 
 	::memcpy(buffer + 9U, data, length);
 
 #if defined(DUMP_TX)
-	CUtils::dump(wxT("Sending Data"), buffer, length + 9U);
+	CUtils::dump("Sending Data", buffer, length + 9U);
 #endif
 
 	return m_socket.write(buffer, length + 9U, address, port);
 }
 
-NETWORK_TYPE CGatewayProtocolHandler::read(wxUint16& id, in_addr& address, unsigned int& port)
+NETWORK_TYPE CGatewayProtocolHandler::read(uint16_t& id, in_addr& address, unsigned int& port)
 {
 	bool res = true;
 
@@ -124,7 +129,7 @@ NETWORK_TYPE CGatewayProtocolHandler::read(wxUint16& id, in_addr& address, unsig
 	return m_type;
 }
 
-bool CGatewayProtocolHandler::readPackets(wxUint16& id, in_addr& address, unsigned int& port)
+bool CGatewayProtocolHandler::readPackets(uint16_t& id, in_addr& address, unsigned int& port)
 {
 	m_type = NETWORK_NONE;
 
@@ -158,7 +163,7 @@ bool CGatewayProtocolHandler::readPackets(wxUint16& id, in_addr& address, unsign
 		}
 	}
 
-	CUtils::dump(wxT("Unknown packet from the Repeater"), m_buffer, m_length);
+	CUtils::dump("Unknown packet from the Repeater", m_buffer, m_length);
 
 	return true;
 }
@@ -180,7 +185,7 @@ unsigned int CGatewayProtocolHandler::readHeader(unsigned char* buffer, unsigned
 
 	bool check = csum.check(m_buffer + 8U + RADIO_HEADER_LENGTH_BYTES - 2U);
 	if (!check) {
-		CUtils::dump(wxT("Header checksum failure from the Repeater"), m_buffer + 8U, RADIO_HEADER_LENGTH_BYTES);
+		CUtils::dump("Header checksum failure from the Repeater", m_buffer + 8U, RADIO_HEADER_LENGTH_BYTES);
 		return 0U;
 	}
 
@@ -189,7 +194,7 @@ unsigned int CGatewayProtocolHandler::readHeader(unsigned char* buffer, unsigned
 	return RADIO_HEADER_LENGTH_BYTES;
 }
 
-unsigned int CGatewayProtocolHandler::readData(unsigned char* buffer, unsigned int length, wxUint8& seqNo, unsigned int& errors)
+unsigned int CGatewayProtocolHandler::readData(unsigned char* buffer, unsigned int length, uint8_t& seqNo, unsigned int& errors)
 {
 	if (m_type != NETWORK_DATA)
 		return 0U;
@@ -222,12 +227,12 @@ unsigned int CGatewayProtocolHandler::readData(unsigned char* buffer, unsigned i
 	return dataLen;
 }
 
-unsigned int CGatewayProtocolHandler::readRegister(wxString& name)
+unsigned int CGatewayProtocolHandler::readRegister(std::string& name)
 {
 	if (m_type != NETWORK_REGISTER)
 		return 0U;
 
-	name = wxString((char*)(m_buffer + 5U), wxConvLocal);
+	name = std::string((char*)(m_buffer + 5U));
 
 	return m_length - 6U;
 }

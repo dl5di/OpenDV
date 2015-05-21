@@ -19,6 +19,8 @@
 #include "CCITTChecksumReverse.h"
 #include "SoundCardController.h"
 #include "DStarDefines.h"
+#include "MutexLocker.h"
+#include "Log.h"
 
 // #define	AUDIO_LOOPBACK
 
@@ -33,23 +35,23 @@ const unsigned int MAX_SYNC_BITS = 50U * DV_FRAME_LENGTH_BITS;
 const unsigned int FEC_SECTION_LENGTH_BITS = 660U;
 
 // D-Star bit order version of 0x55 0x55 0x55 0x55
-const wxUint32     BIT_SYNC_DATA = 0xAAAAAAAAU;
-const wxUint32     BIT_SYNC_MASK = 0xFFFFFFFFU;
+const uint32_t     BIT_SYNC_DATA = 0xAAAAAAAAU;
+const uint32_t     BIT_SYNC_MASK = 0xFFFFFFFFU;
 const unsigned int BIT_SYNC_ERRS = 1U;
 
 // D-Star bit order version of 0x55 0x55 0x6E 0x0A
-const wxUint32     FRAME_SYNC_DATA = 0x00557650U;
-const wxUint32     FRAME_SYNC_MASK = 0x00FFFFFFU;
+const uint32_t     FRAME_SYNC_DATA = 0x00557650U;
+const uint32_t     FRAME_SYNC_MASK = 0x00FFFFFFU;
 const unsigned int FRAME_SYNC_ERRS = 2U;
 
 // D-Star bit order version of 0x55 0x2D 0x16
-const wxUint32     DATA_SYNC_DATA = 0x00AAB468U;
-const wxUint32     DATA_SYNC_MASK = 0x00FFFFFFU;
+const uint32_t     DATA_SYNC_DATA = 0x00AAB468U;
+const uint32_t     DATA_SYNC_MASK = 0x00FFFFFFU;
 const unsigned int DATA_SYNC_ERRS = 2U;
 
 // D-Star bit order version of 0x55 0x55 0xC8 0x7A
-const wxUint32     END_SYNC_DATA = 0xAAAA135EU;
-const wxUint32     END_SYNC_MASK = 0xFFFFFFFFU;
+const uint32_t     END_SYNC_DATA = 0xAAAA135EU;
+const uint32_t     END_SYNC_MASK = 0xFFFFFFFFU;
 const unsigned int END_SYNC_ERRS = 3U;
 
 const unsigned char BIT_SYNC    = 0xAAU;
@@ -363,7 +365,7 @@ const unsigned char SCRAMBLE_TABLE_RX[] = {
   0x7BU, 0x9AU, 0x04U, 0x22U, 0xA3U, 0x6BU, 0x83U, 0x59U, 0x39U, 0x6FU,
   0x00U};
 
-CSoundCardController::CSoundCardController(const wxString& rxDevice, const wxString& txDevice, bool rxInvert, bool txInvert, wxFloat32 rxLevel, wxFloat32 txLevel, unsigned int txDelay, unsigned int txTail) :
+CSoundCardController::CSoundCardController(const std::string& rxDevice, const std::string& txDevice, bool rxInvert, bool txInvert, float rxLevel, float txLevel, unsigned int txDelay, unsigned int txTail) :
 CModem(),
 m_sound(rxDevice, txDevice, DSTAR_RADIO_SAMPLE_RATE, DSTAR_RADIO_BLOCK_SIZE),
 m_rxLevel(rxLevel),
@@ -389,8 +391,8 @@ m_pathMemory2(NULL),
 m_pathMemory3(NULL),
 m_fecOutput(NULL)
 {
-	wxASSERT(!rxDevice.IsEmpty());
-	wxASSERT(!txDevice.IsEmpty());
+	assert(!rxDevice.empty());
+	assert(!txDevice.empty());
 
 	m_modulator.setInvert(txInvert);
 	m_demodulator.setInvert(rxInvert);
@@ -424,19 +426,17 @@ bool CSoundCardController::start()
 	if (!ret)
 		return false;
 
-	Create();
-	SetPriority(100U);
-	Run();
+	run();
 
 	return true;
 }
 
-void* CSoundCardController::Entry()
+void CSoundCardController::entry()
 {
-	wxLogMessage(wxT("Starting Sound Card Controller thread"));
+	LogMessage("Starting Sound Card Controller thread");
 
 	while (!m_stopped) {
-		wxFloat32 val;
+		float val;
 		while (m_rxAudio.getData(&val, 1U) == 1U) {
 			TRISTATE state = m_demodulator.decode(val * m_rxLevel);
 			switch (state) {
@@ -478,18 +478,16 @@ void* CSoundCardController::Entry()
 		Sleep(10UL);
 	}
 
-	wxLogMessage(wxT("Stopping Sound Card Controller thread"));
+	LogMessage("Stopping Sound Card Controller thread");
 
 	m_sound.close();
-
-	return NULL;
 }
 
 bool CSoundCardController::writeHeader(const CHeaderData& header)
 {
 	bool ret = m_txAudio.hasSpace((m_txDelay + 60U + 85U) * 8U * DSTAR_RADIO_BIT_LENGTH);
 	if (!ret) {
-		wxLogWarning(wxT("No space to write the header"));
+		LogWarning("No space to write the header");
 		return false;
 	}
 
@@ -501,25 +499,25 @@ bool CSoundCardController::writeHeader(const CHeaderData& header)
 	buffer1[1U] = header.getFlag2();
 	buffer1[2U] = header.getFlag3();
 
-	wxString rpt2 = header.getRptCall2();
-	for (unsigned int i = 0U; i < rpt2.Len() && i < LONG_CALLSIGN_LENGTH; i++)
-		buffer1[i + 3U]  = rpt2.GetChar(i);
+	std::string rpt2 = header.getRptCall2();
+	for (unsigned int i = 0U; i < rpt2.length() && i < LONG_CALLSIGN_LENGTH; i++)
+		buffer1[i + 3U]  = rpt2.at(i);
 
-	wxString rpt1 = header.getRptCall1();
-	for (unsigned int i = 0U; i < rpt1.Len() && i < LONG_CALLSIGN_LENGTH; i++)
-		buffer1[i + 11U] = rpt1.GetChar(i);
+	std::string rpt1 = header.getRptCall1();
+	for (unsigned int i = 0U; i < rpt1.length() && i < LONG_CALLSIGN_LENGTH; i++)
+		buffer1[i + 11U] = rpt1.at(i);
 
-	wxString your = header.getYourCall();
-	for (unsigned int i = 0U; i < your.Len() && i < LONG_CALLSIGN_LENGTH; i++)
-		buffer1[i + 19U] = your.GetChar(i);
+	std::string your = header.getYourCall();
+	for (unsigned int i = 0U; i < your.length() && i < LONG_CALLSIGN_LENGTH; i++)
+		buffer1[i + 19U] = your.at(i);
 
-	wxString my1 = header.getMyCall1();
-	for (unsigned int i = 0U; i < my1.Len() && i < LONG_CALLSIGN_LENGTH; i++)
-		buffer1[i + 27U] = my1.GetChar(i);
+	std::string my1 = header.getMyCall1();
+	for (unsigned int i = 0U; i < my1.length() && i < LONG_CALLSIGN_LENGTH; i++)
+		buffer1[i + 27U] = my1.at(i);
 
-	wxString my2 = header.getMyCall2();
-	for (unsigned int i = 0U; i < my2.Len() && i < SHORT_CALLSIGN_LENGTH; i++)
-		buffer1[i + 35U] = my2.GetChar(i);
+	std::string my2 = header.getMyCall2();
+	for (unsigned int i = 0U; i < my2.length() && i < SHORT_CALLSIGN_LENGTH; i++)
+		buffer1[i + 35U] = my2.at(i);
 
 	CCCITTChecksumReverse cksum1;
 	cksum1.update(buffer1 + 0U, RADIO_HEADER_LENGTH_BYTES - 2U);
@@ -549,7 +547,7 @@ bool CSoundCardController::writeData(const unsigned char* data, unsigned int len
 
 		bool ret = m_txAudio.hasSpace(tailBlocks * END_PATTERN_LENGTH_BYTES * 8U * DSTAR_RADIO_BIT_LENGTH);
 		if (!ret) {
-			wxLogWarning(wxT("No space to write end data"));
+			LogWarning("No space to write end data");
 			return false;
 		}
 
@@ -560,7 +558,7 @@ bool CSoundCardController::writeData(const unsigned char* data, unsigned int len
 	} else {
 		bool ret = m_txAudio.hasSpace(length * 8U * DSTAR_RADIO_BIT_LENGTH);
 		if (!ret) {
-			wxLogWarning(wxT("No space to write data"));
+			LogWarning("No space to write data");
 			return false;
 		}
 
@@ -583,14 +581,14 @@ bool CSoundCardController::isTXReady()
 
 bool CSoundCardController::isTX()
 {
-#if (defined(__APPLE__) && defined(__MACH__)) || defined(__WINDOWS__)
+#if (defined(__APPLE__) && defined(__MACH__)) || defined(WIN32)
 	return m_txAudio.hasData();
 #else
         return m_sound.isWriterBusy() || m_txAudio.hasData();
 #endif
 }
 
-void CSoundCardController::readCallback(const wxFloat32* input, unsigned int n, int id)
+void CSoundCardController::readCallback(const float* input, unsigned int n, int id)
 {
 #if !defined(AUDIO_LOOPBACK)
 	if (!m_stopped)
@@ -598,12 +596,12 @@ void CSoundCardController::readCallback(const wxFloat32* input, unsigned int n, 
 #endif
 }
 
-void CSoundCardController::writeCallback(wxFloat32* output, unsigned int& n, int id)
+void CSoundCardController::writeCallback(float* output, unsigned int& n, int id)
 {
         if (n == 0U)
                 return;
 
-	::memset(output, 0x00, n * sizeof(wxFloat32));
+	::memset(output, 0x00, n * sizeof(float));
 
 	if (!m_stopped) {
 		n = m_txAudio.getData(output, n);
@@ -698,7 +696,7 @@ void CSoundCardController::txHeader(const unsigned char* in, unsigned char* out)
 
 void CSoundCardController::writeBits(unsigned char c)
 {
-	wxFloat32 buffer[DSTAR_RADIO_BIT_LENGTH];
+	float buffer[DSTAR_RADIO_BIT_LENGTH];
 
 	unsigned char mask = 0x01U;
 	for (unsigned int i = 0U; i < 8U; i++) {
@@ -788,7 +786,7 @@ void CSoundCardController::processHeader(bool bit)
 		bool ok = rxHeader(m_rxBuffer, header);
 		if (ok) {
 			// The checksum is correct
-			wxMutexLocker locker(m_mutex);
+			CMutexLocker locker(m_mutex);
 
 			unsigned char data[2U];
 			data[0U] = DSMTT_HEADER;
@@ -827,7 +825,7 @@ void CSoundCardController::processData(bool bit)
 		// Release the GMSK PLL
 		m_demodulator.lock(false);
 
-		wxMutexLocker locker(m_mutex);
+		CMutexLocker locker(m_mutex);
 
 		unsigned char data[2U];
 		data[0U] = DSMTT_EOT;
@@ -852,7 +850,7 @@ void CSoundCardController::processData(bool bit)
 		// Release the GMSK PLL
 		m_demodulator.lock(false);
 
-		wxMutexLocker locker(m_mutex);
+		CMutexLocker locker(m_mutex);
 
 		unsigned char data[2U];
 		data[0U] = DSMTT_LOST;
@@ -865,7 +863,7 @@ void CSoundCardController::processData(bool bit)
 
 	// Send a data frame to the host if the required number of bits have been received, or if a data sync has been seen
 	if (m_rxBufferBits == DV_FRAME_LENGTH_BITS || syncSeen) {
-		wxMutexLocker locker(m_mutex);
+		CMutexLocker locker(m_mutex);
 
 		unsigned char data[2U];
 		data[0U] = DSMTT_DATA;
@@ -880,7 +878,7 @@ void CSoundCardController::processData(bool bit)
 	}
 }
 
-unsigned int CSoundCardController::countBits(wxUint32 num)
+unsigned int CSoundCardController::countBits(uint32_t num)
 {
     unsigned int count = 0U;
 

@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2011-2014 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2011-2015 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -23,7 +23,9 @@
 #include "DStarDefines.h"
 #include "HeaderData.h"
 #include "Version.h"
+#include "Thread.h"
 #include "Utils.h"
+#include "Log.h"
 
 const unsigned char DTMF_MASK[] = {0x82U, 0x08U, 0x20U, 0x82U, 0x00U, 0x00U, 0x82U, 0x00U, 0x00U};
 const unsigned char DTMF_SIG[]  = {0x82U, 0x08U, 0x20U, 0x82U, 0x00U, 0x00U, 0x00U, 0x00U, 0x00U};
@@ -34,7 +36,7 @@ const unsigned int NETWORK_QUEUE_COUNT = 2U;
 
 const unsigned int CYCLE_TIME = 9U;
 
-CDStarRepeaterRXThread::CDStarRepeaterRXThread(const wxString& type) :
+CDStarRepeaterRXThread::CDStarRepeaterRXThread(const std::string& type) :
 m_type(type),
 m_modem(NULL),
 m_protocolHandler(NULL),
@@ -58,28 +60,28 @@ m_lastAMBEErrors(0U)
 
 CDStarRepeaterRXThread::~CDStarRepeaterRXThread()
 {
-	delete  m_rxHeader;
+	delete m_rxHeader;
 }
 
 void CDStarRepeaterRXThread::run()
 {
 	// Wait here until we have the essentials to run
 	while (!m_killed && (m_modem == NULL  || m_protocolHandler == NULL))
-		::wxMilliSleep(500UL);		// 1/2 sec
+		CThread::milliSleep(500U);		// 1/2 sec
 
 	if (m_killed)
 		return;
 
 	m_registerTimer.start(10U);
 
-	wxString hardware = m_type;
+	std::string hardware = m_type;
 	int n = hardware.Find(wxT(' '));
 	if (n != wxNOT_FOUND)
 		hardware = m_type.Left(n);
 
-	wxLogMessage(wxT("Starting the D-Star receiver thread"));
+	LogMessage("Starting the D-Star receiver thread");
 
-	wxStopWatch stopWatch;
+	CStopWatch stopWatch;
 
 	try {
 		while (!m_killed) {
@@ -105,14 +107,13 @@ void CDStarRepeaterRXThread::run()
 		}
 	}
 	catch (std::exception& e) {
-		wxString message(e.what(), wxConvLocal);
-		wxLogError(wxT("Exception raised - \"%s\""), message.c_str());
+		LogError("Exception raised - \"%s\"", e.what());
 	}
 	catch (...) {
-		wxLogError(wxT("Unknown exception raised"));
+		LogError("Unknown exception raised");
 	}
 
-	wxLogMessage(wxT("Stopping the D-Star receiver thread"));
+	LogMessage("Stopping the D-Star receiver thread");
 
 	m_modem->stop();
 
@@ -125,20 +126,20 @@ void CDStarRepeaterRXThread::kill()
 	m_killed = true;
 }
 
-void CDStarRepeaterRXThread::setCallsign(const wxString&, const wxString&, DSTAR_MODE, ACK_TYPE, bool, bool, bool, bool)
+void CDStarRepeaterRXThread::setCallsign(const std::string&, const std::string&, DSTAR_MODE, ACK_TYPE, bool, bool, bool, bool)
 {
 }
 
 void CDStarRepeaterRXThread::setProtocolHandler(CRepeaterProtocolHandler* handler, bool local)
 {
-	wxASSERT(handler != NULL);
+	assert(handler != NULL);
 
 	m_protocolHandler = handler;
 }
 
 void CDStarRepeaterRXThread::setModem(CModem* modem)
 {
-	wxASSERT(modem != NULL);
+	assert(modem != NULL);
 
 	m_modem = modem;
 }
@@ -147,11 +148,11 @@ void CDStarRepeaterRXThread::setTimes(unsigned int, unsigned int)
 {
 }
 
-void CDStarRepeaterRXThread::setBeacon(unsigned int, const wxString&, bool, TEXT_LANG)
+void CDStarRepeaterRXThread::setBeacon(unsigned int, const std::string&, bool, TEXT_LANG)
 {
 }
 
-void CDStarRepeaterRXThread::setAnnouncement(bool, unsigned int, const wxString&, const wxString&, const wxString&, const wxString&)
+void CDStarRepeaterRXThread::setAnnouncement(bool, unsigned int, const std::string&, const std::string&, const std::string&, const std::string&)
 {
 }
 
@@ -159,7 +160,7 @@ void CDStarRepeaterRXThread::setController(CExternalController*, unsigned int)
 {
 }
 
-void CDStarRepeaterRXThread::setControl(bool, const wxString&, const wxString&, const wxString&, const wxString&, const wxString&, const wxString&, const wxString&, const wxString&, const wxString&, const wxString&, const wxString&, const wxString&, const wxString&, const wxString&, const wxString&, const wxString&, const wxString&, const wxString&, const wxString&, const wxString&, const wxString&, const wxString&, const wxString&, const wxString&, const wxString&)
+void CDStarRepeaterRXThread::setControl(bool, const std::string&, const std::string&, const std::string&, const std::string&, const std::string&, const std::string&, const std::string&, const std::string&, const std::string&, const std::string&, const std::string&, const std::string&, const std::string&, const std::string&, const std::string&, const std::string&, const std::string&, const std::string&, const std::string&, const std::string&, const std::string&, const std::string&, const std::string&, const std::string&, const std::string&)
 {
 }
 
@@ -167,7 +168,7 @@ void CDStarRepeaterRXThread::setOutputs(bool, bool, bool, bool)
 {
 }
 
-void CDStarRepeaterRXThread::setLogging(bool, const wxString&)
+void CDStarRepeaterRXThread::setLogging(bool, const std::string&)
 {
 }
 
@@ -228,9 +229,9 @@ void CDStarRepeaterRXThread::receiveModem()
 
 void CDStarRepeaterRXThread::receiveHeader(CHeaderData* header)
 {
-	wxASSERT(header != NULL);
+	assert(header != NULL);
 
-	wxLogMessage(wxT("Radio header decoded - My: %s/%s  Your: %s  Rpt1: %s  Rpt2: %s  Flags: %02X %02X %02X"), header->getMyCall1().c_str(), header->getMyCall2().c_str(), header->getYourCall().c_str(), header->getRptCall1().c_str(), header->getRptCall2().c_str(), header->getFlag1(), header->getFlag2(), header->getFlag3());
+	LogMessage("Radio header decoded - My: %s/%s  Your: %s  Rpt1: %s  Rpt2: %s  Flags: %02X %02X %02X", header->getMyCall1().c_str(), header->getMyCall2().c_str(), header->getYourCall().c_str(), header->getRptCall1().c_str(), header->getRptCall2().c_str(), header->getFlag1(), header->getFlag2(), header->getFlag3());
 
 	bool res = processRadioHeader(header);
 	if (res) {
@@ -239,7 +240,7 @@ void CDStarRepeaterRXThread::receiveHeader(CHeaderData* header)
 		setRadioState(DSRXS_PROCESS_DATA);
 	} else {
 		// This is a DD packet or some other problem
-		// wxLogMessage(wxT("Invalid header"));
+		// LogMessage("Invalid header");
 	}
 }
 
@@ -252,11 +253,11 @@ void CDStarRepeaterRXThread::receiveSlowData(unsigned char* data, unsigned int)
 
 	// The data sync has been seen, a fuzzy match is used, two bit errors or less
 	if (errs <= MAX_DATA_SYNC_BIT_ERRS) {
-		// wxLogMessage(wxT("Found data sync at frame %u, errs: %u"), m_radioSeqNo, errs);
+		// LogMessage("Found data sync at frame %u, errs: %u", m_radioSeqNo, errs);
 		m_radioSeqNo     = 0U;
 		m_slowDataDecoder.sync();
 	} else if (m_radioSeqNo == 20U) {
-		// wxLogMessage(wxT("Assuming data sync"));
+		// LogMessage("Assuming data sync");
 		m_radioSeqNo = 0U;
 		m_slowDataDecoder.sync();
 	} else {
@@ -267,7 +268,7 @@ void CDStarRepeaterRXThread::receiveSlowData(unsigned char* data, unsigned int)
 		if (header == NULL)
 			return;
 
-		wxLogMessage(wxT("Radio header from slow data - My: %s/%s  Your: %s  Rpt1: %s  Rpt2: %s  Flags: %02X %02X %02X  BER: 0%%"), header->getMyCall1().c_str(), header->getMyCall2().c_str(), header->getYourCall().c_str(), header->getRptCall1().c_str(), header->getRptCall2().c_str(), header->getFlag1(), header->getFlag2(), header->getFlag3());
+		LogMessage("Radio header from slow data - My: %s/%s  Your: %s  Rpt1: %s  Rpt2: %s  Flags: %02X %02X %02X  BER: 0%%", header->getMyCall1().c_str(), header->getMyCall2().c_str(), header->getYourCall().c_str(), header->getRptCall1().c_str(), header->getRptCall2().c_str(), header->getFlag1(), header->getFlag2(), header->getFlag3());
 
 		if (header != NULL) {
 			bool res = processRadioHeader(header);
@@ -276,7 +277,7 @@ void CDStarRepeaterRXThread::receiveSlowData(unsigned char* data, unsigned int)
 				setRadioState(DSRXS_PROCESS_DATA);
 			} else {
 				// This is a DD packet or some other problem
-				// wxLogMessage(wxT("Invalid header"));
+				// LogMessage("Invalid header");
 			}
 		}
 	}
@@ -291,11 +292,11 @@ void CDStarRepeaterRXThread::receiveRadioData(unsigned char* data, unsigned int)
 
 	// The data sync has been seen, a fuzzy match is used, two bit errors or less
 	if (errs <= MAX_DATA_SYNC_BIT_ERRS) {
-		// wxLogMessage(wxT("Found data sync at frame %u, errs: %u"), m_radioSeqNo, errs);
+		// LogMessage("Found data sync at frame %u, errs: %u", m_radioSeqNo, errs);
 		m_radioSeqNo = 0U;
 		processRadioFrame(data, FRAME_SYNC);
 	} else if (m_radioSeqNo == 20U) {
-		// wxLogMessage(wxT("Regenerating data sync"));
+		// LogMessage("Regenerating data sync");
 		m_radioSeqNo = 0U;
 		processRadioFrame(data, FRAME_SYNC);
 	} else {
@@ -341,11 +342,11 @@ void CDStarRepeaterRXThread::setRadioState(DSTAR_RX_STATE state)
 
 bool CDStarRepeaterRXThread::processRadioHeader(CHeaderData* header)
 {
-	wxASSERT(header != NULL);
+	assert(header != NULL);
 
 	// We don't handle DD data packets
 	if (header->isDataPacket()) {
-		wxLogMessage(wxT("Received a DD packet, ignoring"));
+		LogMessage("Received a DD packet, ignoring");
 		delete header;
 		return false;
 	}
@@ -398,7 +399,7 @@ void CDStarRepeaterRXThread::processRadioFrame(unsigned char* data, FRAME_TYPE t
 
 void CDStarRepeaterRXThread::endOfRadioData()
 {
-	wxLogMessage(wxT("AMBE for %s  Frames: %.1fs, Silence: %.1f%%, BER: %.1f%%"), m_rxHeader->getMyCall1().c_str(), float(m_ambeFrames) / 50.0F, float(m_ambeSilence * 100U) / float(m_ambeFrames), float(m_ambeErrors * 100U) / float(m_ambeBits));
+	LogMessage("AMBE for %s  Frames: %.1fs, Silence: %.1f%%, BER: %.1f%%", m_rxHeader->getMyCall1().c_str(), float(m_ambeFrames) / 50.0F, float(m_ambeSilence * 100U) / float(m_ambeFrames), float(m_ambeErrors * 100U) / float(m_ambeBits));
 
 	m_rptState = DSRS_LISTENING;
 

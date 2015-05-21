@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2011-2014 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2011-2015 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -24,7 +24,7 @@
 #include "Modem.h"
 #include "Utils.h"
 
-#include <wx/wx.h>
+#include <string>
 
 enum RESP_TYPE_V1 {
 	RT1_TIMEOUT,
@@ -47,10 +47,10 @@ enum RESP_TYPE_V1 {
 
 class CDVRPTRV1Controller : public CModem {
 public:
-	CDVRPTRV1Controller(const wxString& port, const wxString& path, bool rxInvert, bool txInvert, bool channel, unsigned int modLevel, unsigned int txDelay);
+	CDVRPTRV1Controller(const std::string& port, const std::string& path, bool rxInvert, bool txInvert, bool channel, unsigned int modLevel, unsigned int txDelay);
 	virtual ~CDVRPTRV1Controller();
 
-	virtual void* Entry();
+	virtual void entry();
 
 	virtual bool start();
 
@@ -60,11 +60,11 @@ public:
 	virtual bool writeHeader(const CHeaderData& header);
 	virtual bool writeData(const unsigned char* data, unsigned int length, bool end);
 
-	virtual wxString getPath() const;
+	virtual std::string getPath() const;
 
 private:
-	wxString                   m_port;
-	wxString                   m_path;
+	std::string                m_port;
+	std::string                m_path;
 	bool                       m_rxInvert;
 	bool                       m_txInvert;
 	bool                       m_channel;
@@ -95,4 +95,3 @@ private:
 };
 
 #endif
-

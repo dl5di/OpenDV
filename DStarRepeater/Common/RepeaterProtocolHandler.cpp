@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2009-2014 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2009-2015 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -17,15 +17,21 @@
  */
 
 #include "RepeaterProtocolHandler.h"
+
 #include "CCITTChecksumReverse.h"
 #include "DStarDefines.h"
 #include "Utils.h"
+#include "Log.h"
+
+#include <cstdio>
+#include <cassert>
+#include <ctime>
 
 // #define	DUMP_TX
 
 const unsigned int BUFFER_LENGTH = 255U;
 
-CRepeaterProtocolHandler::CRepeaterProtocolHandler(const wxString& gatewayAddress, unsigned int gatewayPort, const wxString& localAddress, unsigned int localPort, const wxString& name) :
+CRepeaterProtocolHandler::CRepeaterProtocolHandler(const std::string& gatewayAddress, unsigned int gatewayPort, const std::string& localAddress, unsigned int localPort, const std::string& name) :
 m_socket(localAddress, localPort),
 m_address(),
 m_port(gatewayPort),
@@ -41,8 +47,9 @@ m_length(0U)
 
 	m_buffer = new unsigned char[BUFFER_LENGTH];
 
-	wxDateTime now = wxDateTime::UNow();
-	::srand(now.GetMillisecond());
+	time_t now;
+	::time(&now);
+	::srand(now);
 }
 
 CRepeaterProtocolHandler::~CRepeaterProtocolHandler()
@@ -82,19 +89,19 @@ bool CRepeaterProtocolHandler::writeHeader(const CHeaderData& header)
 	buffer[10] = header.getFlag3();
 
 	for (unsigned int i = 0U; i < LONG_CALLSIGN_LENGTH; i++)
-		buffer[11 + i] = header.getRptCall1().GetChar(i);
+		buffer[11 + i] = header.getRptCall1().at(i);
 
 	for (unsigned int i = 0U; i < LONG_CALLSIGN_LENGTH; i++)
-		buffer[19 + i] = header.getRptCall2().GetChar(i);
+		buffer[19 + i] = header.getRptCall2().at(i);
 
 	for (unsigned int i = 0U; i < LONG_CALLSIGN_LENGTH; i++)
-		buffer[27 + i] = header.getYourCall().GetChar(i);
+		buffer[27 + i] = header.getYourCall().at(i);
 
 	for (unsigned int i = 0U; i < LONG_CALLSIGN_LENGTH; i++)
-		buffer[35 + i] = header.getMyCall1().GetChar(i);
+		buffer[35 + i] = header.getMyCall1().at(i);
 
 	for (unsigned int i = 0U; i < SHORT_CALLSIGN_LENGTH; i++)
-		buffer[43 + i] = header.getMyCall2().GetChar(i);
+		buffer[43 + i] = header.getMyCall2().at(i);
 
 	// Get the checksum for the header
 	CCCITTChecksumReverse csum;
@@ -104,7 +111,7 @@ bool CRepeaterProtocolHandler::writeHeader(const CHeaderData& header)
 	m_outSeq = 0U;
 
 #if defined(DUMP_TX)
-	CUtils::dump(wxT("Sending Header"), buffer, 49U);
+	CUtils::dump("Sending Header", buffer, 49U);
 #endif
 
 	for (unsigned int i = 0U; i < 2U; i++) {
@@ -118,8 +125,8 @@ bool CRepeaterProtocolHandler::writeHeader(const CHeaderData& header)
 
 bool CRepeaterProtocolHandler::writeData(const unsigned char* data, unsigned int length, unsigned int errors, bool end)
 {
-	wxASSERT(data != NULL);
-	wxASSERT(length == DV_FRAME_LENGTH_BYTES || length == DV_FRAME_MAX_LENGTH_BYTES);
+	assert(data != NULL);
+	assert(length == DV_FRAME_LENGTH_BYTES || length == DV_FRAME_MAX_LENGTH_BYTES);
 
 	unsigned char buffer[30U];
 
@@ -150,7 +157,7 @@ bool CRepeaterProtocolHandler::writeData(const unsigned char* data, unsigned int
 	::memcpy(buffer + 9U, data, length);
 
 #if defined(DUMP_TX)
-	CUtils::dump(wxT("Sending Data"), buffer, length + 9U);
+	CUtils::dump("Sending Data", buffer, length + 9U);
 #endif
 
 	return m_socket.write(buffer, length + 9U, m_address, m_port);
@@ -180,19 +187,19 @@ bool CRepeaterProtocolHandler::writeBusyHeader(const CHeaderData& header)
 	buffer[10] = header.getFlag3();
 
 	for (unsigned int i = 0U; i < LONG_CALLSIGN_LENGTH; i++)
-		buffer[11 + i] = header.getRptCall1().GetChar(i);
+		buffer[11 + i] = header.getRptCall1().at(i);
 
 	for (unsigned int i = 0U; i < LONG_CALLSIGN_LENGTH; i++)
-		buffer[19 + i] = header.getRptCall2().GetChar(i);
+		buffer[19 + i] = header.getRptCall2().at(i);
 
 	for (unsigned int i = 0U; i < LONG_CALLSIGN_LENGTH; i++)
-		buffer[27 + i] = header.getYourCall().GetChar(i);
+		buffer[27 + i] = header.getYourCall().at(i);
 
 	for (unsigned int i = 0U; i < LONG_CALLSIGN_LENGTH; i++)
-		buffer[35 + i] = header.getMyCall1().GetChar(i);
+		buffer[35 + i] = header.getMyCall1().at(i);
 
 	for (unsigned int i = 0U; i < SHORT_CALLSIGN_LENGTH; i++)
-		buffer[43 + i] = header.getMyCall2().GetChar(i);
+		buffer[43 + i] = header.getMyCall2().at(i);
 
 	// Get the checksum for the header
 	CCCITTChecksumReverse csum;
@@ -202,7 +209,7 @@ bool CRepeaterProtocolHandler::writeBusyHeader(const CHeaderData& header)
 	m_outSeq = 0U;
 
 #if defined(DUMP_TX)
-	CUtils::dump(wxT("Sending Busy Header"), buffer, 49U);
+	CUtils::dump("Sending Busy Header", buffer, 49U);
 #endif
 
 	return m_socket.write(buffer, 49U, m_address, m_port);
@@ -210,8 +217,8 @@ bool CRepeaterProtocolHandler::writeBusyHeader(const CHeaderData& header)
 
 bool CRepeaterProtocolHandler::writeBusyData(const unsigned char* data, unsigned int length, unsigned int errors, bool end)
 {
-	wxASSERT(data != NULL);
-	wxASSERT(length == DV_FRAME_LENGTH_BYTES || length == DV_FRAME_MAX_LENGTH_BYTES);
+	assert(data != NULL);
+	assert(length == DV_FRAME_LENGTH_BYTES || length == DV_FRAME_MAX_LENGTH_BYTES);
 
 	unsigned char buffer[30U];
 
@@ -242,13 +249,13 @@ bool CRepeaterProtocolHandler::writeBusyData(const unsigned char* data, unsigned
 	::memcpy(buffer + 9U, data, length);
 
 #if defined(DUMP_TX)
-	CUtils::dump(wxT("Sending Busy Data"), buffer, length + 9U);
+	CUtils::dump("Sending Busy Data", buffer, length + 9U);
 #endif
 
 	return m_socket.write(buffer, length + 9U, m_address, m_port);
 }
 
-bool CRepeaterProtocolHandler::writePoll(const wxString& text)
+bool CRepeaterProtocolHandler::writePoll(const std::string& text)
 {
 	unsigned char buffer[40U];
 
@@ -259,15 +266,15 @@ bool CRepeaterProtocolHandler::writePoll(const wxString& text)
 
 	buffer[4] = 0x0A;				// Poll with text
 
-	unsigned int length = text.Length();
+	unsigned int length = text.length();
 
 	for (unsigned int i = 0U; i < length; i++)
-		buffer[5U + i] = text.GetChar(i);
+		buffer[5U + i] = text.at(i);
 
 	buffer[5U + length] = 0x00;
 
 #if defined(DUMP_TX)
-	CUtils::dump(wxT("Sending Poll"), buffer, 6U + length);
+	CUtils::dump("Sending Poll", buffer, 6U + length);
 #endif
 
 	return m_socket.write(buffer, 6U + length, m_address, m_port);
@@ -284,15 +291,15 @@ bool CRepeaterProtocolHandler::writeRegister()
 
 	buffer[4] = 0x0B;				// Register with name
 
-	unsigned int length = m_name.Length();
+	unsigned int length = m_name.length();
 
 	for (unsigned int i = 0U; i < length; i++)
-		buffer[5U + i] = m_name.GetChar(i);
+		buffer[5U + i] = m_name.at(i);
 
 	buffer[5U + length] = 0x00;
 
 #if defined(DUMP_TX)
-	CUtils::dump(wxT("Sending Register"), buffer, 6U + length);
+	CUtils::dump("Sending Register", buffer, 6U + length);
 #endif
 
 	return m_socket.write(buffer, 6U + length, m_address, m_port);
@@ -322,8 +329,8 @@ bool CRepeaterProtocolHandler::readPackets()
 
 	// Check if the data is for us
 	if (m_address.s_addr != address.s_addr || m_port != port) {
-		wxLogMessage(wxT("Packet received from an invalid source, %08X != %08X and/or %u != %u"), m_address.s_addr, address.s_addr, m_port, port);
-		CUtils::dump(wxT("Data"), m_buffer, length);
+		LogMessage("Packet received from an invalid source, %08X != %08X and/or %u != %u", m_address.s_addr, address.s_addr, m_port, port);
+		CUtils::dump("Data", m_buffer, length);
 		return false;
 	}
 
@@ -373,7 +380,7 @@ bool CRepeaterProtocolHandler::readPackets()
 
 		// Header data
 		else if (m_buffer[4] == 0x20U) {
-			wxUint16 id = m_buffer[5] * 256U + m_buffer[6];
+			uint16_t id = m_buffer[5] * 256U + m_buffer[6];
 
 			// Are we listening for headers?
 			if (m_inId != 0U)
@@ -386,7 +393,7 @@ bool CRepeaterProtocolHandler::readPackets()
 
 		// User data
 		else if (m_buffer[4] == 0x21U) {
-			wxUint16 id = m_buffer[5] * 256U + m_buffer[6];
+			uint16_t id = m_buffer[5] * 256U + m_buffer[6];
 
 			// Check that the stream id matches the valid header, reject otherwise
 			if (id != m_inId)
@@ -405,7 +412,7 @@ bool CRepeaterProtocolHandler::readPackets()
 		}
 	}
 
-	CUtils::dump(wxT("Unknown packet from the Gateway"), m_buffer, m_length);
+	CUtils::dump("Unknown packet from the Gateway", m_buffer, m_length);
 
 	return true;
 }
@@ -423,7 +430,7 @@ CHeaderData* CRepeaterProtocolHandler::readHeader()
 	CHeaderData* header = new CHeaderData(m_buffer + 8U, RADIO_HEADER_LENGTH_BYTES, true);
 
 	if (!header->isValid()) {
-		CUtils::dump(wxT("Header checksum failure from the Gateway"), m_buffer + 8U, RADIO_HEADER_LENGTH_BYTES);
+		CUtils::dump("Header checksum failure from the Gateway", m_buffer + 8U, RADIO_HEADER_LENGTH_BYTES);
 		delete header;
 		return NULL;
 	}
@@ -462,70 +469,70 @@ unsigned int CRepeaterProtocolHandler::readData(unsigned char* buffer, unsigned 
 	return dataLen;
 }
 
-void CRepeaterProtocolHandler::readText(wxString& text, LINK_STATUS& status, wxString& reflector)
+void CRepeaterProtocolHandler::readText(std::string& text, LINK_STATUS& status, std::string& reflector)
 {
 	if (m_type != NETWORK_TEXT) {
-		text = wxT("                    ");
-		reflector = wxT("        ");
+		text = "                    ";
+		reflector = "        ";
 		status = LS_NONE;
 		return;
 	}
 
-	text = wxString((char*)(m_buffer + 5U), wxConvLocal, 20U);
+	text = std::string((char*)(m_buffer + 5U), 20U);
 
 	status = LINK_STATUS(m_buffer[25U]);
 
-	reflector = wxString((char*)(m_buffer + 26U), wxConvLocal, 8U);
+	reflector = std::string((char*)(m_buffer + 26U), 8U);
 }
 
-void CRepeaterProtocolHandler::readTempText(wxString& text)
+void CRepeaterProtocolHandler::readTempText(std::string& text)
 {
 	if (m_type != NETWORK_TEMPTEXT) {
-		text = wxT("                    ");
+		text = "                    ";
 		return;
 	}
 
-	text = wxString((char*)(m_buffer + 5U), wxConvLocal, 20U);
+	text = std::string((char*)(m_buffer + 5U), 20U);
 }
 
-wxString CRepeaterProtocolHandler::readStatus1()
+std::string CRepeaterProtocolHandler::readStatus1()
 {
 	if (m_type != NETWORK_STATUS1)
-		return wxEmptyString;
+		return "";
 
-	return wxString((char*)(m_buffer + 6U), wxConvLocal, 20U);
+	return std::string((char*)(m_buffer + 6U), 20U);
 }
 
-wxString CRepeaterProtocolHandler::readStatus2()
+std::string CRepeaterProtocolHandler::readStatus2()
 {
 	if (m_type != NETWORK_STATUS2)
-		return wxEmptyString;
+		return "";
 
-	return wxString((char*)(m_buffer + 6U), wxConvLocal, 20U);
+	return std::string((char*)(m_buffer + 6U), 20U);
 }
 
-wxString CRepeaterProtocolHandler::readStatus3()
+std::string CRepeaterProtocolHandler::readStatus3()
 {
 	if (m_type != NETWORK_STATUS3)
-		return wxEmptyString;
+		return "";
 
-	return wxString((char*)(m_buffer + 6U), wxConvLocal, 20U);
+	return std::string((char*)(m_buffer + 6U), 20U);
 }
 
-wxString CRepeaterProtocolHandler::readStatus4()
+std::string CRepeaterProtocolHandler::readStatus4()
 {
 	if (m_type != NETWORK_STATUS4)
-		return wxEmptyString;
+		return "";
 
-	return wxString((char*)(m_buffer + 6U), wxConvLocal, 20U);
+	return std::string((char*)(m_buffer + 6U), 20U);
 }
 
-wxString CRepeaterProtocolHandler::readStatus5()
+std::string CRepeaterProtocolHandler::readStatus5()
 {
 	if (m_type != NETWORK_STATUS5)
-		return wxEmptyString;
+		return "";
 
-	return wxString((char*)(m_buffer + 6U), wxConvLocal, 20U);
+	return std::string((char*)(m_buffer + 6U), 20U);
 }
 
 void CRepeaterProtocolHandler::reset()

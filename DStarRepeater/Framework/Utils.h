@@ -1,5 +1,5 @@
 /*
- *	Copyright (C) 2009,2013 by Jonathan Naylor, G4KLX
+ *	Copyright (C) 2009,2014,2015 by Jonathan Naylor, G4KLX
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -11,24 +11,20 @@
  *	GNU General Public License for more details.
  */
 
-#ifndef	DStarScrambler_H
-#define	DStarScrambler_H
+#ifndef	Utils_H
+#define	Utils_H
 
-class CDStarScrambler {
+enum TRISTATE {
+	STATE_FALSE,
+	STATE_TRUE,
+	STATE_UNKNOWN
+};
+
+class CUtils {
 public:
-	CDStarScrambler();
-	~CDStarScrambler();
-
-	void process(bool* inOut, unsigned int length);
-	void process(const bool* in, bool* out, unsigned int length);
-
-	void process(unsigned char* inOut, unsigned int length);
-	void process(const unsigned char* in, unsigned char* out, unsigned int length);
-
-	void reset();
+	static void dump(const char* title, const unsigned char* data, unsigned int length);
 
 private:
-	unsigned int m_count;
 };
 
 #endif

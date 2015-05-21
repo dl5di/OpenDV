@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2002-2004,2007-2009,2011-2013,2015 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2015 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -16,16 +16,23 @@
  *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#ifndef SerialPortSelector_H
-#define SerialPortSelector_H
+#if !defined(LOG_H)
+#define	LOG_H
 
-#include <wx/wx.h>
+#include <string>
 
-class CSerialPortSelector {
-public:
-	static wxArrayString getDevices();
+#define	LogDebug(fmt, ...)	Log(1U, fmt, ##__VA_ARGS__)
+#define	LogMessage(fmt, ...)	Log(2U, fmt, ##__VA_ARGS__)
+#define	LogInfo(fmt, ...)	Log(3U, fmt, ##__VA_ARGS__)
+#define	LogWarning(fmt, ...)	Log(4U, fmt, ##__VA_ARGS__)
+#define	LogError(fmt, ...)	Log(5U, fmt, ##__VA_ARGS__)
+#define	LogFatal(fmt, ...)	Log(6U, fmt, ##__VA_ARGS__)
 
-private:
-};
+extern void Log(unsigned int level, const char* fmt, ...);
+
+extern bool LogInitialise(const std::string& path, const std::string& root);
+extern void LogFinalise();
+
+extern void LogSetLevel(unsigned int level);
 
 #endif

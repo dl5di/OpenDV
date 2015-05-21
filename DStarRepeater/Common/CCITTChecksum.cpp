@@ -1,5 +1,5 @@
 /*
- *	Copyright (C) 2009 by Jonathan Naylor, G4KLX
+ *	Copyright (C) 2009,2015 by Jonathan Naylor, G4KLX
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -14,6 +14,9 @@
 #include "CCITTChecksum.h"
 
 #include "Utils.h"
+
+#include <cstdio>
+#include <cassert>
 
 static const unsigned short ccittTab[] = {
 	0x0000, 0x1021, 0x2042, 0x3063, 0x4084, 0x50A5, 0x60C6, 0x70E7,
@@ -60,15 +63,15 @@ CCCITTChecksum::~CCCITTChecksum()
 
 void CCCITTChecksum::update(const unsigned char* data, unsigned int length)
 {
-	wxASSERT(data != NULL);
+	assert(data != NULL);
 
 	for (unsigned int i = 0U; i < length; i++)
-		m_crc16 = (wxUint16(m_crc8[0U]) << 8) ^ ccittTab[m_crc8[1U] ^ data[i]];
+		m_crc16 = (uint16_t(m_crc8[0U]) << 8) ^ ccittTab[m_crc8[1U] ^ data[i]];
 }
 
 void CCCITTChecksum::result(unsigned char* data)
 {
-	wxASSERT(data != NULL);
+	assert(data != NULL);
 
 	data[0U] = m_crc8[1U];
 	data[1U] = m_crc8[0U];
@@ -76,7 +79,7 @@ void CCCITTChecksum::result(unsigned char* data)
 
 bool CCCITTChecksum::check(const unsigned char* data)
 {
-	wxASSERT(data != NULL);
+	assert(data != NULL);
 
 	unsigned char sum[2U];
 	result(sum);

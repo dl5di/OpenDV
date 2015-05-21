@@ -18,10 +18,13 @@
  */
 
 #include "SerialDataController.h"
+#include "Log.h"
 
 #include <sys/types.h>
 
-#if defined(__WINDOWS__)
+#include <cassert>
+
+#if defined(WIN32)
 #include <setupapi.h>
 #include <winioctl.h>
 #else
@@ -34,11 +37,11 @@
 #endif
 
 
-#if defined(__WINDOWS__)
+#if defined(WIN32)
 
 const unsigned int BUFFER_LENGTH = 1000U;
 
-CSerialDataController::CSerialDataController(const wxString& device, SERIAL_SPEED speed, bool assertRTS) :
+CSerialDataController::CSerialDataController(const std::string& device, SERIAL_SPEED speed, bool assertRTS) :
 m_device(device),
 m_speed(speed),
 m_assertRTS(assertRTS),
@@ -49,7 +52,7 @@ m_readBuffer(NULL),
 m_readLength(0U),
 m_readPending(false)
 {
-	wxASSERT(!device.IsEmpty());
+	assert(!device.empty());
 
 	m_readBuffer = new unsigned char[BUFFER_LENGTH];
 }
@@ -61,20 +64,20 @@ CSerialDataController::~CSerialDataController()
 
 bool CSerialDataController::open()
 {
-	wxASSERT(m_handle == INVALID_HANDLE_VALUE);
+	assert(m_handle == INVALID_HANDLE_VALUE);
 
 	DWORD errCode;
 
-	wxString baseName = m_device.Mid(4U);		// Convert "\\.\COM10" to "COM10"
+	std::string baseName = m_device.substr(4U);		// Convert "\\.\COM10" to "COM10"
 
-	m_handle = ::CreateFile(m_device.c_str(), GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, FILE_FLAG_OVERLAPPED, NULL);
+	m_handle = ::CreateFileA(m_device.c_str(), GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, FILE_FLAG_OVERLAPPED, NULL);
 	if (m_handle == INVALID_HANDLE_VALUE) {
-		wxLogError(wxT("Cannot open device - %s, err=%04lx"), m_device.c_str(), ::GetLastError());
+		LogError("Cannot open device - %s, err=%04lx", m_device.c_str(), ::GetLastError());
 		return false;
 	}
 
 	if (!::SetupComm(m_handle, 32768UL, 32768UL)) {
-		wxLogError(wxT("Cannot set the communications parameters for %s, err=%04lx"), m_device.c_str(), ::GetLastError());
+		LogError("Cannot set the communications parameters for %s, err=%04lx", m_device.c_str(), ::GetLastError());
 		::ClearCommError(m_handle, &errCode, NULL);
 		::CloseHandle(m_handle);
 		return false;
@@ -86,15 +89,15 @@ bool CSerialDataController::open()
 	::memset(&config, 0x00U, sizeof(COMMCONFIG));
 	config.dwSize = size;
 
-	if (!::GetDefaultCommConfig(baseName.c_str(), &config, &size)) {
-		wxLogError(wxT("Cannot get the default comm config for %s, err=%04lx"), m_device.c_str(), ::GetLastError());
+	if (!::GetDefaultCommConfigA(baseName.c_str(), &config, &size)) {
+		LogError("Cannot get the default comm config for %s, err=%04lx", m_device.c_str(), ::GetLastError());
 		::ClearCommError(m_handle, &errCode, NULL);
 		::CloseHandle(m_handle);
 		return false;
 	}
 
 	if (!::SetCommConfig(m_handle, &config, size)) {
-		wxLogError(wxT("Cannot set the comm config for %s, err=%04lx"), m_device.c_str(), ::GetLastError());
+		LogError("Cannot set the comm config for %s, err=%04lx", m_device.c_str(), ::GetLastError());
 		::ClearCommError(m_handle, &errCode, NULL);
 		::CloseHandle(m_handle);
 		return false;
@@ -102,7 +105,7 @@ bool CSerialDataController::open()
 
 	DCB dcb;
 	if (::GetCommState(m_handle, &dcb) == 0) {
-		wxLogError(wxT("Cannot get the attributes for %s, err=%04lx"), m_device.c_str(), ::GetLastError());
+		LogError("Cannot get the attributes for %s, err=%04lx", m_device.c_str(), ::GetLastError());
 		::ClearCommError(m_handle, &errCode, NULL);
 		::CloseHandle(m_handle);
 		return false;
@@ -121,7 +124,7 @@ bool CSerialDataController::open()
 	dcb.fRtsControl  = RTS_CONTROL_DISABLE;
 
 	if (::SetCommState(m_handle, &dcb) == 0) {
-		wxLogError(wxT("Cannot set the attributes for %s, err=%04lx"), m_device.c_str(), ::GetLastError());
+		LogError("Cannot set the attributes for %s, err=%04lx", m_device.c_str(), ::GetLastError());
 		::ClearCommError(m_handle, &errCode, NULL);
 		::CloseHandle(m_handle);
 		return false;
@@ -129,7 +132,7 @@ bool CSerialDataController::open()
 
 	COMMTIMEOUTS timeouts;
 	if (!::GetCommTimeouts(m_handle, &timeouts)) {
-		wxLogError(wxT("Cannot get the timeouts for %s, err=%04lx"), m_device.c_str(), ::GetLastError());
+		LogError("Cannot get the timeouts for %s, err=%04lx", m_device.c_str(), ::GetLastError());
 		::ClearCommError(m_handle, &errCode, NULL);
 		::CloseHandle(m_handle);
 		return false;
@@ -140,21 +143,21 @@ bool CSerialDataController::open()
 	timeouts.ReadTotalTimeoutConstant   = 0UL;
 
 	if (!::SetCommTimeouts(m_handle, &timeouts)) {
-		wxLogError(wxT("Cannot set the timeouts for %s, err=%04lx"), m_device.c_str(), ::GetLastError());
+		LogError("Cannot set the timeouts for %s, err=%04lx", m_device.c_str(), ::GetLastError());
 		::ClearCommError(m_handle, &errCode, NULL);
 		::CloseHandle(m_handle);
 		return false;
 	}
 
 	if (::EscapeCommFunction(m_handle, CLRDTR) == 0) {
-		wxLogError(wxT("Cannot clear DTR for %s, err=%04lx"), m_device.c_str(), ::GetLastError());
+		LogError("Cannot clear DTR for %s, err=%04lx", m_device.c_str(), ::GetLastError());
 		::ClearCommError(m_handle, &errCode, NULL);
 		::CloseHandle(m_handle);
 		return false;
 	}
 
 	if (::EscapeCommFunction(m_handle, m_assertRTS ? SETRTS : CLRRTS) == 0) {
-		wxLogError(wxT("Cannot set/clear RTS for %s, err=%04lx"), m_device.c_str(), ::GetLastError());
+		LogError("Cannot set/clear RTS for %s, err=%04lx", m_device.c_str(), ::GetLastError());
 		::ClearCommError(m_handle, &errCode, NULL);
 		::CloseHandle(m_handle);
 		return false;
@@ -177,8 +180,8 @@ bool CSerialDataController::open()
 
 int CSerialDataController::read(unsigned char* buffer, unsigned int length)
 {
-	wxASSERT(m_handle != INVALID_HANDLE_VALUE);
-	wxASSERT(buffer != NULL);
+	assert(m_handle != INVALID_HANDLE_VALUE);
+	assert(buffer != NULL);
 
 	unsigned int ptr = 0U;
 
@@ -199,8 +202,8 @@ int CSerialDataController::read(unsigned char* buffer, unsigned int length)
 
 int CSerialDataController::readNonblock(unsigned char* buffer, unsigned int length)
 {
-	wxASSERT(m_handle != INVALID_HANDLE_VALUE);
-	wxASSERT(buffer != NULL);
+	assert(m_handle != INVALID_HANDLE_VALUE);
+	assert(buffer != NULL);
 
 	if (length > BUFFER_LENGTH)
 		length = BUFFER_LENGTH;
@@ -225,7 +228,7 @@ int CSerialDataController::readNonblock(unsigned char* buffer, unsigned int leng
 
 		DWORD error = ::GetLastError();
 		if (error != ERROR_IO_PENDING) {
-			wxLogError(wxT("Error from ReadFile: %04lx"), error);
+			LogError("Error from ReadFile: %04lx", error);
 			return -1;
 		}
 
@@ -239,7 +242,7 @@ int CSerialDataController::readNonblock(unsigned char* buffer, unsigned int leng
 	DWORD bytes = 0UL;
 	res = ::GetOverlappedResult(m_handle, &m_readOverlapped, &bytes, TRUE);
 	if (!res) {
-		wxLogError(wxT("Error from GetOverlappedResult (ReadFile): %04lx"), ::GetLastError());
+		LogError("Error from GetOverlappedResult (ReadFile): %04lx", ::GetLastError());
 		return -1;
 	}
 
@@ -251,8 +254,8 @@ int CSerialDataController::readNonblock(unsigned char* buffer, unsigned int leng
 
 int CSerialDataController::write(const unsigned char* buffer, unsigned int length)
 {
-	wxASSERT(m_handle != INVALID_HANDLE_VALUE);
-	wxASSERT(buffer != NULL);
+	assert(m_handle != INVALID_HANDLE_VALUE);
+	assert(buffer != NULL);
 
 	if (length == 0U)
 		return 0;
@@ -265,13 +268,13 @@ int CSerialDataController::write(const unsigned char* buffer, unsigned int lengt
 		if (!res) {
 			DWORD error = ::GetLastError();
 			if (error != ERROR_IO_PENDING) {
-				wxLogError(wxT("Error from WriteFile: %04lx"), error);
+				LogError("Error from WriteFile: %04lx", error);
 				return -1;
 			}
 
 			res = ::GetOverlappedResult(m_handle, &m_writeOverlapped, &bytes, TRUE);
 			if (!res) {
-				wxLogError(wxT("Error from GetOverlappedResult (WriteFile): %04lx"), ::GetLastError());
+				LogError("Error from GetOverlappedResult (WriteFile): %04lx", ::GetLastError());
 				return -1;
 			}
 		}
@@ -284,7 +287,7 @@ int CSerialDataController::write(const unsigned char* buffer, unsigned int lengt
 
 void CSerialDataController::close()
 {
-	wxASSERT(m_handle != INVALID_HANDLE_VALUE);
+	assert(m_handle != INVALID_HANDLE_VALUE);
 
 	::CloseHandle(m_handle);
 	m_handle = INVALID_HANDLE_VALUE;
@@ -295,13 +298,13 @@ void CSerialDataController::close()
 
 #else
 
-CSerialDataController::CSerialDataController(const wxString& device, SERIAL_SPEED speed, bool assertRTS) :
+CSerialDataController::CSerialDataController(const std::string& device, SERIAL_SPEED speed, bool assertRTS) :
 m_device(device),
 m_speed(speed),
 m_assertRTS(assertRTS),
 m_fd(-1)
 {
-	wxASSERT(!device.IsEmpty());
+	assert(!device.empty());
 }
 
 CSerialDataController::~CSerialDataController()
@@ -310,23 +313,23 @@ CSerialDataController::~CSerialDataController()
 
 bool CSerialDataController::open()
 {
-	wxASSERT(m_fd == -1);
+	assert(m_fd == -1);
 
-	m_fd = ::open(m_device.mb_str(), O_RDWR | O_NOCTTY | O_NDELAY, 0);
+	m_fd = ::open(m_device.c_str(), O_RDWR | O_NOCTTY | O_NDELAY, 0);
 	if (m_fd < 0) {
-		wxLogError(wxT("Cannot open device - %s"), m_device.c_str());
+		LogError("Cannot open device - %s", m_device.c_str());
 		return false;
 	}
 
 	if (::isatty(m_fd) == 0) {
-		wxLogError(wxT("%s is not a TTY device"), m_device.c_str());
+		LogError("%s is not a TTY device", m_device.c_str());
 		::close(m_fd);
 		return false;
 	}
 
 	termios termios;
 	if (::tcgetattr(m_fd, &termios) < 0) {
-		wxLogError(wxT("Cannot get the attributes for %s"), m_device.c_str());
+		LogError("Cannot get the attributes for %s", m_device.c_str());
 		::close(m_fd);
 		return false;
 	}
@@ -373,13 +376,13 @@ bool CSerialDataController::open()
 			::cfsetispeed(&termios, B230400);
 			break;
 		default:
-			wxLogError(wxT("Unsupported serial port speed - %d"), int(m_speed));
+			LogError("Unsupported serial port speed - %d", int(m_speed));
 			::close(m_fd);
 			return false;
 	}
 
 	if (::tcsetattr(m_fd, TCSANOW, &termios) < 0) {
-		wxLogError(wxT("Cannot set the attributes for %s"), m_device.c_str());
+		LogError("Cannot set the attributes for %s", m_device.c_str());
 		::close(m_fd);
 		return false;
 	}
@@ -387,7 +390,7 @@ bool CSerialDataController::open()
 	if (m_assertRTS) {
 		unsigned int y;
 		if (::ioctl(m_fd, TIOCMGET, &y) < 0) {
-			wxLogError(wxT("Cannot get the control attributes for %s"), m_device.c_str());
+			LogError("Cannot get the control attributes for %s", m_device.c_str());
 			::close(m_fd);
 			return false;
 		}
@@ -395,7 +398,7 @@ bool CSerialDataController::open()
 		y |= TIOCM_RTS;
                                                                                 
 		if (::ioctl(m_fd, TIOCMSET, &y) < 0) {
-			wxLogError(wxT("Cannot set the control attributes for %s"), m_device.c_str());
+			LogError("Cannot set the control attributes for %s", m_device.c_str());
 			::close(m_fd);
 			return false;
 		}
@@ -406,8 +409,8 @@ bool CSerialDataController::open()
 
 int CSerialDataController::read(unsigned char* buffer, unsigned int length)
 {
-	wxASSERT(buffer != NULL);
-	wxASSERT(m_fd != -1);
+	assert(buffer != NULL);
+	assert(m_fd != -1);
 
 	if (length == 0U)
 		return 0;
@@ -433,7 +436,7 @@ int CSerialDataController::read(unsigned char* buffer, unsigned int length)
 		}
 
 		if (n < 0) {
-			wxLogError(wxT("Error from select(), errno=%d"), errno);
+			LogError("Error from select(), errno=%d", errno);
 			return -1;
 		}
 
@@ -441,7 +444,7 @@ int CSerialDataController::read(unsigned char* buffer, unsigned int length)
 			ssize_t len = ::read(m_fd, buffer + offset, length - offset);
 			if (len < 0) {
 				if (errno != EAGAIN) {
-					wxLogError(wxT("Error from read(), errno=%d"), errno);
+					LogError("Error from read(), errno=%d", errno);
 					return -1;
 				}
 			}
@@ -456,8 +459,8 @@ int CSerialDataController::read(unsigned char* buffer, unsigned int length)
 
 int CSerialDataController::write(const unsigned char* buffer, unsigned int length)
 {
-	wxASSERT(buffer != NULL);
-	wxASSERT(m_fd != -1);
+	assert(buffer != NULL);
+	assert(m_fd != -1);
 
 	if (length == 0U)
 		return 0;
@@ -468,7 +471,7 @@ int CSerialDataController::write(const unsigned char* buffer, unsigned int lengt
 		ssize_t n = ::write(m_fd, buffer + ptr, length - ptr);
 		if (n < 0) {
 			if (errno != EAGAIN) {
-				wxLogError(wxT("Error returned from write(), errno=%d"), errno);
+				LogError("Error returned from write(), errno=%d", errno);
 				return -1;
 			}
 		}
@@ -482,7 +485,7 @@ int CSerialDataController::write(const unsigned char* buffer, unsigned int lengt
 
 void CSerialDataController::close()
 {
-	wxASSERT(m_fd != -1);
+	assert(m_fd != -1);
 
 	::close(m_fd);
 	m_fd = -1;

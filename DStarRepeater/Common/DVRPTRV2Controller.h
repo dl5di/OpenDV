@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2011-2014 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2011-2015 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -26,7 +26,7 @@
 #include "Modem.h"
 #include "Utils.h"
 
-#include <wx/wx.h>
+#include <string>
 
 enum RESP_TYPE_V2 {
 	RT2_TIMEOUT,
@@ -41,11 +41,11 @@ enum RESP_TYPE_V2 {
 
 class CDVRPTRV2Controller : public CModem {
 public:
-	CDVRPTRV2Controller(const wxString& port, const wxString& path, bool txInvert, unsigned int modLevel, bool duplex, const wxString& callsign, unsigned int txDelay);
-	CDVRPTRV2Controller(const wxString& address, unsigned int port, bool txInvert, unsigned int modLevel, bool duplex, const wxString& callsign, unsigned int txDelay);
+	CDVRPTRV2Controller(const std::string& port, const std::string& path, bool txInvert, unsigned int modLevel, bool duplex, const std::string& callsign, unsigned int txDelay);
+	CDVRPTRV2Controller(const std::string& address, unsigned int port, bool txInvert, unsigned int modLevel, bool duplex, const std::string& callsign, unsigned int txDelay);
 	virtual ~CDVRPTRV2Controller();
 
-	virtual void* Entry();
+	virtual void entry();
 
 	virtual bool start();
 
@@ -55,18 +55,18 @@ public:
 	virtual bool writeHeader(const CHeaderData& header);
 	virtual bool writeData(const unsigned char* data, unsigned int length, bool end);
 
-	virtual wxString getPath() const;
+	virtual std::string getPath() const;
 
 private:
 	CONNECTION_TYPE            m_connection;
-	wxString                   m_usbPort;
-	wxString                   m_usbPath;
-	wxString                   m_address;
+	std::string                m_usbPort;
+	std::string                m_usbPath;
+	std::string                m_address;
 	unsigned int               m_port;
 	bool                       m_txInvert;
 	unsigned int               m_modLevel;
 	bool                       m_duplex;
-	wxString                   m_callsign;
+	std::string                m_callsign;
 	unsigned int               m_txDelay;
 	CSerialDataController*     m_usb;
 	CTCPReaderWriter*          m_network;

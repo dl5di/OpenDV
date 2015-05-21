@@ -24,7 +24,7 @@
 #include "Modem.h"
 #include "Utils.h"
 
-#include <wx/wx.h>
+#include <string>
 
 enum RESP_TYPE_MEGA {
 	RTM_TIMEOUT,
@@ -47,11 +47,11 @@ enum RESP_TYPE_MEGA {
 
 class CDVMegaController : public CModem {
 public:
-	CDVMegaController(const wxString& port, const wxString& path, bool rxInvert, bool txInvert, unsigned int txDelay);
-	CDVMegaController(const wxString& port, const wxString& path, unsigned int txDelay, unsigned int rxFrequency, unsigned int txFrequency, unsigned int power);
+	CDVMegaController(const std::string& port, const std::string& path, bool rxInvert, bool txInvert, unsigned int txDelay);
+	CDVMegaController(const std::string& port, const std::string& path, unsigned int txDelay, unsigned int rxFrequency, unsigned int txFrequency, unsigned int power);
 	virtual ~CDVMegaController();
 
-	virtual void* Entry();
+	virtual void entry();
 
 	virtual bool start();
 
@@ -61,11 +61,11 @@ public:
 	virtual bool writeHeader(const CHeaderData& header);
 	virtual bool writeData(const unsigned char* data, unsigned int length, bool end);
 
-	virtual wxString getPath() const;
+	virtual std::string getPath() const;
 
 private:
-	wxString                   m_port;
-	wxString                   m_path;
+	std::string                m_port;
+	std::string                m_path;
 	bool                       m_rxInvert;
 	bool                       m_txInvert;
 	unsigned int               m_txDelay;
@@ -98,4 +98,3 @@ private:
 };
 
 #endif
-
