@@ -33,7 +33,7 @@ CG2Handler::CG2Handler(CRepeaterHandler* repeater, const in_addr& address, unsig
 m_repeater(repeater),
 m_address(address),
 m_id(id),
-m_inactivityTimer(1000U, NETWORK_TIMEOUT)
+m_inactivityTimer(3000U, NETWORK_TIMEOUT)
 {
 	m_inactivityTimer.start();
 }
