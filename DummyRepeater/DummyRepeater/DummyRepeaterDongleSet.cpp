@@ -28,11 +28,12 @@ BEGIN_EVENT_TABLE(CDummyRepeaterDongleSet, wxPanel)
 	EVT_CHOICE(CHOICE_TYPE, CDummyRepeaterDongleSet::onType)
 END_EVENT_TABLE()
 
-CDummyRepeaterDongleSet::CDummyRepeaterDongleSet(wxWindow* parent, int id, const wxString& title, DONGLE_TYPE type, const wxString& device, const wxString& address, unsigned int port) :
+CDummyRepeaterDongleSet::CDummyRepeaterDongleSet(wxWindow* parent, int id, const wxString& title, DONGLE_TYPE type, const wxString& device, SERIAL_SPEED speed, const wxString& address, unsigned int port) :
 wxPanel(parent, id),
 m_title(title),
 m_type(NULL),
 m_device(NULL),
+m_speed(NULL),
 m_address(NULL),
 m_port(NULL)
 {
@@ -67,6 +68,15 @@ m_port(NULL)
 			m_device->SetSelection(0);
 	}
 
+	wxStaticText* speedLabel = new wxStaticText(this, -1, _("Speed"));
+	sizer->Add(speedLabel, 0, wxALL, BORDER_SIZE);
+
+	m_speed = new wxChoice(this, -1, wxDefaultPosition, wxSize(CONTROL_WIDTH, -1));
+	m_speed->Append(wxT("230400 Baud"));
+	m_speed->Append(wxT("460800 Baud"));
+	sizer->Add(m_speed, 0, wxALL, BORDER_SIZE);
+	m_speed->SetSelection(speed == SERIAL_230400 ? 0 : 1);
+
 	wxStaticText* addressLabel = new wxStaticText(this, -1, _("Address"));
 	sizer->Add(addressLabel, 0, wxALL, BORDER_SIZE);
 
@@ -86,6 +96,11 @@ m_port(NULL)
 
 	if (type == DT_DV3000_NETWORK || type == DT_STARDV_NETWORK || type == DT_STARDV_NETWORK2) {
 		m_device->Disable();
+		m_speed->Disable();
+	} else if (type == DT_DVDONGLE) {
+		m_speed->Disable();
+		m_address->Disable();
+		m_port->Disable();
 	} else {
 		m_address->Disable();
 		m_port->Disable();
@@ -122,6 +137,14 @@ bool CDummyRepeaterDongleSet::Validate()
 			dialog.ShowModal();
 			return false;
 		}
+
+		n = m_speed->GetSelection();
+
+		if (n == wxNOT_FOUND) {
+			wxMessageDialog dialog(this, _("The AMBE Dongle speed is not set"), m_title + _(" Error"), wxICON_ERROR);
+			dialog.ShowModal();
+			return false;
+		}
 	} else {
 		unsigned int port = getPort();
 
@@ -155,6 +178,19 @@ wxString CDummyRepeaterDongleSet::getDevice() const
 		return device;
 }
 
+SERIAL_SPEED CDummyRepeaterDongleSet::getSpeed() const
+{
+	int n = m_speed->GetSelection();
+
+	switch (n)
+	{
+		case 0:
+			return SERIAL_230400;
+		default:
+			return SERIAL_460800;
+	}
+}
+
 wxString CDummyRepeaterDongleSet::getAddress() const
 {
 	return m_address->GetValue();
@@ -174,8 +210,16 @@ void CDummyRepeaterDongleSet::onType(wxCommandEvent& event)
 	int n = event.GetSelection();
 
 	switch (n) {
-		default:	// DV-Dongle, DV3000 Serial
+		default:	// DV-Dongle
 			m_device->Enable();
+			m_speed->Disable();
+			m_address->Disable();
+			m_port->Disable();
+			break;
+
+		case 2:		// DV3000 Serial
+			m_device->Enable();
+			m_speed->Enable();
 			m_address->Disable();
 			m_port->Disable();
 			break;
@@ -184,6 +228,7 @@ void CDummyRepeaterDongleSet::onType(wxCommandEvent& event)
 		case 3:		// STARDV Network
 		case 4:		// STARDV Network
 			m_device->Disable();
+			m_speed->Disable();
 			m_address->Enable();
 			m_port->Enable();
 			break;

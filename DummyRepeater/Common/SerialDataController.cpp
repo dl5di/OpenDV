@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2002-2004,2007-2011,2013,2014 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2002-2004,2007-2011,2013-2015 by Jonathan Naylor G4KLX
  *   Copyright (C) 1999-2001 by Thomas Sailor HB9JNX
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -366,6 +366,10 @@ bool CSerialDataController::open()
 		case SERIAL_230400:
 			::cfsetospeed(&termios, B230400);
 			::cfsetispeed(&termios, B230400);
+			break;
+		case SERIAL_460800:
+			::cfsetospeed(&termios, B460800);
+			::cfsetispeed(&termios, B460800);
 			break;
 		default:
 			wxLogError(wxT("Unsupported serial port speed - %d"), int(m_speed));

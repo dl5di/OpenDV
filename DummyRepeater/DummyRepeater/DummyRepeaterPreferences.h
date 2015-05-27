@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2010,2011,2012,2014 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2010,2011,2012,2014,2015 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -35,9 +35,10 @@ class CDummyRepeaterPreferences : public wxDialog {
 public:
 	CDummyRepeaterPreferences(wxWindow* parent, int id, const wxString& callsign1, const wxString& callsign2,
 		const wxString& readDevice, const wxString& writeDevice, DONGLE_TYPE dongleType, const wxString& dongleDevice,
-		const wxString& dongleAddress, unsigned int donglePort, const wxString& gwyAddress, unsigned int gwyPort,
-		const wxString& localAddress, unsigned int localPort, const wxString& type, unsigned int config, bool pttInvert,
-		bool squelchInvert, unsigned int timeout, const wxString& message, bool bleep);
+		SERIAL_SPEED dongleSpeed, const wxString& dongleAddress, unsigned int donglePort, const wxString& gwyAddress,
+		unsigned int gwyPort, const wxString& localAddress, unsigned int localPort, const wxString& type,
+		unsigned int config, bool pttInvert, bool squelchInvert, unsigned int timeout, const wxString& message,
+		bool bleep);
 	virtual ~CDummyRepeaterPreferences();
 
 	virtual bool Validate();
@@ -50,6 +51,7 @@ public:
 
 	virtual DONGLE_TYPE  getDongleType() const;
 	virtual wxString     getDongleDevice() const;
+	virtual SERIAL_SPEED getDongleSpeed() const;
 	virtual wxString     getDongleAddress() const;
 	virtual unsigned int getDonglePort() const;
 

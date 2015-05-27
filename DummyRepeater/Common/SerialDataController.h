@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2002-2004,2007-2009,2011-2013 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2002-2004,2007-2009,2011-2013,2015 by Jonathan Naylor G4KLX
  *   Copyright (C) 1999-2001 by Thomas Sailor HB9JNX
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -35,7 +35,8 @@ enum SERIAL_SPEED {
 	SERIAL_38400  = 38400,
 	SERIAL_76800  = 76800,
 	SERIAL_115200 = 115200,
-	SERIAL_230400 = 230400
+	SERIAL_230400 = 230400,
+	SERIAL_460800 = 460800
 };
 
 class CSerialDataController {

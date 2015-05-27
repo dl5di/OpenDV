@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2010,2011,2012,2014 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2010,2011,2012,2014,2015 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -20,6 +20,7 @@
 #define	DummyRepeaterApp_H
 
 #include "DummyRepeaterDongleSet.h"
+#include "SerialDataController.h"
 #include "DummyRepeaterThread.h"
 #include "DummyRepeaterFrame.h"
 #include "DummyRepeaterDefs.h"
@@ -71,8 +72,8 @@ public:
 	virtual void getMessage(wxString& message) const;
 	virtual void setMessage(const wxString& message) const;
 
-	virtual void getDongle(DONGLE_TYPE& type, wxString& device, wxString& address, unsigned int& port) const;
-	virtual void setDongle(DONGLE_TYPE type, const wxString& device, const wxString& address, unsigned int port) const;
+	virtual void getDongle(DONGLE_TYPE& type, wxString& device, SERIAL_SPEED& speed, wxString& address, unsigned int& port) const;
+	virtual void setDongle(DONGLE_TYPE type, const wxString& device, SERIAL_SPEED speed, const wxString& address, unsigned int port) const;
 
 	virtual void getNetwork(wxString& gwyAddress, unsigned int& gwyPort, wxString& localAddress, unsigned int& localPort) const;
 	virtual void setNetwork(const wxString& gwyAddress, unsigned int gwyPort, const wxString& localAddress, unsigned int localPort) const;

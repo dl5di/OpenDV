@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2010,2014 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2010,2014,2015 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -19,6 +19,7 @@
 #ifndef	DummyRepeaterDongleSet_H
 #define	DummyRepeaterDongleSet_H
 
+#include "SerialDataController.h"
 #include "DummyRepeaterDefs.h"
 #include "AddressTextCtrl.h"
 #include "PortTextCtrl.h"
@@ -27,13 +28,14 @@
 
 class CDummyRepeaterDongleSet : public wxPanel {
 public:
-	CDummyRepeaterDongleSet(wxWindow* parent, int id, const wxString& title, DONGLE_TYPE type, const wxString& device, const wxString& address, unsigned int port);
+	CDummyRepeaterDongleSet(wxWindow* parent, int id, const wxString& title, DONGLE_TYPE type, const wxString& device, SERIAL_SPEED speed, const wxString& address, unsigned int port);
 	virtual ~CDummyRepeaterDongleSet();
 
 	virtual bool Validate();
 
 	virtual DONGLE_TYPE  getType() const;
 	virtual wxString     getDevice() const;
+	virtual SERIAL_SPEED getSpeed() const;
 	virtual wxString     getAddress() const;
 	virtual unsigned int getPort() const;
 
@@ -43,6 +45,7 @@ private:
 	wxString          m_title;
 	wxChoice*         m_type;
 	wxChoice*         m_device;
+	wxChoice*         m_speed;
 	CAddressTextCtrl* m_address;
 	CPortTextCtrl*    m_port;
 

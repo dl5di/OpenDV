@@ -64,6 +64,7 @@ const wxString KEY_PTT_INVERT             = wxT("/pttInvert");
 const wxString KEY_SQUELCH_INVERT         = wxT("/squelchInvert");
 const wxString KEY_DONGLE_TYPE            = wxT("/dongleType");
 const wxString KEY_DONGLE_DEVICE          = wxT("/dongleDevice");
+const wxString KEY_DONGLE_SPEED           = wxT("/dongleSpeed");
 const wxString KEY_DONGLE_ADDRESS         = wxT("/dongleAddress");
 const wxString KEY_DONGLE_PORT            = wxT("/donglePort");
 const wxString KEY_YOUR_CALL              = wxT("/yourCall");
@@ -92,6 +93,7 @@ const bool     DEFAULT_PTT_INVERT         = false;
 const bool     DEFAULT_SQUELCH_INVERT     = false;
 const long     DEFAULT_DONGLE_TYPE        = 0L;
 const wxString DEFAULT_DONGLE_DEVICE      = wxEmptyString;
+const long     DEFAULT_DONGLE_SPEED       = long(SERIAL_230400);
 const wxString DEFAULT_DONGLE_ADDRESS     = wxEmptyString;
 const long     DEFAULT_DONGLE_PORT        = 2460L;
 const wxString DEFAULT_YOUR_CALL          = wxEmptyString;
@@ -344,7 +346,7 @@ void CDummyRepeaterApp::setSoundcard(const wxString& readDevice, const wxString&
 	delete profile;
 }
 
-void CDummyRepeaterApp::getDongle(DONGLE_TYPE& type, wxString& device, wxString& address, unsigned int& port) const
+void CDummyRepeaterApp::getDongle(DONGLE_TYPE& type, wxString& device, SERIAL_SPEED& speed, wxString& address, unsigned int& port) const
 {
 	wxConfigBase* profile = new wxConfig(APPLICATION_NAME);
 	wxASSERT(profile != NULL);
@@ -354,6 +356,9 @@ void CDummyRepeaterApp::getDongle(DONGLE_TYPE& type, wxString& device, wxString&
 	type = DONGLE_TYPE(temp);
 
 	profile->Read(KEY_DONGLE_DEVICE, &device, DEFAULT_DONGLE_DEVICE);
+
+	profile->Read(KEY_DONGLE_SPEED, &temp, DEFAULT_DONGLE_SPEED);
+	speed = SERIAL_SPEED(temp);
 
 	profile->Read(KEY_DONGLE_ADDRESS, &address, DEFAULT_DONGLE_ADDRESS);
 
@@ -365,13 +370,14 @@ void CDummyRepeaterApp::getDongle(DONGLE_TYPE& type, wxString& device, wxString&
 	delete profile;
 }
 
-void CDummyRepeaterApp::setDongle(DONGLE_TYPE type, const wxString& device, const wxString& address, unsigned int port) const
+void CDummyRepeaterApp::setDongle(DONGLE_TYPE type, const wxString& device, SERIAL_SPEED speed, const wxString& address, unsigned int port) const
 {
 	wxConfigBase* profile = new wxConfig(APPLICATION_NAME);
 	wxASSERT(profile != NULL);
 
 	profile->Write(KEY_DONGLE_TYPE, long(type));
 	profile->Write(KEY_DONGLE_DEVICE, device);
+	profile->Write(KEY_DONGLE_SPEED, long(speed));
 	profile->Write(KEY_DONGLE_ADDRESS, address);
 	profile->Write(KEY_DONGLE_PORT, long(port));
 	profile->Flush();
@@ -705,8 +711,9 @@ void CDummyRepeaterApp::createThread()
 
 	DONGLE_TYPE dongleType;
 	wxString dongleDevice, dongleAddress;
+	SERIAL_SPEED dongleSpeed;
 	unsigned int donglePort;
-	getDongle(dongleType, dongleDevice, dongleAddress, donglePort);
+	getDongle(dongleType, dongleDevice, dongleSpeed, dongleAddress, donglePort);
 
 	CDongleThread* dongle = NULL;
 
@@ -726,7 +733,7 @@ void CDummyRepeaterApp::createThread()
 			break;
 		case DT_DV3000_SERIAL:
 			if (!dongleDevice.IsEmpty())
-				dongle = new CDV3000Thread(new CDV3000SerialController(dongleDevice));
+				dongle = new CDV3000Thread(new CDV3000SerialController(dongleDevice, dongleSpeed));
 			break;
 		default:
 			wxLogError(wxT("Invalid Dongle type specified - %d"), int(dongleType));

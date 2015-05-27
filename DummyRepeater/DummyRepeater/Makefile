@@ -17,7 +17,7 @@ DummyRepeaterApp.o:	DummyRepeaterApp.cpp DummyRepeaterApp.h DummyRepeaterThread.
 			../Common/URIUSBController.h ../Common/ExternalController.h ../Common/DummyController.h ../Common/GPIOController.h \
 			../Common/ArduinoController.h ../Common/Version.h ../Common/DV3000Controller.h ../Common/DV3000Thread.h ../Common/DVDongleController.h \
 			../Common/DVDongleThread.h ../Common/DV3000NetworkController.h ../Common/DV3000SerialController.h ../Common/STARDVThread.h \
-			../Common/STARDVNetworkController.h
+			../Common/STARDVNetworkController.h ../Common/SerialDataController.h
 			$(CC) $(CFLAGS) -c DummyRepeaterApp.cpp
 
 DummyRepeaterBleepSet.o:	DummyRepeaterBleepSet.cpp DummyRepeaterBleepSet.h
@@ -30,7 +30,7 @@ DummyRepeaterControllerSet.o:	DummyRepeaterControllerSet.cpp DummyRepeaterContro
 				$(CC) $(CFLAGS) -c DummyRepeaterControllerSet.cpp
 
 DummyRepeaterDongleSet.o:	DummyRepeaterDongleSet.cpp DummyRepeaterDongleSet.h DummyRepeaterDefs.h ../Common/SerialPortSelector.h \
-						../Common/AddressTextCtrl.h ../Common/PortTextCtrl.h
+						../Common/AddressTextCtrl.h ../Common/PortTextCtrl.h ../Common/SerialDataController.h
 				$(CC) $(CFLAGS) -c DummyRepeaterDongleSet.cpp
 
 DummyRepeaterErrorEvent.o:	DummyRepeaterErrorEvent.cpp DummyRepeaterErrorEvent.h

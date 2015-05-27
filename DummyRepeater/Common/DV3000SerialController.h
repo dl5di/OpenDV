@@ -26,7 +26,7 @@
 
 class CDV3000SerialController : public IDV3000Controller {
 public:
-	CDV3000SerialController(const wxString& device);
+	CDV3000SerialController(const wxString& device, SERIAL_SPEED speed);
 	virtual ~CDV3000SerialController();
 
 	virtual bool open();

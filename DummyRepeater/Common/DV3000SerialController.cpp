@@ -46,8 +46,8 @@ const unsigned int DV3000_HEADER_LEN = 4U;
 
 const unsigned int BUFFER_LENGTH = 400U;
 
-CDV3000SerialController::CDV3000SerialController(const wxString& device) :
-m_serial(device, SERIAL_230400)
+CDV3000SerialController::CDV3000SerialController(const wxString& device, SERIAL_SPEED speed) :
+m_serial(device, speed)
 {
 }
 

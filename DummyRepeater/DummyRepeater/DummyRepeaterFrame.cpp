@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2010-2014 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2010-2015 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -407,8 +407,9 @@ void CDummyRepeaterFrame::onPreferences(wxCommandEvent&)
 
 	DONGLE_TYPE dongleType;
 	wxString dongleDevice, dongleAddress;
+	SERIAL_SPEED dongleSpeed;
 	unsigned int donglePort;
-	::wxGetApp().getDongle(dongleType, dongleDevice, dongleAddress, donglePort);
+	::wxGetApp().getDongle(dongleType, dongleDevice, dongleSpeed, dongleAddress, donglePort);
 
 	wxString gatewayAddress, localAddress;
 	unsigned int gatewayPort, localPort;
@@ -429,8 +430,8 @@ void CDummyRepeaterFrame::onPreferences(wxCommandEvent&)
 	::wxGetApp().getBleep(bleep);
 
 	CDummyRepeaterPreferences dialog1(this, -1, callsign1, callsign2, readDevice, writeDevice, dongleType, dongleDevice,
-		dongleAddress, donglePort, gatewayAddress, gatewayPort, localAddress, localPort, type, config, pttInvert,
-		squelchInvert, timeout, message, bleep);
+		dongleSpeed, dongleAddress, donglePort, gatewayAddress, gatewayPort, localAddress, localPort, type, config,
+		pttInvert, squelchInvert, timeout, message, bleep);
 	if (dialog1.ShowModal() != wxID_OK)
 		return;
 
@@ -452,6 +453,7 @@ void CDummyRepeaterFrame::onPreferences(wxCommandEvent&)
 
 	dongleType      = dialog1.getDongleType();
 	dongleDevice    = dialog1.getDongleDevice();
+	dongleSpeed     = dialog1.getDongleSpeed();
 	dongleAddress   = dialog1.getDongleAddress();
 	donglePort      = dialog1.getDonglePort();
 
@@ -463,7 +465,7 @@ void CDummyRepeaterFrame::onPreferences(wxCommandEvent&)
 
 	::wxGetApp().setCallsign(callsign1, callsign2);
 	::wxGetApp().setSoundcard(readDevice, writeDevice);
-	::wxGetApp().setDongle(dongleType, dongleDevice, dongleAddress, donglePort);
+	::wxGetApp().setDongle(dongleType, dongleDevice, dongleSpeed, dongleAddress, donglePort);
 	::wxGetApp().setNetwork(gatewayAddress, gatewayPort, localAddress, localPort);
 	::wxGetApp().setController(type, config, pttInvert, squelchInvert);
 	::wxGetApp().setTimeout(timeout);

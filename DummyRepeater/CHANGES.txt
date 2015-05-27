@@ -1973,3 +1973,8 @@ Fix the continuous bleeping at the end of reception.
 --------
 
 Add Star*DV hardware support.
+
+2015xxxx
+--------
+
+Add an extra higher speed for the next generation of ThumbDV.
