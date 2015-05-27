@@ -594,7 +594,7 @@ bool CDVMegaController::readVersion()
 			}
 		}
 
-		milliSleep(500U);
+		milliSleep(1000U);
 	}
 
 	LogError("Unable to read the firmware version after six attempts");

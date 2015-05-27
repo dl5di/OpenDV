@@ -1447,3 +1447,4 @@ Update the copyright date in the GUI Help dialogue boxes.
 
 Enable data dumping in the D-RATS server.
 Rearrange the source code slightly.
+Update the DExtra_Hosts.txt file.
