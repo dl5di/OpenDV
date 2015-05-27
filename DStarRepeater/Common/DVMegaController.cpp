@@ -593,7 +593,7 @@ bool CDVMegaController::readVersion()
 			}
 		}
 
-		::wxMilliSleep(500UL);
+		::wxSleep(1);
 	}
 
 	wxLogError(wxT("Unable to read the firmware version after six attempts"));
