@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2010-2014 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2010-2015 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -95,6 +95,8 @@ m_status4(),
 m_status5(),
 m_latitude(0.0),
 m_longitude(0.0),
+m_whiteList(NULL),
+m_blackList(NULL),
 m_restrictList(NULL)
 {
 	CHeaderData::initialise();
@@ -264,6 +266,16 @@ void CIRCDDBGatewayThread::run()
 	CRepeaterHandler::setInfoEnabled(m_infoEnabled);
 	CRepeaterHandler::setEchoEnabled(m_echoEnabled);
 	CRepeaterHandler::setDTMFEnabled(m_dtmfEnabled);
+	if (m_whiteList != NULL) {
+		CDExtraHandler::setWhiteList(m_whiteList);
+		CDPlusHandler::setWhiteList(m_whiteList);
+		CDCSHandler::setWhiteList(m_whiteList);
+	}
+	if (m_blackList != NULL) {
+		CDExtraHandler::setBlackList(m_blackList);
+		CDPlusHandler::setBlackList(m_blackList);
+		CDCSHandler::setBlackList(m_blackList);
+	}
 	if (m_restrictList != NULL)
 		CRepeaterHandler::setRestrictList(m_restrictList);
 
@@ -625,6 +637,20 @@ void CIRCDDBGatewayThread::setRemote(bool enabled, const wxString& password, uns
 		m_remotePassword = password;
 		m_remotePort     = REMOTE_DUMMY_PORT;
 	}
+}
+
+void CIRCDDBGatewayThread::setWhiteList(CCallsignList* list)
+{
+	wxASSERT(list != NULL);
+
+	m_whiteList = list;
+}
+
+void CIRCDDBGatewayThread::setBlackList(CCallsignList* list)
+{
+	wxASSERT(list != NULL);
+
+	m_blackList = list;
 }
 
 void CIRCDDBGatewayThread::setRestrictList(CCallsignList* list)

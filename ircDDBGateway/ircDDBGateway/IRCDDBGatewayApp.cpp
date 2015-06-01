@@ -810,13 +810,41 @@ void CIRCDDBGatewayApp::createThread()
 		thread->setDDModeEnabled(true);
 	}
 
-	wxFileName filename(wxFileName::GetHomeDir(), RESTRICT_FILE_NAME);
-	bool exists = filename.FileExists();
+	wxFileName wlFilename(wxFileName::GetHomeDir(), WHITELIST_FILE_NAME);
+	bool exists = wlFilename.FileExists();
 	if (exists) {
-		CCallsignList* list = new CCallsignList(filename.GetFullPath());
+		CCallsignList* list = new CCallsignList(wlFilename.GetFullPath());
 		bool res = list->load();
 		if (!res) {
-			wxLogError(wxT("Unable to open the restrict list file - %s"), filename.GetFullPath().c_str());
+			wxLogError(wxT("Unable to open the white list file - %s"), wlFilename.GetFullPath().c_str());
+			delete list;
+		} else {
+			wxLogInfo(wxT("%u callsigns loaded into the white list"), list->getCount());
+			thread->setWhiteList(list);
+		}
+	}
+
+	wxFileName blFilename(wxFileName::GetHomeDir(), BLACKLIST_FILE_NAME);
+	exists = blFilename.FileExists();
+	if (exists) {
+		CCallsignList* list = new CCallsignList(blFilename.GetFullPath());
+		bool res = list->load();
+		if (!res) {
+			wxLogError(wxT("Unable to open the black list file - %s"), blFilename.GetFullPath().c_str());
+			delete list;
+		} else {
+			wxLogInfo(wxT("%u callsigns loaded into the black list"), list->getCount());
+			thread->setBlackList(list);
+		}
+	}
+
+	wxFileName rlFilename(wxFileName::GetHomeDir(), RESTRICT_FILE_NAME);
+	exists = rlFilename.FileExists();
+	if (exists) {
+		CCallsignList* list = new CCallsignList(rlFilename.GetFullPath());
+		bool res = list->load();
+		if (!res) {
+			wxLogError(wxT("Unable to open the restrict list file - %s"), rlFilename.GetFullPath().c_str());
 			delete list;
 		} else {
 			wxLogInfo(wxT("%u callsigns loaded into the restrict list"), list->getCount());

@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2010-2014 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2010-2015 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -32,6 +32,9 @@ CDExtraProtocolHandler*     CDExtraHandler::m_incoming = NULL;
 bool                        CDExtraHandler::m_stateChange = false;
 
 CHeaderLogger*              CDExtraHandler::m_headerLogger = NULL;
+
+CCallsignList*              CDExtraHandler::m_whiteList = NULL;
+CCallsignList*              CDExtraHandler::m_blackList = NULL;
 
 
 CDExtraHandler::CDExtraHandler(IReflectorCallback* handler, const wxString& reflector, const wxString& repeater, CDExtraProtocolHandler* protoHandler, const in_addr& address, unsigned int port, DIRECTION direction) :
@@ -154,6 +157,20 @@ void CDExtraHandler::setHeaderLogger(CHeaderLogger* logger)
 void CDExtraHandler::setMaxDongles(unsigned int maxDongles)
 {
 	m_maxDongles = maxDongles;
+}
+
+void CDExtraHandler::setWhiteList(CCallsignList* list)
+{
+	wxASSERT(list != NULL);
+
+	m_whiteList = list;
+}
+
+void CDExtraHandler::setBlackList(CCallsignList* list)
+{
+	wxASSERT(list != NULL);
+
+	m_blackList = list;
 }
 
 wxString CDExtraHandler::getIncoming(const wxString& callsign)
@@ -562,9 +579,28 @@ void CDExtraHandler::finalise()
 
 void CDExtraHandler::processInt(CHeaderData& header)
 {
+	wxString     my = header.getMyCall1();
+	wxString   rpt1 = header.getRptCall1();
+	wxString   rpt2 = header.getRptCall2();
 	unsigned int id = header.getId();
-	wxString rpt1 = header.getRptCall1();
-	wxString rpt2 = header.getRptCall2();
+
+	if (m_whiteList != NULL) {
+		bool res = m_whiteList->isInList(my);
+		if (!res) {
+			wxLogMessage(wxT("%s rejected from DExtra as not found in the white list"), my.c_str());
+			m_dExtraId = 0x00U;
+			return;
+		}
+	}
+
+	if (m_blackList != NULL) {
+		bool res = m_blackList->isInList(my);
+		if (res) {
+			wxLogMessage(wxT("%s rejected from DExtra as found in the black list"), my.c_str());
+			m_dExtraId = 0x00U;
+			return;
+		}
+	}
 
 	if (m_linkState != DEXTRA_LINKED)
 		return;

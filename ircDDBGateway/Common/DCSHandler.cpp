@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2012-2014 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2012-2015 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -32,6 +32,9 @@ bool                     CDCSHandler::m_stateChange = false;
 GATEWAY_TYPE             CDCSHandler::m_gatewayType  = GT_REPEATER;
 
 CHeaderLogger*           CDCSHandler::m_headerLogger = NULL;
+
+CCallsignList*           CDCSHandler::m_whiteList = NULL;
+CCallsignList*           CDCSHandler::m_blackList = NULL;
 
 
 CDCSHandler::CDCSHandler(IReflectorCallback* handler, const wxString& reflector, const wxString& repeater, CDCSProtocolHandler* protoHandler, const in_addr& address, unsigned int port, DIRECTION direction) :
@@ -118,6 +121,20 @@ void CDCSHandler::setHeaderLogger(CHeaderLogger* logger)
 void CDCSHandler::setGatewayType(GATEWAY_TYPE type)
 {
 	m_gatewayType = type;
+}
+
+void CDCSHandler::setWhiteList(CCallsignList* list)
+{
+	wxASSERT(list != NULL);
+
+	m_whiteList = list;
+}
+
+void CDCSHandler::setBlackList(CCallsignList* list)
+{
+	wxASSERT(list != NULL);
+
+	m_blackList = list;
 }
 
 wxString CDCSHandler::getIncoming(const wxString& callsign)
@@ -482,7 +499,26 @@ void CDCSHandler::processInt(CAMBEData& data)
 	CHeaderData& header = temp.getHeader();
 	unsigned int seqNo = temp.getSeq();
 
+	wxString   my = header.getMyCall1();
 	wxString rpt2 = header.getRptCall2();
+
+	if (m_whiteList != NULL) {
+		bool res = m_whiteList->isInList(my);
+		if (!res) {
+			wxLogMessage(wxT("%s rejected from DCS as not found in the white list"), my.c_str());
+			m_dcsId = 0x00U;
+			return;
+		}
+	}
+
+	if (m_blackList != NULL) {
+		bool res = m_blackList->isInList(my);
+		if (res) {
+			wxLogMessage(wxT("%s rejected from DCS as found in the black list"), my.c_str());
+			m_dcsId = 0x00U;
+			return;
+		}
+	}
 
 	if (m_linkState != DCS_LINKED)
 		return;

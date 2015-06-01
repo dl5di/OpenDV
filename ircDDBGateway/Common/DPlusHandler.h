@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2010,2011,2012,2013 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2010-2013,2015 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -25,6 +25,7 @@
 #include "CacheManager.h"
 #include "DStarDefines.h"
 #include "HeaderLogger.h"
+#include "CallsignList.h"
 #include "ConnectData.h"
 #include "HeaderData.h"
 #include "AMBEData.h"
@@ -79,6 +80,9 @@ public:
 	static bool stateChange();
 	static void writeStatus(wxFFile& file);
 
+	static void setWhiteList(CCallsignList* list);
+	static void setBlackList(CCallsignList* list);
+
 	static void finalise();
 
 	static void getInfo(IReflectorCallback* handler, CRemoteRepeaterData& data);
@@ -113,6 +117,9 @@ private:
 
 	static CHeaderLogger*             m_headerLogger;
 	static CDPlusAuthenticator*       m_authenticator;
+
+	static CCallsignList*             m_whiteList;
+	static CCallsignList*             m_blackList;
 
 	wxString               m_repeater;
 	wxString               m_callsign;

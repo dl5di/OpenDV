@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2010-2014 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2010-2015 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -76,6 +76,8 @@ public:
 	static void setInfoEnabled(bool enabled);
 	static void setEchoEnabled(bool enabled);
 	static void setDTMFEnabled(bool enabled);
+	static void setWhiteList(CCallsignList* list);
+	static void setBlackList(CCallsignList* list);
 	static void setRestrictList(CCallsignList* list);
 
 	static void startup();
@@ -164,6 +166,8 @@ private:
 
 	static CAPRSWriter*     m_aprsWriter;
 
+	static CCallsignList*   m_whiteList;
+	static CCallsignList*   m_blackList;
 	static CCallsignList*   m_restrictList;
 
 	// Repeater info

@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2010-2014 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2010-2015 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -36,6 +36,9 @@ bool                       CDPlusHandler::m_stateChange = false;
 
 CDPlusAuthenticator*       CDPlusHandler::m_authenticator = NULL;
 CHeaderLogger*             CDPlusHandler::m_headerLogger = NULL;
+
+CCallsignList*             CDPlusHandler::m_whiteList = NULL;
+CCallsignList*             CDPlusHandler::m_blackList = NULL;
 
 
 CDPlusHandler::CDPlusHandler(IReflectorCallback* handler, const wxString& repeater, const wxString& reflector, CDPlusProtocolHandler* protoHandler, const in_addr& address, unsigned int port) :
@@ -165,6 +168,20 @@ void CDPlusHandler::setHeaderLogger(CHeaderLogger* logger)
 void CDPlusHandler::setMaxDongles(unsigned int maxDongles)
 {
 	m_maxDongles = maxDongles;
+}
+
+void CDPlusHandler::setWhiteList(CCallsignList* list)
+{
+	wxASSERT(list != NULL);
+
+	m_whiteList = list;
+}
+
+void CDPlusHandler::setBlackList(CCallsignList* list)
+{
+	wxASSERT(list != NULL);
+
+	m_blackList = list;
 }
 
 void CDPlusHandler::getInfo(IReflectorCallback* handler, CRemoteRepeaterData& data)
@@ -537,9 +554,28 @@ void CDPlusHandler::finalise()
 
 void CDPlusHandler::processInt(CHeaderData& header)
 {
+	wxString     my = header.getMyCall1();
 	wxString   rpt1 = header.getRptCall1();
 	wxString   rpt2 = header.getRptCall2();
 	unsigned int id = header.getId();
+
+	if (m_whiteList != NULL) {
+		bool res = m_whiteList->isInList(my);
+		if (!res) {
+			wxLogMessage(wxT("%s rejected from D-Plus as not found in the white list"), my.c_str());
+			m_dPlusId = 0x00U;
+			return;
+		}
+	}
+
+	if (m_blackList != NULL) {
+		bool res = m_blackList->isInList(my);
+		if (res) {
+			wxLogMessage(wxT("%s rejected from D-Plus as found in the black list"), my.c_str());
+			m_dPlusId = 0x00U;
+			return;
+		}
+	}
 
 	if (m_linkState != DPLUS_LINKED)
 		return;

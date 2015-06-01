@@ -64,7 +64,7 @@ ConnectData.o:	ConnectData.cpp ConnectData.h DStarDefines.h Version.h Utils.h De
 				$(CC) $(CFLAGS) -c ConnectData.cpp
 
 DCSHandler.o:	DCSHandler.cpp DCSHandler.h DStarDefines.h RepeaterHandler.h Utils.h DCSProtocolHandlerPool.h DCSProtocolHandler.h ConnectData.h AMBEData.h \
-				PollData.h Timer.h Defs.h HeaderLogger.h ReflectorCallback.h HeaderData.h
+				PollData.h Timer.h Defs.h HeaderLogger.h ReflectorCallback.h HeaderData.h CallsignList.h
 				$(CC) $(CFLAGS) -c DCSHandler.cpp
 
 DCSProtocolHandler.o:	DCSProtocolHandler.cpp DCSProtocolHandler.h AMBEData.h UDPReaderWriter.h DStarDefines.h Timer.h Utils.h ConnectData.h PollData.h
@@ -80,7 +80,7 @@ DDHandler.o:	DDHandler.cpp DDHandler.h DDData.h RepeaterHandler.h HeaderLogger.h
 				$(CC) $(CFLAGS) -c DDHandler.cpp
 
 DExtraHandler.o:	DExtraHandler.cpp DExtraHandler.h DStarDefines.h RepeaterHandler.h Utils.h DExtraProtocolHandlerPool.h DExtraProtocolHandler.h \
-					ConnectData.h HeaderData.h AMBEData.h PollData.h Timer.h Defs.h HeaderLogger.h ReflectorCallback.h
+					ConnectData.h HeaderData.h AMBEData.h PollData.h Timer.h Defs.h HeaderLogger.h ReflectorCallback.h CallsignList.h
 				$(CC) $(CFLAGS) -c DExtraHandler.cpp
 
 DExtraProtocolHandler.o:	DExtraProtocolHandler.cpp DExtraProtocolHandler.h HeaderData.h AMBEData.h UDPReaderWriter.h DStarDefines.h Timer.h Utils.h \
@@ -95,7 +95,7 @@ DPlusAuthenticator.o:	DPlusAuthenticator.cpp DPlusAuthenticator.h UDPReaderWrite
 				$(CC) $(CFLAGS) -c DPlusAuthenticator.cpp
 
 DPlusHandler.o:	DPlusHandler.cpp DPlusHandler.h DStarDefines.h RepeaterHandler.h Utils.h DPlusProtocolHandlerPool.h DPlusProtocolHandler.h ConnectData.h \
-						HeaderData.h AMBEData.h PollData.h Timer.h Defs.h HeaderLogger.h DPlusAuthenticator.h CacheManager.h ReflectorCallback.h
+						HeaderData.h AMBEData.h PollData.h Timer.h Defs.h HeaderLogger.h DPlusAuthenticator.h CacheManager.h ReflectorCallback.h CallsignList.h
 				$(CC) $(CFLAGS) -c DPlusHandler.cpp
 
 DPlusProtocolHandler.o:	DPlusProtocolHandler.cpp DPlusProtocolHandler.h HeaderData.h AMBEData.h UDPReaderWriter.h DStarDefines.h Timer.h Utils.h \

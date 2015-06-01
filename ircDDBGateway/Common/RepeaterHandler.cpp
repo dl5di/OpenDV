@@ -1070,13 +1070,11 @@ bool CRepeaterHandler::process(CDDData& data)
 	unsigned char* address = data.getDestinationAddress();
 	if (::memcmp(address, ETHERNET_BROADCAST_ADDRESS, ETHERNET_ADDRESS_LENGTH) == 0)
 		data.setRepeaters(m_gwyCallsign, wxT("        "));
-	else if (::memcmp(address, TOALL_MULTICAST_ADDRESS, ETHERNET_ADDRESS_LENGTH) == 0){
-		data.setRepeaters(m_gwyCallsign, wxT("CQCQCQ  "));
-		data.setRptCall2(m_rptCallsign);
-	} else if (::memcmp(address, DX_MULTICAST_ADDRESS, ETHERNET_ADDRESS_LENGTH) == 0){
-		data.setRepeaters(m_gwyCallsign, wxT("CQCQCQ  "));
-		data.setRptCall2(m_rptCallsign);
-	} else
+	else if (::memcmp(address, TOALL_MULTICAST_ADDRESS, ETHERNET_ADDRESS_LENGTH) == 0)
+		data.setRepeaters(m_gwyCallsign, m_rptCallsign);
+	else if (::memcmp(address, DX_MULTICAST_ADDRESS, ETHERNET_ADDRESS_LENGTH) == 0)
+		data.setRepeaters(m_gwyCallsign, m_rptCallsign);
+	else
 		data.setRepeaters(m_gwyCallsign, m_rptCallsign);
 
 	data.setDestination(m_address, m_port);

@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2010-2013 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2010-2013,2015 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -67,6 +67,8 @@ public:
 	virtual void setDDModeEnabled(bool enabled);
 	virtual void setRemote(bool enabled, const wxString& password, unsigned int port);
 	virtual void setLocation(double latitude, double longitude);
+	virtual void setWhiteList(CCallsignList* list);
+	virtual void setBlackList(CCallsignList* list);
 	virtual void setRestrictList(CCallsignList* list);
 
 	virtual CIRCDDBGatewayStatusData* getStatus() const;
@@ -121,6 +123,8 @@ private:
 	wxString                  m_status5;
 	double                    m_latitude;
 	double                    m_longitude;
+	CCallsignList*            m_whiteList;
+	CCallsignList*            m_blackList;
 	CCallsignList*            m_restrictList;
 
 	void processIrcDDB();
