@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2011-2014 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2011-2015 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -278,6 +278,10 @@ void CDStarRepeaterTXRXThread::setOutputs(bool, bool, bool, bool)
 }
 
 void CDStarRepeaterTXRXThread::setLogging(bool, const wxString&)
+{
+}
+
+void CDStarRepeaterTXRXThread::setWhiteList(CCallsignList*)
 {
 }
 

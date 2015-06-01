@@ -555,8 +555,22 @@ void CDStarRepeaterApp::createThread()
 	m_frame->setLogging(logging);
 	wxLogInfo(wxT("Frame logging set to %d, in %s"), int(logging), m_audioDir.c_str());
 
+	wxFileName wlFilename(wxFileName::GetHomeDir(), WHITELIST_FILE_NAME);
+	bool exists = wlFilename.FileExists();
+	if (exists) {
+		CCallsignList* list = new CCallsignList(wlFilename.GetFullPath());
+		bool res = list->load();
+		if (!res) {
+			wxLogError(wxT("Unable to open white list file - %s"), wlFilename.GetFullPath().c_str());
+			delete list;
+		} else {
+			wxLogInfo(wxT("%u callsigns loaded into the white list"), list->getCount());
+			thread->setWhiteList(list);
+		}
+	}
+
 	wxFileName blFilename(wxFileName::GetHomeDir(), BLACKLIST_FILE_NAME);
-	bool exists = blFilename.FileExists();
+	exists = blFilename.FileExists();
 	if (exists) {
 		CCallsignList* list = new CCallsignList(blFilename.GetFullPath());
 		bool res = list->load();
