@@ -282,6 +282,10 @@ void CDStarRepeaterTXRXThread::setLogging(bool, const std::string&)
 {
 }
 
+void CDStarRepeaterTXRXThread::setWhiteList(CCallsignList*)
+{
+}
+
 void CDStarRepeaterTXRXThread::setBlackList(CCallsignList*)
 {
 }

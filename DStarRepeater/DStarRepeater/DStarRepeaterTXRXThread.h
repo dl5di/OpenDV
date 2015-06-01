@@ -49,6 +49,7 @@ public:
 	virtual void setControl(bool enabled, const std::string& rpt1Callsign, const std::string& rpt2Callsign, const std::string& shutdown, const std::string& startup, const std::string& status1, const std::string& status2, const std::string& status3, const std::string& status4, const std::string& status5, const std::string& command1, const std::string& command1Line, const std::string& command2, const std::string& command2Line, const std::string& command3, const std::string& command3Line, const std::string& command4, const std::string& command4Line, const std::string& command5, const std::string& command5Line, const std::string& command6, const std::string& command6Line, const std::string& output1, const std::string& output2, const std::string& output3, const std::string& output4);
 	virtual void setOutputs(bool out1, bool out2, bool out3, bool out4);
 	virtual void setLogging(bool logging, const std::string& dir);
+	virtual void setWhiteList(CCallsignList* list);
 	virtual void setBlackList(CCallsignList* list);
 	virtual void setGreyList(CCallsignList* list);
 

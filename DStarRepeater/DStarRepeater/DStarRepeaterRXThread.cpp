@@ -172,6 +172,10 @@ void CDStarRepeaterRXThread::setLogging(bool, const std::string&)
 {
 }
 
+void CDStarRepeaterRXThread::setWhiteList(CCallsignList*)
+{
+}
+
 void CDStarRepeaterRXThread::setBlackList(CCallsignList*)
 {
 }

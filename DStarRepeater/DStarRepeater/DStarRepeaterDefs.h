@@ -25,6 +25,7 @@ const std::string APPLICATION_NAME = "D-Star Repeater";
 const std::string LOG_BASE_NAME    = "DStarRepeater";
 const std::string CONFIG_FILE_NAME = "dstarrepeater";
 
+const std::string WHITELIST_FILE_NAME = "whitelist.dat";
 const std::string BLACKLIST_FILE_NAME = "blacklist.dat";
 const std::string GREYLIST_FILE_NAME  = "greylist.dat";
 
