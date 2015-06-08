@@ -2,8 +2,7 @@
 
 CIRCDDB - ircDDB client library in C++
 
-Copyright (C) 2010	Michael Dirska, DL1BFF (dl1bff@mdx.de)
-Copyright (C) 2014	Jonathan Naylor, G4KLX
+Copyright (C) 2010   Michael Dirska, DL1BFF (dl1bff@mdx.de)
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -22,87 +21,117 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "IRCMessageQueue.h"
 
-IRCMessageQueue::IRCMessageQueue() :
-m_first(NULL),
-m_last(NULL),
-m_mutex(),
-m_eof(false)
+
+IRCMessageQueue::IRCMessageQueue()
 {
+  eof = false;
+  first = NULL;
+  last = NULL;
+
 }
 
 IRCMessageQueue::~IRCMessageQueue()
 {
-	while (messageAvailable())
-		delete getMessage();
+  while (messageAvailable())
+  {
+    IRCMessage * m = getMessage();
+
+    delete m;
+  }
 }
+
 
 bool IRCMessageQueue::isEOF()
 {
-	return m_eof;
+  return eof;
 }
+
 
 void IRCMessageQueue::signalEOF()
 {
-	m_eof = true;
+  eof = true;
 }
+
 
 bool IRCMessageQueue::messageAvailable()
 {
-	wxMutexLocker lock(m_mutex);
+  wxMutexLocker lock(accessMutex);
 
-	return m_first != NULL;
+  return (first != NULL);
 }
 
-IRCMessage* IRCMessageQueue::peekFirst()
+
+IRCMessage * IRCMessageQueue::peekFirst()
 {
-	wxMutexLocker lock(m_mutex);
+  wxMutexLocker lock(accessMutex);
 
-	IRCMessageQueueItem* k = m_first;
+  IRCMessageQueueItem * k = first;
 
-	if (k == NULL)
-		return NULL;
+  if ( k == NULL )
+  {
+    return NULL;
+  }
 
-	return k->msg;
+  return k->msg;
 }
 
-IRCMessage* IRCMessageQueue::getMessage()
+
+IRCMessage * IRCMessageQueue::getMessage()
 {
-	wxMutexLocker lock(m_mutex);
+  wxMutexLocker lock(accessMutex);
 
-	if (m_first == NULL)
-		return NULL;
+  IRCMessageQueueItem * k;
 
-	IRCMessageQueueItem* k = m_first;
+  if (first == NULL)
+  {
+	  return NULL;
+  }
 
-	m_first = k->next;
+  k = first;
 
-	if (k->next == NULL)
-		m_last = NULL;
-	else
-		k->next->prev = NULL;
+  first = k -> next;
 
-	IRCMessage* msg = k->msg;
+  if (k -> next == NULL)
+  {
+	  last = NULL;
+  }
+  else
+  {
+	  k -> next -> prev = NULL;
+  }
 
-	delete k;
 
-	return msg;
+  IRCMessage * msg = k -> msg;
+
+  delete k;
+
+  return msg;
 }
 
-void IRCMessageQueue::putMessage(IRCMessage* m)
+
+void IRCMessageQueue::putMessage( IRCMessage * m )
 {
-	wxASSERT(m != NULL);
+  wxMutexLocker lock(accessMutex);
 
-	wxMutexLocker lock(m_mutex);
+  // wxLogVerbose(wxT("IRCMessageQueue::putMessage"));
 
-	IRCMessageQueueItem* k = new IRCMessageQueueItem(m);
+  IRCMessageQueueItem * k = new IRCMessageQueueItem(m);
 
-	k->prev = m_last;
-	k->next = NULL;
+  k -> prev = last;
+  k -> next = NULL;
 
-	if (m_last == NULL)
-		m_first = k;
-	else
-		m_last->next = k;
+  if (last == NULL)
+  {
+	  first = k;
+  }
+  else
+  {
+	  last -> next = k;
+  }
 
-	m_last = k;
+  last = k;
 }
+
+
+
+

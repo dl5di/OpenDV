@@ -2,8 +2,7 @@
 
 CIRCDDB - ircDDB client library in C++
 
-Copyright (C) 2010-2011	Michael Dirska, DL1BFF (dl1bff@mdx.de)
-Copyright (C) 2014		Jonathan Naylor, G4KLX
+Copyright (C) 2010-2011   Michael Dirska, DL1BFF (dl1bff@mdx.de)
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -22,115 +21,157 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "IRCMessage.h"
 
-IRCMessage::IRCMessage() :
-m_prefix(),
-m_command(),
-m_params(),
-m_prefixComponents(),
-m_prefixParsed(false)
+
+
+IRCMessage::IRCMessage ()
 {
+  numParams = 0;
+  prefixParsed = false;
 }
 
-IRCMessage::IRCMessage ( const wxString& toNick, const wxString& msg ) :
-m_prefix(),
-m_command(wxT("PRIVMSG")),
-m_params(),
-m_prefixComponents(),
-m_prefixParsed(false)
+IRCMessage::IRCMessage ( const wxString& toNick, const wxString& msg )
 {
-	m_params.Add(toNick);
-	m_params.Add(msg);
+  command = wxT("PRIVMSG");
+  numParams = 2;
+  params.Add( toNick );
+  params.Add( msg );
+  prefixParsed = false;
 }
 
-IRCMessage::IRCMessage(const wxString& cmd) :
-m_prefix(),
-m_command(cmd),
-m_params(),
-m_prefixComponents(),
-m_prefixParsed(false)
+IRCMessage::IRCMessage ( const wxString& cmd )
 {
+  command = cmd;
+  numParams = 0;
+  prefixParsed = false;
 }
 
 IRCMessage::~IRCMessage()
 {
 }
 
+
+void IRCMessage::addParam( const wxString& p )
+{
+  params.Add( p );
+  numParams = params.GetCount();
+}
+
+int IRCMessage::getParamCount()
+{
+  return params.GetCount();
+}
+
+wxString IRCMessage::getParam( int pos )
+{
+  return params[pos];
+}
+
+wxString IRCMessage::getCommand()
+{
+  return command;
+}
+
+	
 void IRCMessage::parsePrefix()
 {
-	for (unsigned int i = 0U; i < 3U; i++)
-		m_prefixComponents.Add(wxEmptyString);
+  unsigned int i;
 
-	int state = 0;
+  for (i=0; i < 3; i++)
+  {
+    prefixComponents.Add(wxT(""));
+  }
 
-	for (unsigned int i = 0U; i < m_prefix.Len(); i++) {
-		wxChar c = m_prefix.GetChar(i);
+  int state = 0;
+  
+  for (i=0; i < prefix.Len(); i++)
+  {
+    wxChar c = prefix.GetChar(i);
+			
+    switch (c)
+    {
+    case wxT('!'): 
+	    state = 1; // next is name
+	    break;
+	    
+    case wxT('@'):
+	    state = 2; // next is host
+	    break;
+	    
+    default:
+	    prefixComponents[state].Append(c);
+	    break;
+    }
+  }
 
-		switch (c) {
-			case wxT('!'): 
-				state = 1; // next is name
-				break;
-
-			case wxT('@'):
-				state = 2; // next is host
-				break;
-
-			default:
-				m_prefixComponents[state].Append(c);
-				break;
-		}
-	}
-
-	m_prefixParsed = true;
+  prefixParsed = true;
 }
 
 wxString& IRCMessage::getPrefixNick()
 {
-	if (!m_prefixParsed)
-		parsePrefix();
-
-	return m_prefixComponents.Item(0);
+  if (!prefixParsed)
+  {
+    parsePrefix();
+  }
+  
+  return prefixComponents[0];
 }
 
 wxString& IRCMessage::getPrefixName()
 {
-	if (!m_prefixParsed)
-		parsePrefix();
-
-	return m_prefixComponents.Item(1);
+  if (!prefixParsed)
+  {
+    parsePrefix();
+  }
+  
+  return prefixComponents[1];
 }
 
 wxString& IRCMessage::getPrefixHost()
 {
-	if (!m_prefixParsed)
-		parsePrefix();
-
-	return m_prefixComponents.Item(2);
+  if (!prefixParsed)
+  {
+    parsePrefix();
+  }
+  
+  return prefixComponents[2];
 }
 
-wxString IRCMessage::composeMessage() const
+void IRCMessage::composeMessage ( wxString& output )
 {
-	unsigned int numParams = m_params.GetCount();
+#if defined(DEBUG_IRC)
+  wxString d = wxT("T [") + prefix + wxT("] [") + command + wxT("]");
+  for (int i=0; i < numParams; i++)
+  {
+    d.Append(wxT(" [") + params[i] + wxT("]") );
+  }
+  d.Replace(wxT("%"), wxT("%%"), true);
+  d.Replace(wxT("\\"), wxT("\\\\"), true);
+  wxLogVerbose(d);
+#endif
 
-	wxString o;
+  wxString o;
 
-	if (m_prefix.Len() > 0U) {
-		o.Append(wxT(":"));
-		o.Append(m_prefix);
-		o.Append(wxT(" "));
-	}
+  if (prefix.Len() > 0)
+  {
+    o = wxT(":") + prefix + wxT(" ");
+  }
 
-	o.Append(m_command);
+  o.Append(command);
 
-	for (unsigned int i = 0; i < numParams; i++) {
-		if (i == (numParams - 1U))
-			o.Append(wxT(" :"));
-		else
-			o.Append(wxT(" "));
+  for (int i=0; i < numParams; i++)
+  {
+    if (i == (numParams - 1))
+    {
+      o.Append(wxT(" :") + params[i]);
+    }
+    else
+    {
+      o.Append(wxT(" ") + params[i]);
+    }
+  }
 
-		o.Append(m_params[i]);
-	}
+  o.Append(wxT("\r\n"));
 
-	o.Append(wxT("\r\n"));
-
-	return o;
+  output = o;
 }
+

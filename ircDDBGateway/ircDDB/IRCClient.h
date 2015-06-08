@@ -2,8 +2,8 @@
 
 CIRCDDB - ircDDB client library in C++
 
-Copyright (C) 2010-2011			Michael Dirska, DL1BFF (dl1bff@mdx.de)
-Copyright (C) 2011,2012,2014	Jonathan Naylor, G4KLX
+Copyright (C) 2010-2011   Michael Dirska, DL1BFF (dl1bff@mdx.de)
+Copyright (C) 2011,2012   Jonathan Naylor, G4KLX
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -31,33 +31,47 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <wx/wx.h>
 
+
 class IRCClient : public wxThread
 {
-public:
-	IRCClient(IRCApplication* app, const wxString& update_channel, const wxString& hostName, unsigned int port, const wxString& callsign, const wxString& password, const wxString& versionInfo, const wxString& localAddr);
-	virtual ~IRCClient();
+  public:
 
-	virtual void startWork();
+  IRCClient( IRCApplication * app, const wxString& update_channel,
+      const wxString& hostName, unsigned int port, const wxString& callsign, const wxString& password,
+      const wxString& versionInfo, const wxString& localAddr );
 
-	virtual wxThread::ExitCode Entry();
+  virtual ~IRCClient();
 
-	virtual void stopWork();
 
-private:
-	IRCApplication*  m_app;
+  virtual void startWork();
 
-	char*            m_hostName;
-	char*            m_localAddr;
-	unsigned int     m_port;
-	wxString         m_callsign;
-	wxString         m_password;
+  virtual void stopWork();
 
-	bool             m_stopped;
 
-	IRCReceiver*     m_recv;
-	IRCMessageQueue* m_recvQ;
-	IRCMessageQueue* m_sendQ;
-	IRCProtocol*     m_proto;
+  protected:
+
+  virtual wxThread::ExitCode Entry();
+
+
+
+  private:
+
+  char host_name[100];
+  char local_addr[100];
+  unsigned int port;
+  wxString callsign;
+  wxString password;
+
+  bool terminateThread;
+
+  IRCReceiver * recv;
+  IRCMessageQueue * recvQ;
+  IRCMessageQueue * sendQ;
+  IRCProtocol * proto;
+
+  IRCApplication * app;
+
 };
+
 
 #endif 

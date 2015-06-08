@@ -3,7 +3,7 @@
 CIRCDDB - ircDDB client library in C++
 
 Copyright (C) 2010-2011   Michael Dirska, DL1BFF (dl1bff@mdx.de)
-Copyright (C) 2012,2014   Jonathan Naylor, G4KLX
+Copyright (C) 2012        Jonathan Naylor, G4KLX
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -21,96 +21,181 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #if defined(WIN32)
+
 #define WIN32_LEAN_AND_MEAN
+
 #include <winsock2.h>
 #include <ws2tcpip.h>
+
 #else
+
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netdb.h>
+
 #endif
+
 
 #include "IRCDDBApp.h"
 #include "IRCutils.h"
 
+#include <wx/datetime.h>
+#include <wx/regex.h>
 #include <wx/tokenzr.h>
 
-IRCDDBAppUserObject::IRCDDBAppUserObject() :
-m_nick(),
-m_name(),
-m_host(),
-m_op(false),
-m_usn(counter)
+class IRCDDBAppUserObject
 {
-	counter++;
-}
+  public:
 
-IRCDDBAppUserObject::IRCDDBAppUserObject(const wxString& n, const wxString& nm, const wxString& h) :
-m_nick(n),
-m_name(nm),
-m_host(h),
-m_op(false),
-m_usn(counter)
+  wxString nick;
+  wxString name;
+  wxString host;
+  bool op;
+  unsigned int usn;
+
+  IRCDDBAppUserObject ()
+  {
+    IRCDDBAppUserObject (wxT(""), wxT(""), wxT(""));
+  }
+  
+  IRCDDBAppUserObject ( const wxString& n, const wxString& nm, const wxString& h )
+  {
+    nick = n;
+    name = nm;
+    host = h;
+    op = false;
+    usn = counter;
+    counter ++;
+  }
+
+  static unsigned int counter;
+};
+
+unsigned int IRCDDBAppUserObject::counter = 0;
+
+
+WX_DECLARE_STRING_HASH_MAP( IRCDDBAppUserObject, IRCDDBAppUserMap );
+
+
+class IRCDDBAppRptrObject
 {
-	counter++;
-}
+  public:
 
-unsigned int IRCDDBAppUserObject::counter = 0U;
+  wxString arearp_cs;
+  wxDateTime lastChanged;
+  wxString zonerp_cs;
 
-IRCDDBAppRptrObject::IRCDDBAppRptrObject() :
-m_arearp_cs(),
-m_lastChanged(),
-m_zonerp_cs()
+  IRCDDBAppRptrObject ()
+  {
+  }
+
+  IRCDDBAppRptrObject (wxDateTime& dt, wxString& repeaterCallsign, wxString& gatewayCallsign)
+  {
+    arearp_cs = repeaterCallsign;
+    lastChanged = dt;
+    zonerp_cs = gatewayCallsign;
+
+    if (dt.IsLaterThan(maxTime))
+    {
+      maxTime = dt;
+    }
+  }
+
+  static wxDateTime maxTime;
+}; 
+
+wxDateTime IRCDDBAppRptrObject::maxTime((time_t) 950000000);  // February 2000
+
+
+WX_DECLARE_STRING_HASH_MAP( IRCDDBAppRptrObject, IRCDDBAppRptrMap );
+
+WX_DECLARE_STRING_HASH_MAP( wxString, IRCDDBAppModuleQRG );
+WX_DECLARE_STRING_HASH_MAP( wxString, IRCDDBAppModuleQTH );
+WX_DECLARE_STRING_HASH_MAP( wxString, IRCDDBAppModuleURL );
+WX_DECLARE_STRING_HASH_MAP( wxString, IRCDDBAppModuleWD );
+
+class IRCDDBAppPrivate
 {
-}
+  public:
 
-IRCDDBAppRptrObject::IRCDDBAppRptrObject(wxDateTime& dt, wxString& repeaterCallsign, wxString& gatewayCallsign) :
-m_arearp_cs(repeaterCallsign),
-m_lastChanged(dt),
-m_zonerp_cs(gatewayCallsign)
+  IRCDDBAppPrivate()
+  : tablePattern(wxT("^[0-9]$")),
+    datePattern(wxT("^20[0-9][0-9]-((1[0-2])|(0[1-9]))-((3[01])|([12][0-9])|(0[1-9]))$")),
+    timePattern(wxT("^((2[0-3])|([01][0-9])):[0-5][0-9]:[0-5][0-9]$")),
+    dbPattern(wxT("^[0-9A-Z_]{8}$"))
+  {
+  }
+
+  IRCMessageQueue * sendQ;
+
+  IRCDDBAppUserMap user;
+  wxMutex userMapMutex;
+
+  wxString currentServer;
+  wxString myNick;
+
+  wxRegEx tablePattern;
+  wxRegEx datePattern;
+  wxRegEx timePattern;
+  wxRegEx dbPattern;
+ 
+  int state;
+  int timer;
+  int infoTimer;
+
+  wxString updateChannel;
+  wxString channelTopic;
+  wxString bestServer;
+
+  bool initReady;
+
+  bool terminateThread;
+
+  IRCDDBAppRptrMap rptrMap;
+  wxMutex rptrMapMutex;
+
+  IRCMessageQueue replyQ;
+
+  IRCDDBAppModuleQRG moduleQRG;
+  wxMutex moduleQRGMutex;
+
+  IRCDDBAppModuleQTH moduleQTH;
+  IRCDDBAppModuleURL moduleURL;
+  wxMutex moduleQTHURLMutex;
+
+  IRCDDBAppModuleWD moduleWD;
+  wxMutex moduleWDMutex;
+
+  int wdTimer;
+};
+
+	
+IRCDDBApp::IRCDDBApp( const wxString& u_chan )
+  : wxThread(wxTHREAD_JOINABLE),
+    d(new IRCDDBAppPrivate)
 {
-	if (dt.IsLaterThan(maxTime))
-		maxTime = dt;
-}
 
-wxDateTime IRCDDBAppRptrObject::maxTime(time_t(950000000));  // February 2000
+  d->sendQ = NULL;
+  d->initReady = false;
 
+  userListReset();
+		
+  d->state = 0;
+  d->timer = 0;
+  d->myNick = wxT("none");
+		
+  d->updateChannel = u_chan;
 
-IRCDDBApp::IRCDDBApp(const wxString& u_chan) :
-wxThread(wxTHREAD_JOINABLE),
-m_sendQ(NULL),
-m_user(),
-m_userMapMutex(),
-m_currentServer(),
-m_myNick(wxT("none")),
-m_tablePattern(wxT("^[0-9]$")),
-m_datePattern(wxT("^20[0-9][0-9]-((1[0-2])|(0[1-9]))-((3[01])|([12][0-9])|(0[1-9]))$")),
-m_timePattern(wxT("^((2[0-3])|([01][0-9])):[0-5][0-9]:[0-5][0-9]$")),
-m_dbPattern(wxT("^[0-9A-Z_]{8}$")),
-m_state(0),
-m_timer(1U),
-m_updateChannel(u_chan),
-m_channelTopic(),
-m_bestServer(),
-m_initReady(false),
-m_stopped(false),
-m_rptrMap(),
-m_rptrMapMutex(),
-m_replyQ(),
-m_moduleData(),
-m_moduleDataMutex(),
-m_moduleDataTimer(1U),
-m_moduleWD(),
-m_moduleWDMutex(),
-m_moduleWDTimer(1U, 60U)
-{
-	userListReset();
+  d->terminateThread = false;
+		
 }
 
 IRCDDBApp::~IRCDDBApp()
 {
-	delete m_sendQ;
+	delete d->sendQ;
+	delete d;
 }
+
 
 void IRCDDBApp::rptrQTH(const wxString& callsign, double latitude, double longitude, const wxString& desc1, const wxString& desc2, const wxString& infoURL)
 {
@@ -121,8 +206,8 @@ void IRCDDBApp::rptrQTH(const wxString& callsign, double latitude, double longit
 	wxString d1 = desc1;
 	wxString d2 = desc2;
 
-	d1.Append(wxT(' '), 20U);
-	d2.Append(wxT(' '), 20U);
+	d1.Append(wxT(' '), 20);
+	d2.Append(wxT(' '), 20);
 
 	wxRegEx nonValid(wxT("[^a-zA-Z0-9 +&(),./'-]"));
 	nonValid.Replace(&d1, wxEmptyString);
@@ -133,10 +218,11 @@ void IRCDDBApp::rptrQTH(const wxString& callsign, double latitude, double longit
 	d2.Replace(wxT(" "), wxT("_"));
 	cs.Replace(wxT(" "), wxT("_"));
 
-	wxMutexLocker locker(m_moduleDataMutex);
+	wxMutexLocker lock(d->moduleQTHURLMutex);
 
-	wxString moduleQTH = wxT("IRCDDB RPTRQTH: ") + cs + wxT(" ") + pos + wxT(" ") + d1.Mid(0, 20) + wxT(" ") + d2.Mid(0, 20);
-	m_moduleData.Add(moduleQTH);
+	d->moduleQTH[cs] = cs + wxT(" ") + pos + wxT(" ") + d1.Mid(0, 20) + wxT(" ") + d2.Mid(0, 20);
+
+	wxLogVerbose(wxT("QTH: ") + d->moduleQTH[cs]);
 
 	wxString url = infoURL;
 
@@ -144,12 +230,14 @@ void IRCDDBApp::rptrQTH(const wxString& callsign, double latitude, double longit
 	urlNonValid.Replace(&url, wxEmptyString);
 
 	if (!url.IsEmpty()) {
-		wxString moduleURL = wxT("IRCDDB RPTRURL: ") + cs + wxT(" ") + url;
-		m_moduleData.Add(moduleURL);
+		d->moduleURL[cs] = cs + wxT(" ") + url;
+
+		wxLogVerbose(wxT("URL: ") + d->moduleURL[cs]);
 	}
 
-	m_moduleDataTimer.start(5U);	// send info in 5 seconds
+	d->infoTimer = 5; // send info in 5 seconds
 }
+
 
 void IRCDDBApp::rptrQRG(const wxString& callsign, double txFrequency, double duplexShift, double range, double agl)
 {
@@ -160,12 +248,13 @@ void IRCDDBApp::rptrQRG(const wxString& callsign, double txFrequency, double dup
 	f.Printf(wxT("%011.5f %+010.5f %06.2f %06.1f"), txFrequency, duplexShift, range / 1609.344, agl);
 	f.Replace(wxT(","), wxT("."));
 
-	wxMutexLocker locker(m_moduleDataMutex);
+	wxMutexLocker lock(d->moduleQRGMutex);
 
-	wxString moduleQRG = wxT("IRCDDB RPTRQRG: ") + cs + wxT(" ") + f;
-	m_moduleData.Add(moduleQRG);
+	d->moduleQRG[cs] = cs + wxT(" ") + f;
 
-	m_moduleDataTimer.start(5U);	// send info in 5 seconds
+	wxLogVerbose(wxT("QRG: ") + d->moduleQRG[cs]);
+
+	d->infoTimer = 5; // send info in 5 seconds
 }
 
 void IRCDDBApp::kickWatchdog(const wxString& callsign, const wxString& s)
@@ -179,27 +268,27 @@ void IRCDDBApp::kickWatchdog(const wxString& callsign, const wxString& s)
 		wxString cs = callsign;
 		cs.Replace(wxT(" "), wxT("_"));
 
-		wxMutexLocker locker(m_moduleWDMutex);
+		wxMutexLocker lock(d->moduleWDMutex);
 
-		wxString moduleWD = wxT("IRCDDB RPTRSW: ") + cs + wxT(" ") + text;
-		m_moduleWD.Add(moduleWD);
+		d->moduleWD[cs] = cs + wxT(" ") + text;
 
-		m_moduleWDTimer.start();
+		d->wdTimer = 60;
 	}
 }
 
+
 int IRCDDBApp::getConnectionState()
 {
-	return m_state;
+	return d->state;
 }
 
 IRCDDB_RESPONSE_TYPE IRCDDBApp::getReplyMessageType()
 {
-	IRCMessage* m = m_replyQ.peekFirst();
+	IRCMessage* m = d->replyQ.peekFirst();
 	if (m == NULL)
 		return IDRT_NONE;
 
-	wxString msgType = m->m_command;
+	wxString msgType = m->getCommand();
 
 	if (msgType.IsSameAs(wxT("IDRT_USER")))
 		return IDRT_USER;
@@ -215,742 +304,1029 @@ IRCDDB_RESPONSE_TYPE IRCDDBApp::getReplyMessageType()
 	return IDRT_NONE;
 }
 
+
 IRCMessage* IRCDDBApp::getReplyMessage()
 {
-	return m_replyQ.getMessage();
+	return d->replyQ.getMessage();
 }
+
+
 
 void IRCDDBApp::startWork()
 {
-	m_stopped = false;
+	d->terminateThread = false;
 
 	Create();
-
 	Run();
 }
 
 void IRCDDBApp::stopWork()
 {
-	m_stopped = true;
+    d->terminateThread = true;
 
-	Wait();
+    Wait();
+}
+
+	
+void IRCDDBApp::userJoin (const wxString& nick, const wxString& name, const wxString& host)
+{
+  wxMutexLocker lock(d->userMapMutex);
+
+  wxString lnick = nick;
+  lnick.MakeLower();
+
+  IRCDDBAppUserObject u( lnick, name, host );
+		
+  d->user[lnick] = u;
+
+  // wxLogVerbose(wxT("add %d: (") + u.nick + wxT(") (") + u.host + wxT(")"), d->user.size());
+
+  if (d->initReady)
+  {
+    int hyphenPos = nick.Find(wxT('-'));
+
+    if ((hyphenPos >= 4) && (hyphenPos <= 6))
+    {
+      wxString gatewayCallsign = nick.Mid(0, hyphenPos).Upper();
+
+      while (gatewayCallsign.Length() < 7)
+      {
+	gatewayCallsign.Append(wxT(' '));
+      }
+
+      gatewayCallsign.Append(wxT('G'));
+
+      IRCMessage * m2 = new IRCMessage(wxT( "IDRT_GATEWAY"));
+      m2->addParam(gatewayCallsign);
+      m2->addParam(host);
+      d->replyQ.putMessage(m2);
+    }
+  }
+
+  // wxLogVerbose(wxT("user %d"), u.usn );
 }
 
 
-void IRCDDBApp::userJoin(const wxString& nick, const wxString& name, const wxString& host)
+
+
+void IRCDDBApp::userLeave (const wxString& nick)
 {
-	wxMutexLocker lock(m_userMapMutex);
+  wxMutexLocker lock(d->userMapMutex);
 
-	wxString lnick = nick;
-	lnick.MakeLower();
+  wxString lnick = nick;
+  lnick.MakeLower();
 
-	IRCDDBAppUserObject u(lnick, name, host);
+  d->user.erase(lnick);
 
-	m_user[lnick] = u;
+  // wxLogVerbose(wxT("rm %d: ") + nick, d->user.size());
 
-	if (m_initReady) {
-		int hyphenPos = nick.Find(wxT('-'));
+  if (d->currentServer.Len() > 0)
+  {
+    if (d->user.count(d->myNick) != 1)
+    {
+      wxLogVerbose(wxT("IRCDDBApp::userLeave: could not find own nick"));
+      return;
+    }
 
-		if ((hyphenPos >= 4) && (hyphenPos <= 6)) {
-			wxString gatewayCallsign = nick.Mid(0, hyphenPos).Upper();
+    IRCDDBAppUserObject me = d->user[d->myNick];
 
-			while (gatewayCallsign.Length() < 7U)
-				gatewayCallsign.Append(wxT(' '));
+    if (me.op == false)  
+    {
+	    // if I am not op, then look for new server
 
-			gatewayCallsign.Append(wxT('G'));
-
-			IRCMessage * m2 = new IRCMessage(wxT("IDRT_GATEWAY"));
-			m2->m_params.Add(gatewayCallsign);
-			m2->m_params.Add(host);
-			m_replyQ.putMessage(m2);
-		}
-	}
-}
-
-void IRCDDBApp::userLeave(const wxString& nick)
-{
-	wxMutexLocker lock(m_userMapMutex);
-
-	wxString lnick = nick;
-	lnick.MakeLower();
-
-	m_user.erase(lnick);
-
-	if (m_currentServer.Len() > 0U) {
-		if (m_user.count(m_myNick) != 1)
-			return;
-
-		IRCDDBAppUserObject& me = m_user[m_myNick];
-
-		if (!me.m_op) {
-			// if I am not op, then look for new server
-
-			if (m_currentServer.IsSameAs(lnick)) {
-				// currentServer = null;
-				m_state = 2;  // choose new server
-
-				m_timer.start(200U);
-
-				m_initReady = false;
-			}
-		}
-	}
+      if (d->currentServer.IsSameAs(lnick))
+      {
+	      // currentServer = null;
+	      d->state = 2;  // choose new server
+	      d->timer = 200;
+	      d->initReady = false;
+      }
+    }
+  }
 }
 
 void IRCDDBApp::userListReset()
 {
-	wxMutexLocker lock(m_userMapMutex);
+  wxMutexLocker lock(d->userMapMutex);
 
-	m_user.clear();
+  d->user.clear();
 }
 
 void IRCDDBApp::setCurrentNick(const wxString& nick)
 {
-	m_myNick = nick;
+  d->myNick = nick;
+  wxLogVerbose(wxT("IRCDDBApp::setCurrentNick ") + nick);
 }
 
 void IRCDDBApp::setBestServer(const wxString& ircUser)
 {
-	m_bestServer = ircUser;
+  d->bestServer = ircUser;
+  wxLogVerbose(wxT("IRCDDBApp::setBestServer ") + ircUser);
 }
 
 void IRCDDBApp::setTopic(const wxString& topic)
 {
-	m_channelTopic = topic;
+  d->channelTopic = topic;
 }
 
 bool IRCDDBApp::findServerUser()
 {
-	wxMutexLocker lock(m_userMapMutex);
+  wxMutexLocker lock(d->userMapMutex);
 
-	bool found = false;
+  bool found = false;
 
-	for (IRCDDBAppUserMap::iterator it = m_user.begin(); it != m_user.end(); ++it) {
-		IRCDDBAppUserObject u = it->second;
+  IRCDDBAppUserMap::iterator it;
 
-		if (u.m_nick.StartsWith(wxT("s-")) && u.m_op && !m_myNick.IsSameAs(u.m_nick) && u.m_nick.IsSameAs(m_bestServer)) {
-			m_currentServer = u.m_nick;
-			found = true;
-			break;
-		}
-	}
+  for( it = d->user.begin(); it != d->user.end(); ++it )
+  {
+    IRCDDBAppUserObject u = it->second;
 
-	if (found)
-		return true;
+    if (u.nick.StartsWith(wxT("s-")) && u.op && !d->myNick.IsSameAs(u.nick)
+      && u.nick.IsSameAs(d->bestServer))
+    {
+      d->currentServer = u.nick;
+      found = true;
+      break;
+    }
+  }
 
-	if (m_bestServer.Len() == 8U) {
-		for (IRCDDBAppUserMap::iterator it = m_user.begin(); it != m_user.end(); ++it) {
-			IRCDDBAppUserObject u = it->second;
+  if (found)
+    return true;
 
-			if (u.m_nick.StartsWith(m_bestServer.Mid(0U, 7U)) && u.m_op && !m_myNick.IsSameAs(u.m_nick)) {
-				m_currentServer = u.m_nick;
-				found = true;
-				break;
-			}
-		}
-	}
+  if (d->bestServer.Len() == 8)
+  {
+    for( it = d->user.begin(); it != d->user.end(); ++it )
+    {
+      IRCDDBAppUserObject u = it->second;
 
-	if (found)
-		return true;
+      if (u.nick.StartsWith(d->bestServer.Mid(0,7)) && u.op &&
+	!d->myNick.IsSameAs(u.nick) )
+      {
+	d->currentServer = u.nick;
+	found = true;
+	break;
+      }
+    }
+  }
 
-	for (IRCDDBAppUserMap::iterator it = m_user.begin(); it != m_user.end(); ++it) {
-		IRCDDBAppUserObject u = it->second;
+  if (found)
+    return true;
 
-		if (u.m_nick.StartsWith(wxT("s-")) && u.m_op && !m_myNick.IsSameAs(u.m_nick)) {
-			m_currentServer = u.m_nick;
-			found = true;
-			break;
-		}
-	}
+  for( it = d->user.begin(); it != d->user.end(); ++it )
+  {
+    IRCDDBAppUserObject u = it->second;
 
-	return found;
+    if (u.nick.StartsWith(wxT("s-")) && u.op && !d->myNick.IsSameAs(u.nick))
+    {
+      d->currentServer = u.nick;
+      found = true;
+      break;
+    }
+  }
+
+  return found;
 }
-
-void IRCDDBApp::userChanOp(const wxString& nick, bool op)
+	
+void IRCDDBApp::userChanOp (const wxString& nick, bool op)
 {
-	wxMutexLocker locker(m_userMapMutex);
+  wxMutexLocker lock(d->userMapMutex);
 
-	wxString lnick = nick;
-	lnick.MakeLower();
+  wxString lnick = nick;
+  lnick.MakeLower();
 
-	if (m_user.count(lnick) == 1)
-		m_user[lnick].m_op = op;
+  if (d->user.count(lnick) == 1)
+  {
+    d->user[lnick].op = op;
+  }
 }
+	
 
-const long NUMBER_OF_TABLES = 2L;
+
+static const int numberOfTables = 2;
+
+
+
+
 
 wxString IRCDDBApp::getIPAddress(wxString& zonerp_cs)
 {
-	wxMutexLocker locker(m_userMapMutex);
+  wxMutexLocker lock(d->userMapMutex);
+  wxString gw = zonerp_cs;
 
-	wxString gw = zonerp_cs;
+  gw.Replace(wxT("_"), wxT(" "));
+  gw.MakeLower();
 
-	gw.Replace(wxT("_"), wxT(" "));
-	gw.MakeLower();
+  unsigned int max_usn = 0;
+  wxString ipAddr;
 
-	unsigned int max_usn = 0U;
-	wxString ipAddr;
+  int j;
 
-	for (unsigned int j = 1U; j <= 4U; j++) {
-		wxString ircUser = gw.Strip() + wxString::Format(wxT("-%d"), j);
+  for (j=1; j <= 4; j++)
+  {
+    // int i = 0;
+    wxString ircUser = gw.Strip() + wxString::Format(wxT("-%d"), j);
 
-		if (m_user.count(ircUser) == 1) {
-			IRCDDBAppUserObject o = m_user[ircUser];
+    if (d->user.count(ircUser) == 1)
+    {
+      IRCDDBAppUserObject o = d->user[ ircUser ];
 
-			if (o.m_usn >= max_usn) {
-				max_usn = o.m_usn;
-				ipAddr  = o.m_host;
-			}
-		}
-	}
+      if (o.usn >= max_usn)
+      {
+	max_usn = o.usn;
+	ipAddr = o.host;
+      }
+      // i = 1;
+    }
+    // wxLogVerbose(wxT("getIP %d (") + ircUser + wxT(") (") + ipAddr + wxT(")"), i);
 
-	return ipAddr;
+  }
+
+  return ipAddr;
 }
+
 
 bool IRCDDBApp::findGateway(const wxString& gwCall)
 {
-	wxString s = gwCall.Mid(0U, 6U);
+  wxString s = gwCall.Mid(0,6);
 
-	IRCMessage* m2 = new IRCMessage(wxT("IDRT_GATEWAY"));
-	m2->m_params.Add(gwCall);
-	m2->m_params.Add(getIPAddress(s));
-	m_replyQ.putMessage(m2);
+  IRCMessage * m2 = new IRCMessage(wxT( "IDRT_GATEWAY"));
+  m2->addParam(gwCall);
+  m2->addParam(getIPAddress(s));
+  d->replyQ.putMessage(m2);
 
-	return true;
+  return true;
+}
+
+static void findReflector( const wxString& rptrCall, IRCDDBAppPrivate * d )
+{
+  wxString zonerp_cs;
+  wxString ipAddr;
+
+#define MAXIPV4ADDR 5
+  struct sockaddr_in addr[MAXIPV4ADDR];
+  unsigned int numAddr = 0;
+
+  char host_name[80];
+
+  wxString host = rptrCall.Mid(0,6) + wxT(".reflector.ircddb.net");
+
+  safeStringCopy(host_name, host.mb_str(wxConvUTF8), sizeof host_name);
+
+  if (getAllIPV4Addresses(host_name, 0, &numAddr, addr, MAXIPV4ADDR) == 0)
+  {
+    if (numAddr > 0)
+    {
+      unsigned char * a = (unsigned char *) &addr[0].sin_addr;
+
+      ipAddr = wxString::Format(wxT("%d.%d.%d.%d"), a[0], a[1], a[2], a[3]);
+      zonerp_cs = rptrCall;
+      zonerp_cs.SetChar(7, wxT('G'));
+    }
+  }
+  
+
+  IRCMessage * m2 = new IRCMessage(wxT("IDRT_REPEATER"));
+  m2->addParam(rptrCall);
+  m2->addParam(zonerp_cs);
+  m2->addParam(ipAddr);
+  d->replyQ.putMessage(m2);
 }
 
 bool IRCDDBApp::findRepeater(const wxString& rptrCall)
 {
-	wxString arearp_cs = rptrCall;
-	arearp_cs.Replace(wxT(" "), wxT("_"));
 
-	wxString zonerp_cs;
+  if (rptrCall.StartsWith(wxT("XRF")) || rptrCall.StartsWith(wxT("REF")))
+  {
+    findReflector(rptrCall, d);
+    return true;
+  }
 
-	wxMutexLocker locker(m_rptrMapMutex);
+  wxString arearp_cs = rptrCall;
+  arearp_cs.Replace(wxT(" "), wxT("_"));
 
-	wxString s = wxT("NONE");
+  wxString zonerp_cs;
 
-	if (m_rptrMap.count(arearp_cs) == 1) {
-		IRCDDBAppRptrObject o = m_rptrMap[arearp_cs];
-		zonerp_cs = o.m_zonerp_cs;
-		zonerp_cs.Replace(wxT("_"), wxT(" "));
-		zonerp_cs.SetChar(7U, wxT('G'));
-		s = o.m_zonerp_cs;
-	}
+  wxMutexLocker lock(d->rptrMapMutex);
+  
+  wxString s = wxT("NONE");
 
-	IRCMessage* m2 = new IRCMessage(wxT("IDRT_REPEATER"));
-	m2->m_params.Add(rptrCall);
-	m2->m_params.Add(zonerp_cs);
-	m2->m_params.Add(getIPAddress(s));
-	m_replyQ.putMessage(m2);
+  if (d->rptrMap.count(arearp_cs) == 1)
+  {
+    IRCDDBAppRptrObject o = d->rptrMap[arearp_cs];
+    zonerp_cs = o.zonerp_cs;
+    zonerp_cs.Replace(wxT("_"), wxT(" "));
+    zonerp_cs.SetChar(7, wxT('G'));
+    s = o.zonerp_cs;
+  }
 
-	return true;
+  IRCMessage * m2 = new IRCMessage(wxT("IDRT_REPEATER"));
+  m2->addParam(rptrCall);
+  m2->addParam(zonerp_cs);
+  m2->addParam(getIPAddress(s));
+  d->replyQ.putMessage(m2);
+
+  return true;
 }
 
-bool IRCDDBApp::sendHeard(const wxString& myCall, const wxString& myCallExt, const wxString& yourCall, const wxString& rpt1, const wxString& rpt2, unsigned char flag1, unsigned char flag2, unsigned char flag3, const wxString& destination, const wxString& tx_msg, const wxString& tx_stats)
+
+bool IRCDDBApp::sendHeard(const wxString& myCall, const wxString& myCallExt,
+        const wxString& yourCall, const wxString& rpt1,
+        const wxString& rpt2, unsigned char flag1,
+        unsigned char flag2, unsigned char flag3,
+	const wxString& destination, const wxString& tx_msg,
+	const wxString& tx_stats )
 {
-	wxString my = myCall;
-	wxString myext = myCallExt;
-	wxString ur = yourCall;
-	wxString r1 = rpt1;
-	wxString r2 = rpt2;
-	wxString dest = destination;
 
-	wxRegEx nonValid(wxT("[^A-Z0-9/]"));
-	wxString underScore = wxT("_");
+  wxString my = myCall;
+  wxString myext = myCallExt;
+  wxString ur = yourCall;
+  wxString r1 = rpt1;
+  wxString r2 = rpt2;
+  wxString dest = destination;
 
-	nonValid.Replace(&my, underScore);
-	nonValid.Replace(&myext, underScore);
-	nonValid.Replace(&ur, underScore);
-	nonValid.Replace(&r1, underScore);
-	nonValid.Replace(&r2, underScore);
-	nonValid.Replace(&dest, underScore);
+  wxRegEx nonValid(wxT("[^A-Z0-9/]"));
+  wxString underScore = wxT("_");
 
-	bool statsMsg = (tx_stats.Len() > 0);
+  nonValid.Replace(&my, underScore);
+  nonValid.Replace(&myext, underScore);
+  nonValid.Replace(&ur, underScore);
+  nonValid.Replace(&r1, underScore);
+  nonValid.Replace(&r2, underScore);
+  nonValid.Replace(&dest, underScore);
 
-	wxString srv = m_currentServer;
-	IRCMessageQueue* q = getSendQ();
+  bool statsMsg = (tx_stats.Len() > 0);
 
-	if ((srv.Len() > 0) && (m_state >= 6) && (q != NULL)) {
-		wxString cmd = wxT("UPDATE ");
+  wxString srv = d->currentServer;
+  IRCMessageQueue * q = getSendQ();
 
-		cmd.Append(IRCUtils::getCurrentTime());
+  if ((srv.Len() > 0) && (d->state >= 6) && (q != NULL))
+  {
+    wxString cmd =  wxT("UPDATE ");
 
-		cmd.Append(wxT(" "));
+    cmd.Append( getCurrentTime() );
 
-		cmd.Append(my);
-		cmd.Append(wxT(" "));
-		cmd.Append(r1);
-		cmd.Append(wxT(" "));
+    cmd.Append(wxT(" "));
 
-		if (!statsMsg)
-			cmd.Append(wxT("0 "));
+    cmd.Append(my);
+    cmd.Append(wxT(" "));
+    cmd.Append(r1);
+    cmd.Append(wxT(" "));
+    if (!statsMsg)
+    {
+      cmd.Append(wxT("0 "));
+    }
+    cmd.Append(r2);
+    cmd.Append(wxT(" "));
+    cmd.Append(ur);
+    cmd.Append(wxT(" "));
 
-		cmd.Append(r2);
-		cmd.Append(wxT(" "));
-		cmd.Append(ur);
-		cmd.Append(wxT(" "));
+    wxString flags = wxString::Format(wxT("%02X %02X %02X"), flag1, flag2, flag3);
 
-		wxString flags = wxString::Format(wxT("%02X %02X %02X"), flag1, flag2, flag3);
+    cmd.Append(flags);
+    cmd.Append(wxT(" "));
+    cmd.Append(myext);
 
-		cmd.Append(flags);
-		cmd.Append(wxT(" "));
-		cmd.Append(myext);
+    if (statsMsg)
+    {
+      cmd.Append(wxT(" # "));
+      cmd.Append(tx_stats);
+    }
+    else
+    {
+      cmd.Append(wxT(" 00 "));
+      cmd.Append(dest);
 
-		if (statsMsg) {
-			cmd.Append(wxT(" # "));
-			cmd.Append(tx_stats);
-		} else {
-			cmd.Append(wxT(" 00 "));
-			cmd.Append(dest);
+      if (tx_msg.Len() == 20)
+      {
+        cmd.Append(wxT(" "));
+	cmd.Append(tx_msg);
+      }
+    }
 
-			if (tx_msg.Len() == 20U) {
-				cmd.Append(wxT(" "));
-				cmd.Append(tx_msg);
-			}
-		}
 
-		IRCMessage* m = new IRCMessage(srv, cmd);
+    IRCMessage * m = new IRCMessage(srv, cmd);
 
-		q->putMessage(m);
-
-		return true;
-	} else {
-		return false;
-	}
+    q->putMessage(m);
+    return true;
+  }
+  else
+  {
+    return false;
+  }
 }
 
 bool IRCDDBApp::findUser(const wxString& usrCall)
 {
-	wxString srv = m_currentServer;
-	IRCMessageQueue* q = getSendQ();
+  wxString srv = d->currentServer;
+  IRCMessageQueue * q = getSendQ();
 
-	if ((srv.Len() > 0) && (m_state >= 6) && (q != NULL)) {
-		wxString usr = usrCall;
+  if ((srv.Len() > 0) && (d->state >= 6) && (q != NULL))
+  {
+    wxString usr = usrCall;
 
-		usr.Replace(wxT(" "), wxT("_"));
+    usr.Replace(wxT(" "), wxT("_"));
 
-		IRCMessage* m = new IRCMessage(srv, wxT("FIND ") + usr);
+    IRCMessage * m = new IRCMessage(srv,
+		  wxT("FIND ") + usr );
 
-		q->putMessage(m);
-	} else {
-		IRCMessage* m2 = new IRCMessage(wxT("IDRT_USER"));
-		m2->m_params.Add(usrCall);
-		m2->m_params.Add(wxEmptyString);
-		m2->m_params.Add(wxEmptyString);
-		m2->m_params.Add(wxEmptyString);
-		m2->m_params.Add(wxEmptyString);
-		m_replyQ.putMessage(m2);
-	}
+    q->putMessage(m);
+  }
+  else
+  {
+    IRCMessage * m2 = new IRCMessage(wxT("IDRT_USER"));
+    m2->addParam(usrCall);
+    m2->addParam(wxT(""));
+    m2->addParam(wxT(""));
+    m2->addParam(wxT(""));
+    m2->addParam(wxT(""));
+    d->replyQ.putMessage(m2);
+  }
 
-	return true;
+  return true;
 }
 
-void IRCDDBApp::msgChannel(IRCMessage* m)
-{
-	wxASSERT(m != NULL);
 
-	if (m->getPrefixNick().StartsWith(wxT("s-")) && (m->m_params.GetCount() >= 2U))  // server msg
-		doUpdate(m->m_params.Item(1));
+void IRCDDBApp::msgChannel (IRCMessage * m)
+{
+  if (m->getPrefixNick().StartsWith(wxT("s-")) && (m->numParams >= 2))  // server msg
+  {
+    doUpdate(m->params[1]);
+  }
 }
 
-void IRCDDBApp::doNotFound(wxString& msg, wxString& retval)
+
+void IRCDDBApp::doNotFound ( wxString& msg, wxString& retval )
 {
-	long tableID = 0L;
+  int tableID = 0;
 
-	wxStringTokenizer tkz(msg);
+  wxStringTokenizer tkz(msg);
 
-	if (!tkz.HasMoreTokens()) 
-		return;  // no text in message
+  if (!tkz.HasMoreTokens()) 
+  {
+    return;  // no text in message
+  }
 
-	wxString tk = tkz.GetNextToken();
+  wxString tk = tkz.GetNextToken();
 
-	if (m_tablePattern.Matches(tk)) {
-		long i;
-		if (tk.ToLong(&i)) {
-			tableID = i;
-			if (tableID < 0L || tableID >= NUMBER_OF_TABLES)
-				return;
-		} else {
-			return; // not a valid number
-		}
 
-		if (!tkz.HasMoreTokens()) 
-			return;  // received nothing but the tableID
+  if (d->tablePattern.Matches(tk))
+  {
+    long i;
 
-		tk = tkz.GetNextToken();
-	}
+    if (tk.ToLong(&i))
+    {
+      tableID = i;
+      if ((tableID < 0) || (tableID >= numberOfTables))
+      {
+	wxLogVerbose(wxT("invalid table ID %d"), tableID);
+	return;
+      }
+    }
+    else
+    {
+      return; // not a valid number
+    }
 
-	if (tableID == 0L) {
-		if (!m_dbPattern.Matches(tk))
-			return; // no valid key
+    if (!tkz.HasMoreTokens()) 
+    {
+      return;  // received nothing but the tableID
+    }
 
-		retval = tk;
-	}
+    tk = tkz.GetNextToken();
+  }
+
+  if (tableID == 0)
+  {
+    if (! d->dbPattern.Matches(tk))
+    {
+      return; // no valid key
+    }
+
+    retval = tk;
+  }
 }
 
-void IRCDDBApp::doUpdate(wxString& msg)
+void IRCDDBApp::doUpdate ( wxString& msg )
 {
-	long tableID = 0L;
+    int tableID = 0;
 
-	wxStringTokenizer tkz(msg);
+    wxStringTokenizer tkz(msg);
+
+    if (!tkz.HasMoreTokens()) 
+    {
+      return;  // no text in message
+    }
+
+    wxString tk = tkz.GetNextToken();
+
+
+    if (d->tablePattern.Matches(tk))
+    {
+      long i;
+
+      if (tk.ToLong(&i))
+      {
+	tableID = i;
+	if ((tableID < 0) || (tableID >= numberOfTables))
+	{
+	  wxLogVerbose(wxT("invalid table ID %d"), tableID);
+	  return;
+	}
+      }
+      else
+      {
+	return; // not a valid number
+      }
+
+      if (!tkz.HasMoreTokens()) 
+      {
+	return;  // received nothing but the tableID
+      }
+
+      tk = tkz.GetNextToken();
+    }
+
+    if (d->datePattern.Matches(tk))
+    {
+      if (!tkz.HasMoreTokens()) 
+      {
+	return;  // nothing after date string
+      }
+
+      wxString timeToken = tkz.GetNextToken();
+
+      if (! d->timePattern.Matches(timeToken))
+      {
+	return; // no time string after date string
+      }
+
+      wxDateTime dt;
+
+      if (dt.ParseFormat(tk + wxT(" ") + timeToken, wxT("%Y-%m-%d %H:%M:%S")) == NULL)
+      {
+	return; // date+time parsing failed
+      }
+
+      if ((tableID == 0) || (tableID == 1))
+      {
+	if (!tkz.HasMoreTokens())
+	{
+	  return;  // nothing after time string
+	}
+
+	wxString key = tkz.GetNextToken();
+
+	if (! d->dbPattern.Matches(key))
+	{
+	  return; // no valid key
+	}
 
 	if (!tkz.HasMoreTokens())
-		return;  // no text in message
-
-	wxString tk = tkz.GetNextToken();
-
-	if (m_tablePattern.Matches(tk)) {
-		long i;
-		if (tk.ToLong(&i)) {
-			tableID = i;
-
-			if (tableID < 0L || tableID >= NUMBER_OF_TABLES)
-				return;
-		} else {
-			return; // not a valid number
-		}
-
-		if (!tkz.HasMoreTokens())
-			return;  // received nothing but the tableID
-
-		tk = tkz.GetNextToken();
+	{
+	  return;  // nothing after time string
 	}
 
-	if (m_datePattern.Matches(tk)) {
-		if (!tkz.HasMoreTokens()) 
-			return;  // nothing after date string
+	wxString value = tkz.GetNextToken();
 
-		wxString timeToken = tkz.GetNextToken();
-
-		if (!m_timePattern.Matches(timeToken))
-			return; // no time string after date string
-
-		wxDateTime dt;
-		if (dt.ParseFormat(tk + wxT(" ") + timeToken, wxT("%Y-%m-%d %H:%M:%S")) == NULL)
-			return; // date+time parsing failed
-
-		if (tableID == 0L || tableID == 1L) {
-			if (!tkz.HasMoreTokens())
-				return;  // nothing after time string
-
-			wxString key = tkz.GetNextToken();
-
-			if (!m_dbPattern.Matches(key))
-				return; // no valid key
-
-			if (!tkz.HasMoreTokens())
-				return;  // nothing after time string
-
-			wxString value = tkz.GetNextToken();
-
-			if (!m_dbPattern.Matches(value))
-				return; // no valid key
-
-			if (tableID == 1L) {
-				wxMutexLocker lock(m_rptrMapMutex);
-
-				IRCDDBAppRptrObject newRptr(dt, key, value);
-
-				m_rptrMap[key] = newRptr;
-
-				if (m_initReady) {
-					wxString arearp_cs = key;
-					wxString zonerp_cs = value;
-
-					arearp_cs.Replace(wxT("_"), wxT(" "));
-					zonerp_cs.Replace(wxT("_"), wxT(" "));
-					zonerp_cs.SetChar(7, wxT('G'));
-
-					IRCMessage* m2 = new IRCMessage(wxT("IDRT_REPEATER"));
-					m2->m_params.Add(arearp_cs);
-					m2->m_params.Add(zonerp_cs);
-					m2->m_params.Add(getIPAddress(value));
-					m_replyQ.putMessage(m2);
-				}
-			} else if (tableID == 0L && m_initReady) {
-				wxMutexLocker lock(m_rptrMapMutex);
-
-				wxString userCallsign = key;
-				wxString arearp_cs = value;
-				wxString zonerp_cs;
-				wxString ip_addr;
-
-				userCallsign.Replace(wxT("_"), wxT(" "));
-				arearp_cs.Replace(wxT("_"), wxT(" "));
-
-				if (m_rptrMap.count(value) == 1) {
-					IRCDDBAppRptrObject o = m_rptrMap[value];
-					zonerp_cs = o.m_zonerp_cs;
-					zonerp_cs.Replace(wxT("_"), wxT(" "));
-					zonerp_cs.SetChar(7U, wxT('G'));
-
-					ip_addr = getIPAddress(o.m_zonerp_cs);
-				}
-
-				IRCMessage* m2 = new IRCMessage(wxT("IDRT_USER"));
-				m2->m_params.Add(userCallsign);
-				m2->m_params.Add(arearp_cs);
-				m2->m_params.Add(zonerp_cs);
-				m2->m_params.Add(ip_addr); 
-				m2->m_params.Add(tk + wxT(" ") + timeToken);
-				m_replyQ.putMessage(m2);
-			}
-		}
+	if (! d->dbPattern.Matches(value))
+	{
+	  return; // no valid key
 	}
-}
 
-wxString IRCDDBApp::getTableIDString(long tableID, bool spaceBeforeNumber)
-{
-	if (tableID == 0L)
-		return wxEmptyString;
+	//wxLogVerbose(wxT("TABLE %d ") + key + wxT(" ") + value, tableID );
 
-	if (tableID > 0L && tableID < NUMBER_OF_TABLES) {
-		if (spaceBeforeNumber)
-			return wxString::Format(wxT(" %ld"), tableID);
-		else
-			return wxString::Format(wxT("%ld "), tableID);
-	} else {
-		return wxT(" TABLE_ID_OUT_OF_RANGE ");
+
+	if (tableID == 1)
+	{
+	  wxMutexLocker lock(d->rptrMapMutex);
+
+	  IRCDDBAppRptrObject newRptr(dt, key, value);
+
+	  d->rptrMap[key] = newRptr;
+
+	  if (d->initReady)
+	  {
+	    wxString arearp_cs = key;
+	    wxString zonerp_cs = value;
+
+	    arearp_cs.Replace(wxT("_"), wxT(" "));
+	    zonerp_cs.Replace(wxT("_"), wxT(" "));
+	    zonerp_cs.SetChar(7, wxT('G'));
+
+	    IRCMessage * m2 = new IRCMessage(wxT("IDRT_REPEATER"));
+	    m2->addParam(arearp_cs);
+	    m2->addParam(zonerp_cs);
+	    m2->addParam(getIPAddress(value));
+	    d->replyQ.putMessage(m2);
+	  }
 	}
-}
+	else if ((tableID == 0) && d->initReady)
+	{
+	  wxMutexLocker lock(d->rptrMapMutex);
 
-void IRCDDBApp::msgQuery(IRCMessage* m)
-{
-	wxASSERT(m != NULL);
+	  wxString userCallsign = key;
+	  wxString arearp_cs = value;
+	  wxString zonerp_cs;
+	  wxString ip_addr;
 
-	if (m->getPrefixNick().StartsWith(wxT("s-")) && (m->m_params.GetCount() >= 2U)) {  // server msg
-		wxString msg = m->m_params.Item(1);
-		wxStringTokenizer tkz(msg);
+	  userCallsign.Replace(wxT("_"), wxT(" "));
+	  arearp_cs.Replace(wxT("_"), wxT(" "));
 
-		if (!tkz.HasMoreTokens()) 
-			return;  // no text in message
+	  if (d->rptrMap.count(value) == 1)
+	  {
+	    IRCDDBAppRptrObject o = d->rptrMap[value];
+	    zonerp_cs = o.zonerp_cs;
+	    zonerp_cs.Replace(wxT("_"), wxT(" "));
+	    zonerp_cs.SetChar(7, wxT('G'));
 
-		wxString cmd = tkz.GetNextToken();
+	    ip_addr = getIPAddress(o.zonerp_cs);
+	  }
 
-		if (cmd.IsSameAs(wxT("UPDATE"), false)) {
-			wxString restOfLine = tkz.GetString();
-			doUpdate(restOfLine);
-		} else if (cmd.IsSameAs(wxT("LIST_END"), false)) {
-			if (m_state == 5) // if in sendlist processing state
-				m_state = 3;  // get next table
-		} else if (cmd.IsSameAs(wxT("LIST_MORE"), false)) {
-			if (m_state == 5) // if in sendlist processing state
-				m_state = 4;  // send next SENDLIST
-		} else if (cmd.IsSameAs(wxT("NOT_FOUND"), false)) {
-			wxString callsign;
-			wxString restOfLine = tkz.GetString();
-			doNotFound(restOfLine, callsign);
+	  IRCMessage * m2 = new IRCMessage(wxT("IDRT_USER"));
+	  m2->addParam(userCallsign);
+	  m2->addParam(arearp_cs);
+	  m2->addParam(zonerp_cs);
+	  m2->addParam(ip_addr); 
+	  m2->addParam(tk + wxT(" ") + timeToken);
+	  d->replyQ.putMessage(m2);
 
-			if (callsign.Len() > 0U) {
-				callsign.Replace(wxT("_"), wxT(" "));
-
-				IRCMessage* m2 = new IRCMessage(wxT("IDRT_USER"));
-				m2->m_params.Add(callsign);
-				m2->m_params.Add(wxEmptyString);
-				m2->m_params.Add(wxEmptyString);
-				m2->m_params.Add(wxEmptyString);
-				m2->m_params.Add(wxEmptyString);
-				m_replyQ.putMessage(m2);
-			}
-		}
 	}
+
+
+      }
+    }
+
 }
 
-void IRCDDBApp::setSendQ(IRCMessageQueue* s)
+
+static wxString getTableIDString( int tableID, bool spaceBeforeNumber )
 {
-	m_sendQ = s;
+  if (tableID == 0)
+  {
+    return wxT("");
+  }
+  else if ((tableID > 0) && (tableID < numberOfTables))
+  {
+    if (spaceBeforeNumber)
+    {
+      return wxString::Format(wxT(" %d"),tableID);
+    }
+    else
+    {	
+      return wxString::Format(wxT("%d "),tableID);
+    }
+  }
+  else
+  {
+    return wxT(" TABLE_ID_OUT_OF_RANGE ");
+  }
 }
 
-IRCMessageQueue* IRCDDBApp::getSendQ()
+
+void IRCDDBApp::msgQuery (IRCMessage * m)
 {
-	return m_sendQ;
-}
 
-wxString IRCDDBApp::getLastEntryTime(long tableID)
+  if (m->getPrefixNick().StartsWith(wxT("s-")) && (m->numParams >= 2))  // server msg
+  {
+    wxString msg = m->params[1];
+    wxStringTokenizer tkz(msg);
+
+    if (!tkz.HasMoreTokens()) 
+    {
+      return;  // no text in message
+    }
+
+    wxString cmd = tkz.GetNextToken();
+
+    if (cmd.IsSameAs(wxT("UPDATE")))
+    {
+      wxString restOfLine = tkz.GetString();
+      doUpdate(restOfLine);
+    }
+    else if (cmd.IsSameAs(wxT("LIST_END")))
+    {
+      if (d->state == 5) // if in sendlist processing state
+      {
+	d->state = 3;  // get next table
+      }
+    }
+    else if (cmd.IsSameAs(wxT("LIST_MORE")))
+    {
+      if (d->state == 5) // if in sendlist processing state
+      {
+	d->state = 4;  // send next SENDLIST
+      }
+    }
+    else if (cmd.IsSameAs(wxT("NOT_FOUND")))
+    {
+      wxString callsign;
+      wxString restOfLine = tkz.GetString();
+      doNotFound(restOfLine, callsign);
+
+      if (callsign.Len() > 0)
+      {
+	callsign.Replace(wxT("_"), wxT(" "));
+
+	IRCMessage * m2 = new IRCMessage(wxT("IDRT_USER"));
+	m2->addParam(callsign);
+	m2->addParam(wxT(""));
+	m2->addParam(wxT(""));
+	m2->addParam(wxT(""));
+	m2->addParam(wxT(""));
+	d->replyQ.putMessage(m2);
+      }
+    }
+  }
+}
+	
+	
+void IRCDDBApp::setSendQ( IRCMessageQueue * s )
 {
-	if (tableID == 1L)
-		return IRCDDBAppRptrObject::maxTime.Format( wxT("%Y-%m-%d %H:%M:%S") );
-
-	return wxT("DBERROR");
+  d->sendQ = s;
 }
-
-bool IRCDDBApp::needsDatabaseUpdate(long tableID)
+	
+IRCMessageQueue * IRCDDBApp::getSendQ()
 {
-	return tableID == 1L;
+  return d->sendQ;
+}
+	
+	
+static wxString getLastEntryTime(int tableID)
+{
+
+  if (tableID == 1)
+  {
+    wxString max = IRCDDBAppRptrObject::maxTime.Format( wxT("%Y-%m-%d %H:%M:%S") );
+    return max;
+  }
+
+  return wxT("DBERROR");
 }
 
+
+static bool needsDatabaseUpdate( int tableID )
+{
+  return (tableID == 1);
+}
+	
+	
 wxThread::ExitCode IRCDDBApp::Entry()
 {
-	wxLogMessage(wxT("Starting the IRCDDB Application thread"));
 
-	long sendlistTableID = 0L;
-
-	try {
-		while (!m_stopped) {
-			m_timer.clock();
-
-			switch (m_state) {
-				case 0:  // wait for network to start
-					if (getSendQ() != NULL)
-						m_state = 1;
-					break;
-
-				case 1:
-					// connect to db
-					m_state = 2;
-
-					m_timer.start(200U);
-
-					break;
-
-				case 2:   // choose server
-					if (getSendQ() == NULL) {
-						m_state = 10;
-					} else {	
-						if (findServerUser()) {
-							sendlistTableID = NUMBER_OF_TABLES;
-
-							m_state = 3; // next: send "SENDLIST"
-						} else if (m_timer.isRunning() && m_timer.hasExpired()) {
-							m_timer.stop();
-
-							m_state = 10;
-							IRCMessage* m = new IRCMessage(wxT("QUIT"));
-
-							m->m_params.Add(wxT("no op user with 's-' found."));
-
-							IRCMessageQueue* q = getSendQ();
-							if (q != NULL)
-								q->putMessage(m);
-						}
-					}
-					break;
-
-				case 3:
-					if (getSendQ() == NULL) {
-						m_state = 10; // disconnect DB
-					} else {
-						sendlistTableID --;
-						if (sendlistTableID < 0L) {
-							m_state = 6; // end of sendlist
-						} else {
-							m_state = 4; // send "SENDLIST"
-
-							m_timer.start(900U); // 15 minutes max for update
-						}
-					}
-					break;
-
-				case 4:
-					if (getSendQ() == NULL) {
-						m_state = 10; // disconnect DB
-					} else {
-						if (needsDatabaseUpdate(sendlistTableID)) {
-							IRCMessage * m = new IRCMessage(m_currentServer, 
-								wxT("SENDLIST") + getTableIDString(sendlistTableID, true) 
-								+ wxT(" ") + getLastEntryTime(sendlistTableID) );
-
-							IRCMessageQueue* q = getSendQ();
-							if (q != NULL)
-								q->putMessage(m);
-
-							m_state = 5; // wait for answers
-						} else {
-							m_state = 3; // don't send SENDLIST for this table, go to next table
-						}
-					}
-					break;
-
-				case 5: // sendlist processing
-					if (getSendQ() == NULL) {
-						m_state = 10; // disconnect DB
-					} else if (m_timer.isRunning() && m_timer.hasExpired()) {
-						m_timer.stop();
-
-						m_state = 10; // disconnect DB
-						IRCMessage* m = new IRCMessage(wxT("QUIT"));
-
-						m->m_params.Add(wxT("timeout SENDLIST"));
-
-						IRCMessageQueue* q = getSendQ();
-						if (q != NULL)
-							q->putMessage(m);
-					}
-					break;
-
-				case 6:
-					if (getSendQ() == NULL) {
-						m_state = 10; // disconnect DB
-					} else {
-						m_moduleDataTimer.start(2U);
+  int sendlistTableID = 0;
 		
-						m_initReady = true;
-						m_state = 7;
-					}
-					break;
+  while (!d->terminateThread)
+  {
 
-				case 7: // standby state after initialization
-					if (getSendQ() == NULL)
-						m_state = 10; // disconnect DB
+    if (d->timer > 0)
+    {
+      d->timer --;
+    }
+			
+    switch(d->state)
+    {
+    case 0:  // wait for network to start
+					
+      if (getSendQ() != NULL)
+      {
+	      d->state = 1;
+      }
+      break;
+				
+    case 1:
+      // connect to db
+      d->state = 2;
+      d->timer = 200;
+      break;
+			
+    case 2:   // choose server
+      wxLogVerbose(wxT("IRCDDBApp: state=2 choose new 's-'-user"));
+      if (getSendQ() == NULL)
+      {
+	d->state = 10;
+      }
+      else
+      {	
+	if (findServerUser())
+	{
+	  sendlistTableID = numberOfTables;
 
-					m_moduleDataTimer.clock();
-					m_moduleWDTimer.clock();
-
-					if (m_moduleDataTimer.isRunning() && m_moduleDataTimer.hasExpired()) {
-						m_moduleDataTimer.stop();
-
-						wxMutexLocker locker(m_moduleDataMutex);
-
-						for (wxArrayString::const_iterator it = m_moduleData.begin(); it != m_moduleData.end(); ++it) {
-							IRCMessage* m = new IRCMessage(m_currentServer, *it);
-
-							IRCMessageQueue* q = getSendQ();
-							if (q != NULL)
-								q->putMessage(m);
-						}
-
-						m_moduleData.clear();
-					}
-
-					if (m_moduleWDTimer.isRunning() && m_moduleWDTimer.hasExpired()) {
-						m_moduleWDTimer.stop();
-
-						wxMutexLocker locker(m_moduleWDMutex);
-
-						for (wxArrayString::const_iterator it = m_moduleWD.begin(); it != m_moduleWD.end(); ++it) {
-							IRCMessage* m = new IRCMessage(m_currentServer, *it);
-
-							IRCMessageQueue* q = getSendQ();
-							if (q != NULL)
-								q->putMessage(m);
-						}
-
-						m_moduleWD.clear();
-					}
-
-					break;
-
-				case 10:
-					// disconnect db
-					m_state = 0;
-					m_timer.stop();
-					m_initReady = false;
-					break;
-			}
-
-			Sleep(1000UL);
-		}
+	  d->state = 3; // next: send "SENDLIST"
 	}
-	catch (std::exception& e) {
-		wxString message(e.what(), wxConvLocal);
-		wxLogError(wxT("Exception raised in the IRCDDB Application thread - \"%s\""), message.c_str());
+	else if (d->timer == 0)
+	{
+	  d->state = 10;
+	  IRCMessage * m = new IRCMessage(wxT("QUIT"));
+
+	  m->addParam(wxT("no op user with 's-' found."));
+						
+	  IRCMessageQueue * q = getSendQ();
+	  if (q != NULL)
+	  {
+	    q->putMessage(m);
+	  }
 	}
-	catch (...) {
-		wxLogError(wxT("Unknown exception raised in the IRCDDB Application thread"));
+      }
+      break;
+				
+    case 3:
+      if (getSendQ() == NULL)
+      {
+	d->state = 10; // disconnect DB
+      }
+      else
+      {
+	sendlistTableID --;
+	if (sendlistTableID < 0)
+	{
+	  d->state = 6; // end of sendlist
+	}
+	else
+	{
+	  wxLogVerbose(wxT("IRCDDBApp: state=3 tableID=%d"), sendlistTableID);
+	  d->state = 4; // send "SENDLIST"
+	  d->timer = 900; // 15 minutes max for update
+	}
+      }
+      break;
+
+    case 4:
+      if (getSendQ() == NULL)
+      {
+	d->state = 10; // disconnect DB
+      }
+      else
+      {
+	if (needsDatabaseUpdate(sendlistTableID))
+	{
+	  IRCMessage * m = new IRCMessage(d->currentServer, 
+			wxT("SENDLIST") + getTableIDString(sendlistTableID, true) 
+			 + wxT(" ") + getLastEntryTime(sendlistTableID) );
+
+	  IRCMessageQueue * q = getSendQ();
+	  if (q != NULL)
+	  {
+	    q->putMessage(m);
+	  }
+
+	  d->state = 5; // wait for answers
+	}
+	else
+	{
+	  d->state = 3; // don't send SENDLIST for this table, go to next table
+	}
+      }
+      break;
+
+    case 5: // sendlist processing
+      if (getSendQ() == NULL)
+      {
+	d->state = 10; // disconnect DB
+      }
+      else if (d->timer == 0)
+      {
+	d->state = 10; // disconnect DB
+	  IRCMessage * m = new IRCMessage(wxT("QUIT"));
+
+	  m->addParam(wxT("timeout SENDLIST"));
+						
+	  IRCMessageQueue * q = getSendQ();
+	  if (q != NULL)
+	  {
+	    q->putMessage(m);
+	  }
+					
+      }
+      break;
+
+    case 6:
+      if (getSendQ() == NULL)
+      {
+	d->state = 10; // disconnect DB
+      }
+      else
+      {
+	wxLogVerbose(wxT( "IRCDDBApp: state=6 initialization completed"));
+
+	d->infoTimer = 2;
+
+	d->initReady = true;
+	d->state = 7;
+      }
+      break;
+				
+			
+    case 7: // standby state after initialization
+      if (getSendQ() == NULL)
+      {
+	d->state = 10; // disconnect DB
+      }
+
+      if (d->infoTimer > 0)
+      {
+	d->infoTimer --;
+
+	if (d->infoTimer == 0)
+	{
+	d->moduleQTHURLMutex.Lock();
+
+	for (IRCDDBAppModuleQTH::iterator it = d->moduleQTH.begin(); it != d->moduleQTH.end(); ++it)
+	{
+	  wxString value = it->second;
+	  IRCMessage* m = new IRCMessage(d->currentServer, wxT("IRCDDB RPTRQTH: ") + value);
+
+	  IRCMessageQueue* q = getSendQ();
+	  if (q != NULL)
+	  {
+	    q->putMessage(m);
+	  }
 	}
 
-	wxLogMessage(wxT("Stopping the IRCDDB Application thread"));
+	d->moduleQTH.clear();
 
-	return 0;
-}
+	for (IRCDDBAppModuleURL::iterator it = d->moduleURL.begin(); it != d->moduleURL.end(); ++it)
+	{
+	  wxString value = it->second;
+	  IRCMessage* m = new IRCMessage(d->currentServer, wxT("IRCDDB RPTRURL: ") + value);
+
+	  IRCMessageQueue* q = getSendQ();
+	  if (q != NULL)
+	  {
+	    q->putMessage(m);
+	  }
+	}
+
+	d->moduleURL.clear();
+
+	d->moduleQTHURLMutex.Unlock();
+
+	d->moduleQRGMutex.Lock();
+
+	for (IRCDDBAppModuleQRG::iterator it = d->moduleQRG.begin(); it != d->moduleQRG.end(); ++it)
+	{
+	  wxString value = it->second;
+	  IRCMessage* m = new IRCMessage(d->currentServer, wxT("IRCDDB RPTRQRG: ") + value);
+
+	  IRCMessageQueue* q = getSendQ();
+	  if (q != NULL)
+	  {
+	    q->putMessage(m);
+	  }
+	}
+
+	d->moduleQRG.clear();
+
+	d->moduleQRGMutex.Unlock();
+
+	}
+      }
+
+      if (d->wdTimer > 0)
+      {
+	d->wdTimer --;
+
+	if (d->wdTimer == 0)
+	{
+	d->moduleWDMutex.Lock();
+
+	for (IRCDDBAppModuleWD::iterator it = d->moduleWD.begin(); it != d->moduleWD.end(); ++it)
+	{
+	  wxString value = it->second;
+	  IRCMessage* m = new IRCMessage(d->currentServer, wxT("IRCDDB RPTRSW: ") + value);
+
+	  IRCMessageQueue* q = getSendQ();
+	  if (q != NULL)
+	  {
+	    q->putMessage(m);
+	  }
+	}
+
+	d->moduleWD.clear();
+
+	d->moduleWDMutex.Unlock();
+	}
+      }
+      break;
+				
+    case 10:
+      // disconnect db
+      d->state = 0;
+      d->timer = 0;
+      d->initReady = false;
+      break;
+			
+    }
+
+    wxThread::Sleep(1000);
+
+			
+			
+
+  } // while
+
+  return 0;
+} // Entry()
+	
+
+
+

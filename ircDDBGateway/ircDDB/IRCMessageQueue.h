@@ -2,8 +2,7 @@
 
 CIRCDDB - ircDDB client library in C++
 
-Copyright (C) 2010	Michael Dirska, DL1BFF (dl1bff@mdx.de)
-Copyright (C) 2014	Jonathan Naylor, G4KLX
+Copyright (C) 2010   Michael Dirska, DL1BFF (dl1bff@mdx.de)
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -27,48 +26,54 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "IRCMessage.h"
 
+
 class IRCMessageQueueItem
 {
-public:
-	IRCMessageQueueItem( IRCMessage * m )
-	{
-		msg = m;
-	}
+  public:
+    IRCMessageQueueItem( IRCMessage * m )
+    {
+      msg = m;
+    }
 
-	~IRCMessageQueueItem()
-	{
-	}
+    ~IRCMessageQueueItem()
+    {
+    }
+    
+    IRCMessage * msg;
 
-	IRCMessage * msg;
-
-	IRCMessageQueueItem * prev;
-	IRCMessageQueueItem * next;
+    IRCMessageQueueItem * prev;
+    IRCMessageQueueItem * next;
 };
 
 
 class IRCMessageQueue
 {
-public:
-	IRCMessageQueue();
-	~IRCMessageQueue();
+  public:
+    IRCMessageQueue();
 
-	bool isEOF();
+    ~IRCMessageQueue();
 
-	void signalEOF();
+    bool isEOF();
 
-	bool messageAvailable();
+    void signalEOF();
 
-	IRCMessage* getMessage();
+    bool messageAvailable();
 
-	IRCMessage* peekFirst();
+    IRCMessage * getMessage();
 
-	void putMessage(IRCMessage* m);
+    IRCMessage * peekFirst();
 
-private:
-	IRCMessageQueueItem* m_first;
-	IRCMessageQueueItem* m_last;
-	wxMutex              m_mutex;
-	bool                 m_eof;
+    void putMessage ( IRCMessage * m );
+
+  private:
+
+    bool eof;
+
+    IRCMessageQueueItem * first;
+    IRCMessageQueueItem * last;
+
+    wxMutex accessMutex;
+    
 };
 
 #endif

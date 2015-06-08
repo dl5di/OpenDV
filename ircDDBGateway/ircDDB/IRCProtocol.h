@@ -2,8 +2,7 @@
 
 CIRCDDB - ircDDB client library in C++
 
-Copyright (C) 2010	Michael Dirska, DL1BFF (dl1bff@mdx.de)
-Copyright (C) 2014	Jonathan Naylor, G4KLX
+Copyright (C) 2010   Michael Dirska, DL1BFF (dl1bff@mdx.de)
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -27,31 +26,40 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "IRCMessageQueue.h"
 #include "IRCApplication.h"
-#include "Timer.h"
+
 
 class IRCProtocol
 {
-public:
-	IRCProtocol(IRCApplication* app, const wxString& callsign, const wxString& password, const wxString& channel, const wxString& versionInfo);
-	~IRCProtocol();
+  public:
+    IRCProtocol ( IRCApplication * app,
+      const wxString& callsign, const wxString& password, const wxString& channel,
+      const wxString& versionInfo );
 
-	void setNetworkReady(bool state);
+    ~IRCProtocol();
 
-	bool processQueues(IRCMessageQueue* recvQ, IRCMessageQueue* sendQ);
+    void setNetworkReady( bool state );
 
-private:
-	IRCApplication* m_app;
-	wxArrayString   m_nicks;
-	wxString        m_password;
-	wxString        m_channel;
-	wxString        m_name;
-	wxString        m_currentNick;
-	wxString        m_versionInfo;
-	int             m_state;
-	CTimer          m_timer;
-	wxString        m_debugChannel;
+    bool processQueues ( IRCMessageQueue * recvQ, IRCMessageQueue * sendQ );
 
-	void chooseNewNick();
+  private:
+    void chooseNewNick();
+
+    wxArrayString nicks;
+    wxString password;
+    wxString channel;
+    wxString name;
+    wxString currentNick;
+    wxString versionInfo;
+
+    int state;
+    int timer;
+    int pingTimer;
+
+    wxString debugChannel;
+
+    IRCApplication * app;
+
 };
+
 
 #endif
