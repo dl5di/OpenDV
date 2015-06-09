@@ -1450,3 +1450,4 @@ Rearrange the source code slightly.
 Use hostnames in the DPlus_Hosts.txt file.
 Update the DExtra_Hosts.txt file.
 Revert to the CIRCDDB library to its previous incarnation.
+Move to the new CCS addressing.

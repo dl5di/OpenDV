@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2012,2013 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2012,2013,2015 by Jonathan Naylor G4KLX
  *   Copyright (C) 2011 by DV Developer Group. DJ0ABR
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -153,7 +153,7 @@ wxString CDTMF::translate()
 		return wxT("       I");
 
 	if (command.IsSameAs(wxT("A")))
-		return wxT("CCSA    ");
+		return wxT("CA      ");
 
 	if (command.IsSameAs(wxT("00")))
 		return wxT("       I");
@@ -226,19 +226,42 @@ wxString CDTMF::processCCS(const wxString& command) const
 {
 	unsigned int len = command.Len();
 
-	unsigned long n;
-	command.ToULong(&n);
-	if (n == 0UL)
-		return wxEmptyString;
-
 	wxString out = wxEmptyString;
 
 	switch (len) {
-		case 4U:
-			out.Printf(wxT("CCS%04lu "), n);
+		case 4U: {
+				wxChar c = command.GetChar(3U);
+				if (c == wxT('A') || c == wxT('B') || c == wxT('C') || c == wxT('D')) {
+					unsigned long n;
+					command.Mid(0U, 3U).ToULong(&n);
+					if (n == 0UL)
+						return wxEmptyString;
+					out.Printf(wxT("C%03lu%c   "), n, c);
+				} else {
+					unsigned long n;
+					command.ToULong(&n);
+					if (n == 0UL)
+						return wxEmptyString;
+					out.Printf(wxT("C%04lu   "), n);
+				}
+			}
 			break;
-		case 5U:
-			out.Printf(wxT("CCS%05lu"), n);
+		case 7U: {
+				wxChar c = command.GetChar(6U);
+				if (c == wxT('A') || c == wxT('B') || c == wxT('C') || c == wxT('D')) {
+					unsigned long n;
+					command.Mid(0U, 6U).ToULong(&n);
+					if (n == 0UL)
+						return wxEmptyString;
+					out.Printf(wxT("C%06lu%c"), n, c);
+				} else {
+					unsigned long n;
+					command.ToULong(&n);
+					if (n == 0UL)
+						return wxEmptyString;
+					out.Printf(wxT("C%07lu"), n);
+				}
+			}
 			break;
 		default:
 			break;

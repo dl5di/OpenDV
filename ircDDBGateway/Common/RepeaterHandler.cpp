@@ -711,7 +711,7 @@ void CRepeaterHandler::processRepeater(CHeaderData& header)
 		return;
 	}
 
-	if (m_yourCall.Left(3U).IsSameAs(wxT("CCS"))) {
+	if (isCCSCommand(m_yourCall)) {
 		ccsCommandHandler(m_yourCall, m_myCall1, wxT("UR Call"));
 		sendToOutgoing(header);
 	} else {
@@ -756,7 +756,7 @@ void CRepeaterHandler::processRepeater(CAMBEData& data)
 			if (!m_restricted && m_yourCall.Left(4U).IsSameAs(wxT("CQCQ"))) {
 				if (command.IsEmpty()) {
 					// Do nothing
-				} else if (command.Left(3U).IsSameAs(wxT("CCS"))) {
+				} else if (isCCSCommand(command)) {
 					ccsCommandHandler(command, m_myCall1, wxT("DTMF"));
 				} else if (command.IsSameAs(wxT("       I"))) {
 					m_infoNeeded = true;
@@ -957,7 +957,7 @@ void CRepeaterHandler::processBusy(CHeaderData& header)
 	if (m_yourCall.Left(4).IsSameAs(wxT("CQCQ")) || m_yourCall.IsSameAs(wxT("       E"))     || m_yourCall.IsSameAs(wxT("       I")))
 		return;
 
-	if (m_yourCall.Left(3U).IsSameAs(wxT("CCS")))
+	if (isCCSCommand(m_yourCall))
 		ccsCommandHandler(m_yourCall, m_myCall1, wxT("background UR Call"));
 	else
 		reflectorCommandHandler(m_yourCall, m_myCall1, wxT("background UR Call"));
@@ -982,7 +982,7 @@ void CRepeaterHandler::processBusy(CAMBEData& data)
 			if (!m_restricted && m_yourCall.Left(4U).IsSameAs(wxT("CQCQ"))) {
 				if (command.IsEmpty()) {
 					// Do nothing
-				} else if (command.Left(3U).IsSameAs(wxT("CCS"))) {
+				} else if (isCCSCommand(command)) {
 					ccsCommandHandler(command, m_myCall1, wxT("background DTMF"));
 				} else if (command.IsSameAs(wxT("       I"))) {
 					// Do nothing
@@ -2019,7 +2019,7 @@ void CRepeaterHandler::g2CommandHandler(const wxString& callsign, const wxString
 
 void CRepeaterHandler::ccsCommandHandler(const wxString& callsign, const wxString& user, const wxString& type)
 {
-	if (callsign.IsSameAs(wxT("CCSA    "))) {
+	if (callsign.IsSameAs(wxT("CA      "))) {
 		m_ccsHandler->stopLink(user, type);
 	} else {
 		CCS_STATUS status = m_ccsHandler->getStatus();
@@ -2027,7 +2027,7 @@ void CRepeaterHandler::ccsCommandHandler(const wxString& callsign, const wxStrin
 			suspendLinks();
 			m_queryTimer.start();
 			m_linkStatus   = LS_LINKING_CCS;
-			m_linkRepeater = callsign.Mid(3U);
+			m_linkRepeater = callsign.Mid(1U);
 			m_ccsHandler->startLink(m_linkRepeater, user, type);
 		}
 	}
@@ -2943,4 +2943,32 @@ void CRepeaterHandler::triggerInfo()
 		m_infoAudio->sendStatus();
 		m_infoNeeded = false;
 	}
+}
+
+bool CRepeaterHandler::isCCSCommand(const wxString& command) const
+{
+	if (command.IsSameAs(wxT("CA      ")))
+		return true;
+
+	wxChar c = command.GetChar(0U);
+	if (c != wxT('C'))
+		return false;
+
+	c = command.GetChar(1U);
+	if (c < wxT('0') || c > wxT('9'))
+		return false;
+
+	c = command.GetChar(2U);
+	if (c < wxT('0') || c > wxT('9'))
+		return false;
+
+	c = command.GetChar(3U);
+	if (c < wxT('0') || c > wxT('9'))
+		return false;
+
+	c = command.GetChar(4U);
+	if (c < wxT('0') || c > wxT('9'))
+		return false;
+
+	return true;
 }

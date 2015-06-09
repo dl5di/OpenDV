@@ -298,6 +298,8 @@ private:
 	bool restoreLinks();
 
 	void triggerInfo();
+
+	bool isCCSCommand(const wxString& command) const;
 };
 
 #endif
