@@ -229,7 +229,7 @@ wxString CDTMF::processCCS(const wxString& command) const
 	wxString out = wxEmptyString;
 
 	switch (len) {
-		case 4U: {
+		case 4U: {		// Old and new style CCS
 				wxChar c = command.GetChar(3U);
 				if (c == wxT('A') || c == wxT('B') || c == wxT('C') || c == wxT('D')) {
 					unsigned long n;
@@ -246,7 +246,15 @@ wxString CDTMF::processCCS(const wxString& command) const
 				}
 			}
 			break;
-		case 7U: {
+		case 5U: {		// Old style CCS
+				unsigned long n;
+				command.ToULong(&n);
+				if (n == 0UL)
+					return wxEmptyString;
+				out.Printf(wxT("C%05lu  "), n);
+			}
+			break;
+		case 7U: {		// New style CCS
 				wxChar c = command.GetChar(6U);
 				if (c == wxT('A') || c == wxT('B') || c == wxT('C') || c == wxT('D')) {
 					unsigned long n;
