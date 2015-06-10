@@ -258,11 +258,11 @@ wxString CDTMF::processCCS(const wxString& command) const
 			}
 			break;
 		case 5U: {
-				wxChar c = command.GetChar(3U);
+				wxChar c = command.GetChar(4U);
 				if (c == wxT('A') || c == wxT('B') || c == wxT('C') || c == wxT('D')) {
 					// New style CCS for local hostspot with band
 					unsigned long n;
-					command.Mid(0U, 3U).ToULong(&n);
+					command.Mid(0U, 4U).ToULong(&n);
 					if (n == 0UL)
 						return wxEmptyString;
 					out.Printf(wxT("C%04lu%c  "), n, c);
@@ -301,6 +301,18 @@ wxString CDTMF::processCCS(const wxString& command) const
 					if (n == 0UL)
 						return wxEmptyString;
 					out.Printf(wxT("C%07lu"), n);
+				}
+			}
+			break;
+		case 8U: {
+				wxChar c = command.GetChar(7U);
+				if (c == wxT('A') || c == wxT('B') || c == wxT('C') || c == wxT('D')) {
+					// New style CCS for full hotspot with band
+					unsigned long n;
+					command.Mid(0U, 7U).ToULong(&n);
+					if (n == 0UL)
+						return wxEmptyString;
+					out.Printf(wxT("C%07lu%c"), n, c);
 				}
 			}
 			break;
