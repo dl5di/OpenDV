@@ -229,15 +229,26 @@ wxString CDTMF::processCCS(const wxString& command) const
 	wxString out = wxEmptyString;
 
 	switch (len) {
-		case 4U: {		// Old and new style CCS
+		case 3U: {
+				// New style CCS for local repeater without band
+				unsigned long n;
+				command.ToULong(&n);
+				if (n == 0UL)
+					return wxEmptyString;
+				out.Printf(wxT("C%03lu    "), n);
+			}
+			break;
+		case 4U: {
 				wxChar c = command.GetChar(3U);
 				if (c == wxT('A') || c == wxT('B') || c == wxT('C') || c == wxT('D')) {
+					// New style CCS for local repeater with band
 					unsigned long n;
 					command.Mid(0U, 3U).ToULong(&n);
 					if (n == 0UL)
 						return wxEmptyString;
 					out.Printf(wxT("C%03lu%c   "), n, c);
 				} else {
+					// Old style CCS, or new style CCS for local user
 					unsigned long n;
 					command.ToULong(&n);
 					if (n == 0UL)
@@ -246,23 +257,45 @@ wxString CDTMF::processCCS(const wxString& command) const
 				}
 			}
 			break;
-		case 5U: {		// Old style CCS
+		case 5U: {
+				wxChar c = command.GetChar(3U);
+				if (c == wxT('A') || c == wxT('B') || c == wxT('C') || c == wxT('D')) {
+					// New style CCS for local hostspot with band
+					unsigned long n;
+					command.Mid(0U, 3U).ToULong(&n);
+					if (n == 0UL)
+						return wxEmptyString;
+					out.Printf(wxT("C%04lu%c  "), n, c);
+				} else {
+					// Old style CCS
+					unsigned long n;
+					command.ToULong(&n);
+					if (n == 0UL)
+						return wxEmptyString;
+					out.Printf(wxT("C%05lu  "), n);
+				}
+			}
+			break;
+		case 6U: {
+				// New style CCS for full repeater without band
 				unsigned long n;
 				command.ToULong(&n);
 				if (n == 0UL)
 					return wxEmptyString;
-				out.Printf(wxT("C%05lu  "), n);
+				out.Printf(wxT("C%06lu "), n);
 			}
 			break;
-		case 7U: {		// New style CCS
+		case 7U: {
 				wxChar c = command.GetChar(6U);
 				if (c == wxT('A') || c == wxT('B') || c == wxT('C') || c == wxT('D')) {
+					// New style CCS for full repeater with band
 					unsigned long n;
 					command.Mid(0U, 6U).ToULong(&n);
 					if (n == 0UL)
 						return wxEmptyString;
 					out.Printf(wxT("C%06lu%c"), n, c);
 				} else {
+					// New style CCS for full user or new style CCS for full hostpot without band
 					unsigned long n;
 					command.ToULong(&n);
 					if (n == 0UL)

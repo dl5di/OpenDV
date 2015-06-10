@@ -2972,9 +2972,5 @@ bool CRepeaterHandler::isCCSCommand(const wxString& command) const
 	if (c < wxT('0') || c > wxT('9'))
 		return false;
 
-	c = command.GetChar(4U);
-	if (c < wxT('0') || c > wxT('9'))
-		return false;
-
 	return true;
 }
