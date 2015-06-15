@@ -1,4 +1,4 @@
-Repeater - 20150404
+Repeater - 20150615
 ===================
 
 20090530
@@ -2048,7 +2048,7 @@ More changes to the ALSA interface.
 
 Added method to ALSA interface for TX control in the sound card controller.
 
-2015xxxx
+20150615
 --------
 
 Rearrange the source code slightly.
