@@ -78,8 +78,19 @@ do_start()
 	echo "*/10 * * * * root ps aux | grep $DAEMON_NAME | grep -vq grep || /etc/init.d/$NAME start" > /etc/cron.d/$NAME
 
 	if [ "${IRCDDBGATEWAY_DDENABLED}" = "yes" ]; then
+	    echo " - wait until DD-mode interface is up"
+	    count=0
+	    while ! grep -q $IRCDDBGATEWAY_DDDEV /proc/net/dev; do
+		sleep 1
+		echo -n "."
+		if [ $count -gt 60 ]; then
+		    echo "Error!! DD-interface $IRCDDBGATEWAY_DDDEV was not created"
+		    exit 1
+		fi
+		let count=$count+1
+	    done
+	    echo "OK"
 	    echo " - configure dd-mode network device $IRCDDBGATEWAY_DDDEV "
-    	    sleep 15
 	    /sbin/ifconfig $IRCDDBGATEWAY_DDDEV $IRCDDBGATEWAY_DDIP netmask $IRCDDBGATEWAY_DDMASK
     	    echo 1 > /proc/sys/net/ipv4/ip_forward
 	    if [ "${IRCDDBGATEWAY_DDDHCP}" = "yes" ]; then
