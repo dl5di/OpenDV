@@ -41,17 +41,29 @@ dostart() {
     sleep 2
     # create a watchdog entry to the crontab
     echo "*/10 * * * * root ps aux | grep $DAEMON_PATH | grep -vq grep || /etc/init.d/$me start" > /etc/cron.d/$me
+    echo "The gateway is up and running"
     if [ "${IRCDDBGATEWAY_DDENABLED}" = "yes" ]; then
-		echo " - configure dd-mode network device $IRCDDBGATEWAY_DDDEV "
-        sleep 15
-		/sbin/ifconfig $IRCDDBGATEWAY_DDDEV $IRCDDBGATEWAY_DDIP netmask $IRCDDBGATEWAY_DDMASK
+    	echo " - wait until DD-mode interface is up"
+        count=0
+        while ! grep -q $IRCDDBGATEWAY_DDDEV /proc/net/dev; do
+            sleep 1
+            echo -n "."
+            if [ $count -gt 120 ]; then
+                echo "Error!! DD-interface $IRCDDBGATEWAY_DDDEV was not created"
+                exit 1
+            fi
+            let count=$count+1
+        done
+        echo "OK"
+        echo " - configure dd-mode network device $IRCDDBGATEWAY_DDDEV "
+        /sbin/ifconfig $IRCDDBGATEWAY_DDDEV $IRCDDBGATEWAY_DDIP netmask $IRCDDBGATEWAY_DDMASK
         echo 1 > /proc/sys/net/ipv4/ip_forward
-		if [ "${IRCDDBGATEWAY_DDDHCP}" = "yes" ]; then
-			echo " - start dhcpd "
-			/sbin/service dhcpd start
-			sleep 3
-			[ -x /usr/local/bin/dd-services.sh ] && /usr/local/bin/dd-services.sh
-		fi
+        if [ "${IRCDDBGATEWAY_DDDHCP}" = "yes" ]; then
+            echo " - start dhcpd "
+            /sbin/service dhcpd start
+            sleep 3
+            [ -x /usr/local/bin/dd-services.sh ] && /usr/local/bin/dd-services.sh
+        fi
     fi
 }
 
