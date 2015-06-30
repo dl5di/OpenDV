@@ -2053,3 +2053,8 @@ Added method to ALSA interface for TX control in the sound card controller.
 
 Rearrange the source code slightly.
 Allow a DVMEGA to be even slower at responding the first time.
+
+2015xxxx
+--------
+
+Allow for a late arriving data sync in the sound card repeater controller.

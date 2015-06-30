@@ -47,6 +47,14 @@ const wxUint32     DATA_SYNC_DATA = 0x00AAB468U;
 const wxUint32     DATA_SYNC_MASK = 0x00FFFFFFU;
 const unsigned int DATA_SYNC_ERRS = 2U;
 
+// D-Star bit order version of 0x55 0x2D 0x16, late by one bit
+const wxUint32     DATA_SYNC_DATA1 = 0x00555A34U;
+const wxUint32     DATA_SYNC_MASK1 = 0x007FFFFFU;
+
+// D-Star bit order version of 0x55 0x2D 0x16, late by two bits
+const wxUint32     DATA_SYNC_DATA2 = 0x002AAD1AU;
+const wxUint32     DATA_SYNC_MASK2 = 0x003FFFFFU;
+
 // D-Star bit order version of 0x55 0x55 0xC8 0x7A
 const wxUint32     END_SYNC_DATA = 0xAAAA135EU;
 const wxUint32     END_SYNC_MASK = 0xFFFFFFFFU;
@@ -845,6 +853,16 @@ void CSoundCardController::processData(bool bit)
 		syncSeen = true;
 		m_dataBits = MAX_SYNC_BITS;
 	}
+
+	// Data sync late by one bit, delay the whole matching process by one bit
+	errs = countBits((m_patternBuffer & DATA_SYNC_MASK1) ^ DATA_SYNC_DATA1);
+	if (errs <= DATA_SYNC_ERRS)
+		m_rxBufferBits--;
+
+	// Data sync late by two bits, delay the whole matching process by two bits
+	errs = countBits((m_patternBuffer & DATA_SYNC_MASK2) ^ DATA_SYNC_DATA2);
+	if (errs <= DATA_SYNC_ERRS)
+		m_rxBufferBits -= 2U;
 
 	// We've not seen a data sync for too long, signal RXLOST and change to RX_NONE
 	m_dataBits--;
