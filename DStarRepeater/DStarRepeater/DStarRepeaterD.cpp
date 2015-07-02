@@ -29,6 +29,7 @@
 #include "DVRPTRV3Controller.h"
 #include "ArduinoController.h"
 #include "DVMegaController.h"
+#include "MMDVMController.h"
 #include "K8055Controller.h"
 #include "DummyController.h"
 #include "SplitController.h"
@@ -401,6 +402,13 @@ bool CDStarRepeaterD::createThread()
 		config.getSoundCard(rxDevice, txDevice, rxInvert, txInvert, rxLevel, txLevel, txDelay, txTail);
 		wxLogInfo(wxT("Sound Card, devices: %s:%s, invert: %d:%d, levels: %.2f:%.2f, tx delay: %u ms, tx tail: %u ms"), rxDevice.c_str(), txDevice.c_str(), int(rxInvert), int(txInvert), rxLevel, txLevel, txDelay, txTail);
 		modem = new CSoundCardController(rxDevice, txDevice, rxInvert, txInvert, rxLevel, txLevel, txDelay, txTail);
+	} else if (modemType.IsSameAs(wxT("MMDVM"))) {
+		wxString port;
+		bool rxInvert, txInvert, pttInvert;
+		unsigned int txDelay;
+		config.getMMDVM(port, rxInvert, txInvert, pttInvert, txDelay);
+		wxLogInfo(wxT("MMDVM, port: %s, RX invert: %d, TX invert: %d, PTT invert: %d, TX delay: %u ms"), port.c_str(), int(rxInvert), int(txInvert), int(pttInvert), txDelay);
+		modem = new CMMDVMController(port, wxEmptyString, rxInvert, txInvert, pttInvert, txDelay);
 	} else if (modemType.IsSameAs(wxT("Split"))) {
 		wxString localAddress;
 		unsigned int localPort;

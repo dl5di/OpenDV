@@ -66,8 +66,6 @@ private:
 	wxUint32                   m_patternBuffer;
 	CDStarGMSKDemodulator      m_demodulator;
 	CDStarGMSKModulator        m_modulator;
-	unsigned int               m_preambleCount;
-	unsigned int               m_preambleTimer;
 	unsigned char*             m_rxBuffer;
 	unsigned int               m_rxBufferBits;
 	unsigned int               m_dataBits;

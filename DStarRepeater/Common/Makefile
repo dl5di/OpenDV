@@ -3,7 +3,7 @@ all:		Common.a
 OBJS :=	AMBEFEC.o AnnouncementUnit.o ArduinoController.o BeaconUnit.o CallsignList.o CCITTChecksum.o CCITTChecksumReverse.o DStarGMSKDemodulator.o \
 		DStarGMSKModulator.o DStarRepeaterConfig.o DummyController.o DVAPController.o DVMegaController.o DVRPTRV1Controller.o DVRPTRV2Controller.o \
 		DVRPTRV3Controller.o DVTOOLFileReader.o DVTOOLFileWriter.o ExternalController.o FIRFilter.o GatewayProtocolHandler.o GMSKController.o GMSKModem.o \
-		GMSKModemLibUsb.o Golay.o GPIOController.o HardwareController.o HeaderData.o K8055Controller.o LogEvent.o Logger.o Modem.o OutputQueue.o \
+		GMSKModemLibUsb.o Golay.o GPIOController.o HardwareController.o HeaderData.o K8055Controller.o LogEvent.o Logger.o MMDVMController.o Modem.o OutputQueue.o \
 		RepeaterProtocolHandler.o SerialDataController.o SerialLineController.o SerialPortSelector.o SlowDataDecoder.o SlowDataEncoder.o SoundCardController.o \
 		SoundCardReaderWriter.o SplitController.o TCPReaderWriter.o Timer.o UDPReaderWriter.o Utils.o
 
@@ -107,6 +107,9 @@ LogEvent.o:	LogEvent.cpp LogEvent.h
 
 Logger.o:	Logger.cpp Logger.h
 		$(CC) $(CFLAGS) -c Logger.cpp
+
+MMDVMController.o:	MMDVMController.cpp MMDVMController.h Modem.h HeaderData.h Utils.h RingBuffer.h SerialDataController.h CCITTChecksumReverse.h Timer.h
+		$(CC) $(CFLAGS) -c MMDVMController.cpp
 
 Modem.o:	Modem.cpp Modem.h RingBuffer.h HeaderData.h DStarDefines.h
 		$(CC) $(CFLAGS) -c Modem.cpp

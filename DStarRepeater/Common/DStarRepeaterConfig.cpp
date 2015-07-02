@@ -124,6 +124,12 @@ const wxString  KEY_DVMEGA_RXFREQUENCY = wxT("dvmegaRXFrequency");
 const wxString  KEY_DVMEGA_TXFREQUENCY = wxT("dvmegaTXFrequency");
 const wxString  KEY_DVMEGA_POWER       = wxT("dvmegaPower");
 
+const wxString  KEY_MMDVM_PORT         = wxT("mmdvmPort");
+const wxString  KEY_MMDVM_RXINVERT     = wxT("mmdvmRXInvert");
+const wxString  KEY_MMDVM_TXINVERT     = wxT("mmdvmTXInvert");
+const wxString  KEY_MMDVM_PTTINVERT    = wxT("mmdvmPTTInvert");
+const wxString  KEY_MMDVM_TXDELAY      = wxT("mmdvmTXDelay");
+
 const wxString  KEY_SOUNDCARD_RXDEVICE = wxT("soundCardRXDevice");
 const wxString  KEY_SOUNDCARD_TXDEVICE = wxT("soundCardTXDevice");
 const wxString  KEY_SOUNDCARD_RXINVERT = wxT("soundCardRXInvert");
@@ -227,6 +233,12 @@ const unsigned int    DEFAULT_DVMEGA_TXDELAY     = 150U;
 const unsigned int    DEFAULT_DVMEGA_RXFREQUENCY = 145500000U;
 const unsigned int    DEFAULT_DVMEGA_TXFREQUENCY = 145500000U;
 const unsigned int    DEFAULT_DVMEGA_POWER       = 100U;
+
+const wxString        DEFAULT_MMDVM_PORT         = wxEmptyString;
+const bool            DEFAULT_MMDVM_RXINVERT     = false;
+const bool            DEFAULT_MMDVM_TXINVERT     = false;
+const bool            DEFAULT_MMDVM_PTTINVERT    = false;
+const unsigned int    DEFAULT_MMDVM_TXDELAY      = 50U;
 
 const wxString        DEFAULT_SOUNDCARD_RXDEVICE = wxEmptyString;
 const wxString        DEFAULT_SOUNDCARD_TXDEVICE = wxEmptyString;
@@ -346,6 +358,11 @@ m_dvmegaTXDelay(DEFAULT_DVMEGA_TXDELAY),
 m_dvmegaRXFrequency(DEFAULT_DVMEGA_RXFREQUENCY),
 m_dvmegaTXFrequency(DEFAULT_DVMEGA_TXFREQUENCY),
 m_dvmegaPower(DEFAULT_DVMEGA_POWER),
+m_mmdvmPort(DEFAULT_MMDVM_PORT),
+m_mmdvmRXInvert(DEFAULT_MMDVM_RXINVERT),
+m_mmdvmTXInvert(DEFAULT_MMDVM_TXINVERT),
+m_mmdvmPTTInvert(DEFAULT_MMDVM_PTTINVERT),
+m_mmdvmTXDelay(DEFAULT_MMDVM_TXDELAY),
 m_soundCardRXDevice(DEFAULT_SOUNDCARD_RXDEVICE),
 m_soundCardTXDevice(DEFAULT_SOUNDCARD_TXDEVICE),
 m_soundCardRXInvert(DEFAULT_SOUNDCARD_RXINVERT),
@@ -602,6 +619,17 @@ m_splitTimeout(DEFAULT_SPLIT_TIMEOUT)
 	m_config->Read(m_name + KEY_DVMEGA_POWER, &temp, long(DEFAULT_DVMEGA_POWER));
 	m_dvmegaPower = (unsigned int)temp;
 
+	m_config->Read(m_name + KEY_MMDVM_PORT, &m_mmdvmPort, DEFAULT_MMDVM_PORT);
+
+	m_config->Read(m_name + KEY_MMDVM_RXINVERT, &m_mmdvmRXInvert, DEFAULT_MMDVM_RXINVERT);
+
+	m_config->Read(m_name + KEY_MMDVM_TXINVERT, &m_mmdvmTXInvert, DEFAULT_MMDVM_TXINVERT);
+
+	m_config->Read(m_name + KEY_MMDVM_PTTINVERT, &m_mmdvmPTTInvert, DEFAULT_MMDVM_PTTINVERT);
+
+	m_config->Read(m_name + KEY_MMDVM_TXDELAY, &temp, long(DEFAULT_MMDVM_TXDELAY));
+	m_mmdvmTXDelay = (unsigned int)temp;
+
 	m_config->Read(m_name + KEY_SOUNDCARD_RXDEVICE, &m_soundCardRXDevice, DEFAULT_SOUNDCARD_RXDEVICE);
 
 	m_config->Read(m_name + KEY_SOUNDCARD_TXDEVICE, &m_soundCardTXDevice, DEFAULT_SOUNDCARD_TXDEVICE);
@@ -755,6 +783,11 @@ m_dvmegaTXDelay(DEFAULT_DVMEGA_TXDELAY),
 m_dvmegaRXFrequency(DEFAULT_DVMEGA_RXFREQUENCY),
 m_dvmegaTXFrequency(DEFAULT_DVMEGA_TXFREQUENCY),
 m_dvmegaPower(DEFAULT_DVMEGA_POWER),
+m_mmdvmPort(DEFAULT_MMDVM_PORT),
+m_mmdvmRXInvert(DEFAULT_MMDVM_RXINVERT),
+m_mmdvmTXInvert(DEFAULT_MMDVM_TXINVERT),
+m_mmdvmPTTInvert(DEFAULT_MMDVM_PTTINVERT),
+m_mmdvmTXDelay(DEFAULT_MMDVM_TXDELAY),
 m_soundCardRXDevice(DEFAULT_SOUNDCARD_RXDEVICE),
 m_soundCardTXDevice(DEFAULT_SOUNDCARD_TXDEVICE),
 m_soundCardRXInvert(DEFAULT_SOUNDCARD_RXINVERT),
@@ -1057,6 +1090,20 @@ m_splitTimeout(DEFAULT_SPLIT_TIMEOUT)
 		} else if (key.IsSameAs(KEY_DVMEGA_POWER)) {
 			val.ToULong(&temp2);
 			m_dvmegaPower = (unsigned int)temp2;
+		} else if (key.IsSameAs(KEY_MMDVM_PORT)) {
+			m_mmdvmPort = val;
+		} else if (key.IsSameAs(KEY_MMDVM_RXINVERT)) {
+			val.ToLong(&temp1);
+			m_mmdvmRXInvert = temp1 == 1L;
+		} else if (key.IsSameAs(KEY_MMDVM_TXINVERT)) {
+			val.ToLong(&temp1);
+			m_mmdvmTXInvert = temp1 == 1L;
+		} else if (key.IsSameAs(KEY_MMDVM_PTTINVERT)) {
+			val.ToLong(&temp1);
+			m_mmdvmPTTInvert = temp1 == 1L;
+		} else if (key.IsSameAs(KEY_MMDVM_TXDELAY)) {
+			val.ToULong(&temp2);
+			m_mmdvmTXDelay = (unsigned int)temp2;
 		} else if (key.IsSameAs(KEY_SOUNDCARD_RXDEVICE)) {
 			m_soundCardRXDevice = val;
 		} else if (key.IsSameAs(KEY_SOUNDCARD_TXDEVICE)) {
@@ -1454,6 +1501,24 @@ void CDStarRepeaterConfig::setDVMEGA(const wxString& port, DVMEGA_VARIANT varian
 	m_dvmegaPower       = power;
 }
 
+void CDStarRepeaterConfig::getMMDVM(wxString& port, bool& rxInvert, bool& txInvert, bool& pttInvert, unsigned int& txDelay) const
+{
+	port      = m_mmdvmPort;
+	rxInvert  = m_mmdvmRXInvert;
+	txInvert  = m_mmdvmTXInvert;
+	pttInvert = m_mmdvmPTTInvert;
+	txDelay   = m_mmdvmTXDelay;
+}
+
+void CDStarRepeaterConfig::setMMDVM(const wxString& port, bool rxInvert, bool txInvert, bool pttInvert, unsigned int txDelay)
+{
+	m_mmdvmPort      = port;
+	m_mmdvmRXInvert  = rxInvert;
+	m_mmdvmTXInvert  = txInvert;
+	m_mmdvmPTTInvert = pttInvert;
+	m_mmdvmTXDelay   = txDelay;
+}
+
 void CDStarRepeaterConfig::getSoundCard(wxString& rxDevice, wxString& txDevice, bool& rxInvert, bool& txInvert, wxFloat32& rxLevel, wxFloat32& txLevel, unsigned int& txDelay, unsigned int& txTail) const
 {
 	rxDevice = m_soundCardRXDevice;
@@ -1602,6 +1667,12 @@ bool CDStarRepeaterConfig::write()
 	m_config->Write(m_name + KEY_DVMEGA_RXFREQUENCY, long(m_dvmegaRXFrequency));
 	m_config->Write(m_name + KEY_DVMEGA_TXFREQUENCY, long(m_dvmegaTXFrequency));
 	m_config->Write(m_name + KEY_DVMEGA_POWER,       long(m_dvmegaPower));
+
+	m_config->Write(m_name + KEY_MMDVM_PORT,         m_mmdvmPort);
+	m_config->Write(m_name + KEY_MMDVM_RXINVERT,     m_mmdvmRXInvert);
+	m_config->Write(m_name + KEY_MMDVM_TXINVERT,     m_mmdvmTXInvert);
+	m_config->Write(m_name + KEY_MMDVM_PTTINVERT,    m_mmdvmPTTInvert);
+	m_config->Write(m_name + KEY_MMDVM_TXDELAY,      long(m_mmdvmTXDelay));
 
 	m_config->Write(m_name + KEY_SOUNDCARD_RXDEVICE, m_soundCardRXDevice);
 	m_config->Write(m_name + KEY_SOUNDCARD_TXDEVICE, m_soundCardTXDevice);
@@ -1757,6 +1828,12 @@ bool CDStarRepeaterConfig::write()
 	buffer.Printf(wxT("%s=%u"), KEY_DVMEGA_RXFREQUENCY.c_str(), m_dvmegaRXFrequency); file.AddLine(buffer);
 	buffer.Printf(wxT("%s=%u"), KEY_DVMEGA_TXFREQUENCY.c_str(), m_dvmegaTXFrequency); file.AddLine(buffer);
 	buffer.Printf(wxT("%s=%u"), KEY_DVMEGA_POWER.c_str(),       m_dvmegaPower); file.AddLine(buffer);
+
+	buffer.Printf(wxT("%s=%s"), KEY_MMDVM_PORT.c_str(),        m_mmdvmPort.c_str()); file.AddLine(buffer);
+	buffer.Printf(wxT("%s=%d"), KEY_MMDVM_RXINVERT.c_str(),    m_mmdvmRXInvert ? 1 : 0); file.AddLine(buffer);
+	buffer.Printf(wxT("%s=%d"), KEY_MMDVM_TXINVERT.c_str(),    m_mmdvmTXInvert ? 1 : 0); file.AddLine(buffer);
+	buffer.Printf(wxT("%s=%d"), KEY_MMDVM_PTTINVERT.c_str(),   m_mmdvmPTTInvert ? 1 : 0); file.AddLine(buffer);
+	buffer.Printf(wxT("%s=%u"), KEY_MMDVM_TXDELAY.c_str(),     m_mmdvmTXDelay); file.AddLine(buffer);
 
 	buffer.Printf(wxT("%s=%s"),   KEY_SOUNDCARD_RXDEVICE.c_str(), m_soundCardRXDevice.c_str()); file.AddLine(buffer);
 	buffer.Printf(wxT("%s=%s"),   KEY_SOUNDCARD_TXDEVICE.c_str(), m_soundCardTXDevice.c_str()); file.AddLine(buffer);

@@ -2058,3 +2058,5 @@ Allow a DVMEGA to be even slower at responding the first time.
 --------
 
 Allow for a late arriving data sync in the sound card repeater controller.
+Add support for D-Star operation with the MMDVM.
+Fix bugs in the DV-RPTR V1 and DVMEGA drivers.
