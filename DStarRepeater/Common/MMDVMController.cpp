@@ -106,7 +106,7 @@ void* CMMDVMController::Entry()
 			if (!ret) {
 				ret = findModem();
 				if (!ret) {
-					wxLogMessage(wxT("Stopping MMDVM Controller thread"));
+					wxLogError(wxT("Stopping MMDVM Controller thread"));
 					return NULL;
 				}
 			}
@@ -124,7 +124,7 @@ void* CMMDVMController::Entry()
 			case RTDVM_ERROR: {
 					bool ret = findModem();
 					if (!ret) {
-						wxLogMessage(wxT("Stopping MMDVM Controller thread"));
+						wxLogError(wxT("Stopping MMDVM Controller thread"));
 						return NULL;
 					}
 				}
@@ -194,11 +194,19 @@ void* CMMDVMController::Entry()
 				}
 				break;
 
-			case RTDVM_GET_STATUS:
-				m_tx  = (m_buffer[4U] & 0x01U) == 0x01U;
-				space = m_buffer[5U];
-				// CUtils::dump(wxT("GET_STATUS"), m_buffer, length);
-				// wxLogMessage(wxT("PTT=%d space=%u"), int(m_tx), space);
+			case RTDVM_GET_STATUS: {
+					bool dstar = (m_buffer[3U] & 0x01U) == 0x01U;
+					if (!dstar) {
+						wxLogError(wxT("D-Star not enabled in the MMDVM!!!"));
+						wxLogError(wxT("Stopping MMDVM Controller thread"));
+						return NULL;
+					}
+
+					m_tx  = (m_buffer[5U] & 0x01U) == 0x01U;
+					space = m_buffer[6U];
+					// CUtils::dump(wxT("GET_STATUS"), m_buffer, length);
+					// wxLogMessage(wxT("PTT=%d space=%u"), int(m_tx), space);
+				}
 				break;
 
 			// These should not be received in this loop, but don't complain if we do
@@ -439,16 +447,14 @@ bool CMMDVMController::setConfig()
 
 	buffer[4U] = 0x01U;		// D-Star only
 
-	buffer[5U] = m_txDelay / 10U;
+	buffer[5U] = m_txDelay;
 
 	buffer[6U] = 30U;		// Mode hang time
 
-	buffer[7U] = 0U;		// DMR TX hang time
+	// CUtils::dump(wxT("Written"), buffer, 7U);
 
-	// CUtils::dump(wxT("Written"), buffer, 8U);
-
-	int ret = m_serial.write(buffer, 8U);
-	if (ret != 8)
+	int ret = m_serial.write(buffer, 7U);
+	if (ret != 7)
 		return false;
 
 	unsigned int count = 0U;
