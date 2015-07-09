@@ -38,8 +38,8 @@ const unsigned char MMDVM_DSTAR_DATA   = 0x11U;
 const unsigned char MMDVM_DSTAR_LOST   = 0x12U;
 const unsigned char MMDVM_DSTAR_EOT    = 0x13U;
 
-const unsigned char MMDVM_ACK = 0x70U;
-const unsigned char MMDVM_NAK = 0x7FU;
+const unsigned char MMDVM_ACK          = 0xF0U;
+const unsigned char MMDVM_NAK          = 0xFFU;
 
 const unsigned int MAX_RESPONSES = 30U;
 
@@ -130,12 +130,8 @@ void* CMMDVMController::Entry()
 				}
 				break;
 
-			case RTDVM_DSTAR_HEADER:
-				// CUtils::dump(wxT("RT_DSTAR_HEADER"), m_buffer, length);
-				if (length == 4U) {
-					if (m_buffer[3U] == MMDVM_NAK)
-						wxLogWarning(wxT("Received a header NAK from the MMDVM"));
-				} else {
+			case RTDVM_DSTAR_HEADER: {
+					// CUtils::dump(wxT("RT_DSTAR_HEADER"), m_buffer, length);
 					wxMutexLocker locker(m_mutex);
 
 					unsigned char data[2U];
@@ -149,12 +145,8 @@ void* CMMDVMController::Entry()
 				}
 				break;
 
-			case RTDVM_DSTAR_DATA:
-				// CUtils::dump(wxT("RT_DSTAR_DATA"), m_buffer, length);
-				if (length == 4U) {
-					if (m_buffer[3U] == MMDVM_NAK)
-						wxLogWarning(wxT("Received a data NAK from the MMDVM"));
-				} else {
+			case RTDVM_DSTAR_DATA: {
+					// CUtils::dump(wxT("RT_DSTAR_DATA"), m_buffer, length);
 					wxMutexLocker locker(m_mutex);
 
 					unsigned char data[2U];
@@ -211,6 +203,25 @@ void* CMMDVMController::Entry()
 
 			// These should not be received in this loop, but don't complain if we do
 			case RTDVM_GET_VERSION:
+			case RTDVM_ACK:
+				break;
+
+			case RTDVM_NAK: {
+					switch (m_buffer[3U]) {
+						case MMDVM_DSTAR_HEADER:
+							wxLogWarning(wxT("Received a header NAK from the MMDVM, reason = %u"), m_buffer[4U]);
+							break;
+						case MMDVM_DSTAR_DATA:
+							wxLogWarning(wxT("Received a data NAK from the MMDVM, reason = %u"), m_buffer[4U]);
+							break;
+						case MMDVM_DSTAR_EOT:
+							wxLogWarning(wxT("Received an EOT NAK from the MMDVM, reason = %u"), m_buffer[4U]);
+							break;
+						default:
+							wxLogWarning(wxT("Received a NAK from the MMDVM, command = 0x%02X, reason = %u"), m_buffer[3U], m_buffer[4U]);
+							break;
+					}
+				}
 				break;
 
 			default:
@@ -461,24 +472,22 @@ bool CMMDVMController::setConfig()
 	unsigned int length;
 	RESP_TYPE_MMDVM resp;
 	do {
-
 		::wxMilliSleep(10UL);
 
 		resp = getResponse(m_buffer, length);
 
-		if (resp != RTDVM_SET_CONFIG) {
+		if (resp != RTDVM_ACK && resp != RTDVM_NAK) {
 			count++;
 			if (count >= MAX_RESPONSES) {
 				wxLogError(wxT("The MMDVM is not responding to the SET_CONFIG command"));
 				return false;
 			}
 		}
-	} while (resp != RTDVM_SET_CONFIG);
+	} while (resp != RTDVM_ACK && resp != RTDVM_NAK);
 
 	// CUtils::dump(wxT("Response"), m_buffer, length);
 
-	unsigned char type = m_buffer[3U];
-	if (type != MMDVM_ACK) {
+	if (resp == RTDVM_NAK) {
 		wxLogError(wxT("Received a NAK to the SET_CONFIG command from the modem"));
 		return false;
 	}
@@ -550,6 +559,10 @@ RESP_TYPE_MMDVM CMMDVMController::getResponse(unsigned char *buffer, unsigned in
 			return RTDVM_DSTAR_EOT;
 		case MMDVM_DSTAR_LOST:
 			return RTDVM_DSTAR_LOST;
+		case MMDVM_ACK:
+			return RTDVM_ACK;
+		case MMDVM_NAK:
+			return RTDVM_NAK;
 		default:
 			return RTDVM_UNKNOWN;
 	}
