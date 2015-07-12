@@ -53,13 +53,17 @@ void delay(unsigned int delay) {
 	nanosleep(&tim, &tim2);
 };
 
-#define	DV3000_VERSION		"2014-11-12"
+#define	DV3000_VERSION		"2015-07-11"
 
 #define	AMBE3000_HEADER_LEN	4U
 #define	AMBE3000_START_BYTE	0x61U
 
-#define	DEFAULT_PORT		2460U
 #define	BUFFER_LENGTH		400U
+#define	DEFAULT_PORT		2460U
+#define DEFAULT_TTY		"/dev/ttyUSB0"
+#define DEFAULT_BAUD		230400U
+
+
 
 struct sockaddr_in sa;
 int serialFd;
@@ -139,7 +143,7 @@ int openWiringPi(void)
 #endif
 
 
-int openSerial()
+int openSerial(long baud)
 {
 	struct termios tty;
 	int fd;
@@ -152,6 +156,12 @@ int openSerial()
         reset[4] = 0x33;
 
 
+	char prodID[5];
+        prodID[0] = 0x61;
+        prodID[1] = 0x00;
+        prodID[2] = 0x01;
+        prodID[3] = 0x00;
+        prodID[4] = 0x33;
 	
 	fd = open(dv3000tty, O_RDWR | O_NOCTTY | O_SYNC);
 	if (fd < 0) {
@@ -163,10 +173,14 @@ int openSerial()
 		fprintf(stderr, "AMBEserver: error %d from tcgetattr\n", errno);
 		return -1;
 	}
-
-	cfsetospeed(&tty, B230400);
-	cfsetispeed(&tty, B230400);
-
+	if(debug) fprintf(stderr, "Baud %ld\n", baud);
+	if(baud == 230400) {
+		cfsetospeed(&tty, B230400);
+		cfsetispeed(&tty, B230400);
+	} else {
+		cfsetospeed(&tty, B460800);
+		cfsetispeed(&tty, B460800);
+	}
 	tty.c_cflag = (tty.c_cflag & ~CSIZE) | CS8;
 	tty.c_iflag &= ~IGNBRK;
 	tty.c_lflag = 0;
@@ -188,11 +202,15 @@ int openSerial()
 		return -1;
 	}
 
+	if (debug)
+		fprintf(stdout, "opened %s %ld\n",dv3000tty,baud);
 	n1 = write(fd,reset,5);
 	if (debug)
-		fprintf(stdout, "opened %s\n",dv3000tty);
 		fprintf(stderr,"Wrote Reset %d chars\n",n1);
-	return fd;
+	n1 = write(fd,prodID,5);
+	if (debug)
+		fprintf(stderr,"Wrote prodID  %d chars\n",n1);
+	return fd; 
 }
 
 int openSocket(uint16_t port)
@@ -319,20 +337,26 @@ int processSocket(void)
 int main(int argc, char **argv)
 {
 	uint16_t port = DEFAULT_PORT;
+	long baud = DEFAULT_BAUD;
+
 	int daemon = 0;
 	int topFd;
 	int commnum;
 	fd_set fds;
 	int ret;
 	int c;
+	strcpy(dv3000tty,DEFAULT_TTY);
 
-	while ((c = getopt(argc, argv, "dc:p:i:vx")) != -1) {
+	while ((c = getopt(argc, argv, "ndc:p:i:vx")) != -1) {
 		switch (c) {
 			case 'd':
 				daemon = 1;
 				break;
 			case 'p':
 				port = (uint16_t)atoi(optarg);
+				break;
+			case 'n':
+				baud = 460800;
 				break;
 			case 'c':
 				commnum = (uint16_t)atoi(optarg);
@@ -347,8 +371,9 @@ int main(int argc, char **argv)
 			case 'x':
 				debug = 1;
 				break;
+			case 'h':
 			default:
-				fprintf(stderr, "Usage: AMBEserver [-d] [-p port] [-i tty] [-c commportnum] [-v] [-x]\n");
+				fprintf(stderr, "Usage: AMBEserver [-d] [-n] [-p port] [-i tty] [-c commportnum] [-v] [-x]\nSelecting -n uses 460800 baud (new) datarate\n");
 				return 1;
 		}
 	}
@@ -392,7 +417,7 @@ int main(int argc, char **argv)
 	if (sockFd < 0)
 		return 1;
 		
-	serialFd = openSerial();
+	serialFd = openSerial(baud);
 	if (serialFd < 0)
 		return 1;
 
