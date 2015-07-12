@@ -13,11 +13,13 @@ def ambecommand(port,cmdarray):
 	print port.readline();
 
 def main(argv):
+	SERIAL_BAUD=230400
 	serialport = "/dev/ttyAMA0"
 	try:
-		opts, args = getopt.getopt(argv,"hs:",["serial="])
+		opts, args = getopt.getopt(argv,"hns:",["serial="])
 	except getopt.GetoptError:
 		print 'AMBEtest3.py -s <serial port>'
+		print 'AMBEtest3.py -h -s <serial port> (for ThumbDV Model A'
 		sys.exit(2)
 	for opt, arg in opts:
 		if opt == '-h':
@@ -25,7 +27,8 @@ def main(argv):
 			sys.exit()
 		elif opt in ("-s", "--serial"):
 			serialport = arg
-	SERIAL_BAUD=230400
+		elif opt == "-n":
+			SERIAL_BAUD=460800
 	print 'Setting ...'
 	port = serial.Serial(serialport, baudrate=SERIAL_BAUD, timeout=1.0, bytesize=serial.EIGHTBITS, parity=serial.PARITY_NONE, stopbits=serial.STOPBITS_ONE, xonxoff=False, rtscts=False, dsrdtr=False)
 	
