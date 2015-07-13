@@ -217,9 +217,9 @@ void CDStarRepeaterConfigModemSet::onConfigure(wxCommandEvent& event)
 	} else if (type.IsSameAs(wxT("MMDVM"))) {
 		wxString port;
 		bool txInvert, rxInvert, pttInvert;
-		unsigned int txDelay;
-		m_config->getMMDVM(port, rxInvert, txInvert, pttInvert, txDelay);
-		CDStarRepeaterConfigMMDVMSet modem(this, -1, port, rxInvert, txInvert, pttInvert, txDelay);
+		unsigned int txDelay, rxLevel, txLevel;
+		m_config->getMMDVM(port, rxInvert, txInvert, pttInvert, txDelay, rxLevel, txLevel);
+		CDStarRepeaterConfigMMDVMSet modem(this, -1, port, rxInvert, txInvert, pttInvert, txDelay, rxLevel, txLevel);
 		if (modem.ShowModal() == wxID_OK) {
 			if (modem.Validate()) {
 				port      = modem.getPort();
@@ -227,7 +227,9 @@ void CDStarRepeaterConfigModemSet::onConfigure(wxCommandEvent& event)
 				txInvert  = modem.getTXInvert();
 				pttInvert = modem.getPTTInvert();
 				txDelay   = modem.getTXDelay();
-				m_config->setMMDVM(port, rxInvert, txInvert, pttInvert, txDelay);
+				rxLevel   = modem.getRXLevel();
+				txLevel   = modem.getTXLevel();
+				m_config->setMMDVM(port, rxInvert, txInvert, pttInvert, txDelay, rxLevel, txLevel);
 			}
 		}
 	} else if (type.IsSameAs(wxT("Sound Card"))) {

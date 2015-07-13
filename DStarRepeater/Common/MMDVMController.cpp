@@ -45,7 +45,7 @@ const unsigned int MAX_RESPONSES = 30U;
 
 const unsigned int BUFFER_LENGTH = 200U;
 
-CMMDVMController::CMMDVMController(const wxString& port, const wxString& path, bool rxInvert, bool txInvert, bool pttInvert, unsigned int txDelay) :
+CMMDVMController::CMMDVMController(const wxString& port, const wxString& path, bool rxInvert, bool txInvert, bool pttInvert, unsigned int txDelay, unsigned int rxLevel, unsigned int txLevel) :
 CModem(),
 m_port(port),
 m_path(path),
@@ -53,6 +53,8 @@ m_rxInvert(rxInvert),
 m_txInvert(txInvert),
 m_pttInvert(pttInvert),
 m_txDelay(txDelay),
+m_txLevel(txLevel),
+m_rxLevel(rxLevel),
 m_serial(port, SERIAL_115200, true),
 m_buffer(NULL),
 m_txData(1000U),
@@ -444,7 +446,7 @@ bool CMMDVMController::setConfig()
 
 	buffer[0U] = MMDVM_FRAME_START;
 
-	buffer[1U] = 8U;
+	buffer[1U] = 9U;
 
 	buffer[2U] = MMDVM_SET_CONFIG;
 
@@ -462,10 +464,13 @@ bool CMMDVMController::setConfig()
 
 	buffer[6U] = 30U;		// Mode hang time
 
-	// CUtils::dump(wxT("Written"), buffer, 7U);
+	buffer[7U] = (m_rxLevel * 255U) / 100U;
+	buffer[8U] = (m_txLevel * 255U) / 100U;
 
-	int ret = m_serial.write(buffer, 7U);
-	if (ret != 7)
+	// CUtils::dump(wxT("Written"), buffer, 9U);
+
+	int ret = m_serial.write(buffer, 9U);
+	if (ret != 9)
 		return false;
 
 	unsigned int count = 0U;
@@ -549,8 +554,6 @@ RESP_TYPE_MMDVM CMMDVMController::getResponse(unsigned char *buffer, unsigned in
 			return RTDVM_GET_STATUS;
 		case MMDVM_GET_VERSION:
 			return RTDVM_GET_VERSION;
-		case MMDVM_SET_CONFIG:
-			return RTDVM_SET_CONFIG;
 		case MMDVM_DSTAR_HEADER:
 			return RTDVM_DSTAR_HEADER;
 		case MMDVM_DSTAR_DATA:

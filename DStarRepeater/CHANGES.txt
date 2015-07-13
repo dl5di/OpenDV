@@ -1,4 +1,4 @@
-Repeater - 20150615
+Repeater - 20150709
 ===================
 
 20090530
@@ -2054,9 +2054,14 @@ Added method to ALSA interface for TX control in the sound card controller.
 Rearrange the source code slightly.
 Allow a DVMEGA to be even slower at responding the first time.
 
-2015xxxx
+20150709
 --------
 
 Allow for a late arriving data sync in the sound card repeater controller.
 Add support for D-Star operation with the MMDVM.
 Fix bugs in the DV-RPTR V1, V2, V3, and DVMEGA drivers.
+
+2015xxxx
+--------
+
+Added the RX and TX levels to the MMDVM driver and configuration.

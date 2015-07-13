@@ -474,10 +474,10 @@ void CDStarRepeaterApp::createThread()
 	} else if (modemType.IsSameAs(wxT("MMDVM"))) {
 		wxString port;
 		bool rxInvert, txInvert, pttInvert;
-		unsigned int txDelay;
-		m_config->getMMDVM(port, rxInvert, txInvert, pttInvert, txDelay);
-		wxLogInfo(wxT("MMDVM, port: %s, RX invert: %d, TX invert: %d, PTT invert: %d, TX delay: %u ms"), port.c_str(), int(rxInvert), int(txInvert), int(pttInvert), txDelay);
-		modem = new CMMDVMController(port, wxEmptyString, rxInvert, txInvert, pttInvert, txDelay);
+		unsigned int txDelay, rxLevel, txLevel;
+		m_config->getMMDVM(port, rxInvert, txInvert, pttInvert, txDelay, rxLevel, txLevel);
+		wxLogInfo(wxT("MMDVM, port: %s, RX invert: %d, TX invert: %d, PTT invert: %d, TX delay: %u ms, RX level: %u%%, TX level: %u%%"), port.c_str(), int(rxInvert), int(txInvert), int(pttInvert), txDelay, rxLevel, txLevel);
+		modem = new CMMDVMController(port, wxEmptyString, rxInvert, txInvert, pttInvert, txDelay, rxLevel, txLevel);
 	} else if (modemType.IsSameAs(wxT("Split"))) {
 		wxString localAddress;
 		unsigned int localPort;

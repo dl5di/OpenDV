@@ -26,7 +26,7 @@
 
 class CDStarRepeaterConfigMMDVMSet : public wxDialog {
 public:
-	CDStarRepeaterConfigMMDVMSet(wxWindow* parent, int id, const wxString& port, bool rxInvert, bool txInvert, bool pttInvert, unsigned int txDelay);
+	CDStarRepeaterConfigMMDVMSet(wxWindow* parent, int id, const wxString& port, bool rxInvert, bool txInvert, bool pttInvert, unsigned int txDelay, unsigned int rxLevel, unsigned int txLevel);
 	virtual ~CDStarRepeaterConfigMMDVMSet();
 
 	virtual bool Validate();
@@ -36,6 +36,8 @@ public:
 	virtual bool         getTXInvert() const;
 	virtual bool         getPTTInvert() const;
 	virtual unsigned int getTXDelay() const;
+	virtual unsigned int getRXLevel() const;
+	virtual unsigned int getTXLevel() const;
 
 private:
 	wxChoice* m_port;
@@ -43,6 +45,8 @@ private:
 	wxChoice* m_rxInvert;
 	wxChoice* m_pttInvert;
 	wxSlider* m_txDelay;
+	wxSlider* m_rxLevel;
+	wxSlider* m_txLevel;
 };
 
 #endif

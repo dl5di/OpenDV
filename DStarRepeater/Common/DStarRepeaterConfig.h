@@ -85,8 +85,8 @@ public:
 	void getDVMEGA(wxString& port, DVMEGA_VARIANT& variant, bool& rxInvert, bool& txInvert, unsigned int& txDelay, unsigned int& rxFrequency, unsigned int& txFrequency, unsigned int& power) const;
 	void setDVMEGA(const wxString& port, DVMEGA_VARIANT variant, bool rxInvert, bool txInvert, unsigned int txDelay, unsigned int rxFrequency, unsigned int txFrequency, unsigned int power);
 
-	void getMMDVM(wxString& port, bool& rxInvert, bool& txInvert, bool& pttInvert, unsigned int& txDelay) const;
-	void setMMDVM(const wxString& port, bool rxInvert, bool txInvert, bool pttInvert, unsigned int txDelay);
+	void getMMDVM(wxString& port, bool& rxInvert, bool& txInvert, bool& pttInvert, unsigned int& txDelay, unsigned int& rxLevel, unsigned int& txLevel) const;
+	void setMMDVM(const wxString& port, bool rxInvert, bool txInvert, bool pttInvert, unsigned int txDelay, unsigned int rxLevel, unsigned int txLevel);
 
 	void getSoundCard(wxString& rxDevice, wxString& txDevice, bool& rxInvert, bool& txInvert, wxFloat32& rxLevel, wxFloat32& txLevel, unsigned int& txDelay, unsigned int& txTail) const;
 	void setSoundCard(const wxString& rxDevice, const wxString& txDevice, bool rxInvert, bool txInvert, wxFloat32 rxLevel, wxFloat32 txLevel, unsigned int txDelay, unsigned int txTail);
@@ -218,6 +218,8 @@ private:
 	bool          m_mmdvmTXInvert;
 	bool          m_mmdvmPTTInvert;
 	unsigned int  m_mmdvmTXDelay;
+	unsigned int  m_mmdvmRXLevel;
+	unsigned int  m_mmdvmTXLevel;
 
 	// Sound Card
 	wxString      m_soundCardRXDevice;

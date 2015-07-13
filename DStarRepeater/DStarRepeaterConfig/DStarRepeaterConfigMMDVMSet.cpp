@@ -25,13 +25,15 @@ const unsigned int CONTROL_WIDTH2 = 300U;
 
 const unsigned int PORT_LENGTH     = 5U;
 
-CDStarRepeaterConfigMMDVMSet::CDStarRepeaterConfigMMDVMSet(wxWindow* parent, int id, const wxString& port, bool rxInvert, bool txInvert, bool pttInvert, unsigned int txDelay) :
+CDStarRepeaterConfigMMDVMSet::CDStarRepeaterConfigMMDVMSet(wxWindow* parent, int id, const wxString& port, bool rxInvert, bool txInvert, bool pttInvert, unsigned int txDelay, unsigned int rxLevel, unsigned int txLevel) :
 wxDialog(parent, id, wxString(_("MMDVM Settings"))),
 m_port(NULL),
 m_txInvert(NULL),
 m_rxInvert(NULL),
 m_pttInvert(NULL),
-m_txDelay(NULL)
+m_txDelay(NULL),
+m_rxLevel(NULL),
+m_txLevel(NULL)
 {
 	wxBoxSizer* topSizer = new wxBoxSizer(wxVERTICAL);
 
@@ -83,6 +85,18 @@ m_txDelay(NULL)
 
 	m_txDelay = new wxSlider(this, -1, txDelay, 0, 100, wxDefaultPosition, wxSize(CONTROL_WIDTH2, -1), wxSL_HORIZONTAL | wxSL_LABELS);
 	sizer->Add(m_txDelay, 0, wxALL | wxALIGN_LEFT, BORDER_SIZE);
+
+	wxStaticText* rxLevelLabel = new wxStaticText(this, -1, _("RX Level (%)"));
+	sizer->Add(rxLevelLabel, 0, wxALL | wxALIGN_LEFT, BORDER_SIZE);
+
+	m_rxLevel = new wxSlider(this, -1, rxLevel, 0, 100, wxDefaultPosition, wxSize(CONTROL_WIDTH2, -1), wxSL_HORIZONTAL | wxSL_LABELS);
+	sizer->Add(m_rxLevel, 0, wxALL | wxALIGN_LEFT, BORDER_SIZE);
+
+	wxStaticText* txLevelLabel = new wxStaticText(this, -1, _("TX Level (%)"));
+	sizer->Add(txLevelLabel, 0, wxALL | wxALIGN_LEFT, BORDER_SIZE);
+
+	m_txLevel = new wxSlider(this, -1, txLevel, 0, 100, wxDefaultPosition, wxSize(CONTROL_WIDTH2, -1), wxSL_HORIZONTAL | wxSL_LABELS);
+	sizer->Add(m_txLevel, 0, wxALL | wxALIGN_LEFT, BORDER_SIZE);
 
 	topSizer->Add(sizer);
 
@@ -160,4 +174,14 @@ bool CDStarRepeaterConfigMMDVMSet::getPTTInvert() const
 unsigned int CDStarRepeaterConfigMMDVMSet::getTXDelay() const
 {
 	return (unsigned int)m_txDelay->GetValue();
+}
+
+unsigned int CDStarRepeaterConfigMMDVMSet::getRXLevel() const
+{
+	return (unsigned int)m_rxLevel->GetValue();
+}
+
+unsigned int CDStarRepeaterConfigMMDVMSet::getTXLevel() const
+{
+	return (unsigned int)m_txLevel->GetValue();
 }

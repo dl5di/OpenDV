@@ -32,7 +32,6 @@ enum RESP_TYPE_MMDVM {
 	RTDVM_UNKNOWN,
 	RTDVM_GET_STATUS,
 	RTDVM_GET_VERSION,
-	RTDVM_SET_CONFIG,
 	RTDVM_DSTAR_HEADER,
 	RTDVM_DSTAR_DATA,
 	RTDVM_DSTAR_EOT,
@@ -43,7 +42,7 @@ enum RESP_TYPE_MMDVM {
 
 class CMMDVMController : public CModem {
 public:
-	CMMDVMController(const wxString& port, const wxString& path, bool rxInvert, bool txInvert, bool pttInvert, unsigned int txDelay);
+	CMMDVMController(const wxString& port, const wxString& path, bool rxInvert, bool txInvert, bool pttInvert, unsigned int txDelay, unsigned int rxLevel, unsigned int txLevel);
 	virtual ~CMMDVMController();
 
 	virtual void* Entry();
@@ -65,6 +64,8 @@ private:
 	bool                       m_txInvert;
 	bool                       m_pttInvert;
 	unsigned int               m_txDelay;
+	unsigned int               m_rxLevel;
+	unsigned int               m_txLevel;
 	CSerialDataController      m_serial;
 	unsigned char*             m_buffer;
 	CRingBuffer<unsigned char> m_txData;
