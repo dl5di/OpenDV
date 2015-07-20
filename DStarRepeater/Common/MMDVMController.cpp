@@ -38,8 +38,8 @@ const unsigned char MMDVM_DSTAR_DATA   = 0x11U;
 const unsigned char MMDVM_DSTAR_LOST   = 0x12U;
 const unsigned char MMDVM_DSTAR_EOT    = 0x13U;
 
-const unsigned char MMDVM_ACK          = 0xF0U;
-const unsigned char MMDVM_NAK          = 0xFFU;
+const unsigned char MMDVM_ACK          = 0x70U;
+const unsigned char MMDVM_NAK          = 0x7FU;
 
 const unsigned int MAX_RESPONSES = 30U;
 
