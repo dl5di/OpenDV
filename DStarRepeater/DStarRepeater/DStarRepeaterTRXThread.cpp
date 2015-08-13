@@ -1648,12 +1648,11 @@ unsigned int CDStarRepeaterTRXThread::processNetworkFrame(unsigned char* data, u
 		m_headerEncoder.sync();
 	} else {
 		// If in Gateway mode, replace the slow data with our modified header
-		if (m_mode == MODE_GATEWAY) {
+		/*if (m_mode == MODE_GATEWAY) {
 			unsigned char slowData[DATA_FRAME_LENGTH_BYTES];
-			::memcpy(slowData, data + VOICE_FRAME_LENGTH_BYTES, DATA_FRAME_LENGTH_BYTES);//clone slow data
-			m_headerEncoder.getHeaderData(slowData);//replace header data
+			m_headerEncoder.getHeaderData(slowData);
 			::memcpy(data + VOICE_FRAME_LENGTH_BYTES, slowData, DATA_FRAME_LENGTH_BYTES);
-		}
+		}*/
 	}
 
 	packetCount++;
