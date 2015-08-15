@@ -160,7 +160,6 @@ void CSlowDataEncoder::setHeaderData(const CHeaderData& header)
 void CSlowDataEncoder::setTextData(const wxString& text)
 {
 	if(text.IsEmpty()) return;
-	wxLogMessage("Setting slow data \"%s\"", text.c_str());
 	::memset(m_textData, 'f', SLOW_DATA_FULL_BLOCK_SIZE);
 
 	m_textData[0U]  = SLOW_DATA_TYPE_TEXT | 0U;
