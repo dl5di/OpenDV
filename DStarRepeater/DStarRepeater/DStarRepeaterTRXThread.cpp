@@ -57,6 +57,7 @@ m_writeNum(0U),
 m_readNum(0U),
 m_radioSeqNo(0U),
 m_networkSeqNo(0U),
+m_lastSlowDataType(0U),
 m_timeoutTimer(1000U, 180U),		// 180s
 m_watchdogTimer(1000U, NETWORK_TIMEOUT),
 m_pollTimer(1000U, 60U),			// 60s
@@ -1648,10 +1649,20 @@ unsigned int CDStarRepeaterTRXThread::processNetworkFrame(unsigned char* data, u
 		m_headerEncoder.sync();
 	} else {
 		// If in Gateway mode, replace the slow data with our modified header
+		//but only if the current slow data is header data
 		if (m_mode == MODE_GATEWAY) {
-			unsigned char slowData[DATA_FRAME_LENGTH_BYTES];
-			m_headerEncoder.getHeaderData(slowData);
-			::memcpy(data + VOICE_FRAME_LENGTH_BYTES, slowData, DATA_FRAME_LENGTH_BYTES);
+			//retrieve data type
+			unsigned char dataType = 0U;
+			if(m_networkSeqNo & 1U)//if i understood the various docs only odd seq frames contain data type
+				dataType = (data[VOICE_FRAME_LENGTH_BYTES] ^ SCRAMBLER_BYTE1) & SLOW_DATA_TYPE_MASK;
+
+			if(dataType == SLOW_DATA_TYPE_HEADER || m_lastSlowDataType == SLOW_DATA_TYPE_HEADER) {
+				unsigned char slowData[DATA_FRAME_LENGTH_BYTES];
+				m_headerEncoder.getHeaderData(slowData);
+				::memcpy(data + VOICE_FRAME_LENGTH_BYTES, slowData, DATA_FRAME_LENGTH_BYTES);
+			}
+			if(m_networkSeqNo & 1U)
+				m_lastSlowDataType = dataType;
 		}
 	}
 
