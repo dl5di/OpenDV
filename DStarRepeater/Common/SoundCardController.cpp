@@ -732,6 +732,16 @@ void CSoundCardController::processNone(bool bit)
 		// Lock the GMSK PLL to this signal
 		m_demodulator.lock(true);
 
+		wxMutexLocker locker(m_mutex);
+
+		unsigned char data[2U];
+		data[0U] = DSMTT_DATA;
+		data[1U] = DV_FRAME_LENGTH_BYTES;
+		m_rxData.addData(data, 2U);
+
+		m_rxData.addData(NULL_AMBE_DATA_BYTES, VOICE_FRAME_LENGTH_BYTES);
+		m_rxData.addData(DATA_SYNC_BYTES,      DATA_FRAME_LENGTH_BYTES);
+
 		::memset(m_rxBuffer, 0x00U, DV_FRAME_LENGTH_BYTES);
 		m_rxBufferBits = 0U;
 
@@ -847,6 +857,12 @@ void CSoundCardController::processData(bool bit)
 
 	// Send a data frame to the host if the required number of bits have been received, or if a data sync has been seen
 	if (m_rxBufferBits == DV_FRAME_LENGTH_BITS || syncSeen) {
+		if (syncSeen) {
+			m_rxBuffer[9U]  = DATA_SYNC_BYTES[0U];
+			m_rxBuffer[10U] = DATA_SYNC_BYTES[1U];
+			m_rxBuffer[11U] = DATA_SYNC_BYTES[2U];
+		}
+
 		wxMutexLocker locker(m_mutex);
 
 		unsigned char data[2U];

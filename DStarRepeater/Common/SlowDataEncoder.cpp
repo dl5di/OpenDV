@@ -1,5 +1,5 @@
 /*
- *	Copyright (C) 2010,2011 by Jonathan Naylor, G4KLX
+ *	Copyright (C) 2010,2011,2015 by Jonathan Naylor, G4KLX
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -159,6 +159,9 @@ void CSlowDataEncoder::setHeaderData(const CHeaderData& header)
 
 void CSlowDataEncoder::setTextData(const wxString& text)
 {
+	if (text.IsEmpty())
+		return;
+
 	::memset(m_textData, 'f', SLOW_DATA_FULL_BLOCK_SIZE);
 
 	m_textData[0U]  = SLOW_DATA_TYPE_TEXT | 0U;

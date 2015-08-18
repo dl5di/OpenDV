@@ -102,6 +102,7 @@ private:
 	unsigned int               m_readNum;
 	unsigned char              m_radioSeqNo;
 	unsigned char              m_networkSeqNo;
+	unsigned char              m_lastSlowDataType;
 	CTimer                     m_timeoutTimer;
 	CTimer                     m_watchdogTimer;
 	CTimer                     m_pollTimer;
