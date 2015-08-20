@@ -8,7 +8,8 @@ CCS707	ccs707.xreflector.net
 CCS710	ccs710.xreflector.net
 CCS711	ccs711.xreflector.net
 CCS713	ccs713.xreflector.net
-CCS720	ccs720.xreflector.net
 CCS721	ccs721.xreflector.net
 CCS722	ccs722.xreflector.net
 CCS724	ccs724.xreflector.net
+CCS728	ccs728.xreflector.net
+CCS732	ccs732.xreflector.net
