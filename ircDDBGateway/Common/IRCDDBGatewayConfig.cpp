@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2010-2014 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2010-2015 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -233,7 +233,7 @@ const unsigned int DEFAULT_DPLUS_MAXDONGLES      = 5U;
 const wxString     DEFAULT_DPLUS_LOGIN           = wxEmptyString;
 const bool         DEFAULT_DCS_ENABLED           = true;
 const bool         DEFAULT_CCS_ENABLED           = true;
-const wxString     DEFAULT_CCS_HOST              = wxT("CCS004  ");
+const wxString     DEFAULT_CCS_HOST              = wxT("CCS704  ");
 const wxString     DEFAULT_STARNET_BAND          = wxEmptyString;
 const wxString     DEFAULT_STARNET_CALLSIGN      = wxEmptyString;
 const wxString     DEFAULT_STARNET_LOGOFF        = wxEmptyString;

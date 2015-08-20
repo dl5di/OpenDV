@@ -425,8 +425,7 @@ void CCCSHandler::startLink(const wxString& dtmf, const wxString& user, const wx
 		m_rptCall1 = callsign;
 	} else {
 		wxLogMessage(wxT("CCS: New outgoing link to %s via %s by %s"), dtmf.c_str(), type.c_str(), user.c_str());
-		m_yourCall = wxT("*");
-		m_yourCall.Append(dtmf);
+		m_yourCall = dtmf;
 		m_yourCall.resize(LONG_CALLSIGN_LENGTH, wxT(' '));
 		m_rptCall1.Clear();
 	}

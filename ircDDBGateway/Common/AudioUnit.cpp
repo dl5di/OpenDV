@@ -449,7 +449,7 @@ bool CAudioUnit::readIndex(const wxString& name)
 	return true;
 }
 
-void CAudioUnit::sendStatus(LINK_STATUS status, const wxString &reflector, const wxString &text)
+void CAudioUnit::sendStatus(LINK_STATUS status, const wxString& reflector, const wxString &text)
 {
 		m_encoder.setTextData(text);
 
