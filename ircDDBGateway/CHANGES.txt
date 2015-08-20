@@ -1,4 +1,4 @@
-ircDDB Gateway - 20150507
+ircDDB Gateway - 20150615
 =========================
 
 20101010
@@ -1442,7 +1442,7 @@ Update the DExtra_Hosts.txt file.
 Handle malformed D-Plus authentication packets better.
 Update the copyright date in the GUI Help dialogue boxes.
 
-2015xxxx
+20150615
 --------
 
 Enable data dumping in the D-RATS server.
@@ -1450,4 +1450,7 @@ Rearrange the source code slightly.
 Use hostnames in the DPlus_Hosts.txt file.
 Update the DExtra_Hosts.txt file.
 Revert to the CIRCDDB library to its previous incarnation.
+
+2015xxxx
+--------
 Move to the new CCS addressing.
