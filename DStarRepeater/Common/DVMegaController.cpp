@@ -299,8 +299,19 @@ void* CDVMegaController::Entry()
 				writeType = DSMTT_NONE;
 				space--;
 			}
-			
-			if (writeType == DSMTT_HEADER || writeType == DSMTT_DATA || writeType == DSMTT_EOT) {
+
+			if (space >= 4U && writeType == DSMTT_HEADER) {
+				// CUtils::dump(wxT("Write Header"), writeBuffer, writeLength);
+
+				int ret = m_serial.write(writeBuffer, writeLength);
+				if (ret != int(writeLength))
+					wxLogWarning(wxT("Error when writing the header to the DVMEGA"));
+
+				writeType = DSMTT_NONE;
+				space -= 4U;
+			}
+
+			if (writeType == DSMTT_DATA || writeType == DSMTT_EOT) {
 				// CUtils::dump(wxT("Write Data"), writeBuffer, writeLength);
 
 				int ret = m_serial.write(writeBuffer, writeLength);
@@ -831,6 +842,9 @@ RESP_TYPE_MEGA CDVMegaController::getResponse(unsigned char *buffer, unsigned in
 	}
 
 	if (ret == 0)
+		return RTM_TIMEOUT;
+
+	if (buffer[0U] != DVRPTR_FRAME_START)
 		return RTM_TIMEOUT;
 
 	unsigned int offset = 1U;

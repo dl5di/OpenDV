@@ -214,7 +214,7 @@ void* CDVRPTRV2Controller::Entry()
 				break;
 		}
 
-		if (space > 0U) {
+		if (space >= 4U) {
 			if (m_txData.hasData()) {
 				unsigned char len = 0U;
 				unsigned char data[200U];
@@ -236,7 +236,10 @@ void* CDVRPTRV2Controller::Entry()
 						return NULL;
 					}
 				} else {
-					space--;
+					if (len > 100U)
+						space -= 4U;
+					else
+						space--;
 				}
 			}
 		}

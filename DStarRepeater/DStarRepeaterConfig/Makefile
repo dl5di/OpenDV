@@ -6,13 +6,14 @@ dstarrepeaterconfig:	DStarRepeaterConfigActiveHangSet.o DStarRepeaterConfigAnnou
 					DStarRepeaterConfigCallsignSet.o DStarRepeaterConfigControl1Set.o DStarRepeaterConfigControl2Set.o DStarRepeaterConfigControllerSet.o \
 					DStarRepeaterConfigDVAPSet.o DStarRepeaterConfigDVMegaSet.o DStarRepeaterConfigDVRPTR1Set.o DStarRepeaterConfigDVRPTR2Set.o \
 					DStarRepeaterConfigDVRPTR3Set.o DStarRepeaterConfigFrame.o DStarRepeaterConfigGMSKSet.o DStarRepeaterConfigModemSet.o DStarRepeaterConfigNetworkSet.o \
-					DStarRepeaterConfigSoundCardSet.o DStarRepeaterConfigSplitSet.o DStarRepeaterConfigTimesSet.o ../Common/Common.a ../GUICommon/GUICommon.a
+					DStarRepeaterConfigSoundCardSet.o DStarRepeaterConfigSplitSet.o DStarRepeaterConfigTimesSet.o DStarRepeaterConfigMMDVMSet.o ../Common/Common.a \
+					../GUICommon/GUICommon.a
 				$(CC) $(LDFLAGS) -o dstarrepeaterconfig DStarRepeaterConfigActiveHangSet.o DStarRepeaterConfigAnnouncementSet.o DStarRepeaterConfigApp.o \
 					DStarRepeaterConfigBeaconSet.o DStarRepeaterConfigCallsignSet.o DStarRepeaterConfigControl1Set.o DStarRepeaterConfigControl2Set.o \
 					DStarRepeaterConfigControllerSet.o DStarRepeaterConfigDVAPSet.o DStarRepeaterConfigDVMegaSet.o DStarRepeaterConfigDVRPTR1Set.o \
 					DStarRepeaterConfigDVRPTR2Set.o DStarRepeaterConfigDVRPTR3Set.o DStarRepeaterConfigFrame.o DStarRepeaterConfigGMSKSet.o DStarRepeaterConfigModemSet.o \
-					DStarRepeaterConfigNetworkSet.o DStarRepeaterConfigSoundCardSet.o DStarRepeaterConfigSplitSet.o DStarRepeaterConfigTimesSet.o ../Common/Common.a \
-					../GUICommon/GUICommon.a $(LIBS)
+					DStarRepeaterConfigNetworkSet.o DStarRepeaterConfigSoundCardSet.o DStarRepeaterConfigSplitSet.o DStarRepeaterConfigTimesSet.o \
+					DStarRepeaterConfigMMDVMSet.o ../Common/Common.a ../GUICommon/GUICommon.a $(LIBS)
 
 DStarRepeaterConfigActiveHangSet.o:	DStarRepeaterConfigActiveHangSet.cpp DStarRepeaterConfigActiveHangSet.h
 		$(CC) $(CFLAGS) -c DStarRepeaterConfigActiveHangSet.cpp
@@ -63,6 +64,9 @@ DStarRepeaterConfigFrame.o:	DStarRepeaterConfigFrame.cpp DStarRepeaterConfigFram
 
 DStarRepeaterConfigGMSKSet.o:	DStarRepeaterConfigGMSKSet.cpp DStarRepeaterConfigGMSKSet.h ../Common/DStarDefines.h
 				$(CC) $(CFLAGS) -c DStarRepeaterConfigGMSKSet.cpp
+
+DStarRepeaterConfigMMDVMSet.o:	DStarRepeaterConfigMMDVMSet.cpp DStarRepeaterConfigMMDVMSet.h ../Common/SerialPortSelector.h ../Common/DStarDefines.h
+				$(CC) $(CFLAGS) -c DStarRepeaterConfigMMDVMSet.cpp
 
 DStarRepeaterConfigModemSet.o:	DStarRepeaterConfigModemSet.cpp DStarRepeaterConfigModemSet.h DStarRepeaterConfigDefs.h DStarRepeaterConfigSoundCardSet.h \
 					DStarRepeaterConfigDVRPTR1Set.h DStarRepeaterConfigDVRPTR2Set.h DStarRepeaterConfigDVRPTR3Set.h DStarRepeaterConfigModemSet.h \

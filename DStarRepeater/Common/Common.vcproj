@@ -282,6 +282,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\MMDVMController.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Modem.cpp"
 				>
 			</File>
@@ -493,6 +497,10 @@
 			</File>
 			<File
 				RelativePath=".\lusb0_usb.h"
+				>
+			</File>
+			<File
+				RelativePath=".\MMDVMController.h"
 				>
 			</File>
 			<File

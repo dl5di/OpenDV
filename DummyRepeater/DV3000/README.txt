@@ -40,5 +40,8 @@ make AMBEserver
 The python scripts
 
 AMBEtest2.py  (deprecated, strictly for DV3000)
-AMBEtest3.py -i /dev/ttyXXX (new, works for DV3000U and DV3000 [if reset])
+AMBEtest3.py -i /dev/ttyXXX (new, works for DV3000U,DV3000U-A and DV3000 [if reset])
+ambesockettest.py (run to verify AMBEserver/AMBEserverGPIO is working)
+
+AMBEserver has a new switch '-n' for new baud rate, ThumbDV Model A requires a 460800 bauds (update your /etc/init.d/AMBEserver to use -n on newer ThumbDV devices).
 

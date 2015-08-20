@@ -32,11 +32,6 @@ const unsigned int MAX_SYNC_BITS = 50U * DV_FRAME_LENGTH_BITS;
 
 const unsigned int FEC_SECTION_LENGTH_BITS = 660U;
 
-// D-Star bit order version of 0x55 0x55 0x55 0x55
-const wxUint32     BIT_SYNC_DATA = 0xAAAAAAAAU;
-const wxUint32     BIT_SYNC_MASK = 0xFFFFFFFFU;
-const unsigned int BIT_SYNC_ERRS = 1U;
-
 // D-Star bit order version of 0x55 0x55 0x6E 0x0A
 const wxUint32     FRAME_SYNC_DATA = 0x00557650U;
 const wxUint32     FRAME_SYNC_MASK = 0x00FFFFFFU;
@@ -376,8 +371,6 @@ m_rxState(DSRSCCS_NONE),
 m_patternBuffer(0x00U),
 m_demodulator(),
 m_modulator(),
-m_preambleCount(0U),
-m_preambleTimer(0U),
 m_rxBuffer(NULL),
 m_rxBufferBits(0U),
 m_dataBits(0U),
@@ -729,9 +722,6 @@ void CSoundCardController::processNone(bool bit)
 
 		::memset(m_rxBuffer, 0x00U, FEC_SECTION_LENGTH_BYTES);
 		m_rxBufferBits = 0U;
-
-		m_preambleTimer = 0U;
-		m_preambleCount = 0U;
 		m_rxState = DSRSCCS_HEADER;
 		return;
 	}
@@ -742,33 +732,22 @@ void CSoundCardController::processNone(bool bit)
 		// Lock the GMSK PLL to this signal
 		m_demodulator.lock(true);
 
+		wxMutexLocker locker(m_mutex);
+
+		unsigned char data[2U];
+		data[0U] = DSMTT_DATA;
+		data[1U] = DV_FRAME_LENGTH_BYTES;
+		m_rxData.addData(data, 2U);
+
+		m_rxData.addData(NULL_AMBE_DATA_BYTES, VOICE_FRAME_LENGTH_BYTES);
+		m_rxData.addData(DATA_SYNC_BYTES,      DATA_FRAME_LENGTH_BYTES);
+
 		::memset(m_rxBuffer, 0x00U, DV_FRAME_LENGTH_BYTES);
 		m_rxBufferBits = 0U;
 
 		m_dataBits = MAX_SYNC_BITS;
-
-		m_preambleTimer = 0U;
-		m_preambleCount = 0U;
 		m_rxState = DSRSCCS_DATA;
 		return;
-	}
-
-	// Fuzzy matching of the bit sync sequence
-	errs = countBits((m_patternBuffer & BIT_SYNC_MASK) ^ BIT_SYNC_DATA);
-	if (errs <= BIT_SYNC_ERRS) {
-		if (m_preambleCount++ == 4U) {
-			m_demodulator.lock(true);
-
-			m_preambleTimer = 2400U;    // 1/2s = 2400 bits
-			m_preambleCount = 0U;
-		}
-	}
-
-	// Handle the timeout of the preamble to release the demodulator lock
-	if (m_preambleTimer > 0U) {
-		m_preambleTimer--;
-		if (m_preambleTimer == 0U)
-			m_demodulator.lock(false);
 	}
 }
 
@@ -863,8 +842,27 @@ void CSoundCardController::processData(bool bit)
 		return;
 	}
 
+	// Check to see if the sync is arriving late
+	if (m_rxBufferBits == DV_FRAME_LENGTH_BITS && !syncSeen) {
+		for (unsigned int i = 1U; i <= 3U; i++) {
+			wxUint32 syncMask = DATA_SYNC_MASK >> i;
+			wxUint32 syncData = DATA_SYNC_DATA >> i;
+			errs = countBits((m_patternBuffer & syncMask) ^ syncData);
+			if (errs <= DATA_SYNC_ERRS) {
+				m_rxBufferBits -= i;
+				break;
+			}
+		}
+	}
+
 	// Send a data frame to the host if the required number of bits have been received, or if a data sync has been seen
 	if (m_rxBufferBits == DV_FRAME_LENGTH_BITS || syncSeen) {
+		if (syncSeen) {
+			m_rxBuffer[9U]  = DATA_SYNC_BYTES[0U];
+			m_rxBuffer[10U] = DATA_SYNC_BYTES[1U];
+			m_rxBuffer[11U] = DATA_SYNC_BYTES[2U];
+		}
+
 		wxMutexLocker locker(m_mutex);
 
 		unsigned char data[2U];

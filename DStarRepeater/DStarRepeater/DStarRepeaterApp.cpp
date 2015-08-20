@@ -31,6 +31,7 @@
 #include "ArduinoController.h"
 #include "DVMegaController.h"
 #include "DStarRepeaterApp.h"
+#include "MMDVMController.h"
 #include "K8055Controller.h"
 #include "DummyController.h"
 #include "SplitController.h"
@@ -470,6 +471,13 @@ void CDStarRepeaterApp::createThread()
 		m_config->getSoundCard(rxDevice, txDevice, rxInvert, txInvert, rxLevel, txLevel, txDelay, txTail);
 		wxLogInfo(wxT("Sound Card, devices: %s:%s, invert: %d:%d, levels: %.2f:%.2f, tx delay: %u ms, tx tail: %u ms"), rxDevice.c_str(), txDevice.c_str(), int(rxInvert), int(txInvert), rxLevel, txLevel, txDelay, txTail);
 		modem = new CSoundCardController(rxDevice, txDevice, rxInvert, txInvert, rxLevel, txLevel, txDelay, txTail);
+	} else if (modemType.IsSameAs(wxT("MMDVM"))) {
+		wxString port;
+		bool rxInvert, txInvert, pttInvert;
+		unsigned int txDelay, rxLevel, txLevel;
+		m_config->getMMDVM(port, rxInvert, txInvert, pttInvert, txDelay, rxLevel, txLevel);
+		wxLogInfo(wxT("MMDVM, port: %s, RX invert: %d, TX invert: %d, PTT invert: %d, TX delay: %u ms, RX level: %u%%, TX level: %u%%"), port.c_str(), int(rxInvert), int(txInvert), int(pttInvert), txDelay, rxLevel, txLevel);
+		modem = new CMMDVMController(port, wxEmptyString, rxInvert, txInvert, pttInvert, txDelay, rxLevel, txLevel);
 	} else if (modemType.IsSameAs(wxT("Split"))) {
 		wxString localAddress;
 		unsigned int localPort;

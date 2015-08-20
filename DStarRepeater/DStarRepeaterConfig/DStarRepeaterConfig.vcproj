@@ -237,6 +237,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\DStarRepeaterConfigMMDVMSet.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\DStarRepeaterConfigModemSet.cpp"
 				>
 			</File>
@@ -324,6 +328,10 @@
 			</File>
 			<File
 				RelativePath=".\DStarRepeaterConfigGMSKSet.h"
+				>
+			</File>
+			<File
+				RelativePath=".\DStarRepeaterConfigMMDVMSet.h"
 				>
 			</File>
 			<File

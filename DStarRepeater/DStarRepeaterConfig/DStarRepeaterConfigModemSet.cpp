@@ -22,6 +22,7 @@
 #include "DStarRepeaterConfigDVRPTR3Set.h"
 #include "DStarRepeaterConfigDVMegaSet.h"
 #include "DStarRepeaterConfigModemSet.h"
+#include "DStarRepeaterConfigMMDVMSet.h"
 #include "DStarRepeaterConfigGMSKSet.h"
 #include "DStarRepeaterConfigDVAPSet.h"
 #include "DStarRepeaterConfigSplitSet.h"
@@ -57,6 +58,7 @@ m_type(NULL)
 	m_type->Append(wxT("DV-RPTR V2"));
 	m_type->Append(wxT("DV-RPTR V3"));
 	m_type->Append(wxT("GMSK Modem"));
+	m_type->Append(wxT("MMDVM"));
 	m_type->Append(wxT("Sound Card"));
 	m_type->Append(wxT("Split"));
 	sizer->Add(m_type, 0, wxALL | wxALIGN_LEFT, BORDER_SIZE);
@@ -210,6 +212,24 @@ void CDStarRepeaterConfigModemSet::onConfigure(wxCommandEvent& event)
 				txFrequency = modem.getTXFrequency();
 				power       = modem.getPower();
 				m_config->setDVMEGA(port, variant, rxInvert, txInvert, txDelay, rxFrequency, txFrequency, power);
+			}
+		}
+	} else if (type.IsSameAs(wxT("MMDVM"))) {
+		wxString port;
+		bool txInvert, rxInvert, pttInvert;
+		unsigned int txDelay, rxLevel, txLevel;
+		m_config->getMMDVM(port, rxInvert, txInvert, pttInvert, txDelay, rxLevel, txLevel);
+		CDStarRepeaterConfigMMDVMSet modem(this, -1, port, rxInvert, txInvert, pttInvert, txDelay, rxLevel, txLevel);
+		if (modem.ShowModal() == wxID_OK) {
+			if (modem.Validate()) {
+				port      = modem.getPort();
+				rxInvert  = modem.getRXInvert();
+				txInvert  = modem.getTXInvert();
+				pttInvert = modem.getPTTInvert();
+				txDelay   = modem.getTXDelay();
+				rxLevel   = modem.getRXLevel();
+				txLevel   = modem.getTXLevel();
+				m_config->setMMDVM(port, rxInvert, txInvert, pttInvert, txDelay, rxLevel, txLevel);
 			}
 		}
 	} else if (type.IsSameAs(wxT("Sound Card"))) {
