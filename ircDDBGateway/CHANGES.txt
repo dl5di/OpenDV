@@ -1,4 +1,4 @@
-ircDDB Gateway - 20150615
+ircDDB Gateway - 20150820
 =========================
 
 20101010
@@ -1451,6 +1451,6 @@ Use hostnames in the DPlus_Hosts.txt file.
 Update the DExtra_Hosts.txt file.
 Revert to the CIRCDDB library to its previous incarnation.
 
-2015xxxx
+20150820
 --------
 Move to the new CCS addressing.
