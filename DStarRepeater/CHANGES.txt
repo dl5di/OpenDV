@@ -2067,3 +2067,4 @@ Fix bugs in the DV-RPTR V1, V2, V3, and DVMEGA drivers.
 Added the RX and TX levels to the MMDVM driver and configuration.
 Change the slow data header replacement in Gateway mode to be more intelligent.
 Add sync regeneration to the sound card repeater driver.
+Use a new matched filter in the GMSK modem.
