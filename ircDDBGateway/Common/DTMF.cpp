@@ -230,7 +230,7 @@ wxString CDTMF::processCCS(const wxString& command) const
 
 	switch (len) {
 		case 3U: {
-				// New style CCS for local repeater without band
+				// CCS7 for local repeater without band
 				unsigned long n;
 				command.ToULong(&n);
 				if (n == 0UL)
@@ -241,14 +241,14 @@ wxString CDTMF::processCCS(const wxString& command) const
 		case 4U: {
 				wxChar c = command.GetChar(3U);
 				if (c == wxT('A') || c == wxT('B') || c == wxT('C') || c == wxT('D')) {
-					// New style CCS for local repeater with band
+					// CCS7 for local repeater with band
 					unsigned long n;
 					command.Mid(0U, 3U).ToULong(&n);
 					if (n == 0UL)
 						return wxEmptyString;
 					out.Printf(wxT("C%03lu%c   "), n, c);
 				} else {
-					// Old style CCS, or new style CCS for local user
+					// CCS7 for local user
 					unsigned long n;
 					command.ToULong(&n);
 					if (n == 0UL)
@@ -260,24 +260,17 @@ wxString CDTMF::processCCS(const wxString& command) const
 		case 5U: {
 				wxChar c = command.GetChar(4U);
 				if (c == wxT('A') || c == wxT('B') || c == wxT('C') || c == wxT('D')) {
-					// New style CCS for local hostspot with band
+					// CCS7 for local hostspot with band
 					unsigned long n;
 					command.Mid(0U, 4U).ToULong(&n);
 					if (n == 0UL)
 						return wxEmptyString;
 					out.Printf(wxT("C%04lu%c  "), n, c);
-				} else {
-					// Old style CCS
-					unsigned long n;
-					command.ToULong(&n);
-					if (n == 0UL)
-						return wxEmptyString;
-					out.Printf(wxT("C%05lu  "), n);
 				}
 			}
 			break;
 		case 6U: {
-				// New style CCS for full repeater without band
+				// CCS7 for full repeater without band
 				unsigned long n;
 				command.ToULong(&n);
 				if (n == 0UL)
@@ -288,14 +281,14 @@ wxString CDTMF::processCCS(const wxString& command) const
 		case 7U: {
 				wxChar c = command.GetChar(6U);
 				if (c == wxT('A') || c == wxT('B') || c == wxT('C') || c == wxT('D')) {
-					// New style CCS for full repeater with band
+					// CCS7 for full repeater with band
 					unsigned long n;
 					command.Mid(0U, 6U).ToULong(&n);
 					if (n == 0UL)
 						return wxEmptyString;
 					out.Printf(wxT("C%06lu%c"), n, c);
 				} else {
-					// New style CCS for full user or new style CCS for full hostpot without band
+					// CCS7 for full user or CCS7 for full hostpot without band
 					unsigned long n;
 					command.ToULong(&n);
 					if (n == 0UL)
@@ -307,7 +300,7 @@ wxString CDTMF::processCCS(const wxString& command) const
 		case 8U: {
 				wxChar c = command.GetChar(7U);
 				if (c == wxT('A') || c == wxT('B') || c == wxT('C') || c == wxT('D')) {
-					// New style CCS for full hotspot with band
+					// CCS7 for full hotspot with band
 					unsigned long n;
 					command.Mid(0U, 7U).ToULong(&n);
 					if (n == 0UL)

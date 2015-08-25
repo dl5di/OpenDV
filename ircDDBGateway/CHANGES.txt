@@ -1454,3 +1454,8 @@ Revert to the CIRCDDB library to its previous incarnation.
 20150820
 --------
 Move to the new CCS addressing.
+
+2015xxxx
+--------
+
+CCS7 cleanups.

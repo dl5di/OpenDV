@@ -2019,18 +2019,15 @@ void CRepeaterHandler::g2CommandHandler(const wxString& callsign, const wxString
 
 void CRepeaterHandler::ccsCommandHandler(const wxString& callsign, const wxString& user, const wxString& type)
 {
-	if (callsign.IsSameAs(wxT("CA      ")) || callsign.IsSameAs(wxT("CCSA    "))) {
+	if (callsign.IsSameAs(wxT("CA      "))) {
 		m_ccsHandler->stopLink(user, type);
 	} else {
 		CCS_STATUS status = m_ccsHandler->getStatus();
 		if (status == CS_CONNECTED) {
 			suspendLinks();
 			m_queryTimer.start();
-			m_linkStatus = LS_LINKING_CCS;
-			if (callsign.Left(3U).IsSameAs(wxT("CCS")))
-				m_linkRepeater = callsign.Mid(3U);
-			else
-				m_linkRepeater = callsign.Mid(1U);
+			m_linkStatus   = LS_LINKING_CCS;
+			m_linkRepeater = callsign.Mid(1U);
 			m_ccsHandler->startLink(m_linkRepeater, user, type);
 		}
 	}
@@ -2951,9 +2948,6 @@ void CRepeaterHandler::triggerInfo()
 bool CRepeaterHandler::isCCSCommand(const wxString& command) const
 {
 	if (command.IsSameAs(wxT("CA      ")))
-		return true;
-
-	if (command.Left(3U).IsSameAs(wxT("CCS")))
 		return true;
 
 	wxChar c = command.GetChar(0U);
