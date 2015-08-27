@@ -1978,3 +1978,4 @@ Add Star*DV hardware support.
 --------
 
 Add an extra higher speed for the next generation of ThumbDV.
+Add support for the DVMEGA AMBE.

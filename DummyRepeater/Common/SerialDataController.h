@@ -46,6 +46,8 @@ public:
 
 	bool open();
 
+	bool setSpeed(SERIAL_SPEED speed);
+
 	int  read(unsigned char* buffer, unsigned int length);
 	int  write(const unsigned char* buffer, unsigned int length);
 

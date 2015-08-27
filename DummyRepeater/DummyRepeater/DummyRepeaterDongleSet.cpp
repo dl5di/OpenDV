@@ -48,6 +48,7 @@ m_port(NULL)
 	m_type->Append(_("DV3000 Serial"));
 	m_type->Append(_("Star*DV (SPKR/MIC) Network"));
 	m_type->Append(_("Star*DV (PC Audio) Network"));
+	m_type->Append(_("DVMEGA AMBE"));
 	sizer->Add(m_type, 0, wxALL, BORDER_SIZE);
 	m_type->SetSelection(int(type));
 
@@ -97,7 +98,7 @@ m_port(NULL)
 	if (type == DT_DV3000_NETWORK || type == DT_STARDV_NETWORK || type == DT_STARDV_NETWORK2) {
 		m_device->Disable();
 		m_speed->Disable();
-	} else if (type == DT_DVDONGLE) {
+	} else if (type == DT_DVDONGLE || type == DT_DVMEGA_AMBE) {
 		m_speed->Disable();
 		m_address->Disable();
 		m_port->Disable();
@@ -210,7 +211,7 @@ void CDummyRepeaterDongleSet::onType(wxCommandEvent& event)
 	int n = event.GetSelection();
 
 	switch (n) {
-		default:	// DV-Dongle
+		default:	// DV-Dongle, DVMEGA AMBE
 			m_device->Enable();
 			m_speed->Disable();
 			m_address->Disable();

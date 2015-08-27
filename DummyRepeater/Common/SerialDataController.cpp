@@ -164,6 +164,30 @@ bool CSerialDataController::open()
 	return true;
 }
 
+bool CSerialDataController::setSpeed(SERIAL_SPEED speed)
+{
+	wxASSERT(m_handle != INVALID_HANDLE_VALUE);
+
+	DWORD errCode;
+
+	DCB dcb;
+	if (::GetCommState(m_handle, &dcb) == 0) {
+		wxLogError(wxT("Cannot get the attributes for %s, err=%04lx"), m_device.c_str(), ::GetLastError());
+		::ClearCommError(m_handle, &errCode, NULL);
+		return false;
+	}
+
+	dcb.BaudRate = DWORD(speed);
+
+	if (::SetCommState(m_handle, &dcb) == 0) {
+		wxLogError(wxT("Cannot set the attributes (speed) for %s, err=%04lx"), m_device.c_str(), ::GetLastError());
+		::ClearCommError(m_handle, &errCode, NULL);
+		return false;
+	}
+
+	return true;
+}
+
 int CSerialDataController::read(unsigned char* buffer, unsigned int length)
 {
 	wxASSERT(m_handle != INVALID_HANDLE_VALUE);
@@ -380,6 +404,67 @@ bool CSerialDataController::open()
 	if (::tcsetattr(m_fd, TCSANOW, &termios) < 0) {
 		wxLogError(wxT("Cannot set the attributes for %s"), m_device.c_str());
 		::close(m_fd);
+		return false;
+	}
+
+	return true;
+}
+
+bool CSerialDataController::setSpeed(SERIAL_SPEED speed)
+{
+	wxASSERT(m_fd != -1);
+
+	termios termios;
+	if (::tcgetattr(m_fd, &termios) < 0) {
+		wxLogError(wxT("Cannot get the attributes for %s"), m_device.c_str());
+		return false;
+	}
+
+	switch (speed) {
+		case SERIAL_1200:
+			::cfsetospeed(&termios, B1200);
+			::cfsetispeed(&termios, B1200);
+			break;
+		case SERIAL_2400:
+			::cfsetospeed(&termios, B2400);
+			::cfsetispeed(&termios, B2400);
+			break;
+		case SERIAL_4800:
+			::cfsetospeed(&termios, B4800);
+			::cfsetispeed(&termios, B4800);
+			break;
+		case SERIAL_9600:
+			::cfsetospeed(&termios, B9600);
+			::cfsetispeed(&termios, B9600);
+			break;
+		case SERIAL_19200:
+			::cfsetospeed(&termios, B19200);
+			::cfsetispeed(&termios, B19200);
+			break;
+		case SERIAL_38400:
+			::cfsetospeed(&termios, B38400);
+			::cfsetispeed(&termios, B38400);
+			break;
+		case SERIAL_115200:
+			::cfsetospeed(&termios, B115200);
+			::cfsetispeed(&termios, B115200);
+			break;
+		case SERIAL_230400:
+			::cfsetospeed(&termios, B230400);
+			::cfsetispeed(&termios, B230400);
+			break;
+		case SERIAL_460800:
+			::cfsetospeed(&termios, B460800);
+			::cfsetispeed(&termios, B460800);
+			break;
+		default:
+			wxLogError(wxT("Unsupported serial port speed - %d"), int(speed));
+			::close(m_fd);
+			return false;
+	}
+
+	if (::tcsetattr(m_fd, TCSANOW, &termios) < 0) {
+		wxLogError(wxT("Cannot set the attributes for %s"), m_device.c_str());
 		return false;
 	}
 

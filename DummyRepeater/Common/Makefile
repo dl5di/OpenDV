@@ -1,11 +1,11 @@
 all:		Common.a
 
 OBJS :=	AddressTextCtrl.o ArduinoController.o Bleeper.o CallsignTextCtrl.o CCITTChecksumReverse.o DongleThread.o DummyController.o \
-		DV3000Controller.o DV3000NetworkController.o DV3000SerialController.o DV3000Thread.o DVDongleController.o \
+		DV3000Controller.o DV3000NetworkController.o DV3000SerialController.o DV3000Thread.o DVMEGAAMBEController.o DVDongleController.o \
 		DVDongleThread.o ExternalController.o FIRFilter.o GPIOController.o HardwareController.o HeaderData.o \
 		K8055Controller.o Logger.o MessageData.o MessageTextCtrl.o PortTextCtrl.o RepeaterProtocolHandler.o \
 		RestrictedTextCtrl.o SerialDataController.o SerialLineController.o SerialPortSelector.o SlowDataDecoder.o \
-		SlowDataEncoder.o SoundCardReaderWriter.o STARDVController.o STARDVNetworkController.o STARDVThread.o Timer.o \
+		SlowDataEncoder.o SoundCardReaderWriter.o STARDVController.o STARDVNetworkController.o STARDVThread.o Timer.o DVMEGAAMBEThread.o \
 		UDPReaderWriter.o URIUSBController.o Utils.o
 
 Common.a:	$(OBJS)
@@ -44,6 +44,12 @@ DV3000SerialController.o:	DV3000SerialController.cpp DV3000SerialController.h DV
 DV3000Thread.o:	DV3000Thread.cpp DV3000Thread.h DongleThread.h DV3000Controller.h DStarDefines.h
 		$(CC) $(CFLAGS) -c DV3000Thread.cpp
 		
+DVMEGAAMBEController.o:	DVMEGAAMBEController.cpp DVMEGAAMBEController.h DStarDefines.h SerialDataController.h
+		$(CC) $(CFLAGS) -c DVMEGAAMBEController.cpp
+
+DVMEGAAMBEThread.o:	DVMEGAAMBEThread.cpp DVMEGAAMBEThread.h DVMEGAAMBEController.h DongleThread.h DStarDefines.h
+		$(CC) $(CFLAGS) -c DVMEGAAMBEThread.cpp
+
 DVDongleController.o:	DVDongleController.cpp DVDongleController.h DStarDefines.h SerialDataController.h
 		$(CC) $(CFLAGS) -c DVDongleController.cpp
 

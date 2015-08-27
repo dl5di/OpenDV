@@ -206,6 +206,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\DVMEGAAMBEController.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\DVMEGAAMBEThread.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\ExternalController.cpp"
 				>
 			</File>
@@ -373,6 +381,14 @@
 			</File>
 			<File
 				RelativePath=".\DVDongleThread.h"
+				>
+			</File>
+			<File
+				RelativePath=".\DVMEGAAMBEController.h"
+				>
+			</File>
+			<File
+				RelativePath=".\DVMEGAAMBEThread.h"
 				>
 			</File>
 			<File

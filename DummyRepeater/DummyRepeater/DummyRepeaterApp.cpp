@@ -22,6 +22,7 @@
 #include "DV3000SerialController.h"
 #include "SoundCardReaderWriter.h"
 #include "SerialLineController.h"
+#include "DVMEGAAMBEController.h"
 #include "ExternalController.h"
 #include "DVDongleController.h"
 #include "ArduinoController.h"
@@ -29,6 +30,7 @@
 #include "URIUSBController.h"
 #include "DV3000Controller.h"
 #include "STARDVController.h"
+#include "DVMEGAAMBEThread.h"
 #include "K8055Controller.h"
 #include "DummyController.h"
 #if defined(GPIO)
@@ -734,6 +736,10 @@ void CDummyRepeaterApp::createThread()
 		case DT_DV3000_SERIAL:
 			if (!dongleDevice.IsEmpty())
 				dongle = new CDV3000Thread(new CDV3000SerialController(dongleDevice, dongleSpeed));
+			break;
+		case DT_DVMEGA_AMBE:
+			if (!dongleDevice.IsEmpty())
+				dongle = new CDVMEGAAMBEThread(new CDVMEGAAMBEController(dongleDevice));
 			break;
 		default:
 			wxLogError(wxT("Invalid Dongle type specified - %d"), int(dongleType));
