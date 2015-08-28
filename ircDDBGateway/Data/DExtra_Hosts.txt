@@ -87,7 +87,7 @@ XRF603	74.104.179.159
 XRF666	vpngrf.webandcloud.net #VPN
 XRF669	xrf669.no-ip.org
 XRF707	xrf707.openquad.net
-XRF714	ea3hkb.com
+XRF714	xrf714.ea3hkb.com
 XRF720	204.45.107.21 
 XRF727	108.33.72.83 
 XRF740	imagewell.duckdns.org
