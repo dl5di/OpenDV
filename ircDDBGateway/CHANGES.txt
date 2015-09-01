@@ -1458,5 +1458,5 @@ Move to the new CCS addressing.
 2015xxxx
 --------
 
-CCS7 cleanups.
+CCS7 cleanups and fixes.
 Updated DExtra hosts file.

@@ -311,16 +311,16 @@ void CCCSHandler::process(CCCSData& data)
 			break;
 
 		case CT_DTMFNOTFOUND:
-			wxLogMessage(wxT("CCS: Cannot map %s to a callsign"), m_yourCall.Mid(1U).c_str());
+			wxLogMessage(wxT("CCS: Cannot map %s to a callsign"), m_yourCall.c_str());
 			m_stateChange = true;
 			m_state       = CS_CONNECTED;
 			m_inactivityTimer.stop();
-			m_handler->ccsLinkFailed(m_yourCall.Mid(1U), m_direction);
+			m_handler->ccsLinkFailed(m_yourCall, m_direction);
 			break;
 
 		case CT_DTMFFOUND:
-			wxLogMessage(wxT("CCS: Mapped %s to %s, added to the cache"), m_yourCall.Mid(1U).c_str(), data.getRemote().c_str());
-			addToCache(m_yourCall.Mid(1U), data.getRemote());
+			wxLogMessage(wxT("CCS: Mapped %s to %s, added to the cache"), m_yourCall.c_str(), data.getRemote().c_str());
+			addToCache(m_yourCall, data.getRemote());
 			m_stateChange = true;
 			m_yourCall = data.getRemote();
 			m_rptCall1 = data.getRemote();
