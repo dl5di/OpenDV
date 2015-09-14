@@ -462,7 +462,7 @@ bool CMMDVMController::setConfig()
 
 	buffer[5U] = m_txDelay;
 
-	buffer[6U] = 30U;		// Mode hang time
+	buffer[6U] = 1U;		// STATE_DSTAR
 
 	buffer[7U] = (m_rxLevel * 255U) / 100U;
 	buffer[8U] = (m_txLevel * 255U) / 100U;
