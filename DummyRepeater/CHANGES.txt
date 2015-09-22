@@ -1,4 +1,4 @@
-Repeater - 20150507
+Repeater - 20150922
 ===================
 
 20090530
@@ -1974,7 +1974,7 @@ Fix the continuous bleeping at the end of reception.
 
 Add Star*DV hardware support.
 
-2015xxxx
+20150922
 --------
 
 Add an extra higher speed for the next generation of ThumbDV.
