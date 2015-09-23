@@ -11,8 +11,8 @@
 ;Configuration
 
   ;General
-  Name "DummyRepeater 20150922"
-  OutFile "DummyRepeater-20150922.exe"
+  Name "DummyRepeater 20150923"
+  OutFile "DummyRepeater-20150923.exe"
 
   ;Folder selection page
   InstallDir "$PROGRAMFILES\Dummy Repeater"

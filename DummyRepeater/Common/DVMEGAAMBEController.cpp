@@ -65,10 +65,10 @@ bool CDVMEGAAMBEController::open()
 	if (!res)
 		return false;
 
-	m_serial.write(DV3000_REQ_PRODID, DV3000_REQ_PRODID_LEN);
-
 	bool found = false;
 	for (unsigned int i = 0U; i < 10U; i++) {
+		m_serial.write(DV3000_REQ_PRODID, DV3000_REQ_PRODID_LEN);
+
 		unsigned char buffer[BUFFER_LENGTH];
 		RESP_TYPE type = getResponse(buffer, BUFFER_LENGTH);
 
@@ -84,7 +84,7 @@ bool CDVMEGAAMBEController::open()
 			break;
 		}
 
-		::wxMilliSleep(10UL);
+		::wxSleep(1);
 	}
 
 	if (!found) {
