@@ -446,7 +446,7 @@ bool CMMDVMController::setConfig()
 
 	buffer[0U] = MMDVM_FRAME_START;
 
-	buffer[1U] = 9U;
+	buffer[1U] = 10U;
 
 	buffer[2U] = MMDVM_SET_CONFIG;
 
@@ -467,10 +467,12 @@ bool CMMDVMController::setConfig()
 	buffer[7U] = (m_rxLevel * 255U) / 100U;
 	buffer[8U] = (m_txLevel * 255U) / 100U;
 
-	// CUtils::dump(wxT("Written"), buffer, 9U);
+	buffer[9U] = 0U;		// DMR Color Code
 
-	int ret = m_serial.write(buffer, 9U);
-	if (ret != 9)
+	// CUtils::dump(wxT("Written"), buffer, 10U);
+
+	int ret = m_serial.write(buffer, 10U);
+	if (ret != 10)
 		return false;
 
 	unsigned int count = 0U;
