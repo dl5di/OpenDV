@@ -51,7 +51,7 @@ const unsigned int DV3000_HEADER_LEN = 4U;
 const unsigned int BUFFER_LENGTH = 400U;
 
 CDVMEGAAMBEController::CDVMEGAAMBEController(const wxString& device) :
-m_serial(device, SERIAL_115200)
+m_serial(device, SERIAL_230400)
 {
 }
 
@@ -93,8 +93,6 @@ bool CDVMEGAAMBEController::open()
 	}
 
 	m_serial.write(DV3000_REQ_RESETSOFTCFG, DV3000_REQ_RESETSOFTCFG_LEN);
-
-	m_serial.setSpeed(SERIAL_230400);
 
 	m_serial.write(DV3000_REQ_RATEP, DV3000_REQ_RATEP_LEN);
 

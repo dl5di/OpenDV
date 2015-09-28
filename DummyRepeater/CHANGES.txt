@@ -1,4 +1,4 @@
-Repeater - 20150923
+Repeater - 20150928
 ===================
 
 20090530
@@ -1981,6 +1981,11 @@ Add an extra higher speed for the next generation of ThumbDV.
 Add support for the DVMEGA AMBE.
 
 20150923
+--------
+
+Small change to the initialisation of the DVMEGA AMBE.
+
+20150928
 --------
 
 Small change to the initialisation of the DVMEGA AMBE.
