@@ -37,7 +37,12 @@ enum RESP_TYPE_MMDVM {
 	RTDVM_DSTAR_EOT,
 	RTDVM_DSTAR_LOST,
 	RTDVM_ACK,
-	RTDVM_NAK
+	RTDVM_NAK,
+	RTDVM_DEBUG1,
+	RTDVM_DEBUG2,
+	RTDVM_DEBUG3,
+	RTDVM_DEBUG4,
+	RTDVM_DEBUG5
 };
 
 class CMMDVMController : public CModem {
@@ -82,6 +87,8 @@ private:
 
 	bool findModem();
 	bool openModem();
+
+	void printDebug();
 };
 
 #endif

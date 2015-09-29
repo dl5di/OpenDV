@@ -41,6 +41,12 @@ const unsigned char MMDVM_DSTAR_EOT    = 0x13U;
 const unsigned char MMDVM_ACK          = 0x70U;
 const unsigned char MMDVM_NAK          = 0x7FU;
 
+const unsigned char MMDVM_DEBUG1       = 0xF1U;
+const unsigned char MMDVM_DEBUG2       = 0xF2U;
+const unsigned char MMDVM_DEBUG3       = 0xF3U;
+const unsigned char MMDVM_DEBUG4       = 0xF4U;
+const unsigned char MMDVM_DEBUG5       = 0xF5U;
+
 const unsigned int MAX_RESPONSES = 30U;
 
 const unsigned int BUFFER_LENGTH = 200U;
@@ -226,6 +232,14 @@ void* CMMDVMController::Entry()
 				}
 				break;
 
+			case RTDVM_DEBUG1:
+			case RTDVM_DEBUG2:
+			case RTDVM_DEBUG3:
+			case RTDVM_DEBUG4:
+			case RTDVM_DEBUG5:
+				printDebug();
+				break;
+
 			default:
 				wxLogMessage(wxT("Unknown message, type: %02X"), m_buffer[2U]);
 				CUtils::dump(wxT("Buffer dump"), m_buffer, length);
@@ -394,6 +408,8 @@ bool CMMDVMController::isTXReady()
 
 bool CMMDVMController::readVersion()
 {
+	::wxSleep(2);
+
 	for (unsigned int i = 0U; i < 6U; i++) {
 		unsigned char buffer[3U];
 
@@ -568,6 +584,16 @@ RESP_TYPE_MMDVM CMMDVMController::getResponse(unsigned char *buffer, unsigned in
 			return RTDVM_ACK;
 		case MMDVM_NAK:
 			return RTDVM_NAK;
+		case MMDVM_DEBUG1:
+			return RTDVM_DEBUG1;
+		case MMDVM_DEBUG2:
+			return RTDVM_DEBUG2;
+		case MMDVM_DEBUG3:
+			return RTDVM_DEBUG3;
+		case MMDVM_DEBUG4:
+			return RTDVM_DEBUG4;
+		case MMDVM_DEBUG5:
+			return RTDVM_DEBUG5;
 		default:
 			return RTDVM_UNKNOWN;
 	}
@@ -781,3 +807,33 @@ bool CMMDVMController::openModem()
 	return true;
 }
 
+void CMMDVMController::printDebug()
+{
+	unsigned int length = m_buffer[1U];
+	if (m_buffer[2U] == 0xF1U) {
+		wxString message((char*)(m_buffer + 3U), wxConvLocal, length - 3U);
+		wxLogMessage(wxT("Debug: %s"), message.c_str());
+	} else if (m_buffer[2U] == 0xF2U) {
+		wxString message((char*)(m_buffer + 3U), wxConvLocal, length - 5U);
+		short val1 = (m_buffer[length - 2U] << 8) | m_buffer[length - 1U];
+		wxLogMessage(wxT("Debug: %s %d"), message.c_str(), val1);
+	} else if (m_buffer[2U] == 0xF3U) {
+		wxString message((char*)(m_buffer + 3U), wxConvLocal, length - 7U);
+		short val1 = (m_buffer[length - 4U] << 8) | m_buffer[length - 3U];
+		short val2 = (m_buffer[length - 2U] << 8) | m_buffer[length - 1U];
+		wxLogMessage(wxT("Debug: %s %d %d"), message.c_str(), val1, val2);
+	} else if (m_buffer[2U] == 0xF4U) {
+		wxString message((char*)(m_buffer + 3U), wxConvLocal, length - 9U);
+		short val1 = (m_buffer[length - 6U] << 8) | m_buffer[length - 5U];
+		short val2 = (m_buffer[length - 4U] << 8) | m_buffer[length - 3U];
+		short val3 = (m_buffer[length - 2U] << 8) | m_buffer[length - 1U];
+		wxLogMessage(wxT("Debug: %s %d %d %d"), message.c_str(), val1, val2, val3);
+	} else if (m_buffer[2U] == 0xF5U) {
+		wxString message((char*)(m_buffer + 3U), wxConvLocal, length - 11U);
+		short val1 = (m_buffer[length - 8U] << 8) | m_buffer[length - 7U];
+		short val2 = (m_buffer[length - 6U] << 8) | m_buffer[length - 5U];
+		short val3 = (m_buffer[length - 4U] << 8) | m_buffer[length - 3U];
+		short val4 = (m_buffer[length - 2U] << 8) | m_buffer[length - 1U];
+		wxLogMessage(wxT("Debug: %s %d %d %d %d"), message.c_str(), val1, val2, val3, val4);
+	}
+}
