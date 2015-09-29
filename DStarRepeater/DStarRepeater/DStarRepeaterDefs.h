@@ -25,9 +25,11 @@ const wxString APPLICATION_NAME = wxT("D-Star Repeater");
 const wxString LOG_BASE_NAME    = wxT("DStarRepeater");
 const wxString CONFIG_FILE_NAME = wxT("dstarrepeater");
 
-const wxString WHITELIST_FILE_NAME = wxT("whitelist.dat");
-const wxString BLACKLIST_FILE_NAME = wxT("blacklist.dat");
-const wxString GREYLIST_FILE_NAME  = wxT("greylist.dat");
+const wxString PRIMARY_WHITELIST_FILE_NAME   = wxT("rptr_whitelist.dat");
+const wxString SECONDARY_WHITELIST_FILE_NAME = wxT("whitelist.dat");
+const wxString PRIMARY_BLACKLIST_FILE_NAME   = wxT("rptr_blacklist.dat");
+const wxString SECONDARY_BLACKLIST_FILE_NAME = wxT("blacklist.dat");
+const wxString GREYLIST_FILE_NAME            = wxT("greylist.dat");
 
 enum DSTAR_RX_STATE {
 	DSRXS_LISTENING,

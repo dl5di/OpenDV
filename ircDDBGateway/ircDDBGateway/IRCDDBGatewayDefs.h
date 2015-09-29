@@ -33,9 +33,11 @@ const wxString STATUS3_FILE_NAME = wxT("status3.txt");
 const wxString STATUS4_FILE_NAME = wxT("status4.txt");
 const wxString STATUS5_FILE_NAME = wxT("status5.txt");
 
-const wxString WHITELIST_FILE_NAME = wxT("whitelist.dat");
-const wxString BLACKLIST_FILE_NAME = wxT("blacklist.dat");
-const wxString RESTRICT_FILE_NAME  = wxT("restrict.txt");
+const wxString PRIMARY_WHITELIST_FILE_NAME   = wxT("gw_whitelist.dat");
+const wxString SECONDARY_WHITELIST_FILE_NAME = wxT("whitelist.dat");
+const wxString PRIMARY_BLACKLIST_FILE_NAME   = wxT("gw_blacklist.dat");
+const wxString SECONDARY_BLACKLIST_FILE_NAME = wxT("blacklist.dat");
+const wxString RESTRICT_FILE_NAME            = wxT("restrict.txt");
 
 const unsigned int MAX_OUTGOING       = 6U;
 const unsigned int MAX_REPEATERS      = 4U;
