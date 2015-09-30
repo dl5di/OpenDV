@@ -41,6 +41,7 @@ const unsigned char MMDVM_DSTAR_EOT    = 0x13U;
 const unsigned char MMDVM_ACK          = 0x70U;
 const unsigned char MMDVM_NAK          = 0x7FU;
 
+const unsigned char MMDVM_DUMP         = 0xF0U;
 const unsigned char MMDVM_DEBUG1       = 0xF1U;
 const unsigned char MMDVM_DEBUG2       = 0xF2U;
 const unsigned char MMDVM_DEBUG3       = 0xF3U;
@@ -230,6 +231,10 @@ void* CMMDVMController::Entry()
 							break;
 					}
 				}
+				break;
+
+			case RTDVM_DUMP:
+				CUtils::dump(wxT("Modem dump"), m_buffer + 3U, length - 3U);
 				break;
 
 			case RTDVM_DEBUG1:
@@ -585,6 +590,8 @@ RESP_TYPE_MMDVM CMMDVMController::getResponse(unsigned char *buffer, unsigned in
 			return RTDVM_ACK;
 		case MMDVM_NAK:
 			return RTDVM_NAK;
+		case MMDVM_DUMP:
+			return RTDVM_DUMP;
 		case MMDVM_DEBUG1:
 			return RTDVM_DEBUG1;
 		case MMDVM_DEBUG2:

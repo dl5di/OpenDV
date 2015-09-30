@@ -819,10 +819,13 @@ void CSoundCardController::processData(bool bit)
 
 	// Fuzzy matching of the data sync bit sequence
 	bool syncSeen = false;
-	errs = countBits((m_patternBuffer & DATA_SYNC_MASK) ^ DATA_SYNC_DATA);
-	if (errs <= DATA_SYNC_ERRS) {
-		syncSeen = true;
-		m_dataBits = MAX_SYNC_BITS;
+	if (m_rxBufferBits >= (DV_FRAME_LENGTH_BITS - 3U)) {
+		errs = countBits((m_patternBuffer & DATA_SYNC_MASK) ^ DATA_SYNC_DATA);
+		if (errs <= DATA_SYNC_ERRS) {
+			m_rxBufferBits = DV_FRAME_LENGTH_BITS;
+			m_dataBits = MAX_SYNC_BITS;
+			syncSeen = true;
+		}
 	}
 
 	// We've not seen a data sync for too long, signal RXLOST and change to RX_NONE
@@ -856,7 +859,7 @@ void CSoundCardController::processData(bool bit)
 	}
 
 	// Send a data frame to the host if the required number of bits have been received, or if a data sync has been seen
-	if (m_rxBufferBits == DV_FRAME_LENGTH_BITS || syncSeen) {
+	if (m_rxBufferBits == DV_FRAME_LENGTH_BITS) {
 		if (syncSeen) {
 			m_rxBuffer[9U]  = DATA_SYNC_BYTES[0U];
 			m_rxBuffer[10U] = DATA_SYNC_BYTES[1U];
