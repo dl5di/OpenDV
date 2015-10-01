@@ -300,7 +300,7 @@ void* CDVMegaController::Entry()
 				space--;
 			}
 
-			if (space >= 4U && writeType == DSMTT_HEADER) {
+			if (space > 4U && writeType == DSMTT_HEADER) {
 				// CUtils::dump(wxT("Write Header"), writeBuffer, writeLength);
 
 				int ret = m_serial.write(writeBuffer, writeLength);

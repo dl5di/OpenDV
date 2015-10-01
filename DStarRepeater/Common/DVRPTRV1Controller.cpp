@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2011-2014 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2011-2015 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -270,7 +270,7 @@ void* CDVRPTRV1Controller::Entry()
 				space--;
 			}
 
-			if (space >= 4U && writeType == DSMTT_HEADER) {
+			if (space > 4U && writeType == DSMTT_HEADER) {
 				// CUtils::dump(wxT("Write Header"), writeBuffer, writeLength);
 
 				int ret = m_serial.write(writeBuffer, writeLength);

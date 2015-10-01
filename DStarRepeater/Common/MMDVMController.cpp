@@ -259,7 +259,7 @@ void* CMMDVMController::Entry()
 			m_txData.getData(writeBuffer, writeLength);
 		}
 
-		if (space >= 4U && writeType == DSMTT_HEADER) {
+		if (space > 4U && writeType == DSMTT_HEADER) {
 			// CUtils::dump(wxT("Write Header"), writeBuffer, writeLength);
 
 			int ret = m_serial.write(writeBuffer, writeLength);
@@ -270,7 +270,7 @@ void* CMMDVMController::Entry()
 			space -= 4U;
 		}
 
-		if (space >= 1U && (writeType == DSMTT_DATA || writeType == DSMTT_EOT)) {
+		if (space > 1U && (writeType == DSMTT_DATA || writeType == DSMTT_EOT)) {
 			// CUtils::dump(wxT("Write Data"), writeBuffer, writeLength);
 
 			int ret = m_serial.write(writeBuffer, writeLength);

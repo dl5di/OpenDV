@@ -714,9 +714,9 @@ void CSoundCardController::processNone(bool bit)
     if (bit)
 		m_patternBuffer |= 0x01U;
 
-	// Fuzzy matching of the frame sync sequence
+	// Exact matching of the frame sync sequence
 	unsigned int errs = countBits((m_patternBuffer & FRAME_SYNC_MASK) ^ FRAME_SYNC_DATA);
-	if (errs <= FRAME_SYNC_ERRS) {
+	if (errs == 0U) {
 		// Lock the GMSK PLL to this signal
 		m_demodulator.lock(true);
 
@@ -726,9 +726,9 @@ void CSoundCardController::processNone(bool bit)
 		return;
 	}
 
-	// Fuzzy matching of the data sync bit sequence
+	// Exact matching of the data sync bit sequence
 	errs = countBits((m_patternBuffer & DATA_SYNC_MASK) ^ DATA_SYNC_DATA);
-	if (errs <= DATA_SYNC_ERRS) {
+	if (errs == 0U) {
 		// Lock the GMSK PLL to this signal
 		m_demodulator.lock(true);
 
