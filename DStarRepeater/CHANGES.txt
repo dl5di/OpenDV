@@ -1,4 +1,4 @@
-Repeater - 20150709
+Repeater - 20151001
 ===================
 
 20090530
@@ -2061,7 +2061,7 @@ Allow for a late arriving data sync in the sound card repeater controller.
 Add support for D-Star operation with the MMDVM.
 Fix bugs in the DV-RPTR V1, V2, V3, and DVMEGA drivers.
 
-2015xxxx
+20151001
 --------
 
 Added the RX and TX levels to the MMDVM driver and configuration.
