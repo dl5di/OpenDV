@@ -111,6 +111,7 @@ wxArrayString CSerialController::getDevices()
 	devices.Add(wxT("/dev/ttyUSB2"));
 	devices.Add(wxT("/dev/ttyUSB3"));
 	devices.Add(wxT("/dev/ttyUSB4"));
+	devices.Add(wxT("/dev/DVDongle"));
 #endif
 
 	return devices;
