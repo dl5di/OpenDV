@@ -73,33 +73,6 @@ bool CSerialDataController::open()
 		return false;
 	}
 
-	if (!::SetupComm(m_handle, 32768UL, 32768UL)) {
-		wxLogError(wxT("Cannot set the communications parameters for %s, err=%04lx"), m_device.c_str(), ::GetLastError());
-		::ClearCommError(m_handle, &errCode, NULL);
-		::CloseHandle(m_handle);
-		return false;
-	}
-
-	DWORD size = sizeof(COMMCONFIG);
-
-	COMMCONFIG config;
-	::memset(&config, 0x00U, sizeof(COMMCONFIG));
-	config.dwSize = size;
-
-	if (!::GetDefaultCommConfig(baseName.c_str(), &config, &size)) {
-		wxLogError(wxT("Cannot get the default comm config for %s, err=%04lx"), m_device.c_str(), ::GetLastError());
-		::ClearCommError(m_handle, &errCode, NULL);
-		::CloseHandle(m_handle);
-		return false;
-	}
-
-	if (!::SetCommConfig(m_handle, &config, size)) {
-		wxLogError(wxT("Cannot set the comm config for %s, err=%04lx"), m_device.c_str(), ::GetLastError());
-		::ClearCommError(m_handle, &errCode, NULL);
-		::CloseHandle(m_handle);
-		return false;
-	}
-
 	DCB dcb;
 	if (::GetCommState(m_handle, &dcb) == 0) {
 		wxLogError(wxT("Cannot get the attributes for %s, err=%04lx"), m_device.c_str(), ::GetLastError());

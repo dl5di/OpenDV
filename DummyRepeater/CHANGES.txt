@@ -1989,3 +1989,8 @@ Small change to the initialisation of the DVMEGA AMBE.
 --------
 
 Small change to the initialisation of the DVMEGA AMBE.
+
+2015xxxx
+--------
+
+Change Windows serial port handling for Windows 10.
