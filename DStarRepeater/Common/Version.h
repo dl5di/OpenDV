@@ -24,9 +24,9 @@
 const wxString VENDOR_NAME = wxT("G4KLX");
 
 #if defined(__WXDEBUG__)
-const wxString VERSION = wxT("20151001 - DEBUG");
+const wxString VERSION = wxT("20151012 - DEBUG");
 #else
-const wxString VERSION = wxT("20151001");
+const wxString VERSION = wxT("20151012");
 #endif
 
 #endif

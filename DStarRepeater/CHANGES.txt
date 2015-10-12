@@ -1,4 +1,4 @@
-Repeater - 20151001
+Repeater - 20151012
 ===================
 
 20090530
@@ -2071,7 +2071,7 @@ Change the slipped sync detection in the sound card repeater driver.
 Use a new matched filter in the GMSK modem.
 More MMDVM driver changes.
 
-2015xxxx
+20151012
 --------
 
 Change to the Windows serial controller for Windows 10.
