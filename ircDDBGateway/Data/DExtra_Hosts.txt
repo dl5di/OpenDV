@@ -7,7 +7,7 @@
 XRF000	000.xreflector.org
 XRF001	75.76.90.90 
 XRF002	91.201.57.233 
-XRF003	95.110.157.83
+XRF003	xrf003.iw0red.it
 XRF004	96.36.58.9 
 XRF005	216.16.240.236 
 XRF006	80.62.20.151 
@@ -16,7 +16,7 @@ XRF008	95.110.231.219
 XRF009	141.22.15.29 
 XRF010	87.106.48.7 
 XRF011	87.106.3.249 
-XRF012	xreflector12.dstarsandiego.com 
+XRF012	xreflector12.dstarsandiego.com
 XRF013	xrf013.vkradio.com
 XRF014	xrf014.iz0rin.it
 XRF015	xrf015.theapplecore.me
@@ -36,9 +36,11 @@ XRF030	xrf030.oe3xht.at
 XRF031	83.241.141.245 
 XRF033	46.226.178.81 
 XRF036	xrf036.ddns.net
+XRF037	185.58.193.163
 XRF038	66.6.171.228 
 XRF040	xrf040.dyndns.org
 XRF041	167.88.37.80 
+XRF042	xrf042.luthienstar.fr
 XRF043	xrf043.aotnet.it
 XRF044	82.1.185.173 
 XRF045	045.xreflector.org
@@ -59,6 +61,7 @@ XRF100	88.46.211.5
 XRF111	5.196.3.184
 XRF112	92.222.47.175
 XRF117	xrf117.dyndns.org
+XRF118	xrf118.dyndns.org
 XRF119	149.154.158.170 
 XRF123	213.126.90.100 
 XRF133	xrf133.gb7de.co.uk
@@ -72,6 +75,7 @@ XRF250	xrf250.dstar.su
 XRF255	xrf255.reflector.up4dar.de
 XRF262	xrf262.reflector.up4dar.de
 XRF295	104.167.96.2 
+XRF295	xrf295.dyndns.org
 XRF307	104.167.106.95
 XRF310	server1.xrefl.net
 XRF333	xrf333.f1smf.com
@@ -85,7 +89,9 @@ XRF423	4ix.hacktic.de
 XRF433	217.160.22.17
 XRF444	70.125.157.44 
 XRF450	450.xreflector.org
+XRF456	149.202.45.162
 XRF500	xrf500.org
+XRF550	550.xreflector.es
 XRF555	54.191.67.121
 XRF559	98.239.113.175 
 XRF580	67.20.31.79 
@@ -98,16 +104,19 @@ XRF714	xrf714.ea3hkb.com
 XRF720	204.45.107.21 
 XRF727	108.33.72.83 
 XRF740	imagewell.duckdns.org
+XRF747	xrf747.de
 XRF748	104.167.109.27 
 XRF757	xrf757.openquad.net
 XRF773	xrf773.iz0rin.it
 XRF777	62.167.15.53 
 XRF780	96.53.97.22 
+XRF828	xrf828.ddnss.de
 XRF851	xrf851.rsdt.de
 XRF858	198.57.255.30 
 XRF870	103.18.207.114
-XRF888	5.135.147.180
+XRF888	888.xreflector.es
 XRF901	xrf901.dyndns.org
+XRF902	xrf902.dyndns.org
 XRF905	199.212.121.20 
 XRF906	xrf906.radioclubveleta.es
 XRF909	216.86.147.198
@@ -115,6 +124,6 @@ XRF911	xrf911.ns0.it
 XRF929	xrf929.ddns.net
 XRF978	74.104.179.159 
 XRF987	xrf987.metro-uhf.org
-XRF988	46.105.27.191
+XRF988	988.xreflector.es
 XRF989	xrf989.bbhill.net
 XRFWDX	xrfwdx.ham-radio-op.net
