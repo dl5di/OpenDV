@@ -1994,3 +1994,4 @@ Small change to the initialisation of the DVMEGA AMBE.
 --------
 
 Change Windows serial port handling for Windows 10.
+Handle open sound devices in the ports list.

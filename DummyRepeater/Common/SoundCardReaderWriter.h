@@ -46,6 +46,9 @@ private:
 	int             m_id;
 	PaStream*       m_stream;
 
+	static wxString m_openReadDevice;
+	static wxString m_openWriteDevice;
+
 	bool convertNameToDevices(PaDeviceIndex& inDev, PaDeviceIndex& outDev);
 };
 

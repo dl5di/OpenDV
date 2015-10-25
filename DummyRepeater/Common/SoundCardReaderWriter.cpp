@@ -19,6 +19,9 @@
 
 #include "SoundCardReaderWriter.h"
 
+wxString CSoundCardReaderWriter::m_openReadDevice;
+wxString CSoundCardReaderWriter::m_openWriteDevice;
+
 #if (defined(__APPLE__) && defined(__MACH__)) || defined(__WINDOWS__)
 
 static int scrwCallback(const void* input, void* output, unsigned long nSamples, const PaStreamCallbackTimeInfo* timeInfo, PaStreamCallbackFlags statusFlags, void* userData)
@@ -52,6 +55,9 @@ wxArrayString CSoundCardReaderWriter::getReadDevices()
 	wxArrayString devices;
 
 	devices.Alloc(10);
+
+	if (!m_openReadDevice.IsEmpty())
+		devices.Add(m_openReadDevice);
 
 	PaError error = ::Pa_Initialize();
 	if (error != paNoError)
@@ -97,6 +103,9 @@ wxArrayString CSoundCardReaderWriter::getWriteDevices()
 	wxArrayString devices;
 
 	devices.Alloc(10);
+
+	if (!m_openWriteDevice.IsEmpty())
+		devices.Add(m_openWriteDevice);
 
 	PaError error = ::Pa_Initialize();
 	if (error != paNoError)
@@ -147,6 +156,9 @@ void CSoundCardReaderWriter::setCallback(IAudioCallback* callback, int id)
 
 bool CSoundCardReaderWriter::open()
 {
+	m_openReadDevice.Clear();
+	m_openWriteDevice.Clear();
+
 	PaError error = ::Pa_Initialize();
 	if (error != paNoError) {
 		wxLogError(wxT("Cannot initialise PortAudio"));
@@ -215,7 +227,10 @@ bool CSoundCardReaderWriter::open()
 		return false;
 	}
 
- 	return true;
+	m_openReadDevice  = m_readDevice;
+	m_openWriteDevice = m_writeDevice;
+
+	return true;
 }
 
 void CSoundCardReaderWriter::close()
