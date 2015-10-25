@@ -347,7 +347,7 @@ int main(int argc, char **argv)
 	int c;
 	strcpy(dv3000tty,DEFAULT_TTY);
 
-	while ((c = getopt(argc, argv, "ndc:p:i:vx")) != -1) {
+	while ((c = getopt(argc, argv, "ndc:p:i:vxh")) != -1) {
 		switch (c) {
 			case 'd':
 				daemon = 1;
