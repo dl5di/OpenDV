@@ -2076,3 +2076,8 @@ More MMDVM driver changes.
 
 Change to the Windows serial controller for Windows 10.
 Add overflow warnings for the MMDVM.
+
+2015xxxx
+--------
+
+Fix the TX Delay setting for the MMDVM.

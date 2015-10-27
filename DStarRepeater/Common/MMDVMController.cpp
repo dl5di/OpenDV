@@ -488,16 +488,16 @@ bool CMMDVMController::setConfig()
 	if (m_pttInvert)
 		buffer[3U] |= 0x04U;
 
-	buffer[4U] = 0x01U;		// D-Star only
+	buffer[4U] = 0x01U;				// D-Star only
 
-	buffer[5U] = m_txDelay;
+	buffer[5U] = m_txDelay / 10U;	// In 10ms units
 
-	buffer[6U] = 1U;		// STATE_DSTAR
+	buffer[6U] = 1U;				// STATE_DSTAR
 
 	buffer[7U] = (m_rxLevel * 255U) / 100U;
 	buffer[8U] = (m_txLevel * 255U) / 100U;
 
-	buffer[9U] = 0U;		// DMR Color Code
+	buffer[9U] = 0U;				// DMR Color Code
 
 	// CUtils::dump(wxT("Written"), buffer, 10U);
 
