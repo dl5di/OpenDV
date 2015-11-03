@@ -797,8 +797,14 @@ bool CIRCDDBGatewayAppD::createThread()
 		m_thread->setDDModeEnabled(true);
 	}
 
-	wxFileName wlFilename(wxFileName::GetHomeDir(), WHITELIST_FILE_NAME);
+	wxFileName wlFilename(wxFileName::GetHomeDir(), PRIMARY_WHITELIST_FILE_NAME);
 	bool exists = wlFilename.FileExists();
+
+	if (!exists) {
+		wlFilename.Assign(wxFileName::GetHomeDir(), SECONDARY_WHITELIST_FILE_NAME);
+		exists = wlFilename.FileExists();
+	}
+
 	if (exists) {
 		CCallsignList* list = new CCallsignList(wlFilename.GetFullPath());
 		bool res = list->load();
@@ -811,8 +817,14 @@ bool CIRCDDBGatewayAppD::createThread()
 		}
 	}
 
-	wxFileName blFilename(wxFileName::GetHomeDir(), BLACKLIST_FILE_NAME);
+	wxFileName blFilename(wxFileName::GetHomeDir(), PRIMARY_BLACKLIST_FILE_NAME);
 	exists = blFilename.FileExists();
+
+	if (!exists) {
+		blFilename.Assign(wxFileName::GetHomeDir(), SECONDARY_BLACKLIST_FILE_NAME);
+		exists = blFilename.FileExists();
+	}
+
 	if (exists) {
 		CCallsignList* list = new CCallsignList(blFilename.GetFullPath());
 		bool res = list->load();
