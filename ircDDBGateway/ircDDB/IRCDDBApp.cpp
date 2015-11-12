@@ -532,8 +532,10 @@ wxString IRCDDBApp::getIPAddress(wxString& zonerp_cs)
 
       if (o.usn >= max_usn)
       {
-	max_usn = o.usn;
-	ipAddr = o.host;
+		max_usn = o.usn;
+		ipAddr = o.host.c_str(); // make a deep copy of the string and do not use wxString reference counting!
+							// This is important, because the reference counting feature
+							// in wxString is not thread-safe.
       }
       // i = 1;
     }
