@@ -1,4 +1,4 @@
-ircDDB Gateway - 20150820
+ircDDB Gateway - 20151116
 =========================
 
 20101010
@@ -1455,8 +1455,10 @@ Revert to the CIRCDDB library to its previous incarnation.
 --------
 Move to the new CCS addressing.
 
-2015xxxx
+20151116
 --------
 
 CCS7 cleanups and fixes.
 Updated DExtra hosts file.
+Updated DPlus hosts file to use IP addresses again.
+Fix crashing bug in the gateway (from Michael DL1BFF).
