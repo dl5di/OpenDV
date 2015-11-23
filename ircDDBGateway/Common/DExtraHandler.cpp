@@ -705,8 +705,8 @@ void CDExtraHandler::processInt(CAMBEData& data)
 
 	m_dExtraSeq = data.getSeq();
 
-	// Send the header every 21 frames
-	if (m_dExtraSeq == 0U)
+	// Send the header every 21 frames, if we have it
+	if (m_dExtraSeq == 0U && m_header != NULL)
 		m_destination->process(*m_header, m_direction, AS_DUP);
 
 	// Copy the data to ensure it remains unchanged

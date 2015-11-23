@@ -647,8 +647,8 @@ void CDPlusHandler::processInt(CAMBEData& data)
 
 	m_dPlusSeq = data.getSeq();
 
-	// Send the header every 21 frames
-	if (m_dPlusSeq == 0U)
+	// Send the header every 21 frames, if we have it
+	if (m_dPlusSeq == 0U && m_header != NULL)
 		m_destination->process(*m_header, m_direction, AS_DUP);
 
 	m_inactivityTimer.start();

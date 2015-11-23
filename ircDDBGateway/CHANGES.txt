@@ -1462,3 +1462,8 @@ CCS7 cleanups and fixes.
 Updated DExtra hosts file.
 Updated DPlus hosts file to use IP addresses again.
 Fix crashing bug in the gateway (from Michael DL1BFF).
+
+2015xxxx
+--------
+
+Fix header repeater crashing bug (from Michael DL1BFF).
