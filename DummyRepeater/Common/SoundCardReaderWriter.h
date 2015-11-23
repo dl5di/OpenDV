@@ -124,6 +124,9 @@ private:
 
 	static wxArrayString m_readDevices;
 	static wxArrayString m_writeDevices;
+
+	static wxString m_openReadDevice;
+	static wxString m_openWriteDevice;
 };
 
 #endif
