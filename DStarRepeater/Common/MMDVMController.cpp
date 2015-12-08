@@ -209,10 +209,6 @@ void* CMMDVMController::Entry()
 					if (adcOverflow)
 						wxLogWarning(wxT("MMDVM ADC levels have overflowed"));
 
-					bool bufferOverflow = (m_buffer[5U] & 0x04U) == 0x04U;
-					if (bufferOverflow)
-						wxLogWarning(wxT("MMDVM RX buffer has overflowed"));
-
 					space = m_buffer[6U];
 					// CUtils::dump(wxT("GET_STATUS"), m_buffer, length);
 					// wxLogMessage(wxT("PTT=%d space=%u"), int(m_tx), space);
