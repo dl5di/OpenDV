@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2006-2009,2012,2013 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2006-2009,2012,2013,2015 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -152,11 +152,11 @@ public:
 	}
 
 private:
-	unsigned int m_length;
-	T*           m_buffer;
-	unsigned int m_iPtr;
-	unsigned int m_oPtr;
-	RBSTATE      m_state;
+	unsigned int          m_length;
+	T*                    m_buffer;
+	volatile unsigned int m_iPtr;
+	volatile unsigned int m_oPtr;
+	volatile RBSTATE      m_state;
 };
 
 #endif
