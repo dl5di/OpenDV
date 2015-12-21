@@ -56,7 +56,7 @@ wxArrayString CSoundCardReaderWriter::getReadDevices()
 
 #if defined(__WINDOWS__)
 	PaHostApiIndex apiIndex = ::Pa_HostApiTypeIdToHostApiIndex(paDirectSound);
-#elif defined(__APPLE__) && defined(__MAC__)
+#elif defined(__APPLE__) && defined(__MACH__)
 	PaHostApiIndex apiIndex = ::Pa_HostApiTypeIdToHostApiIndex(paCoreAudio);
 #else
 	PaHostApiIndex apiIndex = ::Pa_HostApiTypeIdToHostApiIndex(paALSA);
@@ -101,7 +101,7 @@ wxArrayString CSoundCardReaderWriter::getWriteDevices()
 
 #if defined(__WINDOWS__)
 	PaHostApiIndex apiIndex = ::Pa_HostApiTypeIdToHostApiIndex(paDirectSound);
-#elif defined(__APPLE__) && defined(__MAC__)
+#elif defined(__APPLE__) && defined(__MACH__)
 	PaHostApiIndex apiIndex = ::Pa_HostApiTypeIdToHostApiIndex(paCoreAudio);
 #else
 	PaHostApiIndex apiIndex = ::Pa_HostApiTypeIdToHostApiIndex(paALSA);
@@ -238,7 +238,7 @@ bool CSoundCardReaderWriter::convertNameToDevices(PaDeviceIndex& inDev, PaDevice
 
 #if defined(__WINDOWS__)
 	PaHostApiIndex apiIndex = ::Pa_HostApiTypeIdToHostApiIndex(paDirectSound);
-#elif defined(__APPLE__) && defined(__MAC__)
+#elif defined(__APPLE__) && defined(__MACH__)
 	PaHostApiIndex apiIndex = ::Pa_HostApiTypeIdToHostApiIndex(paCoreAudio);
 #else
 	PaHostApiIndex apiIndex = ::Pa_HostApiTypeIdToHostApiIndex(paALSA);
