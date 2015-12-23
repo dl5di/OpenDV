@@ -22,16 +22,9 @@
 
 #include <cassert>
 
-// The PR FILL and Data Sync pattern.
-const unsigned char IDLE_DATA[] =
-        {0x53U, 0xC2U, 0x5EU, 0xABU, 0xA8U, 0x67U, 0x1DU, 0xC7U, 0x38U, 0x3BU, 0xD9U,
-         0x36U, 0x00U, 0x0DU, 0xFFU, 0x57U, 0xD7U, 0x5DU, 0xF5U, 0xD0U, 0x03U, 0xF6U,
-         0xE4U, 0x65U, 0x17U, 0x1BU, 0x48U, 0xCAU, 0x6DU, 0x4FU, 0xC6U, 0x10U, 0xB4U};
-
 unsigned int      CDMRSlot::m_colorCode = 0U;
 CModem*           CDMRSlot::m_modem = NULL;
 CHomebrewDMRIPSC* CDMRSlot::m_network = NULL;
-unsigned char*    CDMRSlot::m_idle = NULL;
 
 FLCO              CDMRSlot::m_flco1;
 unsigned char     CDMRSlot::m_id1 = 0U;
@@ -39,8 +32,10 @@ FLCO              CDMRSlot::m_flco2;
 unsigned char     CDMRSlot::m_id2 = 0U;
 
 // XXX TODO
-// Short LC setting/clearing
-// Embedded LC regeneration
+// Short LC generation
+// Embedded LC regeneration?
+// Timed playout
+// AMBE FEC
 
 CDMRSlot::CDMRSlot(unsigned int slotNo) :
 m_slotNo(slotNo),
@@ -60,8 +55,14 @@ CDMRSlot::~CDMRSlot()
 
 void CDMRSlot::writeRF(unsigned char *data)
 {
-	if (data[0U] == TAG_LOST && (m_state == SS_LATE_ENTRY || m_state == SS_RELAYING_RF)) {
+	if (data[0U] == TAG_LOST && m_state == SS_RELAYING_RF) {
 		LogMessage("DMR Slot %u, transmission lost", m_slotNo);
+		setShortLC(m_slotNo, 0U);
+		m_state = SS_LISTENING;
+		return;
+	}
+
+	if (data[0U] == TAG_LOST && m_state == SS_LATE_ENTRY) {
 		m_lateEntryWatchdog.stop();
 		m_state = SS_LISTENING;
 		return;
@@ -110,6 +111,7 @@ void CDMRSlot::writeRF(unsigned char *data)
 			writeQueue(data);
 
 			m_state = SS_RELAYING_RF;
+			setShortLC(m_slotNo, m_lc->getDstId(), m_lc->getFLCO());
 
 			LogMessage("DMR Slot %u, received RF header from %u to %s:%u", m_slotNo, m_lc->getSrcId(), m_lc->getFLCO() == FLCO_GROUP ? "Group" : "User", m_lc->getDstId());
 		} else {
@@ -139,6 +141,7 @@ void CDMRSlot::writeRF(unsigned char *data)
 				LogMessage("DMR Slot %u, received RF end of transmission from %u to %s:%u", m_slotNo, m_lc->getSrcId(), m_lc->getFLCO() == FLCO_GROUP ? "Group" : "User", m_lc->getDstId());
 
 				m_state = SS_LISTENING;
+				setShortLC(m_slotNo, 0U);
 
 				if (dataType == DT_TERMINATOR_WITH_LC)
 					return;
@@ -175,10 +178,6 @@ void CDMRSlot::writeRF(unsigned char *data)
 
 			writeQueue(data);
 			writeNetwork(data, DMRDT_VOICE_SYNC);
-		} else if (m_state == SS_LATE_ENTRY) {
-			// Send an Idle message out to look busy
-			::memcpy(data, m_idle, DMR_FRAME_LENGTH_BYTES + 2U);
-			writeQueue(data);
 		} else if (m_state == SS_LISTENING) {
 			m_lateEntryWatchdog.start();
 			m_state = SS_LATE_ENTRY;
@@ -245,12 +244,9 @@ void CDMRSlot::writeRF(unsigned char *data)
 
 				m_state = SS_RELAYING_RF;
 				m_lateEntryWatchdog.stop();
+				setShortLC(m_slotNo, m_lc->getDstId(), m_lc->getFLCO());
 
 				LogMessage("DMR Slot %u, received RF late entry from %u to %s:%u", m_slotNo, m_lc->getSrcId(), m_lc->getFLCO() == FLCO_GROUP ? "Group" : "User", m_lc->getDstId());
-			} else {
-				// Send an Idle message out to look busy
-				::memcpy(data, m_idle, DMR_FRAME_LENGTH_BYTES + 2U);
-				writeQueue(data);
 			}
 		}
 	}
@@ -309,6 +305,7 @@ void CDMRSlot::writeNet(const CDMRData& dmrData)
 		writeQueue(data);
 
 		m_state = SS_LISTENING;
+		setShortLC(m_slotNo, 0U);
 		m_networkWatchdog.stop();
 
 		LogMessage("DMR Slot %u, received network end of transmission from %u to %s:%u", m_slotNo, m_lc->getSrcId(), m_lc->getFLCO() == FLCO_GROUP ? "Group" : "User", m_lc->getDstId());
@@ -371,6 +368,7 @@ void CDMRSlot::clock(unsigned int ms)
 
 		if (m_networkWatchdog.hasExpired()) {
 			LogMessage("DMR Slot %u, network watchdog has expired", m_slotNo);
+			setShortLC(m_slotNo, 0U);
 			m_networkWatchdog.stop();
 			m_state = SS_LISTENING;
 		}
@@ -442,6 +440,7 @@ void CDMRSlot::writeHeader(const CDMRData& dmrData)
 	writeQueue(data);
 
 	m_state = SS_RELAYING_NETWORK;
+	setShortLC(m_slotNo, m_lc->getDstId(), m_lc->getFLCO());
 
 	LogMessage("DMR Slot %u, received network header from %u to %s:%u", m_slotNo, m_lc->getSrcId(), m_lc->getFLCO() == FLCO_GROUP ? "Group" : "User", m_lc->getDstId());
 }
@@ -450,24 +449,12 @@ void CDMRSlot::init(unsigned int colorCode, CModem* modem, CHomebrewDMRIPSC* net
 {
 	assert(modem != NULL);
 
-	m_idle = new unsigned char[DMR_FRAME_LENGTH_BYTES + 2U];
-
-	m_idle[0U] = TAG_DATA;
-	m_idle[1U] = 0x00U;
-
-	::memcpy(m_idle + 2U, IDLE_DATA, DMR_FRAME_LENGTH_BYTES);	
-
-	CSlotType slotType;
-	slotType.setColorCode(colorCode);
-	slotType.setDataType(DT_IDLE);
-	slotType.getData(m_idle + 2U);
-
 	m_colorCode = colorCode;
 	m_modem     = modem;
 	m_network   = network;
 }
 
-void CDMRSlot::setShortLC(unsigned int slotNo, FLCO flco, unsigned int id)
+void CDMRSlot::setShortLC(unsigned int slotNo, unsigned int id, FLCO flco)
 {
 	assert(m_modem != NULL);
 

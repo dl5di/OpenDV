@@ -65,7 +65,6 @@ private:
 	static unsigned int        m_colorCode;
 	static CModem*             m_modem;
 	static CHomebrewDMRIPSC*   m_network;
-	static unsigned char*      m_idle;
 
 	static FLCO                m_flco1;
 	static unsigned char       m_id1;
@@ -76,7 +75,7 @@ private:
 	void writeQueue(const unsigned char* data);
 	void writeNetwork(const unsigned char* data, DMR_DATA_TYPE dataType);
 
-	static void setShortLC(unsigned int slotNo, FLCO flco, unsigned int id);
+	static void setShortLC(unsigned int slotNo, unsigned int id, FLCO flco = FLCO_GROUP);
 };
 
 #endif
