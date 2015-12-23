@@ -30,7 +30,7 @@ DMRControl.o:	DMRControl.cpp DMRControl.h DMRSlot.h DMRData.h Modem.h HomebrewDM
 DMRData.o:	DMRData.cpp DMRData.h DMRDefines.h Utils.h Log.h
 		$(CC) $(CFLAGS) -c DMRData.cpp
 	
-DMRSlot.o:	DMRSlot.cpp DMRSlot.h DMRData.h Modem.h HomebrewDMRIPSC.h Defines.h Log.h EmbeddedLC.h RingBuffer.h Timer.h LC.h SlotType.h DMRSync.h FullLC.h EMB.h CRC.h
+DMRSlot.o:	DMRSlot.cpp DMRSlot.h DMRData.h Modem.h HomebrewDMRIPSC.h Defines.h Log.h EmbeddedLC.h RingBuffer.h Timer.h LC.h SlotType.h DMRSync.h FullLC.h EMB.h CRC.h CSBK.h
 		$(CC) $(CFLAGS) -c DMRSlot.cpp
 
 DMRSync.o:	DMRSync.cpp DMRSync.h DMRDefines.h

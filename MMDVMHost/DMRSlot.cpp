@@ -16,6 +16,7 @@
 #include "Defines.h"
 #include "DMRSync.h"
 #include "FullLC.h"
+#include "CSBK.h"
 #include "EMB.h"
 #include "CRC.h"
 #include "Log.h"
@@ -115,6 +116,14 @@ void CDMRSlot::writeRF(unsigned char *data)
 
 			LogMessage("DMR Slot %u, received RF header from %u to %s:%u", m_slotNo, m_lc->getSrcId(), m_lc->getFLCO() == FLCO_GROUP ? "Group" : "User", m_lc->getDstId());
 		} else {
+			// Ignore wakeup CSBKs
+			if (dataType == DT_CSBK) {
+				CCSBK csbk(data + 2U);
+				CSBKO csbko = csbk.getCSBKO();
+				if (csbko == CSBKO_BSDWNACT)
+					return;
+			}
+
 			if (m_state == SS_RELAYING_RF) {
 				unsigned char end[DMR_FRAME_LENGTH_BYTES + 2U];
 
