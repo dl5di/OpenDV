@@ -20,7 +20,7 @@
 #include "SlowDataEncoder.h"
 #include "DStarDefines.h"
 #include "APRSTransmit.h"
-#include "APRSParser"
+//#include "APRSParser"
 
 
 CAPRSTransmit::CAPRSTransmit(const wxString& callsign, const wxString& text) :
