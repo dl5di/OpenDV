@@ -48,6 +48,7 @@ Section "Repeater Program Files" SecProgram
   
   File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\opendv-git\OpenDV\ircDDBGateway\Release\ircDDBGateway.exe"
   File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\opendv-git\OpenDV\ircDDBGateway\Release\ircDDBGatewayConfig.exe"
+  File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\opendv-git\OpenDV\ircDDBGateway\Release\APRSTransmit.exe"
   File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\opendv-git\OpenDV\ircDDBGateway\Release\RemoteControl.exe"
   File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\opendv-git\OpenDV\ircDDBGateway\Release\StarNetServer.exe"
   File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\opendv-git\OpenDV\ircDDBGateway\Release\TextTransmit.exe"
@@ -98,6 +99,7 @@ Section "Repeater Program Files" SecProgram
   CreateDirectory "$SMPROGRAMS\ircDDBGateway"
   CreateShortCut "$SMPROGRAMS\ircDDBGateway\ircDDB Gateway.lnk"        "$INSTDIR\ircDDBGateway.exe"
   CreateShortCut "$SMPROGRAMS\ircDDBGateway\ircDDB Gateway Config.lnk" "$INSTDIR\ircDDBGatewayConfig.exe"
+  CreateShortCut "$SMPROGRAMS\ircDDBGateway\APRS Transmit.lnk"         "$INSTDIR\APRSTransmit.exe"
   CreateShortCut "$SMPROGRAMS\ircDDBGateway\Remote Control.lnk"        "$INSTDIR\RemoteControl.exe"
   CreateShortCut "$SMPROGRAMS\ircDDBGateway\StarNet Server.lnk"        "$INSTDIR\StarNetServer.exe"
   CreateShortCut "$SMPROGRAMS\ircDDBGateway\Timer Control.lnk"         "$INSTDIR\TimerControl.exe"
@@ -123,6 +125,7 @@ Section "Uninstall"
   RMDir  "$SMPROGRAMS\ircDDBGateway"
 
   DeleteRegKey /ifempty HKCU "Software\G4KLX\IRCDDB Gateway"
+  DeleteRegKey /ifempty HKCU "Software\G4KLX\APRS Transmit"
   DeleteRegKey /ifempty HKCU "Software\G4KLX\Remote Control"
   DeleteRegKey /ifempty HKCU "Software\G4KLX\StarNet Server"
   DeleteRegKey /ifempty HKCU "Software\G4KLX\Timer Control"

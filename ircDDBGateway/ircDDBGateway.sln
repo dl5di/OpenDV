@@ -57,6 +57,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "VoiceTransmit", "VoiceTrans
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GUICommon", "GUICommon\GUICommon.vcproj", "{02D03515-0BBE-4553-8C40-566A597478F8}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "APRSTransmit", "APRSTransmit\APRSTransmit.vcproj", "{F26EA1DB-74CF-4C52-A425-00235C8ABED2}"
+	ProjectSection(ProjectDependencies) = postProject
+		{E793CB8E-2AC9-431A-BBFC-3F52537BB3CF} = {E793CB8E-2AC9-431A-BBFC-3F52537BB3CF}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -107,6 +112,10 @@ Global
 		{02D03515-0BBE-4553-8C40-566A597478F8}.Debug|Win32.Build.0 = Debug|Win32
 		{02D03515-0BBE-4553-8C40-566A597478F8}.Release|Win32.ActiveCfg = Release|Win32
 		{02D03515-0BBE-4553-8C40-566A597478F8}.Release|Win32.Build.0 = Release|Win32
+		{F26EA1DB-74CF-4C52-A425-00235C8ABED2}.Debug|Win32.ActiveCfg = Debug|Win32
+		{F26EA1DB-74CF-4C52-A425-00235C8ABED2}.Debug|Win32.Build.0 = Debug|Win32
+		{F26EA1DB-74CF-4C52-A425-00235C8ABED2}.Release|Win32.ActiveCfg = Release|Win32
+		{F26EA1DB-74CF-4C52-A425-00235C8ABED2}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

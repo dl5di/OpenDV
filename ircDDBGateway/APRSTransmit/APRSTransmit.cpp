@@ -219,7 +219,6 @@ bool CAPRSTransmit::sendData(const CAMBEData& data)
 
 unsigned int CAPRSTransmit::calcCRC(const wxString& gpsData)
 { 
-	wxASSERT(gpsDataconst != NULL);
 	size_t length = gpsData.length();
 	wxASSERT(length > 0U);
 
