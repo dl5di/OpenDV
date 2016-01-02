@@ -20,6 +20,7 @@
 #include "SlowDataEncoder.h"
 #include "DStarDefines.h"
 #include "APRSTransmit.h"
+#include "APRSParser"
 
 
 CAPRSTransmit::CAPRSTransmit(const wxString& callsign, const wxString& text) :
@@ -50,7 +51,7 @@ bool CAPRSTransmit::run()
 	if (!opened)
 		return false;
 
-	in_addr address = CUDPReaderWriter::lookup(wxT("149.202.53.0"));
+	in_addr address = CUDPReaderWriter::lookup(wxT("127.0.0.1"));
 
 	unsigned int id = CHeaderData::createId();
 
