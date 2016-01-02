@@ -23,10 +23,12 @@
 #include "RingBuffer.h"
 
 #include <wx/wx.h>
+typedef void (*ReadAPRSFrameCallback)(const wxString&);
 
 class CAPRSWriterThread : public wxThread {
 public:
 	CAPRSWriterThread(const wxString& callsign, const wxString& address, const wxString& hostname, unsigned int port);
+	CAPRSWriterThread(const wxString& callsign, const wxString& address, const wxString& hostname, unsigned int port, const wxString& filter, const wxString& clientName);
 	virtual ~CAPRSWriterThread();
 
 	virtual bool start();
@@ -39,15 +41,20 @@ public:
 
 	virtual void stop();
 
+	void setReadAPRSCallback(ReadAPRSFrameCallback cb);
+
 private:
-	char*                  m_username;
+	wxString               m_username;
+	wxString	       m_ssid;
 	CTCPReaderWriterClient m_socket;
 	CRingBuffer<char*>     m_queue;
 	bool                   m_exit;
 	bool                   m_connected;
+	ReadAPRSFrameCallback  m_APRSReadCallback;
+	wxString m_filter, m_clientName;
 
 	bool connect();
-	unsigned int getAPRSPassword(const char* username) const;
+	unsigned int getAPRSPassword(wxString username) const;
 };
 
 #endif
