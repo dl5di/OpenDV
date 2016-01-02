@@ -44,7 +44,9 @@ public:
 	bool open();
 
 	int  read(unsigned char* buffer, unsigned int length, unsigned int secs, unsigned int msecs = 0U);
+	int readLine(wxString& line, unsigned int secs);
 	bool write(const unsigned char* buffer, unsigned int length);
+	bool writeLine(const wxString& line);
 
 	void close();
 
