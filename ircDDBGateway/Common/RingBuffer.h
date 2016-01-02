@@ -57,7 +57,7 @@ public:
 		wxMutexLocker locker(m_mutex);
 
 		if (m_iPtr == m_oPtr)
-			return 0;
+			return NULL;
 
 		T data = m_buffer[m_oPtr++];
 
@@ -89,7 +89,7 @@ public:
 		wxMutexLocker locker(m_mutex);
 
 		if (m_iPtr == m_oPtr)
-			return 0;
+			return NULL;
 
 		return m_buffer[m_oPtr];
 	}
