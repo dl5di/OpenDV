@@ -41,7 +41,7 @@ static void handler(int signum)
 
 static void aprsFrameCallback(const wxString& aprsFrame)
 {
-	wxLogMessage(wxT("Received APRS Fram : ") + aprsFrame);
+	//wxLogMessage(wxT("Received APRS Fram : ") + aprsFrame);
 	m_aprsTransmit->m_aprsFramesQueue->addData(new wxString(aprsFrame));
 }
 
@@ -96,8 +96,6 @@ int main(int argc, char** argv)
 	aprsFilter << wxT("-") << ssid;
 	aprsFilter.Prepend(wxT("f/"));
 	aprsFilter << wxT("/") << radius;
-	std::cout << aprsFilter.mb_str() << std::endl;
-        std::cout << radius << std::endl;
 
 	bool daemon = parser.Found(DAEMON_SWITCH);
 
@@ -192,6 +190,7 @@ void CAPRSTransmitAppD::run()
 
 	m_run = true;
 	while(m_run){
+		wxMilliSleep(10U);
 		aprsFrame = m_aprsFramesQueue->getData();
 		if(aprsFrame){
 			CAPRSTransmit aprsTransmit(m_repeater, wxString(*aprsFrame));

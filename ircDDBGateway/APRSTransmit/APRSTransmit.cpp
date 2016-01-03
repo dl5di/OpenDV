@@ -20,7 +20,7 @@
 #include "SlowDataEncoder.h"
 #include "DStarDefines.h"
 #include "APRSTransmit.h"
-//#include "APRSParser"
+#include "APRSParser.h"
 
 
 CAPRSTransmit::CAPRSTransmit(const wxString& callsign, const wxString& text) :
@@ -32,13 +32,6 @@ m_text(text)
 	int index = m_text.Find(wxT(">"));
 	if(index != wxNOT_FOUND)
 		m_APRSCallsign = m_text.Left(index);
-
-	//add nececessary stuff to text
-	m_text.Append(wxT("\r"));
-	wxString crc;
-	crc.Printf(wxT("$$CRC%04X,"), calcCRC(m_text));
-	m_text.Prepend(crc);
-	//std::cout << m_text.mb_str() << std::endl;
 }
 
 CAPRSTransmit::~CAPRSTransmit()
@@ -47,6 +40,20 @@ CAPRSTransmit::~CAPRSTransmit()
 
 bool CAPRSTransmit::run()
 {
+	wxString textWithCRC(m_text);
+	//First see if the packet is Icom supported...
+	CAPRSPacket aprsPacket;
+	if(!CAPRSParser::Parse(textWithCRC, aprsPacket)){
+		wxLogWarning(wxT("Unsupported APRS Format, ignoring => ") + textWithCRC.Trim(true));
+		return false;
+	}
+	wxLogMessage(wxT("Supported APRS Format => ") + textWithCRC.Trim(true));
+	//add nececessary stuff to text, but keep it the original
+	textWithCRC.Replace(wxT("\n"), wxEmptyString);
+	if(!textWithCRC.EndsWith(wxT("\r"))) textWithCRC.Append(wxT("\r"));
+	wxString crc = wxString::Format(wxT("$$CRC%04X,"), calcCRC(textWithCRC));
+	textWithCRC.Prepend(crc);
+
 	bool opened = m_socket.open();
 	if (!opened)
 		return false;
@@ -71,7 +78,7 @@ bool CAPRSTransmit::run()
 
 	CSlowDataEncoder encoder;
 	encoder.setHeaderData(header);
-	encoder.setGPSData(m_text);
+	encoder.setGPSData(textWithCRC);
 	encoder.setTextData(wxT("APRS to DPRS"));
 
 	CAMBEData data;
@@ -142,7 +149,7 @@ bool CAPRSTransmit::sendData(const CAMBEData& data)
 }
 
 unsigned int CAPRSTransmit::calcCRC(const wxString& gpsData)
-{ 
+{
 	size_t length = gpsData.length();
 	wxASSERT(length > 0U);
 
