@@ -26,8 +26,26 @@
 const unsigned int APRS_TIMEOUT = 10U;
 
 CAPRSWriterThread::CAPRSWriterThread(const wxString& callsign, const wxString& address, const wxString& hostname, unsigned int port) :
-	CAPRSWriterThread(callsign, address, hostname, port, wxT("ircDDBGateway"), wxT(""))
+wxThread(wxTHREAD_JOINABLE),
+m_username(callsign),
+m_ssid(callsign),
+m_socket(hostname, port, address),
+m_queue(20U),
+m_exit(false),
+m_connected(false),
+m_APRSReadCallback(NULL),
+m_filter(wxT("ircDDBGateway")),
+m_clientName()
 {
+	wxASSERT(!callsign.IsEmpty());
+	wxASSERT(!hostname.IsEmpty());
+	wxASSERT(port > 0U);
+
+	m_username.SetChar(LONG_CALLSIGN_LENGTH - 1U, wxT(' '));
+	m_username.Trim();
+	m_username.MakeUpper();
+
+	m_ssid = m_ssid.SubString(LONG_CALLSIGN_LENGTH - 1U, 1);
 }
 
 CAPRSWriterThread::CAPRSWriterThread(const wxString& callsign, const wxString& address, const wxString& hostname, unsigned int port, const wxString& filter, const wxString& clientName) :

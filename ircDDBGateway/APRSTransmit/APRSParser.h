@@ -22,13 +22,13 @@
 
 #include <wx/string.h>
 
-enum APRSPacketType{
-	Unknown,	
-	Position,
-	WX,
-	Object,
-	Item,
-	Message
+enum APRSPacketType {
+	APT_Unknown,	
+	APT_Position,
+	APT_WX,
+	APT_Object,
+	APT_Item,
+	APT_Message
 };
 
 class CAPRSPacket{
@@ -36,17 +36,18 @@ public :
 	CAPRSPacket();
 	CAPRSPacket(APRSPacketType type, float latitude, float longitude, const wxString& infoText, const wxString raw);
 	
-	float& Longitude();
-	float& Latitude();
-	wxString& InfoText();
-	wxString& Raw();
+	float           Longitude();
+	float           Latitude();
+	wxString&       InfoText();
+	wxString&       Raw();
 	APRSPacketType& Type();
 
 private:
 	APRSPacketType m_type;
-	float m_latitude, m_longitude;
-	wxString m_infoText;
-	wxString m_raw;//raw string in TNC2 format, including '\n'	
+	float          m_latitude;
+	float          m_longitude;
+	wxString       m_infoText;
+	wxString       m_raw;//raw string in TNC2 format, including '\n'	
 };
 
 class CAPRSParser{

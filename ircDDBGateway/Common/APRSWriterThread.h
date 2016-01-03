@@ -45,13 +45,14 @@ public:
 
 private:
 	wxString               m_username;
-	wxString	       m_ssid;
+	wxString	           m_ssid;
 	CTCPReaderWriterClient m_socket;
 	CRingBuffer<char*>     m_queue;
 	bool                   m_exit;
 	bool                   m_connected;
 	ReadAPRSFrameCallback  m_APRSReadCallback;
-	wxString m_filter, m_clientName;
+	wxString               m_filter;
+	wxString               m_clientName;
 
 	bool connect();
 	unsigned int getAPRSPassword(wxString username) const;

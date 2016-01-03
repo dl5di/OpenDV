@@ -224,7 +224,6 @@ int CTCPReaderWriterClient::read(unsigned char* buffer, unsigned int length, uns
 
 int CTCPReaderWriterClient::readLine(wxString& line, unsigned int secs)
 {
-	wxASSERT(line != NULL)
 	//maybe there is a better way to do this like reading blocks, pushing them for later calls
 	//Nevermind, we'll read one char at a time for the time being.
 	unsigned char c;
@@ -265,8 +264,6 @@ bool CTCPReaderWriterClient::write(const unsigned char* buffer, unsigned int len
 
 bool CTCPReaderWriterClient::writeLine(const wxString& line)
 {
-	wxASSERT(line != NULL);
-
 	wxString lineCopy(line);
 	if(lineCopy.Length() > 0 && lineCopy.GetChar(lineCopy.Length() - 1) != '\n')
 		lineCopy.Append(wxT("\n"));

@@ -45,8 +45,12 @@
 #include <iostream>
 
 
-CAPRSPacket::CAPRSPacket()
-	: CAPRSPacket(Unknown, 0.0, 0.0, wxT(""), wxT(""))
+CAPRSPacket::CAPRSPacket() :
+m_type(APT_Unknown),
+m_latitude(0.0F),
+m_longitude(0.0F),
+m_infoText(),
+m_raw()
 {
 }
 CAPRSPacket::CAPRSPacket(APRSPacketType type, float latitude, float longitude, const wxString& infoText, const wxString raw) :
@@ -58,10 +62,10 @@ m_raw(raw)
 {
 }
 
-float& CAPRSPacket::Longitude(){
+float CAPRSPacket::Longitude(){
 	return m_latitude;
 }
-float& CAPRSPacket::Latitude(){
+float CAPRSPacket::Latitude(){
 	return m_longitude;
 }
 wxString& CAPRSPacket::InfoText(){
@@ -82,8 +86,6 @@ APRSPacketType& CAPRSPacket::Type(){
 ******************************************************************************/
 bool CAPRSParser::Parse(const wxString& aprsFrame, CAPRSPacket& packet)
 {
-	wxASSERT(packet != NULL);
-
 	wxString body = aprsFrame.AfterFirst(':');
 	if(body.IsEmpty()){
 		wxLogWarning(wxT("Unable to find body in APRS Frame : ") + aprsFrame);
@@ -94,7 +96,7 @@ bool CAPRSParser::Parse(const wxString& aprsFrame, CAPRSPacket& packet)
 	body = body.Mid(1);//strip the type char from the body
 
 	packet.Raw() = wxString(aprsFrame);
-	packet.Type() = Unknown;
+	packet.Type() = APT_Unknown;
 	
 	switch(packetType)
 	{
@@ -103,7 +105,7 @@ bool CAPRSParser::Parse(const wxString& aprsFrame, CAPRSPacket& packet)
 			//Packet is of MicE type
 			//Icom radios do not support MicE so ignore for now;
 			//TODO? Add converion to icom supported packet format ?
-			packet.Type() = Position;
+			packet.Type() = APT_Position;
 			return false;
 		case '!' :
 			if(body.GetChar(0) == '!'){
@@ -121,7 +123,7 @@ bool CAPRSParser::Parse(const wxString& aprsFrame, CAPRSPacket& packet)
 			 	*
 			 	* ! and / have messaging, / and @ have a prepended timestamp
 			 	*/
-				packet.Type() = Position;
+				packet.Type() = APT_Position;
 				if(packetType == '/' || packetType == '@')//With a prepended timestamp, jump over it. 
 					body = body.Mid(7);
 
@@ -145,14 +147,14 @@ bool CAPRSParser::Parse(const wxString& aprsFrame, CAPRSPacket& packet)
 			break;
 		case ':' :
 			//We have an APRS message
-			packet.Type() = Message;
+			packet.Type() = APT_Message;
 			//Nice future feature would be to add conversion to icom Android App messaging
 			return false;
 		case ';' :
 			//we have an object
 			if(body.Length() > 29){
 				//TODO : Parsing ...
-				packet.Type() = Object;
+				packet.Type() = APT_Object;
 				return true;
 			}
 			break;
@@ -160,7 +162,7 @@ bool CAPRSParser::Parse(const wxString& aprsFrame, CAPRSPacket& packet)
 			//this is an item
 			if(body.Length() > 19){
 				//TODO : Parsing ...
-				packet.Type() = Item;
+				packet.Type() = APT_Item;
 				return true;
 			}
 			break;
@@ -172,7 +174,7 @@ bool CAPRSParser::Parse(const wxString& aprsFrame, CAPRSPacket& packet)
 		case '#': /* Peet Bros U-II Weather Station */
 		case '*': /* Peet Bros U-I  Weather Station */
 		case '_': /* Weather report without position */
-			packet.Type() = WX;
+			packet.Type() = APT_WX;
 			return true; // AFAIK _ is supported, not sure for the others
 		case '{' ://custom
 			return false;
@@ -192,4 +194,3 @@ bool CAPRSParser::valid_sym_table_uncompressed(wxChar c)
 	return (c == '/' || c == '\\' || (c >= 0x41 && c <= 0x5A)
 		    || (c >= 0x30 && c <= 0x39)); /* [\/\\A-Z0-9] */
 }
-
