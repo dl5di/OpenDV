@@ -471,17 +471,14 @@ wxString CRepeaterDataSet::getReflector() const
 	if (isDDMode())
 		return wxEmptyString;
 
-	int n = m_reflector->GetCurrentSelection();
-	int c = m_channel->GetCurrentSelection();
-
-	if (n == 0)
+	if (m_reflector->GetCurrentSelection() == 0)
 		return wxEmptyString;
 
 	wxString reflector = m_reflector->GetStringSelection();
 
 	reflector.Append(wxT("        "));
 	reflector.Truncate(LONG_CALLSIGN_LENGTH - 1U);
-	reflector.Append(wxT('A') + c);
+	reflector.Append(wxT('A')).Append((char)m_channel->GetCurrentSelection());
 
 	return reflector;
 }

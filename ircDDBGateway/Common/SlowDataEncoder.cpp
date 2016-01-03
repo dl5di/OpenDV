@@ -348,7 +348,7 @@ void CSlowDataEncoder::setGPSData(const wxString& gpsData)
 		for(gpsDataPos = 0; gpsDataPos < m_gpsDataFullSize;){
 			unsigned int dataLen = gpsDataStrLen - strPos < 5U ? gpsDataStrLen - strPos : 5U;
 			m_gpsData[gpsDataPos++] = SLOW_DATA_TYPE_GPS | dataLen;
-			
+
 			for(unsigned int i = 0U; i < dataLen; i++){
 				m_gpsData[gpsDataPos++] = gpsData.GetChar(strPos++);
 			}
