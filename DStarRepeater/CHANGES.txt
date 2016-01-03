@@ -2081,3 +2081,4 @@ Add overflow warnings for the MMDVM.
 --------
 
 Fix the TX Delay setting for the MMDVM.
+New slow data encoder from F4FXL.
