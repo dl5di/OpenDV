@@ -55,7 +55,7 @@ const unsigned int LONG_CALLSIGN_LENGTH  = 8U;
 const unsigned int SHORT_CALLSIGN_LENGTH = 4U;
 
 const unsigned char SLOW_DATA_TYPE_MASK    = 0xF0U;
-const unsigned char SLOW_DATA_TYPE_GPS     = 0x30U;
+const unsigned char SLOW_DATA_TYPE_GPSDATA = 0x30U;
 const unsigned char SLOW_DATA_TYPE_TEXT    = 0x40U;
 const unsigned char SLOW_DATA_TYPE_HEADER  = 0x50U;
 const unsigned char SLOW_DATA_TYPE_SQUELCH = 0xC0U;
