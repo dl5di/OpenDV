@@ -73,6 +73,7 @@ m_clientName(clientName)
 
 CAPRSWriterThread::~CAPRSWriterThread()
 {
+	m_username.Clear();
 }
 
 bool CAPRSWriterThread::start()
