@@ -28,7 +28,8 @@ enum APRSPacketType {
 	APT_WX,
 	APT_Object,
 	APT_Item,
-	APT_Message
+	APT_Message,
+	APT_NMEA
 };
 
 class CAPRSPacket{
@@ -36,9 +37,14 @@ public :
 	CAPRSPacket();
 	CAPRSPacket(APRSPacketType type, float latitude, float longitude, const wxString& infoText, const wxString raw);
 	
-	float           Longitude();
-	float           Latitude();
-	wxString&       InfoText();
+	float&          Longitude();
+	float&          Latitude();
+	wxString&	SourceCall();
+	wxChar&           Symbol();
+	wxChar&           SymbolTable();
+	wxChar&		TypeChar();
+	wxString&	DestinationCall();
+	wxString&       Body();
 	wxString&       Raw();
 	APRSPacketType& Type();
 
@@ -46,8 +52,13 @@ private:
 	APRSPacketType m_type;
 	float          m_latitude;
 	float          m_longitude;
-	wxString       m_infoText;
-	wxString       m_raw;//raw string in TNC2 format, including '\n'	
+	wxChar	       m_symbol;
+	wxChar	       m_symbolTable;
+	wxChar           m_typeChar;
+	wxString       m_body;
+	wxString       m_raw;//raw string in TNC2 format, including '\r'
+	wxString       m_destCall;
+	wxString       m_srcCall;
 };
 
 class CAPRSParser{
@@ -57,8 +68,12 @@ public:
 private :
 	static bool valid_sym_table_compressed(wxChar c);
 	static bool valid_sym_table_uncompressed(wxChar c);
-	static bool ensureIsIcomCompatible(wxString& aprsFrame, const wxString& body, CAPRSPacket& packet);
+	static bool parse_aprs_mice(CAPRSPacket& packet);
+
+	static bool ensureIsIcomCompatible(CAPRSPacket& packet);
 	static bool stripFrame(wxString& aprsFrame);
+	static bool preprocessFrame(CAPRSPacket& packet, const wxString& aprsFrame);
+	static void convertToIcomCompatible(CAPRSPacket& packet);
 };
 
 #endif
