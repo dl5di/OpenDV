@@ -86,6 +86,7 @@ APRSPacketType& CAPRSPacket::Type(){
 bool CAPRSParser::Parse(const wxString& aprsFrame, CAPRSPacket& packet)
 {
 	wxString aprsFrameLocal(aprsFrame);
+	stripFrame(aprsFrameLocal);
 	wxString body = aprsFrameLocal.AfterFirst(':');
 	if(body.IsEmpty()){
 		wxLogWarning(wxT("Unable to find body in APRS Frame : ") + aprsFrameLocal);
@@ -191,8 +192,6 @@ bool CAPRSParser::Parse(const wxString& aprsFrame, CAPRSPacket& packet)
 * If no modifications were made true is returned, otherwise false */
 bool CAPRSParser::ensureIsIcomCompatible(wxString& aprsFrame, const wxString& body, CAPRSPacket& packet)
 {
-	const int maxAprsFrameLen = 64;
-
 	bool changeMade = false;
 	wxChar symbol = body.GetChar(18);
 	wxChar charAfterSymbol = body.GetChar(19);
@@ -204,7 +203,18 @@ bool CAPRSParser::ensureIsIcomCompatible(wxString& aprsFrame, const wxString& bo
 		changeMade = true;
 	}
 
-	//Trim the path, only keep from and to. Icom device do not parse too long frames.
+	changeMade = stripFrame(aprsFrame);
+
+	return changeMade;
+}
+
+bool CAPRSParser::stripFrame(wxString& aprsFrame)
+{
+	const int maxAprsFrameLen = 64;
+
+	bool changeMade = false;
+
+	//Trim the path, only keep from and to. Icom device do not support too long frames.
 	if(aprsFrame.Length() > maxAprsFrameLen){
 		wxString dataField = aprsFrame.AfterFirst(':');
 		wxString addressField = aprsFrame.BeforeFirst(':');
