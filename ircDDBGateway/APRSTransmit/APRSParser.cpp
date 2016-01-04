@@ -220,7 +220,7 @@ void CAPRSParser::convertToIcomCompatible(CAPRSPacket& packet)
 	float degrees = ::floor(::fabs(packet.Latitude()));
 	float minutes = (::fabs(packet.Latitude()) - degrees) *  60.0f;
 	char hemisphere = packet.Latitude() > 0.0f ? 'N' : 'S';
-	wxString latString = wxString::Format("%02.0f%05.2f%c", degrees, minutes, hemisphere);
+	wxString latString = wxString::Format(wxT("%02.0f%05.2f%c"), degrees, minutes, hemisphere);
 
 	degrees = ::floor(::fabs(packet.Longitude()));
 	minutes = (::fabs(packet.Longitude()) - degrees) * 60.0f;
@@ -329,25 +329,32 @@ bool CAPRSParser::parse_aprs_mice(CAPRSPacket& packet)
 	int i;
 	
 	//code below is just to map wxWidgets stuff to originaal APRX pointer based logic.
-	char body[packet.Body().length()];
-	::strcpy(body, packet.Body().c_str());
-	char * body_end = body + packet.Body().length();
+	char* body = new char[packet.Body().length()];
+	for (unsigned int i = 0U; i < packet.Body().length(); i++)
+		body[i] = packet.Body().GetChar(i);
+	char* body_end = body + packet.Body().length();
 
-	char d_start[packet.Body().length()];
-	::strcpy(d_start, packet.DestinationCall().c_str());
-	char * dstcall_end_or_ssid = d_start + packet.DestinationCall().length();
+	char* d_start = new char[packet.Body().length()];
+	for (unsigned int i = 0U; i < packet.Body().length(); i++)
+		d_start[i] = packet.DestinationCall().GetChar(i);
+	char* dstcall_end_or_ssid = d_start + packet.DestinationCall().length();
 
 	//Original APRX code follows.. Just a few minor changes
 
 	/* check packet length */
-	if (body_end - body < 8)
-		return 0;
+	if (body_end - body < 8) {
+		delete[] body;
+		delete[] d_start;
+		return false;
+	}
 	
 	/* check that the destination call exists and is of the right size for mic-e */
 	//d_start = pb->srccall_end+1;
 	if (dstcall_end_or_ssid - d_start != 6) {
 		//DEBUG_LOG(".. bad destcall length! ");
-		return 0; /* eh...? */
+		delete[] body;
+		delete[] d_start;
+		return false; /* eh...? */
 	}
 	
 	/* validate destination call:
@@ -360,7 +367,9 @@ bool CAPRSParser::parse_aprs_mice(CAPRSPacket& packet)
 			|| (d_start[i] >= 'A' && d_start[i] <= 'L')
 			|| (d_start[i] >= 'P' && d_start[i] <= 'Z'))) {
 			//DEBUG_LOG(".. bad destcall characters in posits 1..3");
-			return 0;
+			delete[] body;
+			delete[] d_start;
+			return false;
 		}
 	
 	for (i = 3; i < 6; i++)
@@ -368,7 +377,9 @@ bool CAPRSParser::parse_aprs_mice(CAPRSPacket& packet)
 			|| (d_start[i] == 'L')
 			|| (d_start[i] >= 'P' && d_start[i] <= 'Z'))) {
 			//DEBUG_LOG(".. bad destcall characters in posits 4..6");
-			return 0;
+			delete[] body;
+			delete[] d_start;
+			return false;
 		}
 	
 	//DEBUG_LOG("\tpassed dstcall format check");
@@ -381,36 +392,52 @@ bool CAPRSParser::parse_aprs_mice(CAPRSPacket& packet)
 	 */
 	if (body[0] < 0x26 || body[0] > 0x7f) {
 		//DEBUG_LOG("..bad infofield column 1");
-		return 0;
+		delete[] body;
+		delete[] d_start;
+		return false;
 	}
 	if (body[1] < 0x26 || body[1] > 0x61) {
 		//DEBUG_LOG("..bad infofield column 2");
-		return 0;
+		delete[] body;
+		delete[] d_start;
+		return false;
 	}
 	if (body[2] < 0x1c || body[2] > 0x7f) {
 		//DEBUG_LOG("..bad infofield column 3");
-		return 0;
+		delete[] body;
+		delete[] d_start;
+		return false;
 	}
 	if (body[3] < 0x1c || body[3] > 0x7f) {
 		//DEBUG_LOG("..bad infofield column 4");
-		return 0;
+		delete[] body;
+		delete[] d_start;
+		return false;
 	}
 	if (body[4] < 0x1c || body[4] > 0x7d) {
 		//DEBUG_LOG("..bad infofield column 5");
-		//return 0;
+		//delete[] body;
+		//delete[] d_start;
+		//return false;
 	}
 	if (body[5] < 0x1c || body[5] > 0x7f) {
 		//DEBUG_LOG("..bad infofield column 6");
-		return 0;
+		delete[] body;
+		delete[] d_start;
+		return false;
 	}
 	if ((body[6] < 0x21 || body[6] > 0x7b)
 		&& body[6] != 0x7d) {
 		//DEBUG_LOG("..bad infofield column 7");
-		return 0;
+		delete[] body;
+		delete[] d_start;
+		return false;
 	}
 	if (!valid_sym_table_uncompressed(body[7])) {
 		//DEBUG_LOG("..bad symbol table entry on column 8");
-		return 0;
+		delete[] body;
+		delete[] d_start;
+		return false;
 	}
 	
 	//DEBUG_LOG("\tpassed info format check");
@@ -445,7 +472,9 @@ bool CAPRSParser::parse_aprs_mice(CAPRSPacket& packet)
 	if (dstcall[2] == '_') { dstcall[2] = '3'; posambiguity = 4; }
 	if (dstcall[1] == '_' || dstcall[0] == '_') {
 		//DEBUG_LOG("..bad pos-ambiguity on destcall");
-		return 0;
+		delete[] body;
+		delete[] d_start;
+		return false;
 	} // cannot use posamb here
 	
 	// convert to degrees, minutes and decimal degrees,
@@ -454,7 +483,9 @@ bool CAPRSParser::parse_aprs_mice(CAPRSPacket& packet)
 	if (sscanf(dstcall, "%2u%2u%2u",
 	    &lat_deg, &lat_min, &lat_min_frag) != 3) {
 		//DEBUG_LOG("\tsscanf failed");
-		return 0;
+		delete[] body;
+		delete[] d_start;
+		return false;
 	}
 	lat = (float)lat_deg + (float)lat_min / 60.0 + (float)lat_min_frag / 6000.0;
 	
@@ -508,7 +539,9 @@ bool CAPRSParser::parse_aprs_mice(CAPRSPacket& packet)
 		break;
 	default:
 		//DEBUG_LOG(".. posambiguity code BUG!");
-		return 0;
+		delete[] body;
+		delete[] d_start;
+		return false;
 	}
 	
 	/* check the longitude E/W sign */
@@ -536,6 +569,9 @@ bool CAPRSParser::parse_aprs_mice(CAPRSPacket& packet)
 	packet.Symbol() = sym_code;
 	packet.SymbolTable() = sym_table;
 	packet.Body() = packet.Body().Mid(9);//if MicE has additional info like heading it'll be longer than 9, ignore for now
+
+	delete[] body;
+	delete[] d_start;
 
 	return true;
 }
