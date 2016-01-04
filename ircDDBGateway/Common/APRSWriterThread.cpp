@@ -73,7 +73,6 @@ m_clientName(clientName)
 
 CAPRSWriterThread::~CAPRSWriterThread()
 {
-	delete[] m_username;
 }
 
 bool CAPRSWriterThread::start()
