@@ -329,7 +329,6 @@ bool CAPRSParser::parse_aprs_mice(CAPRSPacket& packet)
 	int i;
 	
 	//code below is just to map wxWidgets stuff to originaal APRX pointer based logic.
-<<<<<<< dca6585a30ef2ab4929e2de01d7cd1e656be1403
 	char* body = new char[packet.Body().length()];
 	for (unsigned int i = 0U; i < packet.Body().length(); i++)
 		body[i] = packet.Body().GetChar(i);
@@ -339,15 +338,7 @@ bool CAPRSParser::parse_aprs_mice(CAPRSPacket& packet)
 	for (unsigned int i = 0U; i < packet.Body().length(); i++)
 		d_start[i] = packet.DestinationCall().GetChar(i);
 	char* dstcall_end_or_ssid = d_start + packet.DestinationCall().length();
-=======
-	char body[packet.Body().length()];
-	::strcpy(body, packet.Body().mb_str().data());
-	char * body_end = body + packet.Body().length();
 
-	char d_start[packet.Body().length()];
-	::strcpy(d_start, packet.DestinationCall().mb_str().data());
-	char * dstcall_end_or_ssid = d_start + packet.DestinationCall().length();
->>>>>>> Some changes to make it build with wxWidget 2.8
 
 	//Original APRX code follows.. Just a few minor changes
 
