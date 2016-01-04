@@ -220,7 +220,7 @@ void CAPRSParser::convertToIcomCompatible(CAPRSPacket& packet)
 	float degrees = ::floor(::fabs(packet.Latitude()));
 	float minutes = (::fabs(packet.Latitude()) - degrees) *  60.0f;
 	char hemisphere = packet.Latitude() > 0.0f ? 'N' : 'S';
-	wxString latString = wxString::Format("%02.0f%05.2f%c", degrees, minutes, hemisphere);
+	wxString latString = wxString::Format(wxT("%02.0f%05.2f%c"), degrees, minutes, hemisphere);
 
 	degrees = ::floor(::fabs(packet.Longitude()));
 	minutes = (::fabs(packet.Longitude()) - degrees) * 60.0f;
