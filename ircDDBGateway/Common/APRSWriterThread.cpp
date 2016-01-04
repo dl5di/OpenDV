@@ -73,7 +73,6 @@ m_clientName(clientName)
 
 CAPRSWriterThread::~CAPRSWriterThread()
 {
-	delete[] m_username;
 }
 
 bool CAPRSWriterThread::start()
@@ -220,7 +219,7 @@ bool CAPRSWriterThread::connect()
 	wxString connectString = wxString::Format(wxT("user %s-%s pass %u vers %s%s\n"), m_username.c_str(), m_ssid.c_str(), password,
 							(m_clientName.Length() ? m_clientName : wxT("ircDDBGateway")).c_str(),
 							filter.c_str());
-	wxLogMessage(wxT("Connect String : ") + connectString);
+	//wxLogMessage(wxT("Connect String : ") + connectString);
 	ret = m_socket.writeLine(connectString);
 	if (!ret) {
 		m_socket.close();
@@ -254,8 +253,8 @@ unsigned int CAPRSWriterThread::getAPRSPassword(wxString callsign) const
 	wxUint16 hash = 0x73E2U;
 
 	for (unsigned int i = 0U; i < len; i += 2U) {
-		hash ^= callsign.GetChar(i) << 8;
-		hash ^= callsign.GetChar(i + 1);
+		hash ^= (char)callsign.GetChar(i) << 8;
+		hash ^= (char)callsign.GetChar(i + 1);
 	}
 
 	return hash & 0x7FFFU;

@@ -335,7 +335,7 @@ void CSlowDataEncoder::setGPSData(const wxString& gpsData)
 	m_gpsDataSize = 0U;
 	m_gpsPtr = 0U;
 
-	if(gpsData && (gpsDataStrLen = gpsData.length()) > 0){
+	if((gpsDataStrLen = gpsData.length()) > 0){
 		unsigned int gpsDataPos;
 		unsigned int strPos = 0;
 		m_gpsDataSize = 1U + ((gpsDataStrLen - 1U) / 6U);//to make room for the type bytes

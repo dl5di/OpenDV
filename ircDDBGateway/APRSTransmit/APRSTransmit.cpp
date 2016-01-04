@@ -40,13 +40,14 @@ CAPRSTransmit::~CAPRSTransmit()
 
 bool CAPRSTransmit::run()
 {
-	wxString textWithCRC(m_text);
 	//First see if the packet is Icom supported...
 	CAPRSPacket aprsPacket;
-	if(!CAPRSParser::Parse(textWithCRC, aprsPacket)){
-		wxLogWarning(wxT("Unsupported APRS Format, ignoring => ") + textWithCRC.Trim(true));
+	if(!CAPRSParser::Parse(m_text, aprsPacket)){
+		wxLogWarning(wxT("Unsupported APRS Format, ignoring => ") + m_text.Trim(true));
 		return false;
 	}
+
+	wxString textWithCRC(aprsPacket.Raw());
 	wxLogMessage(wxT("Supported APRS Format => ") + textWithCRC.Trim(true));
 	//add nececessary stuff to text, but keep it the original
 	textWithCRC.Replace(wxT("\n"), wxEmptyString);
