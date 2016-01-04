@@ -31,7 +31,7 @@
 class CAPRSTransmitAppD {
 
 public:
-	CAPRSTransmitAppD(const wxString& repeater, const wxString& aprsHost, unsigned int aprsPort, const wxString& aprsFilter);
+	CAPRSTransmitAppD(const wxString& repeater, const wxString& aprsHost, unsigned int aprsPort, const wxString& aprsFilter, bool daemon);
 	~CAPRSTransmitAppD();
 
 	CRingBuffer<wxString*>  * m_aprsFramesQueue;
@@ -46,6 +46,7 @@ private:
 	CAPRSWriterThread *      m_aprsThread;
 	bool m_run;
 	wxSingleInstanceChecker * m_checker;
+	bool m_daemon;
 
 	void cleanup();
 };

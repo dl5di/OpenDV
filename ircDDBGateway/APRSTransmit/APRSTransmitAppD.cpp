@@ -26,6 +26,10 @@
 #include <wx/cmdline.h>
 #include <signal.h>
 
+#if defined(__WINDOWS__)
+#include <Windows.h>
+#endif
+
 const wxChar* REPEATER_PARAM   = wxT("Repeater");
 const wxChar* APRS_HOST        = wxT("host");
 const wxChar* APRS_PORT        = wxT("port");
@@ -99,6 +103,13 @@ int main(int argc, char** argv)
 
 	bool daemon = parser.Found(DAEMON_SWITCH);
 
+#if defined(__WINDOWS__)
+	m_aprsTransmit = new CAPRSTransmitAppD(repeater, aprsHost, aprsPort, aprsFilter, daemon);
+	if (!m_aprsTransmit->init()) {
+		::wxUninitialize();
+		return 1;
+	}
+#else
 	if (daemon) {
 		pid_t pid = ::fork();
 
@@ -126,7 +137,7 @@ int main(int argc, char** argv)
 		::fclose(fp);
 	}
 
-	m_aprsTransmit = new CAPRSTransmitAppD(repeater, aprsHost, aprsPort, aprsFilter);
+	m_aprsTransmit = new CAPRSTransmitAppD(repeater, aprsHost, aprsPort, aprsFilter, daemon);
 	if (!m_aprsTransmit->init()) {
 		::wxUninitialize();
 		return 1;
@@ -134,17 +145,18 @@ int main(int argc, char** argv)
 
 	::signal(SIGUSR1, handler);
 
-	m_aprsTransmit->run();
 
-	delete m_aprsTransmit;
 	::unlink(pidFileName.mb_str());
+#endif
+	m_aprsTransmit->run();
+	delete m_aprsTransmit;
 	::wxUninitialize();
 	return 0;
 }
 
 
 
-CAPRSTransmitAppD::CAPRSTransmitAppD(const wxString& repeater, const wxString& aprsHost, unsigned int aprsPort, const wxString& aprsFilter) :
+CAPRSTransmitAppD::CAPRSTransmitAppD(const wxString& repeater, const wxString& aprsHost, unsigned int aprsPort, const wxString& aprsFilter, bool daemon) :
 m_aprsFramesQueue(NULL),
 m_repeater(repeater),
 m_aprsHost(aprsHost),
@@ -152,7 +164,8 @@ m_aprsFilter(aprsFilter),
 m_aprsPort(aprsPort),
 m_aprsThread(NULL),
 m_run(false),
-m_checker(NULL)
+m_checker(NULL),
+m_daemon(daemon)
 {
 }
 
@@ -164,15 +177,33 @@ CAPRSTransmitAppD::~CAPRSTransmitAppD()
 
 bool CAPRSTransmitAppD::init()
 {
+#if defined(__WINDOWS__)
+	char tempPath[32766];
+	::GetTempPath(32766, tempPath);
+	m_checker = new wxSingleInstanceChecker(wxT("aprstransmit"), wxString(tempPath));
+#else
 	m_checker = new wxSingleInstanceChecker(wxT("aprstransmit"), wxT("/tmp"));
+#endif
 	bool ret = m_checker->IsAnotherRunning();
 	if (ret) {
 		wxLogError(wxT("Another copy of APRSTransmit is running, exiting"));
 		return false;
 	}
 
+#if defined(__WINDOWS__)
 	wxLog* logger = new wxLogStream(&std::cout);
 	wxLog::SetActiveTarget(logger);
+	if(m_daemon)
+		wxLogMessage(wxT("Daemon not supported under Windows"));
+	m_daemon = false;
+#else
+	if(!m_daemon){
+		wxLog* logger = new wxLogStream(&std::cout);
+		wxLog::SetActiveTarget(logger);
+	} else {
+		new wxLogNull;
+	}
+#endif
 
 	return true;
 }
