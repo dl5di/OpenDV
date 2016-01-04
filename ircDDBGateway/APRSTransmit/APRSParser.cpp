@@ -44,7 +44,10 @@
 #include <wx/log.h> 
 #include <iostream>
 
+<<<<<<< 8c1fbb227ff26487cd97a28d0cf61ee302e930b9
 
+=======
+>>>>>>> merged with G4KLX changes
 CAPRSPacket::CAPRSPacket() :
 m_type(APT_Unknown),
 m_latitude(0.0F),
@@ -95,7 +98,11 @@ bool CAPRSParser::Parse(const wxString& aprsFrame, CAPRSPacket& packet)
 	wxChar packetType = body.GetChar(0);//First char contains the packet type
 	body = body.Mid(1);//strip the type char from the body
 
+<<<<<<< 8c1fbb227ff26487cd97a28d0cf61ee302e930b9
 	packet.Raw() = wxString(aprsFrame);
+=======
+	packet.Raw() = wxString(aprsFrameLocal);
+>>>>>>> merged with G4KLX changes
 	packet.Type() = APT_Unknown;
 	
 	switch(packetType)
