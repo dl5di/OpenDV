@@ -44,10 +44,6 @@
 #include <wx/log.h> 
 #include <iostream>
 
-<<<<<<< 8c1fbb227ff26487cd97a28d0cf61ee302e930b9
-
-=======
->>>>>>> merged with G4KLX changes
 CAPRSPacket::CAPRSPacket() :
 m_type(APT_Unknown),
 m_latitude(0.0F),
@@ -89,20 +85,17 @@ APRSPacketType& CAPRSPacket::Type(){
 ******************************************************************************/
 bool CAPRSParser::Parse(const wxString& aprsFrame, CAPRSPacket& packet)
 {
-	wxString body = aprsFrame.AfterFirst(':');
+	wxString aprsFrameLocal(aprsFrame);
+	wxString body = aprsFrameLocal.AfterFirst(':');
 	if(body.IsEmpty()){
-		wxLogWarning(wxT("Unable to find body in APRS Frame : ") + aprsFrame);
+		wxLogWarning(wxT("Unable to find body in APRS Frame : ") + aprsFrameLocal);
 		return false;
 	}
 
 	wxChar packetType = body.GetChar(0);//First char contains the packet type
 	body = body.Mid(1);//strip the type char from the body
 
-<<<<<<< 8c1fbb227ff26487cd97a28d0cf61ee302e930b9
-	packet.Raw() = wxString(aprsFrame);
-=======
 	packet.Raw() = wxString(aprsFrameLocal);
->>>>>>> merged with G4KLX changes
 	packet.Type() = APT_Unknown;
 	
 	switch(packetType)
@@ -142,7 +135,10 @@ bool CAPRSParser::Parse(const wxString& aprsFrame, CAPRSPacket& packet)
 				}
 				else if(posChar >= '0' && posChar <= '9' //Normal uncompressed format
 					&& body.Length() >=19){//we need at least 19 chars for it to be valid
-					return true;//leave parsing for later parse_aprs_uncompressed(pb, body, body_end)
+					
+					if(ensureIsIcomCompatible(aprsFrameLocal, body, packet))
+						return Parse(aprsFrameLocal, packet);
+					return true;
 				}
 				break;
 			}
@@ -188,6 +184,42 @@ bool CAPRSParser::Parse(const wxString& aprsFrame, CAPRSPacket& packet)
 	}
 
 	return false;
+}
+
+/* Stupidly icom always expects a / after the symbol char, even if no data extension is present -_-
+* This function makes sure the frame is icom compatible. In case the frame is invalid, A COMPLETE aprsFrame is built.
+* If no modifications were made true is returned, otherwise false */
+bool CAPRSParser::ensureIsIcomCompatible(wxString& aprsFrame, const wxString& body, CAPRSPacket& packet)
+{
+	const int maxAprsFrameLen = 64;
+
+	bool changeMade = false;
+	wxChar symbol = body.GetChar(18);
+	wxChar charAfterSymbol = body.GetChar(19);
+	wxString newBody(body);
+	if(charAfterSymbol != '/'
+	  && symbol != '_'){//do not do this for weather packets !
+		newBody = body.Mid(0, 19) + wxT("/") + body.Mid(19);
+		aprsFrame.Replace(body, newBody);
+		changeMade = true;
+	}
+
+	//Trim the path, only keep from and to. Icom device do not parse too long frames.
+	if(aprsFrame.Length() > maxAprsFrameLen){
+		wxString dataField = aprsFrame.AfterFirst(':');
+		wxString addressField = aprsFrame.BeforeFirst(':');
+		addressField = addressField.BeforeFirst(',');
+		aprsFrame = addressField + wxT(":") + dataField;
+		changeMade = true;
+	}
+
+	//Still too long ?
+	if(aprsFrame.Length() > maxAprsFrameLen){
+		aprsFrame = aprsFrame.Left(maxAprsFrameLen);
+		changeMade = true;
+	}
+
+	return changeMade;
 }
 
 bool CAPRSParser::valid_sym_table_compressed(wxChar c)

@@ -57,6 +57,7 @@ public:
 private :
 	static bool valid_sym_table_compressed(wxChar c);
 	static bool valid_sym_table_uncompressed(wxChar c);
+	static bool ensureIsIcomCompatible(wxString& aprsFrame, const wxString& body, CAPRSPacket& packet);
 };
 
 #endif
