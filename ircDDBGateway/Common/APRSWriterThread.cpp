@@ -220,7 +220,7 @@ bool CAPRSWriterThread::connect()
 	wxString connectString = wxString::Format(wxT("user %s-%s pass %u vers %s%s\n"), m_username.c_str(), m_ssid.c_str(), password,
 							(m_clientName.Length() ? m_clientName : wxT("ircDDBGateway")).c_str(),
 							filter.c_str());
-	wxLogMessage(wxT("Connect String : ") + connectString);
+	//wxLogMessage(wxT("Connect String : ") + connectString);
 	ret = m_socket.writeLine(connectString);
 	if (!ret) {
 		m_socket.close();
