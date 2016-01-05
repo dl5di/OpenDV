@@ -227,14 +227,26 @@ void CAPRSParser::convertToIcomCompatible(CAPRSPacket& packet)
 	hemisphere = packet.Longitude() > 0.0f ? 'E' : 'W';
 	wxString longString = wxString::Format(wxT("%03.0f%05.2f%c"), degrees, minutes, hemisphere);
 
-	packet.Raw() = wxString::Format(wxT("%s>%s:=%s%c%s%c/%s"),
-						packet.SourceCall().mb_str(),
-						packet.DestinationCall().mb_str(),
-						latString.mb_str(),
+	/*packet.Raw() = wxString::Format(wxT("%s>%s:=%s%c%s%c/%s"),
+						packet.SourceCall().mb_str().data(),
+						packet.DestinationCall().mb_str().data(),
+						latString.mb_str().data(),
 						(char)packet.SymbolTable(),
-						longString.mb_str(),
+						longString.mb_str().data(),
 						(char)packet.Symbol(),
-						packet.Body().mb_str());
+						packet.Body().mb_str().data());*/
+
+	//above code behaved in different manner under wx2.8 let's do it the brutal way !
+	packet.Raw() = packet.SourceCall()
+			+ wxT(">")
+			+ packet.DestinationCall()
+			+ wxT(":=")
+			+ latString
+			+ packet.SymbolTable()
+			+ longString
+			+ packet.Symbol()
+			+ wxT("/")
+			+ packet.Body();
 }
 
 //configures the packet's raw, source call and dest call
@@ -292,7 +304,7 @@ bool CAPRSParser::ensureIsIcomCompatible(CAPRSPacket& packet)
 
 bool CAPRSParser::stripFrame(wxString& aprsFrame)
 {
-	const int maxAprsFrameLen = 64;
+	const unsigned int maxAprsFrameLen = 64U;
 
 	bool changeMade = false;
 
@@ -338,6 +350,7 @@ bool CAPRSParser::parse_aprs_mice(CAPRSPacket& packet)
 	for (unsigned int i = 0U; i < packet.Body().length(); i++)
 		d_start[i] = packet.DestinationCall().GetChar(i);
 	char* dstcall_end_or_ssid = d_start + packet.DestinationCall().length();
+
 
 	//Original APRX code follows.. Just a few minor changes
 
