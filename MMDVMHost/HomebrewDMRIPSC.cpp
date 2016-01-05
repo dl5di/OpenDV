@@ -276,7 +276,7 @@ bool CHomebrewDMRIPSC::write(const CDMRData& data)
 
 	data.getData(buffer + 20U);
 
-	CUtils::dump(1U, "Homebrew out", buffer, HOMEBREW_DATA_PACKET_LENGTH);
+	CUtils::dump(1U, "IPSC transmitted", buffer, HOMEBREW_DATA_PACKET_LENGTH);
 
 	return m_socket.write(buffer, HOMEBREW_DATA_PACKET_LENGTH, m_address, m_port);
 }
@@ -297,9 +297,12 @@ void CHomebrewDMRIPSC::clock(unsigned int ms)
 {
 	in_addr address;
 	unsigned int port;
-	unsigned int length = m_socket.read(m_buffer, BUFFER_LENGTH, address, port);
+	int length = m_socket.read(m_buffer, BUFFER_LENGTH, address, port);
 
-	if (length > 0U && m_address.s_addr == address.s_addr && m_port == port) {
+	if (length > 0)
+		CUtils::dump(1U, "IPSC received", m_buffer, length);
+
+	if (length > 0 && m_address.s_addr == address.s_addr && m_port == port) {
 		if (::memcmp(m_buffer, "DMRD", 4U) == 0) {
 			unsigned char len = length;
 			m_rxData.addData(&len, 1U);
@@ -442,4 +445,3 @@ bool CHomebrewDMRIPSC::writePing()
 
 	return m_socket.write(buffer, 11U, m_address, m_port);
 }
-
