@@ -34,8 +34,8 @@ m_queue(20U),
 m_exit(false),
 m_connected(false),
 m_APRSReadCallback(NULL),
-m_filter(wxT("ircDDBGateway")),
-m_clientName()
+m_filter(wxT("")),
+m_clientName(wxT("ircDDBGateway"))
 {
 	wxASSERT(!callsign.IsEmpty());
 	wxASSERT(!hostname.IsEmpty());
