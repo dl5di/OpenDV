@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2015 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2015,2016 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -16,22 +16,32 @@
  *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#ifndef	Hamming_H
-#define	Hamming_H
+#if !defined(SHORTLC_H)
+#define	SHORTLC_H
 
-class CHamming {
+class CShortLC
+{
 public:
-	static void encode15113(bool* d);
-	static bool decode15113(bool* d);
+	CShortLC();
+	~CShortLC();
 
-	static void encode1393(bool* d);
-	static bool decode1393(bool* d);
+	bool decode(const unsigned char* in, unsigned char* out);
 
-	static void encode16114(bool* d);
-	static bool decode16114(bool* d);
+	void encode(const unsigned char* in, unsigned char* out);
 
-	static void encode17123(bool* d);
-	static bool decode17123(bool* d);
+private:
+	bool* m_rawData;
+	bool* m_deInterData;
+
+	void decodeExtractBinary(const unsigned char* in);
+	bool decodeErrorCheck();
+	void decodeDeInterleave();
+	void decodeExtractData(unsigned char* data) const;
+
+	void encodeExtractData(const unsigned char* in) const;
+	void encodeInterleave();
+	void encodeErrorCheck();
+	void encodeExtractBinary(unsigned char* data);
 };
 
 #endif

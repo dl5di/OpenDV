@@ -39,7 +39,7 @@ CDMRControl::~CDMRControl()
 bool CDMRControl::processWakeup(const unsigned char* data)
 {
 	// Wakeups always come in on slot 1
-	if (data[0U] != TAG_DATA || data[1U] != (DMR_SYNC_DATA | DT_CSBK))
+	if (data[0U] != TAG_DATA || data[1U] != (DMR_IDLE_RX | DMR_SYNC_DATA | DT_CSBK))
 		return false;
 
 	CCSBK csbk(data + 2U);

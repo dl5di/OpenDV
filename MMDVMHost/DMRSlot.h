@@ -53,14 +53,17 @@ public:
 	static void init(unsigned int colorCode, CModem* modem, CHomebrewDMRIPSC* network);
 
 private:
-	unsigned int               m_slotNo;
-	CRingBuffer<unsigned char> m_txQueue;
-	SLOT_STATE                 m_state;
-	CEmbeddedLC                m_embeddedLC;
-	CLC*                       m_lc;
-	unsigned char              m_n;
-	CTimer                     m_networkWatchdog;
-	CTimer                     m_lateEntryWatchdog;
+	unsigned int                 m_slotNo;
+	CRingBuffer<unsigned char>** m_txQueue;
+	SLOT_STATE                   m_state;
+	CEmbeddedLC                  m_embeddedLC;
+	CLC*                         m_lc;
+	unsigned char                m_n;
+	CTimer**                     m_playoutTimer;
+	CTimer                       m_networkWatchdog;
+	CTimer                       m_lateEntryWatchdog;
+	unsigned int                 m_writeQueue;
+	unsigned int                 m_readQueue;
 
 	static unsigned int        m_colorCode;
 	static CModem*             m_modem;

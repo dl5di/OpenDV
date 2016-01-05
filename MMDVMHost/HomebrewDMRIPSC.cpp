@@ -173,10 +173,13 @@ bool CHomebrewDMRIPSC::read(CDMRData& data)
 		data.setDataType(DMRDT_RATE34_DATA);
 	} else if (slotType == 0x21U) {			// Voice Header
 		data.setData(m_buffer + 20U);
-		data.setDataType(DMRDT_VOICE_HEADER);
+		data.setDataType(DMRDT_VOICE_LC_HEADER);
 	} else if (slotType == 0x22U) {			// Terminator
 		data.setData(m_buffer + 20U);
 		data.setDataType(DMRDT_TERMINATOR);
+	} else if (slotType == 0x20U) {			// PI Header
+		data.setData(m_buffer + 20U);
+		data.setDataType(DMRDT_VOICE_PI_HEADER);
 	} else if (slotType == 0x10U) {			// Voice Sync
 		data.setData(m_buffer + 20U);
 		data.setDataType(DMRDT_VOICE_SYNC);
@@ -244,10 +247,12 @@ bool CHomebrewDMRIPSC::write(const CDMRData& data)
 	unsigned int slotIndex = slotNo - 1U;
 
 	DMR_DATA_TYPE dataType = data.getDataType();
-	if (dataType == DMRDT_VOICE_HEADER) {
+	if (dataType == DMRDT_VOICE_LC_HEADER) {
 		m_streamId[slotIndex] = ::rand() + 1U;
 		m_seqNo[slotIndex]    = 0U;
 		buffer[15U] |= 0x21U;
+	} else if (dataType == DMRDT_VOICE_PI_HEADER) {
+		buffer[15U] |= 0x20U;
 	} else if (dataType == DMRDT_TERMINATOR) {
 		buffer[15U] |= 0x22U;
 	} else if (dataType == DMRDT_CSBK) {
@@ -425,11 +430,11 @@ bool CHomebrewDMRIPSC::writeConfig()
 	::memcpy(buffer + 0U, "RPTC", 4U);
 	::memcpy(buffer + 4U, m_id, 4U);
 
-	::sprintf(buffer + 8U, "%-8.8s%09u%09u%02u%02u%02.8f%03.8f%03d%-20.20s%-20.20s%-124.124s%-40.40s%-40.40s", m_callsign.c_str(),
+	::sprintf(buffer + 8U, "%-8.8s%09u%09u%02u%02u%-08f%-09f%03d%-20.20s%-20.20s%-124.124s%-40.40s%-40.40s", m_callsign.c_str(),
 		m_rxFrequency, m_txFrequency, m_power, m_colorCode, m_latitude, m_longitude, m_height, m_location.c_str(),
 		m_description.c_str(), m_url.c_str(), m_version, m_version);
 
-	bool ret = m_socket.write((unsigned char*)buffer, 300U, m_address, m_port);
+	bool ret = m_socket.write((unsigned char*)buffer, 302U, m_address, m_port);
 
 	delete[] buffer;
 

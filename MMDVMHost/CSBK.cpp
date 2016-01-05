@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2015 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2015,2016 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -50,9 +50,6 @@ m_valid(false)
 		m_srcId = data[7U] << 16 | data[8U] << 8 | data[9U]; 
 		CUtils::dump("Download activate CSBK", data, 12U);
 	} else {
-		m_bsId  = data[4U] << 16 | data[5U] << 8 | data[6U];
-		m_srcId = data[7U] << 16 | data[8U] << 8 | data[9U]; 
-		LogMessage("CSBKO=%u, BS=%u, src=%u", m_CSBKO, m_bsId, m_srcId);
 		CUtils::dump("Unhandled CSBK type", data, 12U);
 	}
 }

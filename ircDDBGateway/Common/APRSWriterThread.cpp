@@ -27,32 +27,53 @@ const unsigned int APRS_TIMEOUT = 10U;
 
 CAPRSWriterThread::CAPRSWriterThread(const wxString& callsign, const wxString& address, const wxString& hostname, unsigned int port) :
 wxThread(wxTHREAD_JOINABLE),
-m_username(NULL),
+m_username(callsign),
+m_ssid(callsign),
 m_socket(hostname, port, address),
 m_queue(20U),
 m_exit(false),
-m_connected(false)
+m_connected(false),
+m_APRSReadCallback(NULL),
+m_filter(wxT("")),
+m_clientName(wxT("ircDDBGateway"))
 {
 	wxASSERT(!callsign.IsEmpty());
 	wxASSERT(!hostname.IsEmpty());
 	wxASSERT(port > 0U);
 
-	m_username = new char[LONG_CALLSIGN_LENGTH + 1U];
+	m_username.SetChar(LONG_CALLSIGN_LENGTH - 1U, wxT(' '));
+	m_username.Trim();
+	m_username.MakeUpper();
 
-	wxString username = callsign;
-	username.SetChar(LONG_CALLSIGN_LENGTH - 1U, wxT(' '));
-	username.Trim();
-	username.MakeUpper();
+	m_ssid = m_ssid.SubString(LONG_CALLSIGN_LENGTH - 1U, 1);
+}
 
-	unsigned int n = 0U;
-	for (unsigned int i = 0U; i < LONG_CALLSIGN_LENGTH && i < username.Len(); i++, n++)
-		m_username[n] = username.GetChar(i);
-	m_username[n] = 0x00;
+CAPRSWriterThread::CAPRSWriterThread(const wxString& callsign, const wxString& address, const wxString& hostname, unsigned int port, const wxString& filter, const wxString& clientName) :
+wxThread(wxTHREAD_JOINABLE),
+m_username(callsign),
+m_ssid(callsign),
+m_socket(hostname, port, address),
+m_queue(20U),
+m_exit(false),
+m_connected(false),
+m_APRSReadCallback(NULL),
+m_filter(filter),
+m_clientName(clientName)
+{
+	wxASSERT(!callsign.IsEmpty());
+	wxASSERT(!hostname.IsEmpty());
+	wxASSERT(port > 0U);
+
+	m_username.SetChar(LONG_CALLSIGN_LENGTH - 1U, wxT(' '));
+	m_username.Trim();
+	m_username.MakeUpper();
+
+	m_ssid = m_ssid.SubString(LONG_CALLSIGN_LENGTH - 1U, 1);
 }
 
 CAPRSWriterThread::~CAPRSWriterThread()
 {
-	delete[] m_username;
+	m_username.Clear();
 }
 
 bool CAPRSWriterThread::start()
@@ -74,41 +95,52 @@ void* CAPRSWriterThread::Entry()
 			if (!m_connected) {
 				m_connected = connect();
 
-				if (!m_connected)
+				if (!m_connected){
 					wxLogError(wxT("Reconnect attempt to the APRS server has failed"));
+					Sleep(10000UL);		// 10 secs
+				}
 			}
 
-			if (m_connected && !m_queue.isEmpty()) {
-				char* p = m_queue.getData();
+			if (m_connected) {
+				if(!m_queue.isEmpty()){
+					char* p = m_queue.getData();
 
-				wxString text(p, wxConvLocal);
-				wxLogMessage(wxT("APRS ==> %s"), text.c_str());
+					wxString text(p, wxConvLocal);
+					wxLogMessage(wxT("APRS ==> %s"), text.c_str());
 
-				::strcat(p, "\r\n");
+					::strcat(p, "\r\n");
 
-				bool ret = m_socket.write((unsigned char*)p, ::strlen(p));
-				if (!ret) {
-					m_connected = false;
-					m_socket.close();
-					wxLogError(wxT("Connection to the APRS thread has failed"));
-				} else {
-					unsigned char buffer[200U];
-					int length = m_socket.read(buffer, 200U, APRS_TIMEOUT);
+					bool ret = m_socket.write((unsigned char*)p, ::strlen(p));
+					if (!ret) {
+						m_connected = false;
+						m_socket.close();
+						wxLogError(wxT("Connection to the APRS thread has failed"));
+					}
 
-					if (length == 0)
-						wxLogWarning(wxT("No response from the APRS server after %u seconds"), APRS_TIMEOUT);
+					delete[] p;
+				}
+				{
+					wxString line;
+					int length = m_socket.readLine(line, APRS_TIMEOUT);
+
+					/*if (length == 0)
+						wxLogWarning(wxT("No response from the APRS server after %u seconds"), APRS_TIMEOUT);*/
 
 					if (length < 0) {
 						m_connected = false;
 						m_socket.close();
 						wxLogError(wxT("Error when reading from the APRS server"));
 					}
+
+					if(length > 0 && line.GetChar(0) != '#'//check if we have something and if that something is an APRS frame
+					    && m_APRSReadCallback != NULL)//do we have someone wanting an APRS Frame?
+					{	
+						//wxLogMessage(wxT("Received APRS Frame : ") + line);
+						m_APRSReadCallback(wxString(line));
+					}
 				}
 
-				delete[] p;
 			}
-
-			Sleep(10000UL);		// 10 secs
 		}
 
 		if (m_connected)
@@ -130,6 +162,11 @@ void* CAPRSWriterThread::Entry()
 	wxLogMessage(wxT("Stopping the APRS Writer thread"));
 
 	return NULL;
+}
+
+void CAPRSWriterThread::setReadAPRSCallback(ReadAPRSFrameCallback cb)
+{
+	m_APRSReadCallback = cb;
 }
 
 void CAPRSWriterThread::write(const char* data)
@@ -167,16 +204,31 @@ bool CAPRSWriterThread::connect()
 	if (!ret)
 		return false;
 
-	unsigned char buffer[200U];
-	::sprintf((char*)buffer, "user %s-G pass %u vers ircDDBGateway\n", m_username, password);
+	//wait for lgin banner
+	int length;
+	wxString serverResponse(wxT(""));
+	length = m_socket.readLine(serverResponse, APRS_TIMEOUT);
+	if (length == 0) {
+		wxLogError(wxT("No reply from the APRS server after %u seconds"), APRS_TIMEOUT);
+		m_socket.close();
+		return false;
+	}
+	wxLogMessage(wxT("Received login banner : ") + serverResponse);
 
-	ret = m_socket.write(buffer, ::strlen((char*)buffer));
+	wxString filter(m_filter);
+	if (filter.Length() > 0) filter.Prepend(wxT(" filter "));
+	wxString connectString = wxString::Format(wxT("user %s-%s pass %u vers %s%s\n"), m_username.c_str(), m_ssid.c_str(), password,
+							(m_clientName.Length() ? m_clientName : wxT("ircDDBGateway")).c_str(),
+							filter.c_str());
+	//wxLogMessage(wxT("Connect String : ") + connectString);
+	ret = m_socket.writeLine(connectString);
 	if (!ret) {
 		m_socket.close();
 		return false;
 	}
+	
 
-	int length = m_socket.read(buffer, 200U, APRS_TIMEOUT);
+	length = m_socket.readLine(serverResponse, APRS_TIMEOUT);
 	if (length == 0) {
 		wxLogError(wxT("No reply from the APRS server after %u seconds"), APRS_TIMEOUT);
 		m_socket.close();
@@ -188,24 +240,22 @@ bool CAPRSWriterThread::connect()
 		return false;
 	}
 
-	wxString text((char*)buffer, wxConvLocal, length - 1U);
-	wxLogMessage(wxT("Response from APRS server: %s"), text.c_str());
+	wxLogMessage(wxT("Response from APRS server: ") + serverResponse);
 
 	wxLogMessage(wxT("Connected to the APRS server"));
 
 	return true;
 }
 
-unsigned int CAPRSWriterThread::getAPRSPassword(const char* callsign) const
+unsigned int CAPRSWriterThread::getAPRSPassword(wxString callsign) const
 {
-	const char* p = callsign;
-	unsigned int len = ::strlen(callsign);
+	unsigned int len = callsign.Length();
 
 	wxUint16 hash = 0x73E2U;
 
 	for (unsigned int i = 0U; i < len; i += 2U) {
-		hash ^= (*p++) << 8;
-		hash ^= (*p++);
+		hash ^= (char)callsign.GetChar(i) << 8;
+		hash ^= (char)callsign.GetChar(i + 1);
 	}
 
 	return hash & 0x7FFFU;

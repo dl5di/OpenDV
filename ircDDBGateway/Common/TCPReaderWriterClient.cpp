@@ -19,6 +19,8 @@
 #include "TCPReaderWriterClient.h"
 #include "UDPReaderWriter.h"
 
+#include <wx/string.h>
+
 #if !defined(__WINDOWS__)
 #include <cerrno>
 #endif
@@ -220,6 +222,27 @@ int CTCPReaderWriterClient::read(unsigned char* buffer, unsigned int length, uns
 	return len;
 }
 
+int CTCPReaderWriterClient::readLine(wxString& line, unsigned int secs)
+{
+	//maybe there is a better way to do this like reading blocks, pushing them for later calls
+	//Nevermind, we'll read one char at a time for the time being.
+	unsigned char c;
+	int resultCode;
+	int len = 0;
+	line = wxT("");
+
+	do
+	{
+		resultCode = read(&c, 1, secs);
+		if(resultCode == 1){
+			line.Append(c);
+			len++;
+		}
+	}while(c != '\n' && resultCode == 1);
+
+	return resultCode <= 0 ? resultCode : len;
+}
+
 bool CTCPReaderWriterClient::write(const unsigned char* buffer, unsigned int length)
 {
 	wxASSERT(buffer != NULL);
@@ -237,6 +260,23 @@ bool CTCPReaderWriterClient::write(const unsigned char* buffer, unsigned int len
 	}
 
 	return true;
+}
+
+bool CTCPReaderWriterClient::writeLine(const wxString& line)
+{
+	wxString lineCopy(line);
+	if(lineCopy.Length() > 0 && lineCopy.GetChar(lineCopy.Length() - 1) != '\n')
+		lineCopy.Append(wxT("\n"));
+	
+	//stupidly write one char after the other
+	size_t len = lineCopy.Length();
+	bool result = true;
+	for(size_t i = 0; i < len && result; i++){
+		unsigned char c = lineCopy.GetChar(i);
+		result = write(&c , 1);
+	}
+
+	return result;
 }
 
 void CTCPReaderWriterClient::close()

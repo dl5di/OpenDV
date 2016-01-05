@@ -1467,3 +1467,5 @@ Fix crashing bug in the gateway (from Michael DL1BFF).
 --------
 
 Fix header repeater crashing bug (from Michael DL1BFF).
+New slow data encoder from F4FXL.
+Added APRSTransmit program from F4FXL.

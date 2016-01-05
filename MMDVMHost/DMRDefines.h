@@ -62,11 +62,13 @@ const unsigned int DMR_SLOT_TIME = 60U;
 const unsigned int AMBE_PER_SLOT = 3U;
 
 const unsigned char DT_MASK               = 0x0FU;
+const unsigned char DT_VOICE_PI_HEADER    = 0x00U;
 const unsigned char DT_VOICE_LC_HEADER    = 0x01U;
 const unsigned char DT_TERMINATOR_WITH_LC = 0x02U;
 const unsigned char DT_CSBK               = 0x03U;
 const unsigned char DT_IDLE               = 0x09U;
 
+const unsigned char DMR_IDLE_RX    = 0x80U;
 const unsigned char DMR_SYNC_DATA  = 0x40U;
 const unsigned char DMR_SYNC_AUDIO = 0x20U;
 

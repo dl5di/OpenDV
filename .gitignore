@@ -1,0 +1,15 @@
+*~
+*.a
+*.bak
+*.o
+*.suo
+*.ncb
+*.zip
+*.exe
+*.log
+Debug
+Release
+*.user
+HID
+WinUSB
+portaudio
