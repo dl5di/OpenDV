@@ -1,5 +1,5 @@
 /*
- *	Copyright (C) 2015 Jonathan Naylor, G4KLX
+ *	Copyright (C) 2015,2016 Jonathan Naylor, G4KLX
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -12,6 +12,7 @@
  */
 
 #include "SlotType.h"
+#include "ShortLC.h"
 #include "DMRSlot.h"
 #include "Defines.h"
 #include "DMRSync.h"
@@ -32,6 +33,8 @@ unsigned char     CDMRSlot::m_id1 = 0U;
 FLCO              CDMRSlot::m_flco2;
 unsigned char     CDMRSlot::m_id2 = 0U;
 
+const unsigned int NUM_QUEUES = 2U;
+
 // XXX TODO
 // Short LC generation
 // Embedded LC regeneration?
@@ -40,18 +43,35 @@ unsigned char     CDMRSlot::m_id2 = 0U;
 
 CDMRSlot::CDMRSlot(unsigned int slotNo) :
 m_slotNo(slotNo),
-m_txQueue(1000U),
+m_txQueue(NULL),
 m_state(SS_LISTENING),
 m_embeddedLC(),
 m_lc(NULL),
 m_n(0U),
+m_playoutTimer(NULL),
 m_networkWatchdog(1000U, 2U),
-m_lateEntryWatchdog(1000U, 1U)
+m_lateEntryWatchdog(1000U, 1U),
+m_writeQueue(0U),
+m_readQueue(0U)
 {
+	m_txQueue      = new CRingBuffer<unsigned char>*[NUM_QUEUES];
+	m_playoutTimer = new CTimer*[NUM_QUEUES];
+
+	for (unsigned int i = 0U; i < NUM_QUEUES; i++) {
+		m_txQueue[i] = new CRingBuffer<unsigned char>(1000U);
+		m_playoutTimer[i] = new CTimer(1000U, 0U, 300U);
+	}
 }
 
 CDMRSlot::~CDMRSlot()
 {
+	for (unsigned int i = 0U; i < NUM_QUEUES; i++) {
+		delete m_txQueue[i];
+		delete m_playoutTimer[i];
+	}
+
+	delete[] m_txQueue;
+	delete[] m_playoutTimer;
 }
 
 void CDMRSlot::writeRF(unsigned char *data)
@@ -108,13 +128,36 @@ void CDMRSlot::writeRF(unsigned char *data)
 			data[1U] = 0x00U;
 			m_n = 0U;
 
-			writeNetwork(data, DMRDT_VOICE_HEADER);
+			m_writeQueue = (m_writeQueue + 1U) % 2U;
+			m_playoutTimer[m_writeQueue]->start();
+
+			writeNetwork(data, DMRDT_VOICE_LC_HEADER);
 			writeQueue(data);
 
 			m_state = SS_RELAYING_RF;
 			setShortLC(m_slotNo, m_lc->getDstId(), m_lc->getFLCO());
 
 			LogMessage("DMR Slot %u, received RF header from %u to %s:%u", m_slotNo, m_lc->getSrcId(), m_lc->getFLCO() == FLCO_GROUP ? "Group" : "User", m_lc->getDstId());
+		} else if (dataType == DT_VOICE_PI_HEADER) {
+			if (m_state == SS_RELAYING_RF) {
+				// Regenerate the Slot Type
+				slotType.getData(data + 2U);
+
+				// Convert the Data Sync to be from the BS
+				CDMRSync sync;
+				sync.addSync(data + 2U, DST_BS_DATA);
+
+				data[0U] = TAG_DATA;
+				data[1U] = 0x00U;
+				m_n = 0U;
+
+				writeNetwork(data, DMRDT_VOICE_PI_HEADER);
+				writeQueue(data);
+
+				LogMessage("DMR Slot %u, received PI header from %u to %s:%u", m_slotNo, m_lc->getSrcId(), m_lc->getFLCO() == FLCO_GROUP ? "Group" : "User", m_lc->getDstId());
+			} else {
+				// Should save the PI header for after we have a valid LC
+			}
 		} else {
 			// Ignore wakeup CSBKs
 			if (dataType == DT_CSBK) {
@@ -238,7 +281,7 @@ void CDMRSlot::writeRF(unsigned char *data)
 				start[1U] = 0x00U;
 				m_n = 0U;
 
-				writeNetwork(start, DMRDT_VOICE_HEADER);
+				writeNetwork(start, DMRDT_VOICE_LC_HEADER);
 				writeQueue(start);
 
 				// Send the original audio frame out
@@ -263,13 +306,16 @@ void CDMRSlot::writeRF(unsigned char *data)
 
 unsigned int CDMRSlot::readRF(unsigned char* data)
 {
-	if (m_txQueue.isEmpty())
+	if (!m_playoutTimer[m_readQueue]->isRunning() || !m_playoutTimer[m_readQueue]->hasExpired())
+		return 0U;
+
+	if (m_txQueue[m_readQueue]->isEmpty())
 		return 0U;
 
 	unsigned char len = 0U;
-	m_txQueue.getData(&len, 1U);
+	m_txQueue[m_readQueue]->getData(&len, 1U);
 
-	m_txQueue.getData(data, len);
+	m_txQueue[m_readQueue]->getData(data, len);
 
 	return len;
 }
@@ -286,8 +332,10 @@ void CDMRSlot::writeNet(const CDMRData& dmrData)
 	unsigned char data[DMR_FRAME_LENGTH_BYTES + 2U];
 	dmrData.getData(data + 2U);
 
-	if (dataType == DMRDT_VOICE_HEADER) {
+	if (dataType == DMRDT_VOICE_LC_HEADER) {
 		writeHeader(dmrData);
+
+		LogMessage("DMR Slot %u, received network header from %u to %s:%u", m_slotNo, m_lc->getSrcId(), m_lc->getFLCO() == FLCO_GROUP ? "Group" : "User", m_lc->getDstId());
 	} else if (dataType == DMRDT_TERMINATOR) {
 		if (m_state != SS_RELAYING_NETWORK) {
 			m_state = SS_LISTENING;
@@ -372,6 +420,9 @@ void CDMRSlot::writeNet(const CDMRData& dmrData)
 
 void CDMRSlot::clock(unsigned int ms)
 {
+	for (unsigned int i = 0U; i < NUM_QUEUES; i++)
+		m_playoutTimer[i]->clock(ms);
+
 	if (m_state == SS_RELAYING_NETWORK) {
 		m_networkWatchdog.clock(ms);
 
@@ -396,9 +447,9 @@ void CDMRSlot::clock(unsigned int ms)
 void CDMRSlot::writeQueue(const unsigned char *data)
 {
 	unsigned char len = DMR_FRAME_LENGTH_BYTES + 2U;
-	m_txQueue.addData(&len, 1U);
+	m_txQueue[m_writeQueue]->addData(&len, 1U);
 
-	m_txQueue.addData(data, len);
+	m_txQueue[m_writeQueue]->addData(data, len);
 }
 
 void CDMRSlot::writeNetwork(const unsigned char* data, DMR_DATA_TYPE dataType)
@@ -450,8 +501,6 @@ void CDMRSlot::writeHeader(const CDMRData& dmrData)
 
 	m_state = SS_RELAYING_NETWORK;
 	setShortLC(m_slotNo, m_lc->getDstId(), m_lc->getFLCO());
-
-	LogMessage("DMR Slot %u, received network header from %u to %s:%u", m_slotNo, m_lc->getSrcId(), m_lc->getFLCO() == FLCO_GROUP ? "Group" : "User", m_lc->getDstId());
 }
 
 void CDMRSlot::init(unsigned int colorCode, CModem* modem, CHomebrewDMRIPSC* network)
@@ -467,51 +516,62 @@ void CDMRSlot::setShortLC(unsigned int slotNo, unsigned int id, FLCO flco)
 {
 	assert(m_modem != NULL);
 
-	unsigned char* ptr = (unsigned char*)&id;
 	switch (slotNo) {
 		case 1U:
-			if (id == 0U)
-				m_id1 = 0U;
-			else
-				m_id1 = CCRC::crc8(ptr + 1U, 3U);
+			m_id1   = 0U;
 			m_flco1 = flco;
+			if (id != 0U) {
+				unsigned char buffer[3U];
+				buffer[0U] = (id << 16) & 0xFFU;
+				buffer[1U] = (id << 8)  & 0xFFU;
+				buffer[2U] = (id << 0)  & 0xFFU;
+				m_id1 = CCRC::crc8(buffer, 3U);
+			}
 			break;
 		case 2U:
-			if (id == 0U)
-				m_id2 = 0U;
-			else
-				m_id2 = CCRC::crc8(ptr + 1U, 3U);
+			m_id2   = 0U;
 			m_flco2 = flco;
+			if (id != 0U) {
+				unsigned char buffer[3U];
+				buffer[0U] = (id << 16) & 0xFFU;
+				buffer[1U] = (id << 8)  & 0xFFU;
+				buffer[2U] = (id << 0)  & 0xFFU;
+				m_id2 = CCRC::crc8(buffer, 3U);
+			}
 			break;
+		default:
+			LogError("Invalid slot number passed to setShortLC - %u", slotNo);
+			return;
 	}
 
-	unsigned char shortLC[5U];
-	shortLC[0U] = 0x01U;
-	shortLC[1U] = 0x00U;
-	shortLC[2U] = 0x00U;
-	shortLC[3U] = 0x00U;
+	unsigned char lc[5U];
+	lc[0U] = 0x01U;
+	lc[1U] = 0x00U;
+	lc[2U] = 0x00U;
+	lc[3U] = 0x00U;
 
 	if (m_id1 != 0U) {
-		shortLC[2U] = m_id1;
+		lc[2U] = m_id1;
 		if (m_flco1 == FLCO_GROUP)
-			shortLC[1U] |= 0x80U;
+			lc[1U] |= 0x80U;
 		else
-			shortLC[1U] |= 0x90U;
+			lc[1U] |= 0x90U;
 	}
 
 	if (m_id2 != 0U) {
-		shortLC[3U] = m_id2;
+		lc[3U] = m_id2;
 		if (m_flco2 == FLCO_GROUP)
-			shortLC[1U] |= 0x08U;
+			lc[1U] |= 0x08U;
 		else
-			shortLC[1U] |= 0x09U;
+			lc[1U] |= 0x09U;
 	}
 
-	shortLC[4U] = CCRC::crc8(shortLC, 4U);
+	lc[4U] = CCRC::crc8(lc, 4U);
 
-	// Variable length BPTC
+	unsigned char sLC[9U];
 
-	// Interleaving
+	CShortLC shortLC;
+	shortLC.encode(lc, sLC);
 
-	// m_modem->writeDMRShortLC();
+	m_modem->writeDMRShortLC(sLC);
 }

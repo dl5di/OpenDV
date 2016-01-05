@@ -269,6 +269,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\ShortLC.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\SlotType.cpp"
 				>
 			</File>
@@ -404,6 +408,10 @@
 			</File>
 			<File
 				RelativePath=".\SHA256.h"
+				>
+			</File>
+			<File
+				RelativePath=".\ShortLC.h"
 				>
 			</File>
 			<File

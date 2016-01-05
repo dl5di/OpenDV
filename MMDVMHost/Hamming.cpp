@@ -170,6 +170,54 @@ void CHamming::encode16114(bool* d)
 	d[15] = d[0] ^ d[2] ^ d[5] ^ d[6] ^ d[8] ^ d[9] ^ d[10];
 }
 
+// A Hamming (17,12,3) Check
+bool CHamming::decode17123(bool* d)
+{
+	// Calculate the checksum this column should have
+	bool c0 = d[0] ^ d[1] ^ d[2] ^ d[3] ^ d[6] ^ d[7] ^ d[9];
+	bool c1 = d[0] ^ d[1] ^ d[2] ^ d[3] ^ d[4] ^ d[7] ^ d[8] ^ d[10];
+	bool c2 = d[1] ^ d[2] ^ d[3] ^ d[4] ^ d[5] ^ d[8] ^ d[9] ^ d[11];
+	bool c3 = d[0] ^ d[1] ^ d[4] ^ d[5] ^ d[7] ^ d[10];
+	bool c4 = d[0] ^ d[1] ^ d[2] ^ d[5] ^ d[6] ^ d[8] ^ d[11];
+
+	// Compare these with the actual bits
+	unsigned char n = 0x00U;
+	n |= (c0 != d[12]) ? 0x01U : 0x00U;
+	n |= (c1 != d[13]) ? 0x02U : 0x00U;
+	n |= (c2 != d[14]) ? 0x04U : 0x00U;
+	n |= (c3 != d[15]) ? 0x08U : 0x00U;
+	n |= (c4 != d[16]) ? 0x10U : 0x00U;
+
+	switch (n) {
+		// Parity bit errors
+		case 0x01U: d[12] = !d[12]; return true;
+		case 0x02U: d[13] = !d[13]; return true;
+		case 0x04U: d[14] = !d[14]; return true;
+		case 0x08U: d[15] = !d[15]; return true;
+		case 0x10U: d[16] = !d[16]; return true;
+
+		// Data bit errors
+		case 0x1BU: d[0]  = !d[0];  return true;
+		case 0x1FU: d[1]  = !d[1];  return true;
+		case 0x17U: d[2]  = !d[2];  return true;
+		case 0x07U: d[3]  = !d[3];  return true;
+		case 0x0EU: d[4]  = !d[4];  return true;
+		case 0x1CU: d[5]  = !d[5];  return true;
+		case 0x11U: d[6]  = !d[6];  return true;
+		case 0x0BU: d[7]  = !d[7];  return true;
+		case 0x16U: d[8]  = !d[8];  return true;
+		case 0x05U: d[9]  = !d[9];  return true;
+		case 0x0AU: d[10] = !d[10]; return true;
+		case 0x14U: d[11] = !d[11]; return true;
+
+		// No bit errors
+		case 0x00U: return true;
+
+		// Unrecoverable errors
+		default: return false;
+	}
+}
+
 void CHamming::encode17123(bool* d)
 {
 	d[12] = d[0] ^ d[1] ^ d[2] ^ d[3] ^ d[6] ^ d[7] ^ d[9];
