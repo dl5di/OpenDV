@@ -112,6 +112,7 @@
     <ClCompile Include="RS129.cpp" />
     <ClCompile Include="SerialController.cpp" />
     <ClCompile Include="SHA256.cpp" />
+    <ClCompile Include="ShortLC.cpp" />
     <ClCompile Include="SlotType.cpp" />
     <ClCompile Include="StopWatch.cpp" />
     <ClCompile Include="Timer.cpp" />
@@ -147,6 +148,7 @@
     <ClInclude Include="RS129.h" />
     <ClInclude Include="SerialController.h" />
     <ClInclude Include="SHA256.h" />
+    <ClInclude Include="ShortLC.h" />
     <ClInclude Include="SlotType.h" />
     <ClInclude Include="StopWatch.h" />
     <ClInclude Include="Timer.h" />
