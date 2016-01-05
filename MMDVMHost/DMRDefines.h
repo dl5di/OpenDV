@@ -75,6 +75,9 @@ const unsigned char DMR_SYNC_AUDIO = 0x20U;
 const unsigned char DMR_SLOT1      = 0x00U;
 const unsigned char DMR_SLOT2      = 0x80U;
 
+const unsigned char FID_ETSI = 0U;
+const unsigned char FID_DMRA = 16U;
+
 enum FLCO {
 	FLCO_GROUP = 0,
 	FLCO_USER_USER = 3

@@ -18,6 +18,7 @@
 #include "DMRSync.h"
 #include "FullLC.h"
 #include "CSBK.h"
+#include "Utils.h"
 #include "EMB.h"
 #include "CRC.h"
 #include "Log.h"
@@ -33,13 +34,7 @@ unsigned char     CDMRSlot::m_id1 = 0U;
 FLCO              CDMRSlot::m_flco2;
 unsigned char     CDMRSlot::m_id2 = 0U;
 
-const unsigned int NUM_QUEUES = 2U;
-
-// XXX TODO
-// Short LC generation
-// Embedded LC regeneration?
-// Timed playout
-// AMBE FEC
+const unsigned int NUM_QUEUES = 1U;
 
 CDMRSlot::CDMRSlot(unsigned int slotNo) :
 m_slotNo(slotNo),
@@ -222,7 +217,9 @@ void CDMRSlot::writeRF(unsigned char *data)
 			CDMRSync sync;
 			sync.addSync(data + 2U, DST_BS_AUDIO);
 
-			// AMBE FEC
+			unsigned char fid = m_lc->getFID();
+			if (fid == FID_ETSI || fid == FID_DMRA)
+				; // AMBE FEC
 
 			data[0U] = TAG_DATA;
 			data[1U] = 0x00U;
@@ -242,7 +239,9 @@ void CDMRSlot::writeRF(unsigned char *data)
 			emb.setColorCode(m_colorCode);
 			emb.getData(data + 2U);
 
-			// AMBE FEC
+			unsigned char fid = m_lc->getFID();
+			if (fid == FID_ETSI || fid == FID_DMRA)
+				; // AMBE FEC
 
 			data[0U] = TAG_DATA;
 			data[1U] = 0x00U;
@@ -285,7 +284,9 @@ void CDMRSlot::writeRF(unsigned char *data)
 				writeQueue(start);
 
 				// Send the original audio frame out
-				// AMBE FEC
+				unsigned char fid = m_lc->getFID();
+				if (fid == FID_ETSI || fid == FID_DMRA)
+					; // AMBE FEC
 
 				data[0U] = TAG_DATA;
 				data[1U] = 0x00U;
@@ -376,7 +377,9 @@ void CDMRSlot::writeNet(const CDMRData& dmrData)
 		CDMRSync sync;
 		sync.addSync(data + 2U, DST_BS_AUDIO);
 
-		// AMBE FEC
+		unsigned char fid = m_lc->getFID();
+		if (fid == FID_ETSI || fid == FID_DMRA)
+			; // AMBE FEC
 
 		data[0U] = TAG_DATA;
 		data[1U] = 0x00U;
@@ -388,7 +391,9 @@ void CDMRSlot::writeNet(const CDMRData& dmrData)
 			writeHeader(dmrData);
 		}
 
-		// AMBE FEC
+		unsigned char fid = m_lc->getFID();
+		if (fid == FID_ETSI || fid == FID_DMRA)
+			; // AMBE FEC
 
 		// Change the color code in the EMB
 		CEMB emb;
@@ -570,8 +575,12 @@ void CDMRSlot::setShortLC(unsigned int slotNo, unsigned int id, FLCO flco)
 
 	unsigned char sLC[9U];
 
+	CUtils::dump(1U, "Input Short LC", lc, 5U);
+
 	CShortLC shortLC;
 	shortLC.encode(lc, sLC);
+
+	CUtils::dump(1U, "Output Short LC", sLC, 9U);
 
 	m_modem->writeDMRShortLC(sLC);
 }

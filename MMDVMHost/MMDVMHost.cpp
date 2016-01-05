@@ -42,7 +42,7 @@ static void sigHandler(int)
 }
 #endif
 
-const char* HEADER = "This software is for use on amateur radio networks only. Its use on commercial networks is strictly prohibited\nCopyright (C) 2015 by Jonathan Naylor, G4KLX\n";
+const char* HEADER = "This software is for use on amateur radio networks only. Its use on commercial networks is strictly prohibited\nCopyright (C) 2015,2016 by Jonathan Naylor, G4KLX\n";
 
 int main(int argc, char** argv)
 {
