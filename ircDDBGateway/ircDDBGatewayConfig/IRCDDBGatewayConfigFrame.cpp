@@ -20,7 +20,7 @@
 #include "IRCDDBGatewayConfigDefs.h"
 #include "Version.h"
 
-const unsigned int BORDER_SIZE = 5;
+const unsigned int BORDER_SIZE = 5U;
 
 #include <wx/gbsizer.h>
 #include <wx/aboutdlg.h>
