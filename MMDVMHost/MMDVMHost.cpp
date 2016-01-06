@@ -81,7 +81,7 @@ CMMDVMHost::~CMMDVMHost()
 
 int CMMDVMHost::run()
 {
-	::fprintf(stdout, "%s\n%s", VERSION, HEADER);
+	::fprintf(stdout, "MMDVMHost-%s\n%s", VERSION, HEADER);
 
 	bool ret = m_conf.read();
 	if (!ret) {
@@ -99,7 +99,7 @@ int CMMDVMHost::run()
 
 	LogInfo(HEADER);
 
-	LogMessage("%s is starting", VERSION);
+	LogMessage("MMDVMHost-%s is starting", VERSION);
 
 	readParams();
 
@@ -242,8 +242,9 @@ int CMMDVMHost::run()
 			ret = m_modem->hasDMRSpace1();
 			if (ret) {
 				len = dmr->readRFSlot1(data);
+				if (len > 0U && mode == MODE_IDLE)
+					mode = MODE_DMR;
 				if (len > 0U && mode == MODE_DMR) {
-					// This starts the transmitter
 					m_modem->writeDMRData1(data, len);
 					modeTimer.start();
 				}
@@ -252,8 +253,9 @@ int CMMDVMHost::run()
 			ret = m_modem->hasDMRSpace2();
 			if (ret) {
 				len = dmr->readRFSlot2(data);
+				if (len > 0U && mode == MODE_IDLE)
+					mode = MODE_DMR;
 				if (len > 0U && mode == MODE_DMR) {
-					// This starts the transmitter
 					m_modem->writeDMRData2(data, len);
 					modeTimer.start();
 				}
@@ -345,7 +347,7 @@ bool CMMDVMHost::createDMRNetwork()
 	unsigned int port    = m_conf.getDMRNetworkPort();
 	unsigned int id      = m_conf.getDMRId();
 	std::string password = m_conf.getDMRNetworkPassword();
-	m_dmrNetwork = new CHomebrewDMRIPSC(address, port, id, password, VERSION_REPORT);
+	m_dmrNetwork = new CHomebrewDMRIPSC(address, port, id, password, VERSION, "MMDVMHost");
 
 	std::string callsign     = m_conf.getDStarCallsign();		// XXX
 	unsigned int rxFrequency = m_conf.getRxFrequency();

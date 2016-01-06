@@ -149,7 +149,7 @@ void CDMRSlot::writeRF(unsigned char *data)
 				writeNetwork(data, DMRDT_VOICE_PI_HEADER);
 				writeQueue(data);
 
-				LogMessage("DMR Slot %u, received PI header from %u to %s:%u", m_slotNo, m_lc->getSrcId(), m_lc->getFLCO() == FLCO_GROUP ? "Group" : "User", m_lc->getDstId());
+				LogMessage("DMR Slot %u, received PI header", m_slotNo);
 			} else {
 				// Should save the PI header for after we have a valid LC
 			}
@@ -185,7 +185,7 @@ void CDMRSlot::writeRF(unsigned char *data)
 				writeNetwork(end, DMRDT_TERMINATOR);
 				writeQueue(end);
 
-				LogMessage("DMR Slot %u, received RF end of transmission from %u to %s:%u", m_slotNo, m_lc->getSrcId(), m_lc->getFLCO() == FLCO_GROUP ? "Group" : "User", m_lc->getDstId());
+				LogMessage("DMR Slot %u, received RF end of transmission", m_slotNo);
 
 				m_state = SS_LISTENING;
 				setShortLC(m_slotNo, 0U);
@@ -280,6 +280,9 @@ void CDMRSlot::writeRF(unsigned char *data)
 				start[1U] = 0x00U;
 				m_n = 0U;
 
+				m_writeQueue = (m_writeQueue + 1U) % 2U;
+				m_playoutTimer[m_writeQueue]->start();
+
 				writeNetwork(start, DMRDT_VOICE_LC_HEADER);
 				writeQueue(start);
 
@@ -296,6 +299,7 @@ void CDMRSlot::writeRF(unsigned char *data)
 				writeNetwork(data, DMRDT_VOICE);
 
 				m_state = SS_RELAYING_RF;
+
 				m_lateEntryWatchdog.stop();
 				setShortLC(m_slotNo, m_lc->getDstId(), m_lc->getFLCO());
 
@@ -366,7 +370,7 @@ void CDMRSlot::writeNet(const CDMRData& dmrData)
 		setShortLC(m_slotNo, 0U);
 		m_networkWatchdog.stop();
 
-		LogMessage("DMR Slot %u, received network end of transmission from %u to %s:%u", m_slotNo, m_lc->getSrcId(), m_lc->getFLCO() == FLCO_GROUP ? "Group" : "User", m_lc->getDstId());
+		LogMessage("DMR Slot %u, received network end of transmission", m_slotNo);
 	} else if (dataType == DMRDT_VOICE_SYNC) {
 		if (m_state == SS_LISTENING) {
 			// We must have missed the opening header
@@ -501,6 +505,9 @@ void CDMRSlot::writeHeader(const CDMRData& dmrData)
 
 	data[0U] = TAG_DATA;
 	data[1U] = 0x00U;
+
+	m_writeQueue = (m_writeQueue + 1U) % 2U;
+	m_playoutTimer[m_writeQueue]->start();
 
 	writeQueue(data);
 

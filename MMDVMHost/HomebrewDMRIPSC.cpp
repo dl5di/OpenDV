@@ -29,11 +29,12 @@ const unsigned int BUFFER_LENGTH = 500U;
 const unsigned int HOMEBREW_DATA_PACKET_LENGTH = 53U;
 
 
-CHomebrewDMRIPSC::CHomebrewDMRIPSC(const std::string& address, unsigned int port, unsigned int id, const std::string& password, const char* version) :
+CHomebrewDMRIPSC::CHomebrewDMRIPSC(const std::string& address, unsigned int port, unsigned int id, const std::string& password, const char* software, const char* version) :
 m_address(),
 m_port(port),
 m_id(NULL),
 m_password(password),
+m_software(software),
 m_version(version),
 m_socket(),
 m_status(DISCONNECTED),
@@ -151,7 +152,7 @@ bool CHomebrewDMRIPSC::read(CDMRData& data)
 
 	unsigned int dstId = (m_buffer[8U] << 16) | (m_buffer[9U] << 8) | (m_buffer[10U] << 0);
 
-	unsigned int slotNo = (m_buffer[15] & 0x80U) == 0x80U ? 2U : 1U;
+	unsigned int slotNo = (m_buffer[15U] & 0x80U) == 0x80U ? 2U : 1U;
 
 	FLCO flco = (m_buffer[15U] & 0x40U) == 0x40U ? FLCO_USER_USER : FLCO_GROUP;
 
@@ -304,8 +305,8 @@ void CHomebrewDMRIPSC::clock(unsigned int ms)
 	unsigned int port;
 	int length = m_socket.read(m_buffer, BUFFER_LENGTH, address, port);
 
-	if (length > 0)
-		CUtils::dump(1U, "IPSC received", m_buffer, length);
+	// if (length > 0)
+	//	CUtils::dump(1U, "IPSC received", m_buffer, length);
 
 	if (length > 0 && m_address.s_addr == address.s_addr && m_port == port) {
 		if (::memcmp(m_buffer, "DMRD", 4U) == 0) {
@@ -425,18 +426,16 @@ bool CHomebrewDMRIPSC::writeAuthorisation()
 
 bool CHomebrewDMRIPSC::writeConfig()
 {
-	char* buffer = new char[400U];
+	char buffer[400U];
 
 	::memcpy(buffer + 0U, "RPTC", 4U);
 	::memcpy(buffer + 4U, m_id, 4U);
 
 	::sprintf(buffer + 8U, "%-8.8s%09u%09u%02u%02u%-08f%-09f%03d%-20.20s%-20.20s%-124.124s%-40.40s%-40.40s", m_callsign.c_str(),
 		m_rxFrequency, m_txFrequency, m_power, m_colorCode, m_latitude, m_longitude, m_height, m_location.c_str(),
-		m_description.c_str(), m_url.c_str(), m_version, m_version);
+		m_description.c_str(), m_url.c_str(), m_software, m_version);
 
 	bool ret = m_socket.write((unsigned char*)buffer, 302U, m_address, m_port);
-
-	delete[] buffer;
 
 	return ret;
 }

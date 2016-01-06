@@ -37,7 +37,7 @@ typedef unsigned char  uint8_t;
 class CHomebrewDMRIPSC
 {
 public:
-	CHomebrewDMRIPSC(const std::string& address, unsigned int port, unsigned int id, const std::string& password, const char* version);
+	CHomebrewDMRIPSC(const std::string& address, unsigned int port, unsigned int id, const std::string& password, const char* software, const char* version);
 	~CHomebrewDMRIPSC();
 
 	void setConfig(const std::string& callsign, unsigned int rxFrequency, unsigned int txFrequency, unsigned int power, unsigned int colorCode, float latitude, float longitude, int height, const std::string& location, const std::string& description, const std::string& url);
@@ -57,6 +57,7 @@ private:
 	unsigned int m_port;
 	uint8_t*     m_id;
 	std::string  m_password;
+	const char*  m_software;
 	const char*  m_version;
 	CUDPSocket   m_socket;
 

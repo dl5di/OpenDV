@@ -19,12 +19,6 @@
 #if !defined(VERSION_H)
 #define	VERSION_H
 
-const char* VERSION = "MMDVMHost-20151222";
-
-#if defined(WIN32)
-const char* VERSION_REPORT = "windows:mmdvm-20151222";
-#else
-const char* VERSION_REPORT = "linux:mmdvm-20151222";
-#endif
+const char* VERSION = "20160106";
 
 #endif
