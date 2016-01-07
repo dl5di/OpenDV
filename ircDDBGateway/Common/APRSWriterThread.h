@@ -25,6 +25,10 @@
 #include <wx/wx.h>
 typedef void (*ReadAPRSFrameCallback)(const wxString&);
 
+#ifdef __UNIT_TEST__
+	class APRSWriterThreadTests;
+#endif
+
 class CAPRSWriterThread : public wxThread {
 public:
 	CAPRSWriterThread(const wxString& callsign, const wxString& address, const wxString& hostname, unsigned int port);
@@ -56,6 +60,10 @@ private:
 
 	bool connect();
 	unsigned int getAPRSPassword(wxString username) const;
+
+#ifdef __UNIT_TEST__
+	friend APRSWriterThreadTests;
+#endif
 };
 
 #endif

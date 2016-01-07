@@ -45,6 +45,9 @@ IRCDDBGatewayThread.o:		IRCDDBGatewayThread.cpp IRCDDBGatewayThread.h IRCDDBGate
 				../Common/CCSHandler.h ../Common/CCSData.h ../Common/CallsignList.h ../Common/DExtraProtocolHandlerPool.h ../ircDDB/IRCDDB.h
 				$(CC) $(CFLAGS) -c IRCDDBGatewayThread.cpp
 
+test:		ircddbgateway ircddbgatewayd
+				$(CC) $(CFLAGS) -c APRSWriterThreadTest.cpp
+
 install:		ircddbgateway ircddbgatewayd
 				install -d -g bin -o root -m 0775 $(BINDIR)
 				install -g bin -o root -m 0775 ircddbgateway $(BINDIR)
