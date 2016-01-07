@@ -149,15 +149,15 @@ m_controller(NULL)
 	m_controller = new CDStarRepeaterConfigControllerSet(noteBook, -1, APPLICATION_NAME, controllerType, serialConfig, pttInvert, activeHangTime);
 	noteBook->AddPage(m_controller, _("Controller"), false);
 
-	sizer->Add(noteBook, 1, wxALL | wxGROW, BORDER_SIZE);
+        sizer->Add(noteBook, 0, wxEXPAND | wxALL, BORDER_SIZE);
 
-	panel->SetSizer(sizer);
+        panel->SetSizer(sizer);
 
-	mainSizer->Add(panel);
+        mainSizer->Add(panel, 0, wxEXPAND | wxALL, BORDER_SIZE);
 
-	SetSizer(mainSizer);
+        mainSizer->SetSizeHints(this);
 
-	mainSizer->SetSizeHints(this);
+        SetSizer(mainSizer);
 }
 
 CDStarRepeaterConfigFrame::~CDStarRepeaterConfigFrame()
