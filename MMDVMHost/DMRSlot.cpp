@@ -128,7 +128,7 @@ void CDMRSlot::writeModem(unsigned char *data)
 			data[1U] = 0x00U;
 			m_n = 0U;
 
-			m_writeQueue = (m_writeQueue + 1U) % 2U;
+			m_writeQueue = (m_writeQueue + 1U) % NUM_QUEUES;
 			m_playoutTimer[m_writeQueue]->setTimeout(0U, 50U);
 			m_playoutTimer[m_writeQueue]->start();
 
@@ -285,7 +285,7 @@ void CDMRSlot::writeModem(unsigned char *data)
 				start[1U] = 0x00U;
 				m_n = 0U;
 
-				m_writeQueue = (m_writeQueue + 1U) % 2U;
+				m_writeQueue = (m_writeQueue + 1U) % NUM_QUEUES;
 				m_playoutTimer[m_writeQueue]->setTimeout(0U, 50U);
 				m_playoutTimer[m_writeQueue]->start();
 
@@ -345,7 +345,6 @@ void CDMRSlot::writeNetwork(const CDMRData& dmrData)
 
 	if (dataType == DT_VOICE_LC_HEADER) {
 		writeHeader(dmrData);
-
 		LogMessage("DMR Slot %u, received network header from %u to %s:%u", m_slotNo, m_lc->getSrcId(), m_lc->getFLCO() == FLCO_GROUP ? "Group" : "User", m_lc->getDstId());
 	} else if (dataType == DT_VOICE_PI_HEADER) {
 		if (m_state == SS_LISTENING) {
@@ -556,7 +555,7 @@ void CDMRSlot::writeHeader(const CDMRData& dmrData)
 	data[0U] = TAG_DATA;
 	data[1U] = 0x00U;
 
-	m_writeQueue = (m_writeQueue + 1U) % 2U;
+	m_writeQueue = (m_writeQueue + 1U) % NUM_QUEUES;
 	m_playoutTimer[m_writeQueue]->setTimeout(0U, 500U);
 	m_playoutTimer[m_writeQueue]->start();
 
