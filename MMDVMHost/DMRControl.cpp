@@ -1,5 +1,5 @@
 /*
- *	Copyright (C) 2015 Jonathan Naylor, G4KLX
+ *	Copyright (C) 2015,2016 Jonathan Naylor, G4KLX
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -60,24 +60,24 @@ bool CDMRControl::processWakeup(const unsigned char* data)
 	return false;
 }
 
-void CDMRControl::writeRFSlot1(unsigned char *data)
+void CDMRControl::writeModemSlot1(unsigned char *data)
 {
-	m_slot1.writeRF(data);
+	m_slot1.writeModem(data);
 }
 
-void CDMRControl::writeRFSlot2(unsigned char *data)
+void CDMRControl::writeModemSlot2(unsigned char *data)
 {
-	m_slot2.writeRF(data);
+	m_slot2.writeModem(data);
 }
 
-unsigned int CDMRControl::readRFSlot1(unsigned char *data)
+unsigned int CDMRControl::readModemSlot1(unsigned char *data)
 {
-	return m_slot1.readRF(data);
+	return m_slot1.readModem(data);
 }
 
-unsigned int CDMRControl::readRFSlot2(unsigned char *data)
+unsigned int CDMRControl::readModemSlot2(unsigned char *data)
 {
-	return m_slot2.readRF(data);
+	return m_slot2.readModem(data);
 }
 
 void CDMRControl::clock(unsigned int ms)
@@ -88,8 +88,8 @@ void CDMRControl::clock(unsigned int ms)
 		if (ret) {
 			unsigned int slotNo = data.getSlotNo();
 			switch (slotNo) {
-				case 1U: m_slot1.writeNet(data); break;
-				case 2U: m_slot2.writeNet(data); break;
+				case 1U: m_slot1.writeNetwork(data); break;
+				case 2U: m_slot2.writeNetwork(data); break;
 				default: LogError("Invalid slot no %u", slotNo); break;
 			}
 		}

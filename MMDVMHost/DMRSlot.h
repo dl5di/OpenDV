@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2015 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2015,2016 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -40,13 +40,13 @@ public:
 	CDMRSlot(unsigned int slotNo);
 	~CDMRSlot();
 
-	void writeRF(unsigned char* data);
+	void writeModem(unsigned char* data);
 
-	unsigned int readRF(unsigned char* data);
+	unsigned int readModem(unsigned char* data);
 
-	void writeNet(const CDMRData& data);
+	void writeNetwork(const CDMRData& data);
 
-	bool readNet(CDMRData& data);
+	bool readNetwork(CDMRData& data);
 
 	void clock(unsigned int ms);
 
@@ -58,12 +58,14 @@ private:
 	SLOT_STATE                   m_state;
 	CEmbeddedLC                  m_embeddedLC;
 	CLC*                         m_lc;
+	unsigned char                m_seqNo;
 	unsigned char                m_n;
 	CTimer**                     m_playoutTimer;
 	CTimer                       m_networkWatchdog;
 	CTimer                       m_lateEntryWatchdog;
 	unsigned int                 m_writeQueue;
 	unsigned int                 m_readQueue;
+	FILE*                        m_fp;
 
 	static unsigned int        m_colorCode;
 	static CModem*             m_modem;
@@ -76,7 +78,12 @@ private:
 
 	void writeHeader(const CDMRData& data);
 	void writeQueue(const unsigned char* data);
-	void writeNetwork(const unsigned char* data, DMR_DATA_TYPE dataType);
+	void writeNetwork(const unsigned char* data, unsigned char dataType);
+	void writeIdle(unsigned int count = 1U);
+
+	bool openFile();
+	bool writeFile(const unsigned char* data);
+	void closeFile();
 
 	static void setShortLC(unsigned int slotNo, unsigned int id, FLCO flco = FLCO_GROUP);
 };

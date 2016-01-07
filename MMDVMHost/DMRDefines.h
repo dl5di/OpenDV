@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2015 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2015,2016 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -51,6 +51,12 @@ const unsigned char DIRECT_SLOT2_DATA_SYNC[]  = {0x0DU, 0x75U, 0x57U, 0xF5U, 0xF
 
 const unsigned char SYNC_MASK[]               = {0x0FU, 0xFFU, 0xFFU, 0xFFU, 0xFFU, 0xFFU, 0xF0U};
 
+// The PR FILL and Data Sync pattern.
+const unsigned char IDLE_DATA[] =
+							{0x53U, 0xC2U, 0x5EU, 0xABU, 0xA8U, 0x67U, 0x1DU, 0xC7U, 0x38U, 0x3BU, 0xD9U,
+							 0x36U, 0x00U, 0x0DU, 0xFFU, 0x57U, 0xD7U, 0x5DU, 0xF5U, 0xD0U, 0x03U, 0xF6U,
+							 0xE4U, 0x65U, 0x17U, 0x1BU, 0x48U, 0xCAU, 0x6DU, 0x4FU, 0xC6U, 0x10U, 0xB4U};
+
 const unsigned char PAYLOAD_LEFT_MASK[]       = {0xFFU, 0xFFU, 0xFFU, 0xFFU, 0xFFU, 0xFFU, 0xFFU, 0xFFU, 0xFFU, 0xFFU, 0xFFU, 0xFFU, 0xFFU, 0xF0U};
 const unsigned char PAYLOAD_RIGHT_MASK[]      = {0x0FU, 0xFFU, 0xFFU, 0xFFU, 0xFFU, 0xFFU, 0xFFU, 0xFFU, 0xFFU, 0xFFU, 0xFFU, 0xFFU, 0xFFU, 0xFFU};
 
@@ -66,7 +72,12 @@ const unsigned char DT_VOICE_PI_HEADER    = 0x00U;
 const unsigned char DT_VOICE_LC_HEADER    = 0x01U;
 const unsigned char DT_TERMINATOR_WITH_LC = 0x02U;
 const unsigned char DT_CSBK               = 0x03U;
+const unsigned char DT_DATA_HEADER        = 0x06U;
 const unsigned char DT_IDLE               = 0x09U;
+
+// Dummy values
+const unsigned char DT_VOICE_SYNC         = 0xF0U;
+const unsigned char DT_VOICE              = 0xF1U;
 
 const unsigned char DMR_IDLE_RX    = 0x80U;
 const unsigned char DMR_SYNC_DATA  = 0x40U;

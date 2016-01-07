@@ -28,6 +28,7 @@ m_srcId(data.m_srcId),
 m_dstId(data.m_dstId),
 m_flco(data.m_flco),
 m_dataType(data.m_dataType),
+m_seqNo(data.m_seqNo),
 m_n(data.m_n)
 {
 	m_data = new unsigned char[2U * DMR_FRAME_LENGTH_BYTES];
@@ -40,7 +41,8 @@ m_data(NULL),
 m_srcId(0U),
 m_dstId(0U),
 m_flco(FLCO_GROUP),
-m_dataType(DMRDT_VOICE),
+m_dataType(0U),
+m_seqNo(0U),
 m_n(0U)
 {
 	m_data = new unsigned char[2U * DMR_FRAME_LENGTH_BYTES];
@@ -61,6 +63,7 @@ CDMRData& CDMRData::operator=(const CDMRData& data)
 		m_dstId    = data.m_dstId;
 		m_flco     = data.m_flco;
 		m_dataType = data.m_dataType;
+		m_seqNo    = data.m_seqNo;
 		m_n        = data.m_n;
 	}
 
@@ -79,12 +82,12 @@ void CDMRData::setSlotNo(unsigned int slotNo)
 	m_slotNo = slotNo;
 }
 
-DMR_DATA_TYPE CDMRData::getDataType() const
+unsigned char CDMRData::getDataType() const
 {
 	return m_dataType;
 }
 
-void CDMRData::setDataType(DMR_DATA_TYPE dataType)
+void CDMRData::setDataType(unsigned char dataType)
 {
 	m_dataType = dataType;
 }
@@ -119,12 +122,22 @@ void CDMRData::setFLCO(FLCO flco)
 	m_flco = flco;
 }
 
-unsigned int CDMRData::getN() const
+unsigned char CDMRData::getSeqNo() const
+{
+	return m_seqNo;
+}
+
+void CDMRData::setSeqNo(unsigned char seqNo)
+{
+	m_seqNo = seqNo;
+}
+
+unsigned char CDMRData::getN() const
 {
 	return m_n;
 }
 
-void CDMRData::setN(unsigned int n)
+void CDMRData::setN(unsigned char n)
 {
 	m_n = n;
 }

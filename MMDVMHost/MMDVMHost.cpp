@@ -166,7 +166,7 @@ int CMMDVMHost::run()
 					modeTimer.start();
 				}
 			} else if (mode == MODE_DMR) {
-				dmr->writeRFSlot1(data);
+				dmr->writeModemSlot1(data);
 				modeTimer.start();
 			} else {
 				LogWarning("DMR data received when in mode %u", mode);
@@ -185,7 +185,7 @@ int CMMDVMHost::run()
 					modeTimer.start();
 				}
 			} else if (mode == MODE_DMR) {
-				dmr->writeRFSlot2(data);
+				dmr->writeModemSlot2(data);
 				modeTimer.start();
 			} else {
 				LogWarning("DMR data received when in mode %u", mode);
@@ -241,7 +241,7 @@ int CMMDVMHost::run()
 		if (dmr != NULL) {
 			ret = m_modem->hasDMRSpace1();
 			if (ret) {
-				len = dmr->readRFSlot1(data);
+				len = dmr->readModemSlot1(data);
 				if (len > 0U && mode == MODE_IDLE)
 					mode = MODE_DMR;
 				if (len > 0U && mode == MODE_DMR) {
@@ -252,7 +252,7 @@ int CMMDVMHost::run()
 
 			ret = m_modem->hasDMRSpace2();
 			if (ret) {
-				len = dmr->readRFSlot2(data);
+				len = dmr->readModemSlot2(data);
 				if (len > 0U && mode == MODE_IDLE)
 					mode = MODE_DMR;
 				if (len > 0U && mode == MODE_DMR) {

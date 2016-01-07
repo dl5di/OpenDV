@@ -16,19 +16,6 @@
 
 #include "DMRDefines.h"
 
-enum DMR_DATA_TYPE {
-	DMRDT_VOICE_LC_HEADER,
-	DMRDT_VOICE_PI_HEADER,
-	DMRDT_VOICE_SYNC,
-	DMRDT_VOICE,
-	DMRDT_DATA_HEADER,
-	DMRDT_CSBK,
-	DMRDT_RATE12_DATA,
-	DMRDT_RATE34_DATA,
-	DMRDT_RATE1_DATA,
-	DMRDT_TERMINATOR
-};
-
 class CDMRData {
 public:
 	CDMRData(const CDMRData& data);
@@ -49,11 +36,14 @@ public:
 	FLCO getFLCO() const;
 	void setFLCO(FLCO flco);
 
-	unsigned int getN() const;
-	void setN(unsigned int n);
+	unsigned char getN() const;
+	void setN(unsigned char n);
 
-	DMR_DATA_TYPE getDataType() const;
-	void setDataType(DMR_DATA_TYPE dataType);
+	unsigned char getSeqNo() const;
+	void setSeqNo(unsigned char seqNo);
+
+	unsigned char getDataType() const;
+	void setDataType(unsigned char dataType);
 
 	void setData(const unsigned char* buffer);
 	unsigned int getData(unsigned char* buffer) const;
@@ -64,8 +54,9 @@ private:
 	unsigned int   m_srcId;
 	unsigned int   m_dstId;
 	FLCO           m_flco;
-	DMR_DATA_TYPE  m_dataType;
-	unsigned int   m_n;
+	unsigned char  m_dataType;
+	unsigned char  m_seqNo;
+	unsigned char  m_n;
 };
 
 #endif

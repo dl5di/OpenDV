@@ -56,7 +56,8 @@ m_longitude(0.0F),
 m_height(0),
 m_location(),
 m_description(),
-m_url()
+m_url(),
+m_beacon(false)
 {
 	assert(!address.empty());
 	assert(port > 0U);
@@ -148,6 +149,8 @@ bool CHomebrewDMRIPSC::read(CDMRData& data)
 	if (::memcmp(m_buffer, "DMRD", 4U) != 0)
 		return false;
 
+	unsigned char seqNo = m_buffer[4U];
+
 	unsigned int srcId = (m_buffer[5U] << 16) | (m_buffer[6U] << 8) | (m_buffer[7U] << 0);
 
 	unsigned int dstId = (m_buffer[8U] << 16) | (m_buffer[9U] << 8) | (m_buffer[10U] << 0);
@@ -156,59 +159,29 @@ bool CHomebrewDMRIPSC::read(CDMRData& data)
 
 	FLCO flco = (m_buffer[15U] & 0x40U) == 0x40U ? FLCO_USER_USER : FLCO_GROUP;
 
+	data.setSeqNo(seqNo);
 	data.setSlotNo(slotNo);
 	data.setSrcId(srcId);
 	data.setDstId(dstId);
 	data.setFLCO(flco);
 
-	unsigned char slotType = m_buffer[15U] & 0x3FU;
+	bool dataSync = (m_buffer[15U] & 0x20U) == 0x20U;
+	bool voiceSync = (m_buffer[15U] & 0x10U) == 0x10U;
 
-	if (slotType == 0x26U) {				// Data header
+	if (dataSync) {
+		unsigned char dataType = m_buffer[15U] & 0x0FU;
 		data.setData(m_buffer + 20U);
-		data.setDataType(DMRDT_DATA_HEADER);
-	} else if (slotType == 0x23U) {			// CSBK
-		data.setData(m_buffer + 20U);
-		data.setDataType(DMRDT_CSBK);
-	} else if (slotType == 0x28U) {			// Data 3/4 rate
-		data.setData(m_buffer + 20U);
-		data.setDataType(DMRDT_RATE34_DATA);
-	} else if (slotType == 0x21U) {			// Voice Header
-		data.setData(m_buffer + 20U);
-		data.setDataType(DMRDT_VOICE_LC_HEADER);
-	} else if (slotType == 0x22U) {			// Terminator
-		data.setData(m_buffer + 20U);
-		data.setDataType(DMRDT_TERMINATOR);
-	} else if (slotType == 0x20U) {			// PI Header
-		data.setData(m_buffer + 20U);
-		data.setDataType(DMRDT_VOICE_PI_HEADER);
-	} else if (slotType == 0x10U) {			// Voice Sync
-		data.setData(m_buffer + 20U);
-		data.setDataType(DMRDT_VOICE_SYNC);
+		data.setDataType(dataType);
 		data.setN(0U);
-	} else if (slotType == 0x01U) {			// Voice
+	} else if (voiceSync) {
 		data.setData(m_buffer + 20U);
-		data.setDataType(DMRDT_VOICE);
-		data.setN(1U);
-	} else if (slotType == 0x02U) {			// Voice
-		data.setData(m_buffer + 20U);
-		data.setDataType(DMRDT_VOICE);
-		data.setN(2U);
-	} else if (slotType == 0x03U) {			// Voice
-		data.setData(m_buffer + 20U);
-		data.setDataType(DMRDT_VOICE);
-		data.setN(3U);
-	} else if (slotType == 0x04U) {			// Voice
-		data.setData(m_buffer + 20U);
-		data.setDataType(DMRDT_VOICE);
-		data.setN(4U);
-	} else if (slotType == 0x05U) {			// Voice
-		data.setData(m_buffer + 20U);
-		data.setDataType(DMRDT_VOICE);
-		data.setN(5U);
+		data.setDataType(DT_VOICE_SYNC);
+		data.setN(0U);
 	} else {
-		::LogMessage("SlotType = 0x%02X", slotType);
-		CUtils::dump("????", m_buffer, length);
-		return false;
+		unsigned char n = m_buffer[15U] & 0x0FU;
+		data.setData(m_buffer + 20U);
+		data.setDataType(DT_VOICE);
+		data.setN(n);
 	}
 
 	return true;
@@ -247,32 +220,19 @@ bool CHomebrewDMRIPSC::write(const CDMRData& data)
 
 	unsigned int slotIndex = slotNo - 1U;
 
-	DMR_DATA_TYPE dataType = data.getDataType();
-	if (dataType == DMRDT_VOICE_LC_HEADER) {
-		m_streamId[slotIndex] = ::rand() + 1U;
-		m_seqNo[slotIndex]    = 0U;
-		buffer[15U] |= 0x21U;
-	} else if (dataType == DMRDT_VOICE_PI_HEADER) {
-		buffer[15U] |= 0x20U;
-	} else if (dataType == DMRDT_TERMINATOR) {
-		buffer[15U] |= 0x22U;
-	} else if (dataType == DMRDT_CSBK) {
-		buffer[15U] |= 0x23U;
-	} else if (dataType == DMRDT_DATA_HEADER) {
-		m_streamId[slotIndex] = ::rand() + 1U;
-		m_seqNo[slotIndex]    = 0U;
-		buffer[15U] |= 0x26U;
-	} else if (dataType == DMRDT_RATE34_DATA) {
-		buffer[15U] |= 0x28U;
-	} else if (dataType == DMRDT_VOICE_SYNC) {
+	unsigned char dataType = data.getDataType();
+	if (dataType == DT_VOICE_SYNC) {
 		buffer[15U] |= 0x10U;
-	} else if (dataType == DMRDT_VOICE) {
-		buffer[15U] |= 0x00U;
-		unsigned int n = data.getN();
+	} else if (dataType == DT_VOICE) {
+		unsigned char n = data.getN();
 		buffer[15U] |= n;
 	} else {
-		::LogError("Unknown DMR data type");
-		return false;
+		if (dataType == DT_VOICE_LC_HEADER || dataType == DT_DATA_HEADER) {
+			m_streamId[slotIndex] = ::rand() + 1U;
+			m_seqNo[slotIndex] = 0U;
+		}
+
+		buffer[15U] |= (0x20U | dataType);
 	}
 
 	buffer[4U]  = m_seqNo[slotIndex];
@@ -351,7 +311,7 @@ void CHomebrewDMRIPSC::clock(unsigned int ms)
 		} else if (::memcmp(m_buffer, "MSTPONG", 7U) == 0) {
 			m_timeoutTimer.start();
 		} else if (::memcmp(m_buffer, "RPTSBKN", 7U) == 0) {
-			// Nothing to do for now
+			m_beacon = true;
 		} else {
 			CUtils::dump("Unknown packet from the master", m_buffer, length);
 		}
@@ -448,4 +408,13 @@ bool CHomebrewDMRIPSC::writePing()
 	::memcpy(buffer + 7U, m_id, 4U);
 
 	return m_socket.write(buffer, 11U, m_address, m_port);
+}
+
+bool CHomebrewDMRIPSC::wantsBeacon()
+{
+	bool beacon = m_beacon;
+
+	m_beacon = false;
+
+	return beacon;
 }

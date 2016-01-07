@@ -48,6 +48,8 @@ public:
 
 	bool write(const CDMRData& data);
 
+	bool wantsBeacon();
+
 	void clock(unsigned int ms);
 
 	void close();
@@ -91,6 +93,8 @@ private:
 	std::string    m_location;
 	std::string    m_description;
 	std::string    m_url;
+
+	bool           m_beacon;
 
 	bool writeLogin();
 	bool writeAuthorisation();
