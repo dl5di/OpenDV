@@ -864,7 +864,11 @@ void IRCDDBApp::doUpdate ( wxString& msg )
 
       wxDateTime dt;
 
-      if (dt.ParseFormat(tk + wxT(" ") + timeToken, wxT("%Y-%m-%d %H:%M:%S")))
+#if wxMAJOR_VERSION == 3
+      if (dt.ParseFormat(tk + wxT(" ") + timeToken, wxT("%Y-%m-%d %H:%M:%S")) == false)
+#else
+      if (dt.ParseFormat(tk + wxT(" ") + timeToken, wxT("%Y-%m-%d %H:%M:%S")) == NULL)
+#endif
       {
         return; // date+time parsing failed
       }
