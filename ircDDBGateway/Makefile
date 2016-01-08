@@ -70,5 +70,9 @@ clean:
 		make -C TimerControl clean
 		make -C TimeServer clean
 		make -C VoiceTransmit clean
-		
+
+.PHONY:	tests
+tests:	all
+		$(CC) -Wfatal-errors $(CFLAGS) -D__UNIT_TEST__ -o ./tests/Tests ./tests/Tests.cpp Common/Common.a ircDDB/libircDDB.a $(LIBS) && ./tests/Tests
+
 include package.mk

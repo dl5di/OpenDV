@@ -29,6 +29,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <wx/wx.h>
 
+#ifdef __UNIT_TEST__
+	class IRCDDBAppTest;
+#endif
+
 class IRCDDBAppPrivate;
 
 class IRCDDBApp : public IRCApplication, wxThread
@@ -93,6 +97,10 @@ class IRCDDBApp : public IRCApplication, wxThread
     wxString getIPAddress( wxString& zonerp_cs );
     bool findServerUser();
     IRCDDBAppPrivate * d;
+
+#ifdef __UNIT_TEST__
+	friend IRCDDBAppTest;
+#endif
 };
 
 

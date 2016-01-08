@@ -18,6 +18,10 @@
 
 #include <wx/wx.h>
 
+#ifdef __UNIT_TEST__
+	class SlowDataEncoderTests;
+#endif
+
 class CSlowDataEncoder {
 public:
 	CSlowDataEncoder();
@@ -36,9 +40,9 @@ public:
 	void getHeaderData(unsigned char* data);
 	void getTextData(unsigned char* data);
 	void getGPSData(unsigned char* data);
-	
+
 	void getInterleavedData(unsigned char* data);
-	
+
 	unsigned int getInterleavedDataLength();
 
 	void reset();
@@ -62,6 +66,11 @@ private:
 	unsigned int   m_gpsDataFullSize; //size including filler bytes
 
 	unsigned int   m_interleavedDataFullSize; //size of interleaved data including filler bytes
+
+#ifdef __UNIT_TEST__
+	friend SlowDataEncoderTests;
+#endif
+
 };
 
 #endif
