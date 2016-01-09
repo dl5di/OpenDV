@@ -1,0 +1,229 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{E793CB8E-2AC9-431A-BBFC-3F52537BB3CF}</ProjectGuid>
+    <RootNamespace>Common</RootNamespace>
+    <Keyword>Win32Proj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>14.0.24720.0</_ProjectFileVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
+    <IntDir>$(Configuration)\</IntDir>
+    <IncludePath>$(WXWIN)\include;$(IncludePath);$(WXWIN)\lib\vc_dll\mswud</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
+    <IntDir>$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <PreBuildEvent>
+      <Command />
+    </PreBuildEvent>
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>$(WXWIN)\include\msvc;$(WXWIN)\include;../ircDDB;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;WINVER=0x0400;__WXMSW__;WXUSINGDLL;wxUSE_GUI=1;__WXDEBUG__;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;_LIB;DCS_LINK;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PrecompiledHeader />
+      <WarningLevel>Level4</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <PreBuildEvent>
+      <Command />
+    </PreBuildEvent>
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <AdditionalIncludeDirectories>$(WXWIN)\include\msvc;$(WXWIN)\include;../ircDDB;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;WINVER=0x0400;__WXMSW__;WXUSINGDLL;wxUSE_GUI=1;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PrecompiledHeader />
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="AMBEData.cpp" />
+    <ClCompile Include="AnnouncementUnit.cpp" />
+    <ClCompile Include="APRSCollector.cpp" />
+    <ClCompile Include="APRSWriter.cpp" />
+    <ClCompile Include="APRSWriterThread.cpp" />
+    <ClCompile Include="AudioUnit.cpp" />
+    <ClCompile Include="CacheManager.cpp" />
+    <ClCompile Include="CallsignList.cpp" />
+    <ClCompile Include="CallsignServer.cpp" />
+    <ClCompile Include="CCITTChecksum.cpp" />
+    <ClCompile Include="CCSData.cpp" />
+    <ClCompile Include="CCSHandler.cpp" />
+    <ClCompile Include="CCSProtocolHandler.cpp" />
+    <ClCompile Include="ConnectData.cpp" />
+    <ClCompile Include="DCSHandler.cpp" />
+    <ClCompile Include="DCSProtocolHandler.cpp" />
+    <ClCompile Include="DCSProtocolHandlerPool.cpp" />
+    <ClCompile Include="DDData.cpp" />
+    <ClCompile Include="DDHandler.cpp" />
+    <ClCompile Include="DExtraHandler.cpp" />
+    <ClCompile Include="DExtraProtocolHandler.cpp" />
+    <ClCompile Include="DExtraProtocolHandlerPool.cpp" />
+    <ClCompile Include="DPlusAuthenticator.cpp" />
+    <ClCompile Include="DPlusHandler.cpp" />
+    <ClCompile Include="DPlusProtocolHandler.cpp" />
+    <ClCompile Include="DPlusProtocolHandlerPool.cpp" />
+    <ClCompile Include="DRATSServer.cpp" />
+    <ClCompile Include="DTMF.cpp" />
+    <ClCompile Include="DummyRepeaterProtocolHandler.cpp" />
+    <ClCompile Include="DVTOOLFileReader.cpp" />
+    <ClCompile Include="EchoUnit.cpp" />
+    <ClCompile Include="G2Handler.cpp" />
+    <ClCompile Include="G2ProtocolHandler.cpp" />
+    <ClCompile Include="GatewayCache.cpp" />
+    <ClCompile Include="HBRepeaterProtocolHandler.cpp" />
+    <ClCompile Include="HeaderData.cpp" />
+    <ClCompile Include="HeaderLogger.cpp" />
+    <ClCompile Include="HeardData.cpp" />
+    <ClCompile Include="HostFile.cpp" />
+    <ClCompile Include="IcomRepeaterProtocolHandler.cpp" />
+    <ClCompile Include="IRCDDBGatewayConfig.cpp" />
+    <ClCompile Include="LogEvent.cpp" />
+    <ClCompile Include="Logger.cpp" />
+    <ClCompile Include="PollData.cpp" />
+    <ClCompile Include="RemoteHandler.cpp" />
+    <ClCompile Include="RemoteLinkData.cpp" />
+    <ClCompile Include="RemoteProtocolHandler.cpp" />
+    <ClCompile Include="RemoteRepeaterData.cpp" />
+    <ClCompile Include="RemoteStarNetGroup.cpp" />
+    <ClCompile Include="RemoteStarNetUser.cpp" />
+    <ClCompile Include="RepeaterCache.cpp" />
+    <ClCompile Include="RepeaterHandler.cpp" />
+    <ClCompile Include="SHA256.cpp" />
+    <ClCompile Include="SlowDataEncoder.cpp" />
+    <ClCompile Include="StarNetHandler.cpp" />
+    <ClCompile Include="StatusData.cpp" />
+    <ClCompile Include="TCPReaderWriterClient.cpp" />
+    <ClCompile Include="TCPReaderWriterServer.cpp" />
+    <ClCompile Include="TextCollector.cpp" />
+    <ClCompile Include="TextData.cpp" />
+    <ClCompile Include="Timer.cpp" />
+    <ClCompile Include="UDPReaderWriter.cpp" />
+    <ClCompile Include="UserCache.cpp" />
+    <ClCompile Include="Utils.cpp" />
+    <ClCompile Include="VersionUnit.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="AMBEData.h" />
+    <ClInclude Include="AnnouncementUnit.h" />
+    <ClInclude Include="APRSCollector.h" />
+    <ClInclude Include="APRSWriter.h" />
+    <ClInclude Include="APRSWriterThread.h" />
+    <ClInclude Include="AudioUnit.h" />
+    <ClInclude Include="CacheManager.h" />
+    <ClInclude Include="CallsignList.h" />
+    <ClInclude Include="CallsignServer.h" />
+    <ClInclude Include="CCITTChecksum.h" />
+    <ClInclude Include="CCSCallback.h" />
+    <ClInclude Include="CCSData.h" />
+    <ClInclude Include="CCSHandler.h" />
+    <ClInclude Include="CCSProtocolHandler.h" />
+    <ClInclude Include="ConnectData.h" />
+    <ClInclude Include="DCSHandler.h" />
+    <ClInclude Include="DCSProtocolHandler.h" />
+    <ClInclude Include="DCSProtocolHandlerPool.h" />
+    <ClInclude Include="DDData.h" />
+    <ClInclude Include="DDHandler.h" />
+    <ClInclude Include="Defs.h" />
+    <ClInclude Include="DExtraHandler.h" />
+    <ClInclude Include="DExtraProtocolHandler.h" />
+    <ClInclude Include="DExtraProtocolHandlerPool.h" />
+    <ClInclude Include="DPlusAuthenticator.h" />
+    <ClInclude Include="DPlusHandler.h" />
+    <ClInclude Include="DPlusProtocolHandler.h" />
+    <ClInclude Include="DPlusProtocolHandlerPool.h" />
+    <ClInclude Include="DRATSServer.h" />
+    <ClInclude Include="DStarDefines.h" />
+    <ClInclude Include="DTMF.h" />
+    <ClInclude Include="DummyRepeaterProtocolHandler.h" />
+    <ClInclude Include="DVTOOLFileReader.h" />
+    <ClInclude Include="EchoUnit.h" />
+    <ClInclude Include="G2Handler.h" />
+    <ClInclude Include="G2ProtocolHandler.h" />
+    <ClInclude Include="GatewayCache.h" />
+    <ClInclude Include="HBRepeaterProtocolHandler.h" />
+    <ClInclude Include="HeaderData.h" />
+    <ClInclude Include="HeaderLogger.h" />
+    <ClInclude Include="HeardData.h" />
+    <ClInclude Include="HostFile.h" />
+    <ClInclude Include="IcomRepeaterProtocolHandler.h" />
+    <ClInclude Include="IRCDDBGatewayConfig.h" />
+    <ClInclude Include="LogEvent.h" />
+    <ClInclude Include="Logger.h" />
+    <ClInclude Include="PollData.h" />
+    <ClInclude Include="ReflectorCallback.h" />
+    <ClInclude Include="RemoteHandler.h" />
+    <ClInclude Include="RemoteLinkData.h" />
+    <ClInclude Include="RemoteProtocolHandler.h" />
+    <ClInclude Include="RemoteRepeaterData.h" />
+    <ClInclude Include="RemoteStarNetGroup.h" />
+    <ClInclude Include="RemoteStarNetUser.h" />
+    <ClInclude Include="RepeaterCache.h" />
+    <ClInclude Include="RepeaterCallback.h" />
+    <ClInclude Include="RepeaterHandler.h" />
+    <ClInclude Include="RepeaterProtocolHandler.h" />
+    <ClInclude Include="RingBuffer.h" />
+    <ClInclude Include="SHA256.h" />
+    <ClInclude Include="SlowDataEncoder.h" />
+    <ClInclude Include="StarNetHandler.h" />
+    <ClInclude Include="StatusData.h" />
+    <ClInclude Include="TCPReaderWriterClient.h" />
+    <ClInclude Include="TCPReaderWriterServer.h" />
+    <ClInclude Include="TextCollector.h" />
+    <ClInclude Include="TextData.h" />
+    <ClInclude Include="Timer.h" />
+    <ClInclude Include="UDPReaderWriter.h" />
+    <ClInclude Include="UserCache.h" />
+    <ClInclude Include="Utils.h" />
+    <ClInclude Include="Version.h" />
+    <ClInclude Include="VersionUnit.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
