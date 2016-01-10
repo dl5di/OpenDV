@@ -157,7 +157,8 @@ int CIRCDDBGatewayApp::OnExit()
 
 	wxLogInfo(APPLICATION_NAME + wxT(" is exiting"));
 
-	m_thread->kill();
+	//m_thread->kill();
+	wxGetApp().GetTopWindow()->Close();
 
 	delete m_config;
 
