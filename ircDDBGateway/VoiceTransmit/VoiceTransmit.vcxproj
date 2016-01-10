@@ -14,6 +14,7 @@
     <ProjectGuid>{27D44C4F-6849-4E15-A5BB-0B54BA296D98}</ProjectGuid>
     <RootNamespace>VoiceTransmit</RootNamespace>
     <Keyword>Win32Proj</Keyword>
+    <WindowsTargetPlatformVersion>7</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
