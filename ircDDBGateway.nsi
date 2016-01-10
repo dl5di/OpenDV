@@ -49,6 +49,7 @@ Section "Repeater Program Files" SecProgram
   File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\opendv-git\OpenDV\ircDDBGateway\Release\ircDDBGateway.exe"
   File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\opendv-git\OpenDV\ircDDBGateway\Release\ircDDBGatewayConfig.exe"
   File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\opendv-git\OpenDV\ircDDBGateway\Release\APRSTransmit.exe"
+  File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\opendv-git\OpenDV\ircDDBGateway\Release\APRSTransmitD.exe"
   File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\opendv-git\OpenDV\ircDDBGateway\Release\RemoteControl.exe"
   File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\opendv-git\OpenDV\ircDDBGateway\Release\StarNetServer.exe"
   File "C:\Users\Jonathan\Documents\Visual Studio 2008\Projects\opendv-git\OpenDV\ircDDBGateway\Release\TextTransmit.exe"
