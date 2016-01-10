@@ -27,6 +27,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GUICommon", "GUICommon\GUIC
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "APRSTransmit", "APRSTransmit\APRSTransmit.vcxproj", "{F26EA1DB-74CF-4C52-A425-00235C8ABED2}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "APRSTransmitD", "APRSTransmit\APRSTransmitD.vcxproj", "{C706EF5D-3917-4796-8BEB-823498A1B13C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -81,6 +83,10 @@ Global
 		{F26EA1DB-74CF-4C52-A425-00235C8ABED2}.Debug|Win32.Build.0 = Debug|Win32
 		{F26EA1DB-74CF-4C52-A425-00235C8ABED2}.Release|Win32.ActiveCfg = Release|Win32
 		{F26EA1DB-74CF-4C52-A425-00235C8ABED2}.Release|Win32.Build.0 = Release|Win32
+		{C706EF5D-3917-4796-8BEB-823498A1B13C}.Debug|Win32.ActiveCfg = Debug|Win32
+		{C706EF5D-3917-4796-8BEB-823498A1B13C}.Debug|Win32.Build.0 = Debug|Win32
+		{C706EF5D-3917-4796-8BEB-823498A1B13C}.Release|Win32.ActiveCfg = Release|Win32
+		{C706EF5D-3917-4796-8BEB-823498A1B13C}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

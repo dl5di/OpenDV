@@ -28,6 +28,7 @@
 
 #if defined(__WINDOWS__)
 #include <Windows.h>
+#include <wx/filename.h>
 #endif
 
 const wxChar* REPEATER_PARAM   = wxT("Repeater");
@@ -178,9 +179,8 @@ CAPRSTransmitAppD::~CAPRSTransmitAppD()
 bool CAPRSTransmitAppD::init()
 {
 #if defined(__WINDOWS__)
-	char tempPath[32766];
-	::GetTempPath(32766, tempPath);
-	m_checker = new wxSingleInstanceChecker(wxT("aprstransmit"), wxString(tempPath));
+	wxString tempPath = wxFileName::GetTempDir();
+	m_checker = new wxSingleInstanceChecker(wxT("aprstransmit"), tempPath);
 #else
 	m_checker = new wxSingleInstanceChecker(wxT("aprstransmit"), wxT("/tmp"));
 #endif
@@ -193,13 +193,15 @@ bool CAPRSTransmitAppD::init()
 #if defined(__WINDOWS__)
 	wxLog* logger = new wxLogStream(&std::cout);
 	wxLog::SetActiveTarget(logger);
+	wxLog::SetLogLevel(wxLOG_Message);
 	if(m_daemon)
-		wxLogMessage(wxT("Daemon not supported under Windows"));
+		wxLogMessage(wxT("Daemon not supported under Windows, ignoring"));
 	m_daemon = false;
 #else
 	if(!m_daemon){
 		wxLog* logger = new wxLogStream(&std::cout);
 		wxLog::SetActiveTarget(logger);
+		wxLog::SetLogLevel(wxLOG_Message);
 	} else {
 		new wxLogNull;
 	}

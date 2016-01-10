@@ -11,10 +11,10 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{AFB9BCE5-0D37-4707-93A1-DA14E39F2773}</ProjectGuid>
-    <RootNamespace>TextTransmit</RootNamespace>
+    <ProjectGuid>{C706EF5D-3917-4796-8BEB-823498A1B13C}</ProjectGuid>
+    <RootNamespace>APRSTransmit</RootNamespace>
     <Keyword>Win32Proj</Keyword>
-    <WindowsTargetPlatformVersion>7</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
@@ -43,13 +43,13 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
-    <IntDir>$(Configuration)\</IntDir>
+    <IntDir>$(Configuration)\$(ProjectName)</IntDir>
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>$(WXWIN)\include;$(WXWIN)\lib\vc_dll\mswud;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
-    <IntDir>$(Configuration)\</IntDir>
+    <IntDir>$(Configuration)\$(ProjectName)</IntDir>
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -61,7 +61,7 @@
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <PrecompiledHeader />
-      <WarningLevel>Level4</WarningLevel>
+      <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
     </ClCompile>
     <Link>
@@ -95,10 +95,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="TextTransmit.cpp" />
+    <ClCompile Include="APRSParser.cpp" />
+    <ClCompile Include="APRSTransmit.cpp" />
+    <ClCompile Include="APRSTransmitAppD.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="TextTransmit.h" />
+    <ClInclude Include="APRSParser.h" />
+    <ClInclude Include="APRSTransmit.h" />
+    <ClInclude Include="APRSTransmitAppD.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Common\Common.vcxproj">
