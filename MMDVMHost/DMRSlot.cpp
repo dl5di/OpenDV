@@ -30,6 +30,8 @@ unsigned int      CDMRSlot::m_colorCode = 0U;
 CModem*           CDMRSlot::m_modem = NULL;
 CHomebrewDMRIPSC* CDMRSlot::m_network = NULL;
 
+unsigned char*    CDMRSlot::m_idle = NULL;
+
 FLCO              CDMRSlot::m_flco1;
 unsigned char     CDMRSlot::m_id1 = 0U;
 FLCO              CDMRSlot::m_flco2;
@@ -39,7 +41,7 @@ unsigned char     CDMRSlot::m_id2 = 0U;
 
 const unsigned int NUM_QUEUES = 1U;
 
-CDMRSlot::CDMRSlot(unsigned int slotNo) :
+CDMRSlot::CDMRSlot(unsigned int slotNo, unsigned int timeout) :
 m_slotNo(slotNo),
 m_txQueue(NULL),
 m_state(SS_LISTENING),
@@ -50,6 +52,7 @@ m_n(0U),
 m_playoutTimer(NULL),
 m_networkWatchdog(1000U, 2U),
 m_lateEntryWatchdog(1000U, 1U),
+m_timeoutTimer(1000U, timeout),
 m_writeQueue(0U),
 m_readQueue(0U),
 m_fp(NULL)
@@ -79,6 +82,7 @@ void CDMRSlot::writeModem(unsigned char *data)
 	if (data[0U] == TAG_LOST && m_state == SS_RELAYING_RF) {
 		LogMessage("DMR Slot %u, transmission lost", m_slotNo);
 		setShortLC(m_slotNo, 0U);
+		m_timeoutTimer.stop();
 		m_state = SS_LISTENING;
 		return;
 	}
@@ -132,13 +136,15 @@ void CDMRSlot::writeModem(unsigned char *data)
 			m_playoutTimer[m_writeQueue]->setTimeout(0U, 50U);
 			m_playoutTimer[m_writeQueue]->start();
 
+			m_timeoutTimer.start();
+
 			writeNetwork(data, DT_VOICE_LC_HEADER);
 			writeQueue(data);
 
 			m_state = SS_RELAYING_RF;
 			setShortLC(m_slotNo, m_lc->getDstId(), m_lc->getFLCO());
 
-			LogMessage("DMR Slot %u, received RF header from %u to %s:%u", m_slotNo, m_lc->getSrcId(), m_lc->getFLCO() == FLCO_GROUP ? "Group" : "User", m_lc->getDstId());
+			LogMessage("DMR Slot %u, received RF header from %u to %s %u", m_slotNo, m_lc->getSrcId(), m_lc->getFLCO() == FLCO_GROUP ? "TG" : "", m_lc->getDstId());
 		} else if (dataType == DT_VOICE_PI_HEADER) {
 			if (m_state == SS_RELAYING_RF) {
 				// Regenerate the Slot Type
@@ -196,8 +202,11 @@ void CDMRSlot::writeModem(unsigned char *data)
 				m_state = SS_LISTENING;
 				setShortLC(m_slotNo, 0U);
 
+				m_timeoutTimer.stop();
+
 				// 480ms of idle to space things out
-				writeIdle(8U);
+				for (unsigned int i = 0U; i < 8U; i++)
+					writeQueue(m_idle);
 
 				if (dataType == DT_TERMINATOR_WITH_LC)
 					return;
@@ -289,6 +298,8 @@ void CDMRSlot::writeModem(unsigned char *data)
 				m_playoutTimer[m_writeQueue]->setTimeout(0U, 50U);
 				m_playoutTimer[m_writeQueue]->start();
 
+				m_timeoutTimer.start();
+
 				writeNetwork(start, DT_VOICE_LC_HEADER);
 				writeQueue(start);
 
@@ -309,7 +320,7 @@ void CDMRSlot::writeModem(unsigned char *data)
 				m_lateEntryWatchdog.stop();
 				setShortLC(m_slotNo, m_lc->getDstId(), m_lc->getFLCO());
 
-				LogMessage("DMR Slot %u, received RF late entry from %u to %s:%u", m_slotNo, m_lc->getSrcId(), m_lc->getFLCO() == FLCO_GROUP ? "Group" : "User", m_lc->getDstId());
+				LogMessage("DMR Slot %u, received RF late entry from %u to %s %u", m_slotNo, m_lc->getSrcId(), m_lc->getFLCO() == FLCO_GROUP ? "TG" : "", m_lc->getDstId());
 			}
 		}
 	}
@@ -345,7 +356,8 @@ void CDMRSlot::writeNetwork(const CDMRData& dmrData)
 
 	if (dataType == DT_VOICE_LC_HEADER) {
 		writeHeader(dmrData);
-		LogMessage("DMR Slot %u, received network header from %u to %s:%u", m_slotNo, m_lc->getSrcId(), m_lc->getFLCO() == FLCO_GROUP ? "Group" : "User", m_lc->getDstId());
+		m_timeoutTimer.start();
+		LogMessage("DMR Slot %u, received network header from %u to %s %u", m_slotNo, m_lc->getSrcId(), m_lc->getFLCO() == FLCO_GROUP ? "TG" : "", m_lc->getDstId());
 	} else if (dataType == DT_VOICE_PI_HEADER) {
 		if (m_state == SS_LISTENING) {
 			// We must have missed the opening header
@@ -404,6 +416,7 @@ void CDMRSlot::writeNetwork(const CDMRData& dmrData)
 		m_state = SS_LISTENING;
 		setShortLC(m_slotNo, 0U);
 		m_networkWatchdog.stop();
+		m_timeoutTimer.stop();
 
 		LogMessage("DMR Slot %u, received network end of transmission", m_slotNo);
 	} else if (dataType == DT_VOICE_SYNC) {
@@ -476,6 +489,8 @@ void CDMRSlot::writeNetwork(const CDMRData& dmrData)
 
 void CDMRSlot::clock(unsigned int ms)
 {
+	m_timeoutTimer.clock(ms);
+
 	for (unsigned int i = 0U; i < NUM_QUEUES; i++)
 		m_playoutTimer[i]->clock(ms);
 
@@ -508,7 +523,11 @@ void CDMRSlot::writeQueue(const unsigned char *data)
 	unsigned char len = DMR_FRAME_LENGTH_BYTES + 2U;
 	m_txQueue[m_writeQueue]->addData(&len, 1U);
 
-	m_txQueue[m_writeQueue]->addData(data, len);
+	// If the timeout has expired, replace the audio with idles to keep the slot busy
+	if (m_timeoutTimer.isRunning() && m_timeoutTimer.hasExpired())
+		m_txQueue[m_writeQueue]->addData(m_idle, len);
+	else
+		m_txQueue[m_writeQueue]->addData(data, len);
 }
 
 void CDMRSlot::writeNetwork(const unsigned char* data, unsigned char dataType)
@@ -516,6 +535,10 @@ void CDMRSlot::writeNetwork(const unsigned char* data, unsigned char dataType)
 	assert(m_lc != NULL);
 
 	if (m_network == NULL)
+		return;
+
+	// Don't send to the network if the timeout has expired
+	if (m_timeoutTimer.isRunning() && m_timeoutTimer.hasExpired())
 		return;
 
 	CDMRData dmrData;
@@ -564,6 +587,8 @@ void CDMRSlot::writeHeader(const CDMRData& dmrData)
 	m_state = SS_RELAYING_NETWORK;
 	setShortLC(m_slotNo, m_lc->getDstId(), m_lc->getFLCO());
 
+	LogMessage("Writing header");
+
 #if defined(DUMP_DMR)
 	openFile();
 	writeFile(data);
@@ -577,6 +602,19 @@ void CDMRSlot::init(unsigned int colorCode, CModem* modem, CHomebrewDMRIPSC* net
 	m_colorCode = colorCode;
 	m_modem     = modem;
 	m_network   = network;
+
+	m_idle = new unsigned char[DMR_FRAME_LENGTH_BYTES + 2U];
+
+	::memcpy(m_idle + 2U, IDLE_DATA, DMR_FRAME_LENGTH_BYTES);
+
+	// Generate the Slot Type
+	CSlotType slotType;
+	slotType.setColorCode(colorCode);
+	slotType.setDataType(DT_IDLE);
+	slotType.getData(m_idle + 2U);
+
+	m_idle[0U] = TAG_DATA;
+	m_idle[1U] = 0x00U;
 }
 
 void CDMRSlot::setShortLC(unsigned int slotNo, unsigned int id, FLCO flco)
@@ -645,25 +683,6 @@ void CDMRSlot::setShortLC(unsigned int slotNo, unsigned int id, FLCO flco)
 	CUtils::dump(1U, "Output Short LC", sLC, 9U);
 
 	m_modem->writeDMRShortLC(sLC);
-}
-
-void CDMRSlot::writeIdle(unsigned int count)
-{
-	unsigned char idle[DMR_FRAME_LENGTH_BYTES + 2U];
-
-	::memcpy(idle + 2U, IDLE_DATA, DMR_FRAME_LENGTH_BYTES);
-
-	// Generate the Slot Type
-	CSlotType slotType;
-	slotType.setColorCode(m_colorCode);
-	slotType.setDataType(DT_IDLE);
-	slotType.getData(idle + 2U);
-
-	idle[0U] = TAG_DATA;
-	idle[1U] = 0x00U;
-
-	for (unsigned int i = 0U; i < count; i++)
-		writeQueue(idle);
 }
 
 bool CDMRSlot::openFile()

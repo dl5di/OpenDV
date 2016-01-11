@@ -122,7 +122,7 @@ int CMMDVMHost::run()
 
 	CDMRControl* dmr = NULL;
 	if (m_dmrEnabled)
-		dmr = new CDMRControl(m_conf.getDMRId(), m_conf.getDMRColorCode(), m_modem, m_dmrNetwork);
+		dmr = new CDMRControl(m_conf.getDMRId(), m_conf.getDMRColorCode(), m_conf.getTimeout(), m_modem, m_dmrNetwork);
 
 	CYSFEcho* ysf = NULL;
 	if (m_ysfEnabled)
@@ -343,13 +343,16 @@ bool CMMDVMHost::createModem()
 
 bool CMMDVMHost::createDMRNetwork()
 {
+	if (!m_conf.getDMRNetworkEnabled())
+		return false;
+
 	std::string address  = m_conf.getDMRNetworkAddress();
 	unsigned int port    = m_conf.getDMRNetworkPort();
 	unsigned int id      = m_conf.getDMRId();
 	std::string password = m_conf.getDMRNetworkPassword();
 	m_dmrNetwork = new CHomebrewDMRIPSC(address, port, id, password, VERSION, "MMDVMHost");
 
-	std::string callsign     = m_conf.getDStarCallsign();		// XXX
+	std::string callsign     = m_conf.getCallsign();
 	unsigned int rxFrequency = m_conf.getRxFrequency();
 	unsigned int txFrequency = m_conf.getTxFrequency();
 	unsigned int power       = m_conf.getPower();

@@ -18,13 +18,13 @@
 
 #include <cassert>
 
-CDMRControl::CDMRControl(unsigned int id, unsigned int colorCode, CModem* modem, CHomebrewDMRIPSC* network) :
+CDMRControl::CDMRControl(unsigned int id, unsigned int colorCode, unsigned int timeout, CModem* modem, CHomebrewDMRIPSC* network) :
 m_id(id),
 m_colorCode(colorCode),
 m_modem(modem),
 m_network(network),
-m_slot1(1U),
-m_slot2(2U)
+m_slot1(1U, timeout),
+m_slot2(2U, timeout)
 {
 	assert(modem != NULL);
 
