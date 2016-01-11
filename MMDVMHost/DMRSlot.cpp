@@ -39,7 +39,7 @@ unsigned char     CDMRSlot::m_id2 = 0U;
 
 // #define	DUMP_DMR
 
-const unsigned int NUM_QUEUES = 1U;
+const unsigned int NUM_QUEUES = 2U;
 
 CDMRSlot::CDMRSlot(unsigned int slotNo, unsigned int timeout) :
 m_slotNo(slotNo),
@@ -81,6 +81,7 @@ void CDMRSlot::writeModem(unsigned char *data)
 {
 	if (data[0U] == TAG_LOST && m_state == SS_RELAYING_RF) {
 		LogMessage("DMR Slot %u, transmission lost", m_slotNo);
+		writeQueueEnd();
 		setShortLC(m_slotNo, 0U);
 		m_timeoutTimer.stop();
 		m_state = SS_LISTENING;
@@ -110,41 +111,46 @@ void CDMRSlot::writeModem(unsigned char *data)
 			return;
 
 		if (dataType == DT_VOICE_LC_HEADER) {
-			CFullLC fullLC;
-			CLC* lc = fullLC.decode(data + 2U, DT_VOICE_LC_HEADER);
-			if (lc == NULL)
-				return;
+			if (m_state != SS_RELAYING_RF) {
+				CFullLC fullLC;
+				CLC* lc = fullLC.decode(data + 2U, DT_VOICE_LC_HEADER);
+				if (lc == NULL)
+					return;
 
-			delete m_lc;
-			m_lc = lc;
+				delete m_lc;
+				m_lc = lc;
 
-			// Regenerate the LC
-			fullLC.encode(*m_lc, data + 2U, DT_VOICE_LC_HEADER);
+				// Regenerate the LC
+				fullLC.encode(*m_lc, data + 2U, DT_VOICE_LC_HEADER);
 
-			// Regenerate the Slot Type
-			slotType.getData(data + 2U);
+				// Regenerate the Slot Type
+				slotType.getData(data + 2U);
 
-			// Convert the Data Sync to be from the BS
-			CDMRSync sync;
-			sync.addSync(data + 2U, DST_BS_DATA);
+				// Convert the Data Sync to be from the BS
+				CDMRSync sync;
+				sync.addSync(data + 2U, DST_BS_DATA);
 
-			data[0U] = TAG_DATA;
-			data[1U] = 0x00U;
-			m_n = 0U;
+				data[0U] = TAG_DATA;
+				data[1U] = 0x00U;
+				m_n = 0U;
 
-			m_writeQueue = (m_writeQueue + 1U) % NUM_QUEUES;
-			m_playoutTimer[m_writeQueue]->setTimeout(0U, 50U);
-			m_playoutTimer[m_writeQueue]->start();
+				m_playoutTimer[m_writeQueue]->setTimeout(0U, 50U);
+				m_playoutTimer[m_writeQueue]->start();
 
-			m_timeoutTimer.start();
+				m_timeoutTimer.start();
 
-			writeNetwork(data, DT_VOICE_LC_HEADER);
-			writeQueue(data);
+				m_seqNo = 0U;
 
-			m_state = SS_RELAYING_RF;
-			setShortLC(m_slotNo, m_lc->getDstId(), m_lc->getFLCO());
+				for (unsigned i = 0U; i < 3U; i++) {
+					writeNetwork(data, DT_VOICE_LC_HEADER);
+					writeQueue(data);
+				}
 
-			LogMessage("DMR Slot %u, received RF header from %u to %s %u", m_slotNo, m_lc->getSrcId(), m_lc->getFLCO() == FLCO_GROUP ? "TG" : "", m_lc->getDstId());
+				m_state = SS_RELAYING_RF;
+				setShortLC(m_slotNo, m_lc->getDstId(), m_lc->getFLCO());
+
+				LogMessage("DMR Slot %u, received RF header from %u to %s %u", m_slotNo, m_lc->getSrcId(), m_lc->getFLCO() == FLCO_GROUP ? "TG" : "", m_lc->getDstId());
+			}
 		} else if (dataType == DT_VOICE_PI_HEADER) {
 			if (m_state == SS_RELAYING_RF) {
 				// Regenerate the Slot Type
@@ -207,6 +213,8 @@ void CDMRSlot::writeModem(unsigned char *data)
 				// 480ms of idle to space things out
 				for (unsigned int i = 0U; i < 8U; i++)
 					writeQueue(m_idle);
+
+				writeQueueEnd();
 
 				if (dataType == DT_TERMINATOR_WITH_LC)
 					return;
@@ -294,14 +302,17 @@ void CDMRSlot::writeModem(unsigned char *data)
 				start[1U] = 0x00U;
 				m_n = 0U;
 
-				m_writeQueue = (m_writeQueue + 1U) % NUM_QUEUES;
 				m_playoutTimer[m_writeQueue]->setTimeout(0U, 50U);
 				m_playoutTimer[m_writeQueue]->start();
 
 				m_timeoutTimer.start();
 
-				writeNetwork(start, DT_VOICE_LC_HEADER);
-				writeQueue(start);
+				m_seqNo = 0U;
+
+				for (unsigned int i = 0U; i < 3U; i++) {
+					writeNetwork(start, DT_VOICE_LC_HEADER);
+					writeQueue(start);
+				}
 
 				// Send the original audio frame out
 				unsigned char fid = m_lc->getFID();
@@ -339,7 +350,23 @@ unsigned int CDMRSlot::readModem(unsigned char* data)
 
 	m_txQueue[m_readQueue]->getData(data, len);
 
+	if (data[0U] == TAG_SWITCH) {
+		m_readQueue = (m_readQueue + 1U) % NUM_QUEUES;
+		return 0U;
+	}
+
 	return len;
+}
+
+void CDMRSlot::writeQueueEnd()
+{
+	unsigned char len = 1U;
+	m_txQueue[m_writeQueue]->addData(&len, 1U);
+
+	unsigned char data = TAG_SWITCH;
+	m_txQueue[m_writeQueue]->addData(&data, 1U);
+
+	m_writeQueue = (m_writeQueue + 1U) % NUM_QUEUES;
 }
 
 void CDMRSlot::writeNetwork(const CDMRData& dmrData)
@@ -355,9 +382,14 @@ void CDMRSlot::writeNetwork(const CDMRData& dmrData)
 	dmrData.getData(data + 2U);
 
 	if (dataType == DT_VOICE_LC_HEADER) {
-		writeHeader(dmrData);
-		m_timeoutTimer.start();
-		LogMessage("DMR Slot %u, received network header from %u to %s %u", m_slotNo, m_lc->getSrcId(), m_lc->getFLCO() == FLCO_GROUP ? "TG" : "", m_lc->getDstId());
+		if (m_state != SS_RELAYING_NETWORK) {
+			for (unsigned int i = 0U; i < 3U; i++)
+				writeHeader(dmrData);
+
+			m_timeoutTimer.start();
+
+			LogMessage("DMR Slot %u, received network header from %u to %s %u", m_slotNo, m_lc->getSrcId(), m_lc->getFLCO() == FLCO_GROUP ? "TG" : "", m_lc->getDstId());
+		}
 	} else if (dataType == DT_VOICE_PI_HEADER) {
 		if (m_state == SS_LISTENING) {
 			// We must have missed the opening header
@@ -382,8 +414,7 @@ void CDMRSlot::writeNetwork(const CDMRData& dmrData)
 #if defined(DUMP_DMR)
 		writeFile(data);
 #endif
-	}
-	else if (dataType == DT_TERMINATOR_WITH_LC) {
+	} else if (dataType == DT_TERMINATOR_WITH_LC) {
 		if (m_state != SS_RELAYING_NETWORK) {
 			m_state = SS_LISTENING;
 			return;
@@ -407,6 +438,7 @@ void CDMRSlot::writeNetwork(const CDMRData& dmrData)
 		data[1U] = 0x00U;
 
 		writeQueue(data);
+		writeQueueEnd();
 
 #if defined(DUMP_DMR)
 		writeFile(data);
@@ -548,6 +580,9 @@ void CDMRSlot::writeNetwork(const unsigned char* data, unsigned char dataType)
 	dmrData.setDstId(m_lc->getDstId());
 	dmrData.setFLCO(m_lc->getFLCO());
 	dmrData.setN(m_n);
+	dmrData.setSeqNo(m_seqNo);
+
+	m_seqNo++;
 
 	dmrData.setData(data + 2U);
 
@@ -578,7 +613,6 @@ void CDMRSlot::writeHeader(const CDMRData& dmrData)
 	data[0U] = TAG_DATA;
 	data[1U] = 0x00U;
 
-	m_writeQueue = (m_writeQueue + 1U) % NUM_QUEUES;
 	m_playoutTimer[m_writeQueue]->setTimeout(0U, 500U);
 	m_playoutTimer[m_writeQueue]->start();
 
@@ -586,8 +620,6 @@ void CDMRSlot::writeHeader(const CDMRData& dmrData)
 
 	m_state = SS_RELAYING_NETWORK;
 	setShortLC(m_slotNo, m_lc->getDstId(), m_lc->getFLCO());
-
-	LogMessage("Writing header");
 
 #if defined(DUMP_DMR)
 	openFile();

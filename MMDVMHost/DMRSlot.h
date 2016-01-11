@@ -83,6 +83,8 @@ private:
 	void writeQueue(const unsigned char* data);
 	void writeNetwork(const unsigned char* data, unsigned char dataType);
 
+	void writeQueueEnd();
+
 	bool openFile();
 	bool writeFile(const unsigned char* data);
 	void closeFile();

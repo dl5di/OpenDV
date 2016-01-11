@@ -350,7 +350,8 @@ bool CMMDVMHost::createDMRNetwork()
 	unsigned int port    = m_conf.getDMRNetworkPort();
 	unsigned int id      = m_conf.getDMRId();
 	std::string password = m_conf.getDMRNetworkPassword();
-	m_dmrNetwork = new CHomebrewDMRIPSC(address, port, id, password, VERSION, "MMDVMHost");
+	bool debug           = m_conf.getDMRNetworkDebug();
+	m_dmrNetwork = new CHomebrewDMRIPSC(address, port, id, password, VERSION, "MMDVMHost", debug);
 
 	std::string callsign     = m_conf.getCallsign();
 	unsigned int rxFrequency = m_conf.getRxFrequency();

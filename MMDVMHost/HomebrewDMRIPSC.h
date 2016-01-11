@@ -37,7 +37,7 @@ typedef unsigned char  uint8_t;
 class CHomebrewDMRIPSC
 {
 public:
-	CHomebrewDMRIPSC(const std::string& address, unsigned int port, unsigned int id, const std::string& password, const char* software, const char* version);
+	CHomebrewDMRIPSC(const std::string& address, unsigned int port, unsigned int id, const std::string& password, const char* software, const char* version, bool debug);
 	~CHomebrewDMRIPSC();
 
 	void setConfig(const std::string& callsign, unsigned int rxFrequency, unsigned int txFrequency, unsigned int power, unsigned int colorCode, float latitude, float longitude, int height, const std::string& location, const std::string& description, const std::string& url);
@@ -59,6 +59,7 @@ private:
 	unsigned int m_port;
 	uint8_t*     m_id;
 	std::string  m_password;
+	bool         m_debug;
 	const char*  m_software;
 	const char*  m_version;
 	CUDPSocket   m_socket;
@@ -78,7 +79,6 @@ private:
 	unsigned char* m_buffer;
 	unsigned char* m_salt;
 	uint32_t*      m_streamId;
-	uint8_t*       m_seqNo;
 
 	CRingBuffer<unsigned char> m_rxData;
 
@@ -100,6 +100,8 @@ private:
 	bool writeAuthorisation();
 	bool writeConfig();
 	bool writePing();
+
+	bool write(const unsigned char* data, unsigned int length);
 };
 
 #endif

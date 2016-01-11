@@ -80,17 +80,20 @@ public:
   std::string  getDStarGatewayAddress() const;
   unsigned int getDStarGatewayPort() const;
   unsigned int getDStarLocalPort() const;
+  bool         getDStarNetworkDebug() const;
 
   // The DMR Network section
   bool         getDMRNetworkEnabled() const;
   std::string  getDMRNetworkAddress() const;
   unsigned int getDMRNetworkPort() const;
   std::string  getDMRNetworkPassword() const;
+  bool         getDMRNetworkDebug() const;
 
   // The System Fusion Network section
   bool         getFusionNetworkEnabled() const;
   std::string  getFusionNetworkAddress() const;
   unsigned int getFusionNetworkPort() const;
+  bool         getFusionNetworkDebug() const;
 
   // The TFTSERIAL section
   std::string  getTFTSerialPort() const;
@@ -140,15 +143,18 @@ private:
   std::string  m_dstarGatewayAddress;
   unsigned int m_dstarGatewayPort;
   unsigned int m_dstarLocalPort;
+  bool         m_dstarNetworkDebug;
 
   bool         m_dmrNetworkEnabled;
   std::string  m_dmrNetworkAddress;
   unsigned int m_dmrNetworkPort;
   std::string  m_dmrNetworkPassword;
+  bool         m_dmrNetworkDebug;
 
   bool         m_fusionNetworkEnabled;
   unsigned int m_fusionNetworkPort;
   std::string  m_fusionNetworkAddress;
+  bool         m_fusionNetworkDebug;
 
   std::string  m_tftSerialPort;
 };

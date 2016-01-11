@@ -78,13 +78,16 @@ m_dstarNetworkEnabled(true),
 m_dstarGatewayAddress(),
 m_dstarGatewayPort(0U),
 m_dstarLocalPort(0U),
+m_dstarNetworkDebug(false),
 m_dmrNetworkEnabled(true),
 m_dmrNetworkAddress(),
 m_dmrNetworkPort(0U),
 m_dmrNetworkPassword(),
+m_dmrNetworkDebug(false),
 m_fusionNetworkEnabled(false),
 m_fusionNetworkAddress(),
 m_fusionNetworkPort(0U),
+m_fusionNetworkDebug(false),
 m_tftSerialPort()
 {
 }
@@ -129,7 +132,7 @@ bool CConf::read()
         section = SECTION_DMR_NETWORK;
       else if (::strncmp(buffer, "[System Fusion Network]", 23U) == 0)
         section = SECTION_FUSION_NETWORK;
-      else if (::strncmp(buffer, "[TFTSERIAL]", 11U) == 0)
+      else if (::strncmp(buffer, "[TFT Serial]", 11U) == 0)
         section = SECTION_TFTSERIAL;
       else
         section = SECTION_NONE;
@@ -222,6 +225,8 @@ bool CConf::read()
 			m_dstarGatewayPort = (unsigned int)::atoi(value);
 		else if (::strcmp(key, "LocalPort") == 0)
 			m_dstarLocalPort = (unsigned int)::atoi(value);
+		else if (::strcmp(key, "Debug") == 0)
+			m_dstarNetworkDebug = ::atoi(value) == 1;
 	} else if (section == SECTION_DMR_NETWORK) {
 		if (::strcmp(key, "Enabled") == 0)
 			m_dmrNetworkEnabled = ::atoi(value) == 1;
@@ -231,13 +236,17 @@ bool CConf::read()
 			m_dmrNetworkPort = (unsigned int)::atoi(value);
 		else if (::strcmp(key, "Password") == 0)
 			m_dmrNetworkPassword = value;
-    } else if (section == SECTION_FUSION_NETWORK) {
+		else if (::strcmp(key, "Debug") == 0)
+			m_dmrNetworkDebug = ::atoi(value) == 1;
+	} else if (section == SECTION_FUSION_NETWORK) {
 		if (::strcmp(key, "Enabled") == 0)
 			m_fusionNetworkEnabled = ::atoi(value) == 1;
 		else if (::strcmp(key, "Address") == 0)
 			m_fusionNetworkAddress = value;
 		else if (::strcmp(key, "Port") == 0)
 			m_fusionNetworkPort = (unsigned int)::atoi(value);
+		else if (::strcmp(key, "Debug") == 0)
+			m_fusionNetworkDebug = ::atoi(value) == 1;
 	} else if (section == SECTION_TFTSERIAL) {
 		if (::strcmp(key, "Port") == 0)
 			m_tftSerialPort = value;
@@ -429,6 +438,11 @@ unsigned int CConf::getDStarLocalPort() const
   return m_dstarLocalPort;
 }
 
+bool CConf::getDStarNetworkDebug() const
+{
+	return m_dstarNetworkDebug;
+}
+
 bool CConf::getDMRNetworkEnabled() const
 {
 	return m_dmrNetworkEnabled;
@@ -449,6 +463,11 @@ std::string CConf::getDMRNetworkPassword() const
   return m_dmrNetworkPassword;
 }
 
+bool CConf::getDMRNetworkDebug() const
+{
+	return m_dmrNetworkDebug;
+}
+
 bool CConf::getFusionNetworkEnabled() const
 {
 	return m_fusionNetworkEnabled;
@@ -462,6 +481,11 @@ std::string CConf::getFusionNetworkAddress() const
 unsigned int CConf::getFusionNetworkPort() const
 {
   return m_fusionNetworkPort;
+}
+
+bool CConf::getFusionNetworkDebug() const
+{
+	return m_fusionNetworkDebug;
 }
 
 std::string CConf::getTFTSerialPort() const
