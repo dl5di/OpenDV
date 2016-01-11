@@ -38,8 +38,8 @@ CCallsignList*           CDCSHandler::m_blackList = NULL;
 
 
 CDCSHandler::CDCSHandler(IReflectorCallback* handler, const wxString& reflector, const wxString& repeater, CDCSProtocolHandler* protoHandler, const in_addr& address, unsigned int port, DIRECTION direction) :
-m_reflector(reflector),
-m_repeater(repeater),
+m_reflector(reflector.Clone()),
+m_repeater(repeater.Clone()),
 m_handler(protoHandler),
 m_yourAddress(address),
 m_yourPort(port),
