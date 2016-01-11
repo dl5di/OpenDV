@@ -73,8 +73,7 @@ m_header(NULL)
 
 	m_time = ::time(NULL);
 
-	m_callsign.Append(wxT("                      "));
-	m_callsign.Truncate(LONG_CALLSIGN_LENGTH);
+	m_callsign.resize(LONG_CALLSIGN_LENGTH, ' ');
 	wxChar band = m_repeater.GetChar(LONG_CALLSIGN_LENGTH - 1U);
 	m_callsign.SetChar(LONG_CALLSIGN_LENGTH - 1U, band);
 }
