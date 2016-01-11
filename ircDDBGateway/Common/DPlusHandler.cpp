@@ -42,9 +42,9 @@ CCallsignList*             CDPlusHandler::m_blackList = NULL;
 
 
 CDPlusHandler::CDPlusHandler(IReflectorCallback* handler, const wxString& repeater, const wxString& reflector, CDPlusProtocolHandler* protoHandler, const in_addr& address, unsigned int port) :
-m_repeater(repeater),
-m_callsign(m_dplusLogin),
-m_reflector(reflector),
+m_repeater(repeater.Clone()),
+m_callsign(m_dplusLogin.Clone()),
+m_reflector(reflector.Clone()),
 m_handler(protoHandler),
 m_yourAddress(address),
 m_yourPort(port),
@@ -73,7 +73,9 @@ m_header(NULL)
 
 	m_time = ::time(NULL);
 
-	wxChar band = repeater.GetChar(LONG_CALLSIGN_LENGTH - 1U);
+	m_callsign.Append(wxT("                      "));
+	m_callsign.Truncate(LONG_CALLSIGN_LENGTH);
+	wxChar band = m_repeater.GetChar(LONG_CALLSIGN_LENGTH - 1U);
 	m_callsign.SetChar(LONG_CALLSIGN_LENGTH - 1U, band);
 }
 
