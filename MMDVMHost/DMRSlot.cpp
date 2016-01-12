@@ -85,6 +85,8 @@ void CDMRSlot::writeModem(unsigned char *data)
 		setShortLC(m_slotNo, 0U);
 		m_timeoutTimer.stop();
 		m_state = SS_LISTENING;
+		delete m_lc;
+		m_lc = NULL;
 		return;
 	}
 
@@ -113,12 +115,11 @@ void CDMRSlot::writeModem(unsigned char *data)
 		if (dataType == DT_VOICE_LC_HEADER) {
 			if (m_state != SS_RELAYING_RF) {
 				CFullLC fullLC;
-				CLC* lc = fullLC.decode(data + 2U, DT_VOICE_LC_HEADER);
-				if (lc == NULL)
+				m_lc = fullLC.decode(data + 2U, DT_VOICE_LC_HEADER);
+				if (m_lc == NULL) {
+					LogMessage("DMR Slot %u: unable to decode the LC", m_slotNo);
 					return;
-
-				delete m_lc;
-				m_lc = lc;
+				}
 
 				// Regenerate the LC
 				fullLC.encode(*m_lc, data + 2U, DT_VOICE_LC_HEADER);
@@ -216,6 +217,9 @@ void CDMRSlot::writeModem(unsigned char *data)
 
 				writeQueueEnd();
 
+				delete m_lc;
+				m_lc = NULL;
+
 				if (dataType == DT_TERMINATOR_WITH_LC)
 					return;
 			}
@@ -279,11 +283,8 @@ void CDMRSlot::writeModem(unsigned char *data)
 			if (colorCode != m_colorCode)
 				return;
 
-			CLC* lc = m_embeddedLC.addData(data + 2U, emb.getLCSS());
-			if (lc != NULL) {
-				delete m_lc;
-				m_lc = lc;
-
+			m_lc = m_embeddedLC.addData(data + 2U, emb.getLCSS());
+			if (m_lc != NULL) {
 				// Create a dummy start frame to replace the received frame
 				unsigned char start[DMR_FRAME_LENGTH_BYTES + 2U];
 
@@ -352,6 +353,7 @@ unsigned int CDMRSlot::readModem(unsigned char* data)
 
 	if (data[0U] == TAG_SWITCH) {
 		m_readQueue = (m_readQueue + 1U) % NUM_QUEUES;
+		LogDebug("DMR Slot %u: read queue set to %u", m_slotNo, m_readQueue);
 		return 0U;
 	}
 
@@ -367,6 +369,7 @@ void CDMRSlot::writeQueueEnd()
 	m_txQueue[m_writeQueue]->addData(&data, 1U);
 
 	m_writeQueue = (m_writeQueue + 1U) % NUM_QUEUES;
+	LogDebug("DMR Slot %u: write queue set to %u", m_slotNo, m_writeQueue);
 }
 
 void CDMRSlot::writeNetwork(const CDMRData& dmrData)
@@ -383,16 +386,20 @@ void CDMRSlot::writeNetwork(const CDMRData& dmrData)
 
 	if (dataType == DT_VOICE_LC_HEADER) {
 		if (m_state != SS_RELAYING_NETWORK) {
-			for (unsigned int i = 0U; i < 3U; i++)
-				writeHeader(dmrData);
+			CFullLC fullLC;
+			m_lc = fullLC.decode(data + 2U, DT_VOICE_LC_HEADER);
+			if (m_lc == NULL)
+				m_lc = new CLC(dmrData.getFLCO(), dmrData.getSrcId(), dmrData.getDstId());
 
-			m_timeoutTimer.start();
+			writeHeader(dmrData);
 
 			LogMessage("DMR Slot %u, received network header from %u to %s %u", m_slotNo, m_lc->getSrcId(), m_lc->getFLCO() == FLCO_GROUP ? "TG" : "", m_lc->getDstId());
 		}
 	} else if (dataType == DT_VOICE_PI_HEADER) {
 		if (m_state == SS_LISTENING) {
 			// We must have missed the opening header
+			m_lc = new CLC(dmrData.getFLCO(), dmrData.getSrcId(), dmrData.getDstId());
+
 			writeHeader(dmrData);
 		}
 
@@ -450,10 +457,15 @@ void CDMRSlot::writeNetwork(const CDMRData& dmrData)
 		m_networkWatchdog.stop();
 		m_timeoutTimer.stop();
 
+		delete m_lc;
+		m_lc = NULL;
+
 		LogMessage("DMR Slot %u, received network end of transmission", m_slotNo);
 	} else if (dataType == DT_VOICE_SYNC) {
 		if (m_state == SS_LISTENING) {
 			// We must have missed the opening header
+			m_lc = new CLC(dmrData.getFLCO(), dmrData.getSrcId(), dmrData.getDstId());
+
 			writeHeader(dmrData);
 		}
 
@@ -476,6 +488,8 @@ void CDMRSlot::writeNetwork(const CDMRData& dmrData)
 	} else if (dataType == DT_VOICE) {
 		if (m_state == SS_LISTENING) {
 			// We must have missed the opening header
+			m_lc = new CLC(dmrData.getFLCO(), dmrData.getSrcId(), dmrData.getDstId());
+
 			writeHeader(dmrData);
 		}
 
@@ -533,7 +547,11 @@ void CDMRSlot::clock(unsigned int ms)
 			LogMessage("DMR Slot %u, network watchdog has expired", m_slotNo);
 			setShortLC(m_slotNo, 0U);
 			m_networkWatchdog.stop();
+			m_timeoutTimer.stop();
+			writeQueueEnd();
 			m_state = SS_LISTENING;
+			delete m_lc;
+			m_lc = NULL;
 #if defined(DUMP_DMR)
 			closeFile();
 #endif
@@ -591,9 +609,6 @@ void CDMRSlot::writeNetwork(const unsigned char* data, unsigned char dataType)
 
 void CDMRSlot::writeHeader(const CDMRData& dmrData)
 {
-	delete m_lc;
-	m_lc = new CLC(dmrData.getFLCO(), dmrData.getSrcId(), dmrData.getDstId());
-
 	unsigned char data[DMR_FRAME_LENGTH_BYTES + 2U];
 
 	// Regenerate the LC
@@ -616,7 +631,10 @@ void CDMRSlot::writeHeader(const CDMRData& dmrData)
 	m_playoutTimer[m_writeQueue]->setTimeout(0U, 500U);
 	m_playoutTimer[m_writeQueue]->start();
 
-	writeQueue(data);
+	m_timeoutTimer.start();
+
+	for (unsigned int i = 0U; i < 3U; i++)
+		writeQueue(data);
 
 	m_state = SS_RELAYING_NETWORK;
 	setShortLC(m_slotNo, m_lc->getDstId(), m_lc->getFLCO());

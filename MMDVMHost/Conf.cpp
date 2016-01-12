@@ -100,7 +100,7 @@ bool CConf::read()
 {
   FILE* fp = ::fopen(m_file.c_str(), "rt");
   if (fp == NULL) {
-    LogError("Couldn't open the .ini file - %s", m_file.c_str());
+    ::fprintf(stderr, "Couldn't open the .ini file - %s\n", m_file.c_str());
     return false;
   }
 
@@ -149,11 +149,11 @@ bool CConf::read()
 		if (::strcmp(key, "Callsign") == 0)
 			m_callsign = value;
 		else if (::strcmp(key, "Timeout") == 0)
-			m_timeout = ::atoi(value);
+			m_timeout = (unsigned int)::atoi(value);
 		else if (::strcmp(key, "Duplex") == 0)
 			m_duplex = ::atoi(value) == 1;
 		else if (::strcmp(key, "ModeHang") == 0)
-			m_modeHang = ::atoi(value);
+			m_modeHang = (unsigned int)::atoi(value);
 		else if (::strcmp(key, "Display") == 0)
 			m_display = value;
 	} else if (section == SECTION_INFO) {
@@ -176,13 +176,13 @@ bool CConf::read()
 		else if (::strcmp(key, "URL") == 0)
 			m_url = value;
 	} else if (section == SECTION_LOG) {
-		if (::strcmp(key, "LogPath") == 0)
+		if (::strcmp(key, "Path") == 0)
 			m_logPath = value;
-		else if (::strcmp(key, "LogRoot") == 0)
+		else if (::strcmp(key, "Root") == 0)
 			m_logRoot = value;
-		else if (::strcmp(key, "LogLevel") == 0)
-			m_logLevel = ::atoi(value);
-		else if (::strcmp(key, "LogDisplay") == 0)
+		else if (::strcmp(key, "Level") == 0)
+			m_logLevel = (unsigned int)::atoi(value);
+		else if (::strcmp(key, "Display") == 0)
 			m_logDisplay = ::atoi(value) == 1;
 	} else if (section == SECTION_MODEM) {
 		if (::strcmp(key, "Port") == 0)
@@ -194,11 +194,11 @@ bool CConf::read()
 		else if (::strcmp(key, "PTTInvert") == 0)
 			m_modemPTTInvert = ::atoi(value) == 1;
 		else if (::strcmp(key, "TXDelay") == 0)
-			m_modemTXDelay = ::atoi(value);
+			m_modemTXDelay = (unsigned int)::atoi(value);
 		else if (::strcmp(key, "RXLevel") == 0)
-			m_modemRXLevel = ::atoi(value);
+			m_modemRXLevel = (unsigned int)::atoi(value);
 		else if (::strcmp(key, "TXLevel") == 0)
-			m_modemTXLevel = ::atoi(value);
+			m_modemTXLevel = (unsigned int)::atoi(value);
 		else if (::strcmp(key, "Debug") == 0)
 			m_modemDebug = ::atoi(value) == 1;
 	} else if (section == SECTION_DSTAR) {
@@ -210,9 +210,9 @@ bool CConf::read()
 		if (::strcmp(key, "Enabled") == 0)
 			m_dmrEnabled = ::atoi(value) == 1;
 		else if (::strcmp(key, "Id") == 0)
-			m_dmrId = ::atoi(value);
+			m_dmrId = (unsigned int)::atoi(value);
 		else if (::strcmp(key, "ColorCode") == 0)
-			m_dmrColorCode = ::atoi(value);
+			m_dmrColorCode = (unsigned int)::atoi(value);
 	} else if (section == SECTION_FUSION) {
 		if (::strcmp(key, "Enabled") == 0)
 			m_fusionEnabled = ::atoi(value) == 1;
