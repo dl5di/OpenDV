@@ -37,7 +37,7 @@ enum SLOT_STATE {
 
 class CDMRSlot {
 public:
-	CDMRSlot(unsigned int slotNo);
+	CDMRSlot(unsigned int slotNo, unsigned int timeout);
 	~CDMRSlot();
 
 	void writeModem(unsigned char* data);
@@ -63,6 +63,7 @@ private:
 	CTimer**                     m_playoutTimer;
 	CTimer                       m_networkWatchdog;
 	CTimer                       m_lateEntryWatchdog;
+	CTimer                       m_timeoutTimer;
 	unsigned int                 m_writeQueue;
 	unsigned int                 m_readQueue;
 	FILE*                        m_fp;
@@ -70,6 +71,8 @@ private:
 	static unsigned int        m_colorCode;
 	static CModem*             m_modem;
 	static CHomebrewDMRIPSC*   m_network;
+
+	static unsigned char*      m_idle;
 
 	static FLCO                m_flco1;
 	static unsigned char       m_id1;
@@ -79,7 +82,8 @@ private:
 	void writeHeader(const CDMRData& data);
 	void writeQueue(const unsigned char* data);
 	void writeNetwork(const unsigned char* data, unsigned char dataType);
-	void writeIdle(unsigned int count = 1U);
+
+	void writeQueueEnd();
 
 	bool openFile();
 	bool writeFile(const unsigned char* data);

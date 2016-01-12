@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2015 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2015,2016 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -109,10 +109,7 @@ unsigned char CQR1676::decode(const unsigned char* data)
 	unsigned int syndrome = getSyndrome1576(code);
 	unsigned int error_pattern = DECODING_TABLE_1576[syndrome];
 
-	if (error_pattern != 0x00U) {
-		LogMessage("*** Fixed EMB FEC");
-		code ^= error_pattern;
-	}
+	code ^= error_pattern;
 
 	return code >> 7;
 }

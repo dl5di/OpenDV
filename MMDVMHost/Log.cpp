@@ -59,7 +59,7 @@ static bool LogOpen()
 	::sprintf(filename, "%s/%s-%04d-%02d-%02d.log", m_path.c_str(), m_root.c_str(), tm->tm_year + 1900, tm->tm_mon + 1, tm->tm_mday);
 #endif
 
-    m_fpLog = ::fopen(filename, "a+t");
+	m_fpLog = ::fopen(filename, "a+t");
 	m_tm = *tm;
 
     return m_fpLog != NULL;

@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2015 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2015,2016 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -30,24 +30,13 @@ public:
   bool read();
 
   // The General section
-  unsigned int getDMRId() const;
-  unsigned int getDMRColorCode() const;
-  std::string  getDStarCallsign() const;
-  std::string  getFusionCallsign() const;
+  std::string  getCallsign() const;
+  unsigned int getTimeout() const;
   bool         getDuplex() const;
   unsigned int getModeHang() const;
+  std::string  getDisplay() const;
 
-  bool         getDStarEnabled() const;
-  bool         getDMREnabled() const;
-  bool         getFusionEnabled() const;
-
-  std::string  getLogPath() const;
-  std::string  getLogRoot() const;
-  unsigned int getLogLevel() const;
-  bool         getLogDisplay() const;
-  bool         getSourceDump() const;
-  bool         getSinkDump() const;
-
+  // The Info section
   unsigned int getRxFrequency() const;
   unsigned int getTxFrequency() const;
   unsigned int getPower() const;
@@ -58,19 +47,11 @@ public:
   std::string  getDescription() const;
   std::string  getURL() const;
 
-  // The D-Star Network section
-  unsigned int getDStarLocalPort() const;
-  std::string  getDStarRemoteAddress() const;
-  unsigned int getDStarRemotePort() const;
-
-  // The DMR Network section
-  std::string  getDMRNetworkAddress() const;
-  unsigned int getDMRNetworkPort() const;
-  std::string  getDMRNetworkPassword() const;
-
-  // The System Fusion Network section
-  std::string  getFusionNetworkAddress() const;
-  unsigned int getFusionNetworkPort() const;
+  // The Log section
+  std::string  getLogPath() const;
+  std::string  getLogRoot() const;
+  unsigned int getLogLevel() const;
+  bool         getLogDisplay() const;
 
   // The Modem section
   std::string  getModemPort() const;
@@ -82,28 +63,48 @@ public:
   unsigned int getModemTXLevel() const;
   bool         getModemDebug() const;
 
+  // The D-Star section
+  bool         getDStarEnabled() const;
+  std::string  getDStarModule() const;
+
+  // The DMR section
+  bool         getDMREnabled() const;
+  unsigned int getDMRId() const;
+  unsigned int getDMRColorCode() const;
+
+  // The System Fusion section
+  bool         getFusionEnabled() const;
+
+  // The D-Star Network section
+  bool         getDStarNetworkEnabled() const;
+  std::string  getDStarGatewayAddress() const;
+  unsigned int getDStarGatewayPort() const;
+  unsigned int getDStarLocalPort() const;
+  bool         getDStarNetworkDebug() const;
+
+  // The DMR Network section
+  bool         getDMRNetworkEnabled() const;
+  std::string  getDMRNetworkAddress() const;
+  unsigned int getDMRNetworkPort() const;
+  std::string  getDMRNetworkPassword() const;
+  bool         getDMRNetworkDebug() const;
+
+  // The System Fusion Network section
+  bool         getFusionNetworkEnabled() const;
+  std::string  getFusionNetworkAddress() const;
+  unsigned int getFusionNetworkPort() const;
+  bool         getFusionNetworkDebug() const;
+
   // The TFTSERIAL section
   std::string  getTFTSerialPort() const;
 
 private:
   std::string  m_file;
-  unsigned int m_dmrId;
-  unsigned int m_dmrColorCode;
-  std::string  m_dstarCallsign;
-  std::string  m_fusionCallsign;
+  std::string  m_callsign;
+  unsigned int m_timeout;
   bool         m_duplex;
   unsigned int m_modeHang;
-
-  bool         m_dstarEnabled;
-  bool         m_dmrEnabled;
-  bool         m_fusionEnabled;
-
-  std::string  m_logPath;
-  std::string  m_logRoot;
-  unsigned int m_logLevel;
-  bool         m_logDisplay;
-  bool         m_sourceDump;
-  bool         m_sinkDump;
+  std::string  m_display;
 
   unsigned int m_rxFrequency;
   unsigned int m_txFrequency;
@@ -115,16 +116,10 @@ private:
   std::string  m_description;
   std::string  m_url;
 
-  unsigned int m_dstarLocalPort;
-  std::string  m_dstarRemoteAddress;
-  unsigned int m_dstarRemotePort;
-
-  std::string  m_dmrNetworkAddress;
-  unsigned int m_dmrNetworkPort;
-  std::string  m_dmrNetworkPassword;
-
-  unsigned int m_fusionNetworkPort;
-  std::string  m_fusionNetworkAddress;
+  unsigned int m_logLevel;
+  std::string  m_logPath;
+  std::string  m_logRoot;
+  bool         m_logDisplay;
 
   std::string  m_modemPort;
   bool         m_modemRXInvert;
@@ -134,6 +129,32 @@ private:
   unsigned int m_modemRXLevel;
   unsigned int m_modemTXLevel;
   bool         m_modemDebug;
+
+  bool         m_dstarEnabled;
+  std::string  m_dstarModule;
+
+  bool         m_dmrEnabled;
+  unsigned int m_dmrId;
+  unsigned int m_dmrColorCode;
+
+  bool         m_fusionEnabled;
+
+  bool         m_dstarNetworkEnabled;
+  std::string  m_dstarGatewayAddress;
+  unsigned int m_dstarGatewayPort;
+  unsigned int m_dstarLocalPort;
+  bool         m_dstarNetworkDebug;
+
+  bool         m_dmrNetworkEnabled;
+  std::string  m_dmrNetworkAddress;
+  unsigned int m_dmrNetworkPort;
+  std::string  m_dmrNetworkPassword;
+  bool         m_dmrNetworkDebug;
+
+  bool         m_fusionNetworkEnabled;
+  unsigned int m_fusionNetworkPort;
+  std::string  m_fusionNetworkAddress;
+  bool         m_fusionNetworkDebug;
 
   std::string  m_tftSerialPort;
 };

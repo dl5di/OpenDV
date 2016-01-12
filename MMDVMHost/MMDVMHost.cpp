@@ -81,8 +81,6 @@ CMMDVMHost::~CMMDVMHost()
 
 int CMMDVMHost::run()
 {
-	::fprintf(stdout, "MMDVMHost-%s\n%s", VERSION, HEADER);
-
 	bool ret = m_conf.read();
 	if (!ret) {
 		::fprintf(stderr, "MMDVMHost: cannot read the .ini file\n");
@@ -121,8 +119,18 @@ int CMMDVMHost::run()
 		dstar = new CDStarEcho(2U, 10000U);
 
 	CDMRControl* dmr = NULL;
-	if (m_dmrEnabled)
-		dmr = new CDMRControl(m_conf.getDMRId(), m_conf.getDMRColorCode(), m_modem, m_dmrNetwork);
+	if (m_dmrEnabled) {
+		unsigned int id        = m_conf.getDMRId();
+		unsigned int colorCode = m_conf.getDMRColorCode();
+		unsigned int timeout   = m_conf.getTimeout();
+
+		LogInfo("DMR Parameters");
+		LogInfo("\tId: %u", id);
+		LogInfo("\tColor Code: %u", colorCode);
+		LogInfo("\tTimeout: %us", timeout);
+
+		dmr = new CDMRControl(id, colorCode, timeout, m_modem, m_dmrNetwork);
+	}
 
 	CYSFEcho* ysf = NULL;
 	if (m_ysfEnabled)
@@ -327,6 +335,15 @@ bool CMMDVMHost::createModem()
     bool debug             = m_conf.getModemDebug();
 	unsigned int colorCode = m_conf.getDMRColorCode();
 
+	LogInfo("Modem Parameters");
+	LogInfo("\tPort: %s", port.c_str());
+	LogInfo("\tRX Invert: %s", rxInvert ? "yes" : "no");
+	LogInfo("\tTX Invert: %s", txInvert ? "yes" : "no");
+	LogInfo("\tPTT Invert: %s", pttInvert ? "yes" : "no");
+	LogInfo("\tTX Delay: %u", txDelay);
+	LogInfo("\tRX Level: %u", rxLevel);
+	LogInfo("\tTX Level: %u", txLevel);
+
 	m_modem = new CModem(port, rxInvert, txInvert, pttInvert, txDelay, rxLevel, txLevel, debug);
 	m_modem->setModeParams(m_dstarEnabled, m_dmrEnabled, m_ysfEnabled);
 	m_modem->setDMRParams(colorCode);
@@ -343,13 +360,22 @@ bool CMMDVMHost::createModem()
 
 bool CMMDVMHost::createDMRNetwork()
 {
+	if (!m_conf.getDMRNetworkEnabled())
+		return false;
+
 	std::string address  = m_conf.getDMRNetworkAddress();
 	unsigned int port    = m_conf.getDMRNetworkPort();
 	unsigned int id      = m_conf.getDMRId();
 	std::string password = m_conf.getDMRNetworkPassword();
-	m_dmrNetwork = new CHomebrewDMRIPSC(address, port, id, password, VERSION, "MMDVMHost");
+	bool debug           = m_conf.getDMRNetworkDebug();
 
-	std::string callsign     = m_conf.getDStarCallsign();		// XXX
+	LogInfo("DMR Network Parameters");
+	LogInfo("\tAddress: %s", address.c_str());
+	LogInfo("\tPort: %u", port);
+
+	m_dmrNetwork = new CHomebrewDMRIPSC(address, port, id, password, VERSION, "MMDVMHost", debug);
+
+	std::string callsign     = m_conf.getCallsign();
 	unsigned int rxFrequency = m_conf.getRxFrequency();
 	unsigned int txFrequency = m_conf.getTxFrequency();
 	unsigned int power       = m_conf.getPower();
@@ -360,6 +386,7 @@ bool CMMDVMHost::createDMRNetwork()
 	std::string location     = m_conf.getLocation();
 	std::string description  = m_conf.getDescription();
 	std::string url          = m_conf.getURL();
+
 	m_dmrNetwork->setConfig(callsign, rxFrequency, txFrequency, power, colorCode, latitude, longitude, height, location, description, url);
 
 	bool ret = m_dmrNetwork->open();

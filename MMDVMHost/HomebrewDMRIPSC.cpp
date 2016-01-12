@@ -29,11 +29,12 @@ const unsigned int BUFFER_LENGTH = 500U;
 const unsigned int HOMEBREW_DATA_PACKET_LENGTH = 53U;
 
 
-CHomebrewDMRIPSC::CHomebrewDMRIPSC(const std::string& address, unsigned int port, unsigned int id, const std::string& password, const char* software, const char* version) :
+CHomebrewDMRIPSC::CHomebrewDMRIPSC(const std::string& address, unsigned int port, unsigned int id, const std::string& password, const char* software, const char* version, bool debug) :
 m_address(),
 m_port(port),
 m_id(NULL),
 m_password(password),
+m_debug(debug),
 m_software(software),
 m_version(version),
 m_socket(),
@@ -44,7 +45,6 @@ m_pingTimer(1000U, 5U),
 m_buffer(NULL),
 m_salt(NULL),
 m_streamId(NULL),
-m_seqNo(NULL),
 m_rxData(1000U),
 m_callsign(),
 m_rxFrequency(0U),
@@ -70,13 +70,9 @@ m_beacon(false)
 	m_salt     = new unsigned char[sizeof(uint32_t)];
 	m_id       = new uint8_t[4U];
 	m_streamId = new uint32_t[2U];
-	m_seqNo    = new uint8_t[2U];
 
 	m_streamId[0U] = 0x00U;
 	m_streamId[1U] = 0x00U;
-
-	m_seqNo[0U] = 0U;
-	m_seqNo[1U] = 0U;
 
 	m_id[0U] = id >> 24;
 	m_id[1U] = id >> 16;
@@ -92,7 +88,6 @@ CHomebrewDMRIPSC::~CHomebrewDMRIPSC()
 	delete[] m_buffer;
 	delete[] m_salt;
 	delete[] m_streamId;
-	delete[] m_seqNo;
 	delete[] m_id;
 }
 
@@ -224,27 +219,21 @@ bool CHomebrewDMRIPSC::write(const CDMRData& data)
 	if (dataType == DT_VOICE_SYNC) {
 		buffer[15U] |= 0x10U;
 	} else if (dataType == DT_VOICE) {
-		unsigned char n = data.getN();
-		buffer[15U] |= n;
+		buffer[15U] |= data.getN();
 	} else {
-		if (dataType == DT_VOICE_LC_HEADER || dataType == DT_DATA_HEADER) {
+		if ((dataType == DT_VOICE_LC_HEADER || dataType == DT_DATA_HEADER) && data.getSeqNo() == 0U)
 			m_streamId[slotIndex] = ::rand() + 1U;
-			m_seqNo[slotIndex] = 0U;
-		}
 
 		buffer[15U] |= (0x20U | dataType);
 	}
 
-	buffer[4U]  = m_seqNo[slotIndex];
-	m_seqNo[slotIndex]++;
+	buffer[4U] = data.getSeqNo();
 
 	::memcpy(buffer + 16U, m_streamId + slotIndex, 4U);
 
 	data.getData(buffer + 20U);
 
-	CUtils::dump(1U, "IPSC transmitted", buffer, HOMEBREW_DATA_PACKET_LENGTH);
-
-	return m_socket.write(buffer, HOMEBREW_DATA_PACKET_LENGTH, m_address, m_port);
+	return write(buffer, HOMEBREW_DATA_PACKET_LENGTH);
 }
 
 void CHomebrewDMRIPSC::close()
@@ -254,7 +243,7 @@ void CHomebrewDMRIPSC::close()
 	unsigned char buffer[9U];
 	::memcpy(buffer + 0U, "RPTCL", 5U);
 	::memcpy(buffer + 5U, m_id, 4U);
-	m_socket.write(buffer, 9U, m_address, m_port);
+	write(buffer, 9U);
 
 	m_socket.close();
 }
@@ -265,8 +254,8 @@ void CHomebrewDMRIPSC::clock(unsigned int ms)
 	unsigned int port;
 	int length = m_socket.read(m_buffer, BUFFER_LENGTH, address, port);
 
-	// if (length > 0)
-	//	CUtils::dump(1U, "IPSC received", m_buffer, length);
+	if (m_debug && length > 0)
+		CUtils::dump(1U, "IPSC Received", m_buffer, length);
 
 	if (length > 0 && m_address.s_addr == address.s_addr && m_port == port) {
 		if (::memcmp(m_buffer, "DMRD", 4U) == 0) {
@@ -360,7 +349,7 @@ bool CHomebrewDMRIPSC::writeLogin()
 	::memcpy(buffer + 0U, "RPTL", 4U);
 	::memcpy(buffer + 4U, m_id, 4U);
 
-	return m_socket.write(buffer, 8U, m_address, m_port);
+	return write(buffer, 8U);
 }
 
 bool CHomebrewDMRIPSC::writeAuthorisation()
@@ -381,7 +370,7 @@ bool CHomebrewDMRIPSC::writeAuthorisation()
 
 	delete[] in;
 
-	return m_socket.write(out, 40U, m_address, m_port);
+	return write(out, 40U);
 }
 
 bool CHomebrewDMRIPSC::writeConfig()
@@ -395,9 +384,7 @@ bool CHomebrewDMRIPSC::writeConfig()
 		m_rxFrequency, m_txFrequency, m_power, m_colorCode, m_latitude, m_longitude, m_height, m_location.c_str(),
 		m_description.c_str(), m_url.c_str(), m_software, m_version);
 
-	bool ret = m_socket.write((unsigned char*)buffer, 302U, m_address, m_port);
-
-	return ret;
+	return write((unsigned char*)buffer, 302U);
 }
 
 bool CHomebrewDMRIPSC::writePing()
@@ -407,7 +394,7 @@ bool CHomebrewDMRIPSC::writePing()
 	::memcpy(buffer + 0U, "RPTPING", 7U);
 	::memcpy(buffer + 7U, m_id, 4U);
 
-	return m_socket.write(buffer, 11U, m_address, m_port);
+	return write(buffer, 11U);
 }
 
 bool CHomebrewDMRIPSC::wantsBeacon()
@@ -417,4 +404,15 @@ bool CHomebrewDMRIPSC::wantsBeacon()
 	m_beacon = false;
 
 	return beacon;
+}
+
+bool CHomebrewDMRIPSC::write(const unsigned char* data, unsigned int length)
+{
+	assert(data != NULL);
+	assert(length > 0U);
+
+	if (m_debug)
+		CUtils::dump(1U, "IPSC Transmitted", data, length);
+
+	return m_socket.write(data, length, m_address, m_port);
 }
