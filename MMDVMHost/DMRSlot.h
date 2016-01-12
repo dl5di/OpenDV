@@ -62,7 +62,6 @@ private:
 	unsigned char                m_n;
 	CTimer**                     m_playoutTimer;
 	CTimer                       m_networkWatchdog;
-	CTimer                       m_lateEntryWatchdog;
 	CTimer                       m_timeoutTimer;
 	unsigned int                 m_writeQueue;
 	unsigned int                 m_readQueue;
@@ -79,11 +78,10 @@ private:
 	static FLCO                m_flco2;
 	static unsigned char       m_id2;
 
-	void writeHeader(const CDMRData& data);
 	void writeQueue(const unsigned char* data);
 	void writeNetwork(const unsigned char* data, unsigned char dataType);
 
-	void writeQueueEnd();
+	void writeEndOfTransmission();
 
 	bool openFile();
 	bool writeFile(const unsigned char* data);
