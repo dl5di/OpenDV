@@ -42,7 +42,9 @@ static void sigHandler(int)
 }
 #endif
 
-const char* HEADER = "This software is for use on amateur radio networks only. Its use on commercial networks is strictly prohibited\nCopyright (C) 2015,2016 by Jonathan Naylor, G4KLX\n";
+const char* HEADER1 = "This software is for use on amateur radio networks only.";
+const char* HEADER2 = "Its use on commercial networks is strictly prohibited.";
+const char* HEADER3 = "Copyright(C) 2015, 2016 by Jonathan Naylor, G4KLX";
 
 int main(int argc, char** argv)
 {
@@ -95,7 +97,9 @@ int CMMDVMHost::run()
 
 	::LogSetLevel(m_conf.getLogLevel());
 
-	LogInfo(HEADER);
+	LogInfo(HEADER1);
+	LogInfo(HEADER2);
+	LogInfo(HEADER3);
 
 	LogMessage("MMDVMHost-%s is starting", VERSION);
 
@@ -125,9 +129,9 @@ int CMMDVMHost::run()
 		unsigned int timeout   = m_conf.getTimeout();
 
 		LogInfo("DMR Parameters");
-		LogInfo("\tId: %u", id);
-		LogInfo("\tColor Code: %u", colorCode);
-		LogInfo("\tTimeout: %us", timeout);
+		LogInfo("    Id: %u", id);
+		LogInfo("    Color Code: %u", colorCode);
+		LogInfo("    Timeout: %us", timeout);
 
 		dmr = new CDMRControl(id, colorCode, timeout, m_modem, m_dmrNetwork);
 	}
@@ -336,13 +340,13 @@ bool CMMDVMHost::createModem()
 	unsigned int colorCode = m_conf.getDMRColorCode();
 
 	LogInfo("Modem Parameters");
-	LogInfo("\tPort: %s", port.c_str());
-	LogInfo("\tRX Invert: %s", rxInvert ? "yes" : "no");
-	LogInfo("\tTX Invert: %s", txInvert ? "yes" : "no");
-	LogInfo("\tPTT Invert: %s", pttInvert ? "yes" : "no");
-	LogInfo("\tTX Delay: %u", txDelay);
-	LogInfo("\tRX Level: %u", rxLevel);
-	LogInfo("\tTX Level: %u", txLevel);
+	LogInfo("    Port: %s", port.c_str());
+	LogInfo("    RX Invert: %s", rxInvert ? "yes" : "no");
+	LogInfo("    TX Invert: %s", txInvert ? "yes" : "no");
+	LogInfo("    PTT Invert: %s", pttInvert ? "yes" : "no");
+	LogInfo("    TX Delay: %u", txDelay);
+	LogInfo("    RX Level: %u", rxLevel);
+	LogInfo("    TX Level: %u", txLevel);
 
 	m_modem = new CModem(port, rxInvert, txInvert, pttInvert, txDelay, rxLevel, txLevel, debug);
 	m_modem->setModeParams(m_dstarEnabled, m_dmrEnabled, m_ysfEnabled);
@@ -370,8 +374,8 @@ bool CMMDVMHost::createDMRNetwork()
 	bool debug           = m_conf.getDMRNetworkDebug();
 
 	LogInfo("DMR Network Parameters");
-	LogInfo("\tAddress: %s", address.c_str());
-	LogInfo("\tPort: %u", port);
+	LogInfo("    Address: %s", address.c_str());
+	LogInfo("    Port: %u", port);
 
 	m_dmrNetwork = new CHomebrewDMRIPSC(address, port, id, password, VERSION, "MMDVMHost", debug);
 
@@ -386,6 +390,18 @@ bool CMMDVMHost::createDMRNetwork()
 	std::string location     = m_conf.getLocation();
 	std::string description  = m_conf.getDescription();
 	std::string url          = m_conf.getURL();
+
+	LogInfo("Info Parameters");
+	LogInfo("    Callsign: %s", callsign.c_str());
+	LogInfo("    RX Frequency: %uHz", rxFrequency);
+	LogInfo("    TX Frequency: %uHz", txFrequency);
+	LogInfo("    Power: %uW", power);
+	LogInfo("    Latitude: %fdeg N", latitude);
+	LogInfo("    Longitude: %fdeg E", longitude);
+	LogInfo("    Height: %um", height);
+	LogInfo("    Location: \"%s\"", location.c_str());
+	LogInfo("    Description: \"%s\"", description.c_str());
+	LogInfo("    URL: \"%s\"", url.c_str());
 
 	m_dmrNetwork->setConfig(callsign, rxFrequency, txFrequency, power, colorCode, latitude, longitude, height, location, description, url);
 

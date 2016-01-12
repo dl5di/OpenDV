@@ -70,12 +70,6 @@ MMDVMHost.o:	MMDVMHost.cpp MMDVMHost.h Conf.h Log.h Version.h Modem.h StopWatch.
 Modem.o:	Modem.cpp Modem.h Log.h SerialController.h Timer.h RingBuffer.h Utils.o DMRDefines.h DStarDefines.h YSFDefines.h Defines.h
 		$(CC) $(CFLAGS) -c Modem.cpp
 
-Mutex.o:	Mutex.cpp Mutex.h
-		$(CC) $(CFLAGS) -c Mutex.cpp
-
-MutexLocker.o:	MutexLocker.cpp MutexLocker.h Mutex.h
-		$(CC) $(CFLAGS) -c MutexLocker.cpp
-
 QR1676.o:	QR1676.cpp QR1676.h Log.h
 		$(CC) $(CFLAGS) -c QR1676.cpp
 
@@ -96,9 +90,6 @@ SlotType.o:	SlotType.cpp SlotType.h Golay2087.h
 
 StopWatch.o:	StopWatch.cpp StopWatch.h
 		$(CC) $(CFLAGS) -c StopWatch.cpp
-
-Thread.o:	Thread.cpp Thread.h
-		$(CC) $(CFLAGS) -c Thread.cpp
 
 Timer.o:	Timer.cpp Timer.h
 		$(CC) $(CFLAGS) -c Timer.cpp
