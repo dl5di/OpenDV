@@ -22,6 +22,8 @@
 #include "StopWatch.h"
 #include "Defines.h"
 #include "DMRControl.h"
+#include "TFTSerial.h"
+#include "NullDisplay.h"
 
 #include "DStarEcho.h"
 #include "YSFEcho.h"
@@ -71,6 +73,7 @@ CMMDVMHost::CMMDVMHost(const std::string& confFile) :
 m_conf(confFile),
 m_modem(NULL),
 m_dmrNetwork(NULL),
+m_display(NULL),
 m_dstarEnabled(false),
 m_dmrEnabled(false),
 m_ysfEnabled(false)
@@ -109,6 +112,8 @@ int CMMDVMHost::run()
 	if (!ret)
 		return 1;
 
+	createDisplay();
+
 	if (m_dmrEnabled) {
 		ret = createDMRNetwork();
 		if (!ret)
@@ -133,7 +138,7 @@ int CMMDVMHost::run()
 		LogInfo("    Color Code: %u", colorCode);
 		LogInfo("    Timeout: %us", timeout);
 
-		dmr = new CDMRControl(id, colorCode, timeout, m_modem, m_dmrNetwork);
+		dmr = new CDMRControl(id, colorCode, timeout, m_modem, m_dmrNetwork, m_display);
 	}
 
 	CYSFEcho* ysf = NULL;
@@ -142,6 +147,8 @@ int CMMDVMHost::run()
 
 	unsigned char mode = MODE_IDLE;
 	CTimer modeTimer(1000U, m_conf.getModeHang());
+
+	m_display->setIdle();
 
 	while (!m_killed) {
 		unsigned char data[200U];
@@ -153,6 +160,7 @@ int CMMDVMHost::run()
 			if (mode == MODE_IDLE && (data[0U] == TAG_HEADER || data[0U] == TAG_DATA)) {
 				LogMessage("Mode set to D-Star");
 				mode = MODE_DSTAR;
+				m_display->setDStar();
 				m_modem->setMode(MODE_DSTAR);
 				modeTimer.start();
 			}
@@ -173,6 +181,7 @@ int CMMDVMHost::run()
 				if (ret) {
 					LogMessage("Mode set to DMR");
 					mode = MODE_DMR;
+					m_display->setDMR();
 					// This sets the mode to DMR within the modem
 					m_modem->writeDMRStart(true);
 					modeTimer.start();
@@ -192,6 +201,7 @@ int CMMDVMHost::run()
 				if (ret) {
 					LogMessage("Mode set to DMR");
 					mode = MODE_DMR;
+					m_display->setDMR();
 					// This sets the mode to DMR within the modem
 					m_modem->writeDMRStart(true);
 					modeTimer.start();
@@ -209,6 +219,7 @@ int CMMDVMHost::run()
 			if (mode == MODE_IDLE && data[0U] == TAG_DATA) {
 				LogMessage("Mode set to System Fusion");
 				mode = MODE_YSF;
+				m_display->setFusion();
 				m_modem->setMode(MODE_YSF);
 				modeTimer.start();
 			}
@@ -230,6 +241,7 @@ int CMMDVMHost::run()
 				m_modem->writeDMRStart(false);
 
 			mode = MODE_IDLE;
+			m_display->setIdle();
 			m_modem->setMode(MODE_IDLE);
 			modeTimer.stop();
 		}
@@ -254,8 +266,10 @@ int CMMDVMHost::run()
 			ret = m_modem->hasDMRSpace1();
 			if (ret) {
 				len = dmr->readModemSlot1(data);
-				if (len > 0U && mode == MODE_IDLE)
+				if (len > 0U && mode == MODE_IDLE) {
+					m_display->setDMR();
 					mode = MODE_DMR;
+				}
 				if (len > 0U && mode == MODE_DMR) {
 					m_modem->writeDMRData1(data, len);
 					modeTimer.start();
@@ -265,8 +279,10 @@ int CMMDVMHost::run()
 			ret = m_modem->hasDMRSpace2();
 			if (ret) {
 				len = dmr->readModemSlot2(data);
-				if (len > 0U && mode == MODE_IDLE)
+				if (len > 0U && mode == MODE_IDLE) {
+					m_display->setDMR();
 					mode = MODE_DMR;
+				}
 				if (len > 0U && mode == MODE_DMR) {
 					m_modem->writeDMRData2(data, len);
 					modeTimer.start();
@@ -312,8 +328,13 @@ int CMMDVMHost::run()
 
 	LogMessage("MMDVMHost is exiting on receipt of SIGHUP1");
 
+	m_display->setIdle();
+
 	m_modem->close();
 	delete m_modem;
+
+	m_display->close();
+	delete m_display;
 
 	if (m_dmrNetwork != NULL) {
 		m_dmrNetwork->close();
@@ -424,5 +445,29 @@ void CMMDVMHost::readParams()
 	if (!m_conf.getDuplex() && m_dmrEnabled) {
 		LogWarning("DMR operation disabled because system is not duplex");
 		m_dmrEnabled = false;
+	}
+}
+
+void CMMDVMHost::createDisplay()
+{
+	std::string type = m_conf.getDisplay();
+
+	LogInfo("Display Parameters");
+	LogInfo("    Type: %s", type.c_str());
+
+	if (type == "TFT Serial") {
+		std::string port = m_conf.getTFTSerialPort();
+
+		LogInfo("    Port: %s", port.c_str());
+
+		m_display = new CTFTSerial(port);
+	} else {
+		m_display = new CNullDisplay;
+	}
+
+	bool ret = m_display->open();
+	if (!ret) {
+		delete m_display;
+		m_display = new CNullDisplay;
 	}
 }

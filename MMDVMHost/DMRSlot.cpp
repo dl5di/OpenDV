@@ -29,6 +29,7 @@
 unsigned int      CDMRSlot::m_colorCode = 0U;
 CModem*           CDMRSlot::m_modem = NULL;
 CHomebrewDMRIPSC* CDMRSlot::m_network = NULL;
+IDisplay*         CDMRSlot::m_display = NULL;
 
 unsigned char*    CDMRSlot::m_idle = NULL;
 
@@ -143,6 +144,8 @@ void CDMRSlot::writeModem(unsigned char *data)
 
 				m_state = SS_RELAYING_RF;
 				setShortLC(m_slotNo, m_lc->getDstId(), m_lc->getFLCO());
+
+				m_display->writeDMR(m_slotNo, m_lc->getSrcId(), m_lc->getFLCO() == FLCO_GROUP, m_lc->getDstId());
 
 				LogMessage("DMR Slot %u, received RF header from %u to %s %u", m_slotNo, m_lc->getSrcId(), m_lc->getFLCO() == FLCO_GROUP ? "TG" : "", m_lc->getDstId());
 			}
@@ -317,6 +320,8 @@ void CDMRSlot::writeModem(unsigned char *data)
 
 				setShortLC(m_slotNo, m_lc->getDstId(), m_lc->getFLCO());
 
+				m_display->writeDMR(m_slotNo, m_lc->getSrcId(), m_lc->getFLCO() == FLCO_GROUP, m_lc->getDstId());
+
 				LogMessage("DMR Slot %u, received RF late entry from %u to %s %u", m_slotNo, m_lc->getSrcId(), m_lc->getFLCO() == FLCO_GROUP ? "TG" : "", m_lc->getDstId());
 			}
 		}
@@ -359,6 +364,8 @@ void CDMRSlot::writeEndOfTransmission()
 	m_state = SS_LISTENING;
 
 	setShortLC(m_slotNo, 0U);
+
+	m_display->clearDMR(m_slotNo);
 
 	m_networkWatchdog.stop();
 	m_timeoutTimer.stop();
@@ -411,7 +418,10 @@ void CDMRSlot::writeNetwork(const CDMRData& dmrData)
 				writeQueue(data);
 
 			m_state = SS_RELAYING_NETWORK;
+
 			setShortLC(m_slotNo, m_lc->getDstId(), m_lc->getFLCO());
+
+			m_display->writeDMR(m_slotNo, m_lc->getSrcId(), m_lc->getFLCO() == FLCO_GROUP, m_lc->getDstId());
 
 #if defined(DUMP_DMR)
 			openFile();
@@ -596,13 +606,15 @@ void CDMRSlot::writeNetwork(const unsigned char* data, unsigned char dataType)
 	m_network->write(dmrData);
 }
 
-void CDMRSlot::init(unsigned int colorCode, CModem* modem, CHomebrewDMRIPSC* network)
+void CDMRSlot::init(unsigned int colorCode, CModem* modem, CHomebrewDMRIPSC* network, IDisplay* display)
 {
 	assert(modem != NULL);
+	assert(display != NULL);
 
 	m_colorCode = colorCode;
 	m_modem     = modem;
 	m_network   = network;
+	m_display   = display;
 
 	m_idle = new unsigned char[DMR_FRAME_LENGTH_BYTES + 2U];
 

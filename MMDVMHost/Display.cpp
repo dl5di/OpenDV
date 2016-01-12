@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2015 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2016 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -16,37 +16,8 @@
  *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#if !defined(MMDVMHOST_H)
-#define	MMDVMHOST_H
-
-#include "HomebrewDMRIPSC.h"
 #include "Display.h"
-#include "Modem.h"
-#include "Conf.h"
 
-#include <string>
-
-class CMMDVMHost
+IDisplay::~IDisplay()
 {
-public:
-  CMMDVMHost(const std::string& confFile);
-  ~CMMDVMHost();
-
-  int run();
-
-private:
-  CConf             m_conf;
-  CModem*           m_modem;
-  CHomebrewDMRIPSC* m_dmrNetwork;
-  IDisplay*         m_display;
-  bool              m_dstarEnabled;
-  bool              m_dmrEnabled;
-  bool              m_ysfEnabled;
-
-  void readParams();
-  bool createModem();
-  bool createDMRNetwork();
-  void createDisplay();
-};
-
-#endif
+}

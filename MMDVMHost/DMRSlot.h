@@ -24,6 +24,7 @@
 #include "RingBuffer.h"
 #include "DMRSlot.h"
 #include "DMRData.h"
+#include "Display.h"
 #include "Timer.h"
 #include "Modem.h"
 #include "LC.h"
@@ -46,11 +47,9 @@ public:
 
 	void writeNetwork(const CDMRData& data);
 
-	bool readNetwork(CDMRData& data);
-
 	void clock(unsigned int ms);
 
-	static void init(unsigned int colorCode, CModem* modem, CHomebrewDMRIPSC* network);
+	static void init(unsigned int colorCode, CModem* modem, CHomebrewDMRIPSC* network, IDisplay* display);
 
 private:
 	unsigned int                 m_slotNo;
@@ -70,6 +69,7 @@ private:
 	static unsigned int        m_colorCode;
 	static CModem*             m_modem;
 	static CHomebrewDMRIPSC*   m_network;
+	static IDisplay*           m_display;
 
 	static unsigned char*      m_idle;
 

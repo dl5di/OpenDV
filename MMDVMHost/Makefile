@@ -5,12 +5,12 @@ LDFLAGS =
 
 all:		MMDVMHost
 
-MMDVMHost:	BPTC19696.o Conf.o CRC.o CSBK.o DMRControl.o DMRData.o DMRSlot.o DMRSync.o DStarEcho.o EMB.o EmbeddedLC.o FullLC.o Golay2087.o Hamming.o \
-						HomebrewDMRIPSC.o LC.o Log.o MMDVMHost.o Modem.o QR1676.o RS129.o SerialController.o SHA256.o ShortLC.o SlotType.o StopWatch.o Timer.o UDPSocket.o \
-						Utils.o YSFEcho.o
-		$(CC) $(LDFLAGS) -o MMDVMHost BPTC19696.o Conf.o CRC.o CSBK.o DMRControl.o DMRData.o DMRSlot.o DMRSync.o DStarEcho.o EMB.o EmbeddedLC.o FullLC.o Golay2087.o \
-						Hamming.o HomebrewDMRIPSC.o LC.o Log.o MMDVMHost.o Modem.o QR1676.o RS129.o SerialController.o SHA256.o ShortLC.o SlotType.o StopWatch.o Timer.o \
-						UDPSocket.o Utils.o YSFEcho.o $(LIBS)
+MMDVMHost:	BPTC19696.o Conf.o CRC.o CSBK.o Display.o DMRControl.o DMRData.o DMRSlot.o DMRSync.o DStarEcho.o EMB.o EmbeddedLC.o FullLC.o Golay2087.o Hamming.o \
+						HomebrewDMRIPSC.o LC.o Log.o MMDVMHost.o Modem.o NullDisplay.o QR1676.o RS129.o SerialController.o SHA256.o ShortLC.o SlotType.o StopWatch.o TFTSerial.o \
+						Timer.o UDPSocket.o Utils.o YSFEcho.o
+		$(CC) $(LDFLAGS) -o MMDVMHost BPTC19696.o Conf.o CRC.o CSBK.o Display.o DMRControl.o DMRData.o DMRSlot.o DMRSync.o DStarEcho.o EMB.o EmbeddedLC.o FullLC.o \
+						Golay2087.o Hamming.o HomebrewDMRIPSC.o LC.o Log.o MMDVMHost.o Modem.o NullDisplay.o  QR1676.o RS129.o SerialController.o SHA256.o ShortLC.o SlotType.o \
+						StopWatch.o TFTSerial.o Timer.o UDPSocket.o Utils.o YSFEcho.o $(LIBS)
 
 BPTC19696.o:	BPTC19696.cpp BPTC19696.h Utils.h Hamming.h
 		$(CC) $(CFLAGS) -c BPTC19696.cpp
@@ -24,14 +24,17 @@ CRC.o:	CRC.cpp CRC.h Utils.h
 CSBK.o:	CSBK.cpp CSBK.h Utils.h DMRDefines.h BPTC19696.h CRC.h Log.h
 		$(CC) $(CFLAGS) -c CSBK.cpp
 
-DMRControl.o:	DMRControl.cpp DMRControl.h DMRSlot.h DMRData.h Modem.h HomebrewDMRIPSC.h Defines.h CSBK.h Log.h
+Display.o:	Display.cpp Display.h
+		$(CC) $(CFLAGS) -c Display.cpp
+
+DMRControl.o:	DMRControl.cpp DMRControl.h DMRSlot.h DMRData.h Modem.h HomebrewDMRIPSC.h Defines.h CSBK.h Log.h DIsplay.h
 		$(CC) $(CFLAGS) -c DMRControl.cpp
 
 DMRData.o:	DMRData.cpp DMRData.h DMRDefines.h Utils.h Log.h
 		$(CC) $(CFLAGS) -c DMRData.cpp
 	
 DMRSlot.o:	DMRSlot.cpp DMRSlot.h DMRData.h Modem.h HomebrewDMRIPSC.h Defines.h Log.h EmbeddedLC.h RingBuffer.h Timer.h LC.h SlotType.h DMRSync.h FullLC.h \
-						EMB.h CRC.h CSBK.h ShortLC.h Utils.h
+						EMB.h CRC.h CSBK.h ShortLC.h Utils.h Display.h
 		$(CC) $(CFLAGS) -c DMRSlot.cpp
 
 DMRSync.o:	DMRSync.cpp DMRSync.h DMRDefines.h
@@ -64,11 +67,15 @@ LC.o:	LC.cpp LC.h Utils.h DMRDefines.h
 Log.o:	Log.cpp Log.h
 		$(CC) $(CFLAGS) -c Log.cpp
 
-MMDVMHost.o:	MMDVMHost.cpp MMDVMHost.h Conf.h Log.h Version.h Modem.h StopWatch.h Defines.h DMRSync.h DStarEcho.h YSFEcho.h DMRControl.h HomebrewDMRIPSC.h
+MMDVMHost.o:	MMDVMHost.cpp MMDVMHost.h Conf.h Log.h Version.h Modem.h StopWatch.h Defines.h DMRSync.h DStarEcho.h YSFEcho.h DMRControl.h HomebrewDMRIPSC.h \
+							Display.h TFTSerial.h NullDisplay.h
 		$(CC) $(CFLAGS) -c MMDVMHost.cpp
 
 Modem.o:	Modem.cpp Modem.h Log.h SerialController.h Timer.h RingBuffer.h Utils.o DMRDefines.h DStarDefines.h YSFDefines.h Defines.h
 		$(CC) $(CFLAGS) -c Modem.cpp
+
+NullDisplay.o:	NullDisplay.cpp NullDisplay.h Display.h
+		$(CC) $(CFLAGS) -c NullDisplay.cpp
 
 QR1676.o:	QR1676.cpp QR1676.h Log.h
 		$(CC) $(CFLAGS) -c QR1676.cpp
@@ -90,6 +97,9 @@ SlotType.o:	SlotType.cpp SlotType.h Golay2087.h
 
 StopWatch.o:	StopWatch.cpp StopWatch.h
 		$(CC) $(CFLAGS) -c StopWatch.cpp
+
+TFTSerial.o:	TFTSerial.cpp TFTSerial.h Display.h SerialController.h Log.h
+		$(CC) $(CFLAGS) -c TFTSerial.cpp
 
 Timer.o:	Timer.cpp Timer.h
 		$(CC) $(CFLAGS) -c Timer.cpp

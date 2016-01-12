@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2015 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2016 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -16,37 +16,35 @@
  *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#if !defined(MMDVMHOST_H)
-#define	MMDVMHOST_H
-
-#include "HomebrewDMRIPSC.h"
-#include "Display.h"
-#include "Modem.h"
-#include "Conf.h"
+#if !defined(DISPLAY_H)
+#define	DISPLAY_H
 
 #include <string>
 
-class CMMDVMHost
+class IDisplay
 {
 public:
-  CMMDVMHost(const std::string& confFile);
-  ~CMMDVMHost();
+  virtual ~IDisplay() = 0;
 
-  int run();
+  virtual bool open() = 0;
+
+  virtual void setIdle() = 0;
+
+  virtual void setDStar() = 0;
+  virtual void writeDStar(const std::string& call1, const std::string& call2) = 0;
+  virtual void clearDStar() = 0;
+
+  virtual void setDMR() = 0;
+  virtual void writeDMR(unsigned int slotNo, unsigned int srdId, bool group, unsigned int dstId) = 0;
+  virtual void clearDMR(unsigned int slotNo) = 0;
+
+  virtual void setFusion() = 0;
+  virtual void writeFusion(const std::string& callsign) = 0;
+  virtual void clearFusion() = 0;
+
+  virtual void close() = 0;
 
 private:
-  CConf             m_conf;
-  CModem*           m_modem;
-  CHomebrewDMRIPSC* m_dmrNetwork;
-  IDisplay*         m_display;
-  bool              m_dstarEnabled;
-  bool              m_dmrEnabled;
-  bool              m_ysfEnabled;
-
-  void readParams();
-  bool createModem();
-  bool createDMRNetwork();
-  void createDisplay();
 };
 
 #endif
