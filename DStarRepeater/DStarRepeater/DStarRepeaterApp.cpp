@@ -32,6 +32,7 @@
 #include "DVMegaController.h"
 #include "DStarRepeaterApp.h"
 #include "MMDVMController.h"
+#include "URIUSBController.h"
 #include "K8055Controller.h"
 #include "DummyController.h"
 #include "SplitController.h"
@@ -521,6 +522,10 @@ void CDStarRepeaterApp::createThread()
 		unsigned long num;
 		port.ToULong(&num);
 		controller = new CExternalController(new CK8055Controller(num), pttInvert);
+	} else if (controllerType.StartsWith(wxT("URI USB - "), &port)) {
+                unsigned long num;
+                port.ToULong(&num);
+                controller = new CExternalController(new CURIUSBController(num, true), pttInvert);
 	} else if (controllerType.StartsWith(wxT("Serial - "), &port)) {
 		controller = new CExternalController(new CSerialLineController(port, portConfig), pttInvert);
 	} else if (controllerType.StartsWith(wxT("Arduino - "), &port)) {

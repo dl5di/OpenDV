@@ -5,7 +5,7 @@ OBJS :=	AMBEFEC.o AnnouncementUnit.o ArduinoController.o BeaconUnit.o CallsignLi
 		DVRPTRV3Controller.o DVTOOLFileReader.o DVTOOLFileWriter.o ExternalController.o FIRFilter.o GatewayProtocolHandler.o GMSKController.o GMSKModem.o \
 		GMSKModemLibUsb.o Golay.o GPIOController.o HardwareController.o HeaderData.o K8055Controller.o LogEvent.o Logger.o MMDVMController.o Modem.o OutputQueue.o \
 		RepeaterProtocolHandler.o SerialDataController.o SerialLineController.o SerialPortSelector.o SlowDataDecoder.o SlowDataEncoder.o SoundCardController.o \
-		SoundCardReaderWriter.o SplitController.o TCPReaderWriter.o Timer.o UDPReaderWriter.o Utils.o
+		SoundCardReaderWriter.o SplitController.o TCPReaderWriter.o Timer.o UDPReaderWriter.o URIUSBController.o Utils.o
 
 Common.a:	$(OBJS)
 		ar rcs Common.a $(OBJS)
@@ -153,6 +153,9 @@ Timer.o:	Timer.cpp Timer.h
 
 UDPReaderWriter.o:	UDPReaderWriter.cpp UDPReaderWriter.h Utils.h
 		$(CC) $(CFLAGS) -c UDPReaderWriter.cpp
+
+URIUSBController.o:	URIUSBController.cpp URIUSBController.h HardwareController.h
+		$(CC) $(CFLAGS) -c URIUSBController.cpp
 
 Utils.o:	Utils.cpp Utils.h
 		$(CC) $(CFLAGS) -c Utils.cpp

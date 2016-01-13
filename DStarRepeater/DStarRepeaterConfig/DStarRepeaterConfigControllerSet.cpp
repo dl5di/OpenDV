@@ -51,6 +51,14 @@ m_time(NULL)
 	m_type->Append(wxT("Velleman K8055 - 2"));
 	m_type->Append(wxT("Velleman K8055 - 3"));
 
+	// Add the URI USB
+        m_type->Append(wxT("URI USB - 1"));
+        m_type->Append(wxT("URI USB - 2"));
+        m_type->Append(wxT("URI USB - 3"));
+        m_type->Append(wxT("URI USB - 4"));
+        m_type->Append(wxT("URI USB - 5"));
+        m_type->Append(wxT("URI USB - 6"));
+
 	// Add the Serial ports
 	wxArrayString serialDevs = CSerialPortSelector::getDevices();
 	for (size_t i = 0U; i < serialDevs.GetCount(); i++)
