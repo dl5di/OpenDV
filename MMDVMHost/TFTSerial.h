@@ -16,9 +16,41 @@
  *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#if !defined(VERSION_H)
-#define	VERSION_H
+#if !defined(TFTSERIAL_H)
+#define	TFTSERIAL_H
 
-const char* VERSION = "20160113";
+#include "Display.h"
+#include "SerialController.h"
+
+#include <string>
+#include <cstring>
+
+class CTFTSerial : public IDisplay
+{
+public:
+  CTFTSerial(const std::string& port);
+  virtual ~CTFTSerial();
+
+  virtual bool open();
+
+  virtual void setIdle();
+
+  virtual void setDStar();
+  virtual void writeDStar(const std::string& call1, const std::string& call2);
+  virtual void clearDStar();
+
+  virtual void setDMR();
+  virtual void writeDMR(unsigned int slotNo, unsigned int srdId, bool group, unsigned int dstId);
+  virtual void clearDMR(unsigned int slotNo);
+
+  virtual void setFusion();
+  virtual void writeFusion(const std::string& callsign);
+  virtual void clearFusion();
+
+  virtual void close();
+
+private:
+  CSerialController m_serial;
+};
 
 #endif

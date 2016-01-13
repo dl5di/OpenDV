@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2015 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2016 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -16,30 +16,38 @@
  *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#if !defined(MUTEX_H)
-#define	MUTEX_H
+#if !defined(NULLDISPLAY_H)
+#define	NULLDISPLAY_H
 
-#if defined(WIN32)
-#include <windows.h>
-#else
-#include <pthread.h>
-#endif
+#include "Display.h"
 
-class CMutex
+#include <string>
+
+class CNullDisplay : public IDisplay
 {
 public:
-	CMutex();
-	~CMutex();
+  CNullDisplay();
+  virtual ~CNullDisplay();
 
-	void lock();
-	void unlock();
+  virtual bool open();
+
+  virtual void setIdle();
+
+  virtual void setDStar();
+  virtual void writeDStar(const std::string& call1, const std::string& call2);
+  virtual void clearDStar();
+
+  virtual void setDMR();
+  virtual void writeDMR(unsigned int slotNo, unsigned int srdId, bool group, unsigned int dstId);
+  virtual void clearDMR(unsigned int slotNo);
+
+  virtual void setFusion();
+  virtual void writeFusion(const std::string& callsign);
+  virtual void clearFusion();
+
+  virtual void close();
 
 private:
-#if defined(WIN32)
-	HANDLE          m_handle;
-#else
-	pthread_mutex_t m_mutex;
-#endif
 };
 
 #endif

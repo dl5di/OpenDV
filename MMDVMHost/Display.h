@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2015 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2016 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -16,50 +16,35 @@
  *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include "Mutex.h"
+#if !defined(DISPLAY_H)
+#define	DISPLAY_H
 
-#if defined(WIN32)
+#include <string>
 
-CMutex::CMutex() :
-m_handle()
+class IDisplay
 {
-	m_handle = ::CreateMutex(NULL, FALSE, NULL);
-}
+public:
+  virtual ~IDisplay() = 0;
 
-CMutex::~CMutex()
-{
-	::CloseHandle(m_handle);
-}
+  virtual bool open() = 0;
 
-void CMutex::lock()
-{
-	::WaitForSingleObject(m_handle, INFINITE);
-}
+  virtual void setIdle() = 0;
 
-void CMutex::unlock()
-{
-	::ReleaseMutex(m_handle);
-}
+  virtual void setDStar() = 0;
+  virtual void writeDStar(const std::string& call1, const std::string& call2) = 0;
+  virtual void clearDStar() = 0;
 
-#else
+  virtual void setDMR() = 0;
+  virtual void writeDMR(unsigned int slotNo, unsigned int srdId, bool group, unsigned int dstId) = 0;
+  virtual void clearDMR(unsigned int slotNo) = 0;
 
-CMutex::CMutex() :
-m_mutex(PTHREAD_MUTEX_INITIALIZER)
-{
-}
+  virtual void setFusion() = 0;
+  virtual void writeFusion(const std::string& callsign) = 0;
+  virtual void clearFusion() = 0;
 
-CMutex::~CMutex()
-{
-}
+  virtual void close() = 0;
 
-void CMutex::lock()
-{
-	::pthread_mutex_lock(&m_mutex);
-}
-
-void CMutex::unlock()
-{
-	::pthread_mutex_unlock(&m_mutex);
-}
+private:
+};
 
 #endif

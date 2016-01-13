@@ -20,6 +20,7 @@
 #define	MMDVMHOST_H
 
 #include "HomebrewDMRIPSC.h"
+#include "Display.h"
 #include "Modem.h"
 #include "Conf.h"
 
@@ -37,6 +38,7 @@ private:
   CConf             m_conf;
   CModem*           m_modem;
   CHomebrewDMRIPSC* m_dmrNetwork;
+  IDisplay*         m_display;
   bool              m_dstarEnabled;
   bool              m_dmrEnabled;
   bool              m_ysfEnabled;
@@ -44,6 +46,7 @@ private:
   void readParams();
   bool createModem();
   bool createDMRNetwork();
+  void createDisplay();
 };
 
 #endif

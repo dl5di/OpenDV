@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2015 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2016 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -16,74 +16,61 @@
  *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include "Thread.h"
+#include "NullDisplay.h"
 
-#if defined(WIN32)
-
-CThread::CThread() :
-m_handle()
+CNullDisplay::CNullDisplay()
 {
 }
 
-CThread::~CThread()
+CNullDisplay::~CNullDisplay()
 {
 }
 
-bool CThread::run()
+bool CNullDisplay::open()
 {
-  m_handle = ::CreateThread(NULL, 0, &helper, this, 0, NULL);
-
-  return m_handle != NULL;
+	return true;
 }
 
-
-void CThread::wait()
-{
-  ::WaitForSingleObject(m_handle, INFINITE);
-
-  ::CloseHandle(m_handle);
-}
-
-
-DWORD CThread::helper(LPVOID arg)
-{
-  CThread* p = (CThread*)arg;
-
-  p->entry();
-
-  return 0UL;
-}
-
-#else
-
-CThread::CThread() :
-m_thread()
+void CNullDisplay::setIdle()
 {
 }
 
-CThread::~CThread()
+void CNullDisplay::setDStar()
 {
 }
 
-bool CThread::run()
+void CNullDisplay::writeDStar(const std::string& call1, const std::string& call2)
 {
-  return ::pthread_create(&m_thread, NULL, helper, this) == 0;
 }
 
-
-void CThread::wait()
+void CNullDisplay::clearDStar()
 {
-  ::pthread_join(m_thread, NULL);
 }
 
-
-void* CThread::helper(void* arg)
+void CNullDisplay::setDMR()
 {
-  CThread* p = (CThread*)arg;
-
-  p->entry();
-
-  return NULL;
 }
 
-#endif
+void CNullDisplay::writeDMR(unsigned int slotNo, unsigned int srcId, bool group, unsigned int dstId)
+{
+}
+
+void CNullDisplay::clearDMR(unsigned int slotNo)
+{
+}
+
+void CNullDisplay::setFusion()
+{
+}
+
+void CNullDisplay::writeFusion(const std::string& callsign)
+{
+}
+
+void CNullDisplay::clearFusion()
+{
+}
+
+void CNullDisplay::close()
+{
+}

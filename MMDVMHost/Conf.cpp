@@ -157,9 +157,9 @@ bool CConf::read()
 		else if (::strcmp(key, "Display") == 0)
 			m_display = value;
 	} else if (section == SECTION_INFO) {
-		if (::strcmp(key, "TxFrequency") == 0)
+		if (::strcmp(key, "TXFrequency") == 0)
 			m_txFrequency = (unsigned int)::atoi(value);
-		else if (::strcmp(key, "RxFrequency") == 0)
+		else if (::strcmp(key, "RXFrequency") == 0)
 			m_rxFrequency = (unsigned int)::atoi(value);
 		else if (::strcmp(key, "Power") == 0)
 			m_power = (unsigned int)::atoi(value);

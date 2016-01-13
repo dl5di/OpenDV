@@ -24,6 +24,7 @@
 #include "RingBuffer.h"
 #include "DMRSlot.h"
 #include "DMRData.h"
+#include "Display.h"
 #include "Timer.h"
 #include "Modem.h"
 #include "LC.h"
@@ -46,31 +47,28 @@ public:
 
 	void writeNetwork(const CDMRData& data);
 
-	bool readNetwork(CDMRData& data);
-
 	void clock(unsigned int ms);
 
-	static void init(unsigned int colorCode, CModem* modem, CHomebrewDMRIPSC* network);
+	static void init(unsigned int colorCode, CModem* modem, CHomebrewDMRIPSC* network, IDisplay* display);
 
 private:
 	unsigned int                 m_slotNo;
-	CRingBuffer<unsigned char>** m_txQueue;
+	CRingBuffer<unsigned char>   m_radioQueue;
+	CRingBuffer<unsigned char>   m_networkQueue;
 	SLOT_STATE                   m_state;
 	CEmbeddedLC                  m_embeddedLC;
 	CLC*                         m_lc;
 	unsigned char                m_seqNo;
 	unsigned char                m_n;
-	CTimer**                     m_playoutTimer;
+	CTimer                       m_playoutTimer;
 	CTimer                       m_networkWatchdog;
-	CTimer                       m_lateEntryWatchdog;
 	CTimer                       m_timeoutTimer;
-	unsigned int                 m_writeQueue;
-	unsigned int                 m_readQueue;
 	FILE*                        m_fp;
 
 	static unsigned int        m_colorCode;
 	static CModem*             m_modem;
 	static CHomebrewDMRIPSC*   m_network;
+	static IDisplay*           m_display;
 
 	static unsigned char*      m_idle;
 
@@ -79,11 +77,11 @@ private:
 	static FLCO                m_flco2;
 	static unsigned char       m_id2;
 
-	void writeHeader(const CDMRData& data);
-	void writeQueue(const unsigned char* data);
+	void writeRadioQueue(const unsigned char* data);
+	void writeNetworkQueue(const unsigned char* data);
 	void writeNetwork(const unsigned char* data, unsigned char dataType);
 
-	void writeQueueEnd();
+	void writeEndOfTransmission();
 
 	bool openFile();
 	bool writeFile(const unsigned char* data);

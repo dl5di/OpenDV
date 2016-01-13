@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2015 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2016 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -16,19 +16,8 @@
  *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#if !defined(MUTEXLOCKER_H)
-#define	MUTEXLOCKER_H
+#include "Display.h"
 
-#include "Mutex.h"
-
-class CMutexLocker
+IDisplay::~IDisplay()
 {
-public:
-	CMutexLocker(CMutex& mutex);
-	~CMutexLocker();
-
-private:
-	CMutex m_mutex;
-};
-
-#endif
+}

@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2015 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2010,2016 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -16,39 +16,16 @@
  *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#if !defined(THREAD_H)
-#define	THREAD_H
+#ifndef Golay24128_H
+#define Golay24128_H
 
-#if defined(WIN32)
-#include <windows.h>
-#else
-#include <pthread.h>
-#endif
-
-class CThread
-{
+class CGolay24128 {
 public:
-  CThread();
-  virtual ~CThread();
+	static unsigned int encode23127(unsigned int data);
+	static unsigned int encode24128(unsigned int data);
 
-  virtual bool run();
-
-  virtual void entry() = 0;
-
-  virtual void wait();
-
-private:
-#if defined(WIN32)
-  HANDLE    m_handle;
-#else
-  pthread_t m_thread;
-#endif
-
-#if defined(WIN32)
-  static DWORD __stdcall helper(LPVOID arg);
-#else
-  static void* helper(void* arg);
-#endif
+	static unsigned int decode23127(unsigned int code);
+	static unsigned int decode24128(unsigned int code);
 };
 
 #endif

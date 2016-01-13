@@ -101,6 +101,18 @@
     <ClCompile Include="ShortLC.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="TFTSerial.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Display.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="NullDisplay.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Golay24128.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BPTC19696.h">
@@ -209,6 +221,18 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ShortLC.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TFTSerial.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Display.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="NullDisplay.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Golay24128.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
