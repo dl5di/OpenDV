@@ -23,6 +23,7 @@
 #include "SerialController.h"
 
 #include <string>
+#include <cstring>
 
 class CTFTSerial : public IDisplay
 {
