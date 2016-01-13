@@ -53,17 +53,16 @@ public:
 
 private:
 	unsigned int                 m_slotNo;
-	CRingBuffer<unsigned char>** m_txQueue;
+	CRingBuffer<unsigned char>   m_radioQueue;
+	CRingBuffer<unsigned char>   m_networkQueue;
 	SLOT_STATE                   m_state;
 	CEmbeddedLC                  m_embeddedLC;
 	CLC*                         m_lc;
 	unsigned char                m_seqNo;
 	unsigned char                m_n;
-	CTimer**                     m_playoutTimer;
+	CTimer                       m_playoutTimer;
 	CTimer                       m_networkWatchdog;
 	CTimer                       m_timeoutTimer;
-	unsigned int                 m_writeQueue;
-	unsigned int                 m_readQueue;
 	FILE*                        m_fp;
 
 	static unsigned int        m_colorCode;
@@ -78,7 +77,8 @@ private:
 	static FLCO                m_flco2;
 	static unsigned char       m_id2;
 
-	void writeQueue(const unsigned char* data);
+	void writeRadioQueue(const unsigned char* data);
+	void writeNetworkQueue(const unsigned char* data);
 	void writeNetwork(const unsigned char* data, unsigned char dataType);
 
 	void writeEndOfTransmission();

@@ -40,41 +40,24 @@ unsigned char     CDMRSlot::m_id2 = 0U;
 
 // #define	DUMP_DMR
 
-const unsigned int NUM_QUEUES = 1U;
-
 CDMRSlot::CDMRSlot(unsigned int slotNo, unsigned int timeout) :
 m_slotNo(slotNo),
-m_txQueue(NULL),
+m_radioQueue(1000U),
+m_networkQueue(100U),
 m_state(SS_LISTENING),
 m_embeddedLC(),
 m_lc(NULL),
 m_seqNo(0U),
 m_n(0U),
-m_playoutTimer(NULL),
+m_playoutTimer(1000U, 0U, 500U),
 m_networkWatchdog(1000U, 2U),
 m_timeoutTimer(1000U, timeout),
-m_writeQueue(0U),
-m_readQueue(0U),
 m_fp(NULL)
 {
-	m_txQueue      = new CRingBuffer<unsigned char>*[NUM_QUEUES];
-	m_playoutTimer = new CTimer*[NUM_QUEUES];
-
-	for (unsigned int i = 0U; i < NUM_QUEUES; i++) {
-		m_txQueue[i] = new CRingBuffer<unsigned char>(1000U);
-		m_playoutTimer[i] = new CTimer(1000U);
-	}
 }
 
 CDMRSlot::~CDMRSlot()
 {
-	for (unsigned int i = 0U; i < NUM_QUEUES; i++) {
-		delete m_txQueue[i];
-		delete m_playoutTimer[i];
-	}
-
-	delete[] m_txQueue;
-	delete[] m_playoutTimer;
 }
 
 void CDMRSlot::writeModem(unsigned char *data)
@@ -129,9 +112,6 @@ void CDMRSlot::writeModem(unsigned char *data)
 				data[1U] = 0x00U;
 				m_n = 0U;
 
-				m_playoutTimer[m_writeQueue]->setTimeout(0U, 50U);
-				m_playoutTimer[m_writeQueue]->start();
-
 				m_networkWatchdog.stop();
 				m_timeoutTimer.start();
 
@@ -139,7 +119,7 @@ void CDMRSlot::writeModem(unsigned char *data)
 
 				for (unsigned i = 0U; i < 3U; i++) {
 					writeNetwork(data, DT_VOICE_LC_HEADER);
-					writeQueue(data);
+					writeRadioQueue(data);
 				}
 
 				m_state = SS_RELAYING_RF;
@@ -163,7 +143,7 @@ void CDMRSlot::writeModem(unsigned char *data)
 				m_n = 0U;
 
 				writeNetwork(data, DT_VOICE_PI_HEADER);
-				writeQueue(data);
+				writeRadioQueue(data);
 
 				LogMessage("DMR Slot %u, received PI header", m_slotNo);
 			} else {
@@ -199,13 +179,13 @@ void CDMRSlot::writeModem(unsigned char *data)
 				end[1U] = 0x00U;
 
 				writeNetwork(end, DT_TERMINATOR_WITH_LC);
-				writeQueue(end);
+				writeRadioQueue(end);
 
 				LogMessage("DMR Slot %u, received RF end of transmission", m_slotNo);
 
 				// 480ms of idle to space things out
 				for (unsigned int i = 0U; i < 8U; i++)
-					writeQueue(m_idle);
+					writeRadioQueue(m_idle);
 
 				writeEndOfTransmission();
 
@@ -224,7 +204,7 @@ void CDMRSlot::writeModem(unsigned char *data)
 			data[1U] = 0x00U;
 
 			writeNetwork(data, dataType);
-			writeQueue(data);
+			writeRadioQueue(data);
 		}
 	} else if (audioSync) {
 		if (m_state == SS_RELAYING_RF) {
@@ -240,7 +220,7 @@ void CDMRSlot::writeModem(unsigned char *data)
 			data[1U] = 0x00U;
 			m_n = 0U;
 
-			writeQueue(data);
+			writeRadioQueue(data);
 			writeNetwork(data, DT_VOICE_SYNC);
 		} else if (m_state == SS_LISTENING) {
 			m_state = SS_LATE_ENTRY;
@@ -261,7 +241,7 @@ void CDMRSlot::writeModem(unsigned char *data)
 			data[1U] = 0x00U;
 			m_n++;
 
-			writeQueue(data);
+			writeRadioQueue(data);
 			writeNetwork(data, DT_VOICE);
 		} else if (m_state == SS_LATE_ENTRY) {
 			// If we haven't received an LC yet, then be strict on the color code
@@ -291,9 +271,6 @@ void CDMRSlot::writeModem(unsigned char *data)
 				start[1U] = 0x00U;
 				m_n = 0U;
 
-				m_playoutTimer[m_writeQueue]->setTimeout(0U, 50U);
-				m_playoutTimer[m_writeQueue]->start();
-
 				m_networkWatchdog.stop();
 				m_timeoutTimer.start();
 
@@ -301,7 +278,7 @@ void CDMRSlot::writeModem(unsigned char *data)
 
 				for (unsigned int i = 0U; i < 3U; i++) {
 					writeNetwork(start, DT_VOICE_LC_HEADER);
-					writeQueue(start);
+					writeRadioQueue(start);
 				}
 
 				// Send the original audio frame out
@@ -313,7 +290,7 @@ void CDMRSlot::writeModem(unsigned char *data)
 				data[1U] = 0x00U;
 				m_n++;
 
-				writeQueue(data);
+				writeRadioQueue(data);
 				writeNetwork(data, DT_VOICE);
 
 				m_state = SS_RELAYING_RF;
@@ -330,37 +307,19 @@ void CDMRSlot::writeModem(unsigned char *data)
 
 unsigned int CDMRSlot::readModem(unsigned char* data)
 {
-	if (!m_playoutTimer[m_readQueue]->isRunning() || !m_playoutTimer[m_readQueue]->hasExpired())
-		return 0U;
-
-	if (m_txQueue[m_readQueue]->isEmpty())
+	if (m_radioQueue.isEmpty())
 		return 0U;
 
 	unsigned char len = 0U;
-	m_txQueue[m_readQueue]->getData(&len, 1U);
+	m_radioQueue.getData(&len, 1U);
 
-	m_txQueue[m_readQueue]->getData(data, len);
-
-	if (data[0U] == TAG_SWITCH) {
-		m_readQueue = (m_readQueue + 1U) % NUM_QUEUES;
-		LogDebug("DMR Slot %u: read queue set to %u", m_slotNo, m_readQueue);
-		return 0U;
-	}
+	m_radioQueue.getData(data, len);
 
 	return len;
 }
 
 void CDMRSlot::writeEndOfTransmission()
 {
-	unsigned char len = 1U;
-	m_txQueue[m_writeQueue]->addData(&len, 1U);
-
-	unsigned char data = TAG_SWITCH;
-	m_txQueue[m_writeQueue]->addData(&data, 1U);
-
-	m_writeQueue = (m_writeQueue + 1U) % NUM_QUEUES;
-	LogDebug("DMR Slot %u: write queue set to %u", m_slotNo, m_writeQueue);
-
 	m_state = SS_LISTENING;
 
 	setShortLC(m_slotNo, 0U);
@@ -409,13 +368,11 @@ void CDMRSlot::writeNetwork(const CDMRData& dmrData)
 			data[0U] = TAG_DATA;
 			data[1U] = 0x00U;
 
-			m_playoutTimer[m_writeQueue]->setTimeout(0U, 500U);
-			m_playoutTimer[m_writeQueue]->start();
-
+			m_playoutTimer.start();
 			m_timeoutTimer.start();
 
 			for (unsigned int i = 0U; i < 3U; i++)
-				writeQueue(data);
+				writeNetworkQueue(data);
 
 			m_state = SS_RELAYING_NETWORK;
 
@@ -446,7 +403,7 @@ void CDMRSlot::writeNetwork(const CDMRData& dmrData)
 		data[0U] = TAG_DATA;
 		data[1U] = 0x00U;
 
-		writeQueue(data);
+		writeNetworkQueue(data);
 
 #if defined(DUMP_DMR)
 		writeFile(data);
@@ -472,7 +429,7 @@ void CDMRSlot::writeNetwork(const CDMRData& dmrData)
 		data[0U] = TAG_EOT;
 		data[1U] = 0x00U;
 
-		writeQueue(data);
+		writeNetworkQueue(data);
 		writeEndOfTransmission();
 
 #if defined(DUMP_DMR)
@@ -495,7 +452,7 @@ void CDMRSlot::writeNetwork(const CDMRData& dmrData)
 		data[0U] = TAG_DATA;
 		data[1U] = 0x00U;
 
-		writeQueue(data);
+		writeNetworkQueue(data);
 
 #if defined(DUMP_DMR)
 		writeFile(data);
@@ -517,7 +474,7 @@ void CDMRSlot::writeNetwork(const CDMRData& dmrData)
 		data[0U] = TAG_DATA;
 		data[1U] = 0x00U;
 
-		writeQueue(data);
+		writeNetworkQueue(data);
 
 #if defined(DUMP_DMR)
 		writeFile(data);
@@ -539,7 +496,7 @@ void CDMRSlot::writeNetwork(const CDMRData& dmrData)
 		data[0U] = TAG_DATA;
 		data[1U] = 0x00U;
 
-		writeQueue(data);
+		writeNetworkQueue(data);
 
 #if defined(DUMP_DMR)
 		writeFile(data);
@@ -551,8 +508,19 @@ void CDMRSlot::clock(unsigned int ms)
 {
 	m_timeoutTimer.clock(ms);
 
-	for (unsigned int i = 0U; i < NUM_QUEUES; i++)
-		m_playoutTimer[i]->clock(ms);
+	m_playoutTimer.clock(ms);
+	if (m_playoutTimer.isRunning() && m_playoutTimer.hasExpired()) {
+		while (!m_networkQueue.isEmpty()) {
+			unsigned char len = 0U;
+			m_networkQueue.getData(&len, 1U);
+
+			unsigned char buffer[100U];
+			m_networkQueue.getData(buffer, len);
+
+			m_radioQueue.addData(&len, 1U);
+			m_radioQueue.addData(buffer, len);
+		}
+	}
 
 	if (m_state == SS_RELAYING_NETWORK) {
 		m_networkWatchdog.clock(ms);
@@ -567,16 +535,27 @@ void CDMRSlot::clock(unsigned int ms)
 	}
 }
 
-void CDMRSlot::writeQueue(const unsigned char *data)
+void CDMRSlot::writeRadioQueue(const unsigned char *data)
 {
 	unsigned char len = DMR_FRAME_LENGTH_BYTES + 2U;
-	m_txQueue[m_writeQueue]->addData(&len, 1U);
+	m_radioQueue.addData(&len, 1U);
 
 	// If the timeout has expired, replace the audio with idles to keep the slot busy
 	if (m_timeoutTimer.isRunning() && m_timeoutTimer.hasExpired())
-		m_txQueue[m_writeQueue]->addData(m_idle, len);
+		m_radioQueue.addData(m_idle, len);
 	else
-		m_txQueue[m_writeQueue]->addData(data, len);
+		m_radioQueue.addData(data, len);
+}
+
+void CDMRSlot::writeNetworkQueue(const unsigned char *data)
+{
+	// If the timeout has expired, send nothing
+	if (!m_timeoutTimer.isRunning() || !m_timeoutTimer.hasExpired()) {
+		unsigned char len = DMR_FRAME_LENGTH_BYTES + 2U;
+		m_networkQueue.addData(&len, 1U);
+
+		m_networkQueue.addData(data, len);
+	}
 }
 
 void CDMRSlot::writeNetwork(const unsigned char* data, unsigned char dataType)
