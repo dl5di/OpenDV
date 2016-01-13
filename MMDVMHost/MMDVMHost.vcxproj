@@ -103,6 +103,7 @@
     <ClCompile Include="EmbeddedLC.cpp" />
     <ClCompile Include="FullLC.cpp" />
     <ClCompile Include="Golay2087.cpp" />
+    <ClCompile Include="Golay24128.cpp" />
     <ClCompile Include="Hamming.cpp" />
     <ClCompile Include="HomebrewDMRIPSC.cpp" />
     <ClCompile Include="LC.cpp" />
@@ -141,6 +142,7 @@
     <ClInclude Include="EmbeddedLC.h" />
     <ClInclude Include="FullLC.h" />
     <ClInclude Include="Golay2087.h" />
+    <ClInclude Include="Golay24128.h" />
     <ClInclude Include="Hamming.h" />
     <ClInclude Include="HomebrewDMRIPSC.h" />
     <ClInclude Include="LC.h" />

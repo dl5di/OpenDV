@@ -5,12 +5,12 @@ LDFLAGS =
 
 all:		MMDVMHost
 
-MMDVMHost:	BPTC19696.o Conf.o CRC.o CSBK.o Display.o DMRControl.o DMRData.o DMRSlot.o DMRSync.o DStarEcho.o EMB.o EmbeddedLC.o FullLC.o Golay2087.o Hamming.o \
-						HomebrewDMRIPSC.o LC.o Log.o MMDVMHost.o Modem.o NullDisplay.o QR1676.o RS129.o SerialController.o SHA256.o ShortLC.o SlotType.o StopWatch.o TFTSerial.o \
-						Timer.o UDPSocket.o Utils.o YSFEcho.o
+MMDVMHost:	BPTC19696.o Conf.o CRC.o CSBK.o Display.o DMRControl.o DMRData.o DMRSlot.o DMRSync.o DStarEcho.o EMB.o EmbeddedLC.o FullLC.o Golay2087.o Golay24128.o \
+						Hamming.o HomebrewDMRIPSC.o LC.o Log.o MMDVMHost.o Modem.o NullDisplay.o QR1676.o RS129.o SerialController.o SHA256.o ShortLC.o SlotType.o StopWatch.o \
+						TFTSerial.o Timer.o UDPSocket.o Utils.o YSFEcho.o
 		$(CC) $(LDFLAGS) -o MMDVMHost BPTC19696.o Conf.o CRC.o CSBK.o Display.o DMRControl.o DMRData.o DMRSlot.o DMRSync.o DStarEcho.o EMB.o EmbeddedLC.o FullLC.o \
-						Golay2087.o Hamming.o HomebrewDMRIPSC.o LC.o Log.o MMDVMHost.o Modem.o NullDisplay.o  QR1676.o RS129.o SerialController.o SHA256.o ShortLC.o SlotType.o \
-						StopWatch.o TFTSerial.o Timer.o UDPSocket.o Utils.o YSFEcho.o $(LIBS)
+						Golay2087.o Golay24128.o  Hamming.o HomebrewDMRIPSC.o LC.o Log.o MMDVMHost.o Modem.o NullDisplay.o  QR1676.o RS129.o SerialController.o SHA256.o ShortLC.o \
+						SlotType.o StopWatch.o TFTSerial.o Timer.o UDPSocket.o Utils.o YSFEcho.o $(LIBS)
 
 BPTC19696.o:	BPTC19696.cpp BPTC19696.h Utils.h Hamming.h
 		$(CC) $(CFLAGS) -c BPTC19696.cpp
@@ -52,8 +52,11 @@ EmbeddedLC.o:	EmbeddedLC.cpp EmbeddedLC.h CRC.h Utils.h LC.h Hamming.h Log.h
 FullLC.o:	FullLC.cpp FullLC.h BPTC19696.h LC.h SlotType.h Log.h DMRDefines.h RS129.h
 		$(CC) $(CFLAGS) -c FullLC.cpp
 
-Golay2087.o:	Golay2087.cpp Golay2087.h Log.h
+Golay2087.o:	Golay2087.cpp Golay2087.h
 		$(CC) $(CFLAGS) -c Golay2087.cpp
+
+Golay24128.o:	Golay24128.cpp Golay24128.h
+		$(CC) $(CFLAGS) -c Golay24128.cpp
 
 Hamming.o:	Hamming.cpp Hamming.h
 		$(CC) $(CFLAGS) -c Hamming.cpp
