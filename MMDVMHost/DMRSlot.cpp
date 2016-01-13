@@ -40,7 +40,7 @@ unsigned char     CDMRSlot::m_id2 = 0U;
 
 // #define	DUMP_DMR
 
-const unsigned int NUM_QUEUES = 2U;
+const unsigned int NUM_QUEUES = 1U;
 
 CDMRSlot::CDMRSlot(unsigned int slotNo, unsigned int timeout) :
 m_slotNo(slotNo),
@@ -147,7 +147,7 @@ void CDMRSlot::writeModem(unsigned char *data)
 
 				m_display->writeDMR(m_slotNo, m_lc->getSrcId(), m_lc->getFLCO() == FLCO_GROUP, m_lc->getDstId());
 
-				LogMessage("DMR Slot %u, received RF header from %u to %s %u", m_slotNo, m_lc->getSrcId(), m_lc->getFLCO() == FLCO_GROUP ? "TG" : "", m_lc->getDstId());
+				LogMessage("DMR Slot %u, received RF header from %u to %s%u", m_slotNo, m_lc->getSrcId(), m_lc->getFLCO() == FLCO_GROUP ? "TG " : "", m_lc->getDstId());
 			}
 		} else if (dataType == DT_VOICE_PI_HEADER) {
 			if (m_state == SS_RELAYING_RF) {
@@ -322,7 +322,7 @@ void CDMRSlot::writeModem(unsigned char *data)
 
 				m_display->writeDMR(m_slotNo, m_lc->getSrcId(), m_lc->getFLCO() == FLCO_GROUP, m_lc->getDstId());
 
-				LogMessage("DMR Slot %u, received RF late entry from %u to %s %u", m_slotNo, m_lc->getSrcId(), m_lc->getFLCO() == FLCO_GROUP ? "TG" : "", m_lc->getDstId());
+				LogMessage("DMR Slot %u, received RF late entry from %u to %s%u", m_slotNo, m_lc->getSrcId(), m_lc->getFLCO() == FLCO_GROUP ? "TG " : "", m_lc->getDstId());
 			}
 		}
 	}
@@ -427,7 +427,7 @@ void CDMRSlot::writeNetwork(const CDMRData& dmrData)
 			openFile();
 			writeFile(data);
 #endif
-			LogMessage("DMR Slot %u, received network header from %u to %s %u", m_slotNo, m_lc->getSrcId(), m_lc->getFLCO() == FLCO_GROUP ? "TG" : "", m_lc->getDstId());
+			LogMessage("DMR Slot %u, received network header from %u to %s%u", m_slotNo, m_lc->getSrcId(), m_lc->getFLCO() == FLCO_GROUP ? "TG " : "", m_lc->getDstId());
 		}
 	} else if (dataType == DT_VOICE_PI_HEADER) {
 		if (m_state != SS_RELAYING_NETWORK)
@@ -709,7 +709,7 @@ bool CDMRSlot::openFile()
 	struct tm* tm = ::localtime(&t);
 
 	char name[100U];
-	::sprintf(name, "DMR_%u_%04d%02d%02d_%02d%02d%02d.ambe", m_slotNo, tm->tm_year + 1900, tm->tm_mon + 1U, tm->tm_mday, tm->tm_hour, tm->tm_min, tm->tm_sec);
+	::sprintf(name, "DMR_%u_%04d%02d%02d_%02d%02d%02d.ambe", m_slotNo, tm->tm_year + 1900, tm->tm_mon + 1, tm->tm_mday, tm->tm_hour, tm->tm_min, tm->tm_sec);
 
 	m_fp = ::fopen(name, "wb");
 	if (m_fp == NULL)
