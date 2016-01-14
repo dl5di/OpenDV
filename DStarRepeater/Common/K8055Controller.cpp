@@ -39,7 +39,11 @@ const char OUT_PORT8 = 0x80U;
 #if defined(__WINDOWS__)
 
 #include <Setupapi.h>
+#if _MSC_VER == 1900
+#include <hidsdi.h>
+#else
 #include "HID.h"
+#endif
 
 const DWORD USB_BUFSIZE = 9UL;
 

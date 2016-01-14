@@ -1,0 +1,40 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.24720.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DStarRepeater", "DStarRepeater\DStarRepeater.vcxproj", "{E3458953-FC3D-47AF-A245-A1A87DC2BC7E}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DStarRepeaterConfig", "DStarRepeaterConfig\DStarRepeaterConfig.vcxproj", "{FBAE8201-11CC-4256-BF39-A860B9DF963C}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Common", "Common\Common.vcxproj", "{3753EF20-2330-415E-B933-2560A474498B}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GUICommon", "GUICommon\GUICommon.vcxproj", "{2C548AAB-A9F7-496F-BCF5-6185BDA304D2}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E3458953-FC3D-47AF-A245-A1A87DC2BC7E}.Debug|Win32.ActiveCfg = Debug|Win32
+		{E3458953-FC3D-47AF-A245-A1A87DC2BC7E}.Debug|Win32.Build.0 = Debug|Win32
+		{E3458953-FC3D-47AF-A245-A1A87DC2BC7E}.Release|Win32.ActiveCfg = Release|Win32
+		{E3458953-FC3D-47AF-A245-A1A87DC2BC7E}.Release|Win32.Build.0 = Release|Win32
+		{FBAE8201-11CC-4256-BF39-A860B9DF963C}.Debug|Win32.ActiveCfg = Debug|Win32
+		{FBAE8201-11CC-4256-BF39-A860B9DF963C}.Debug|Win32.Build.0 = Debug|Win32
+		{FBAE8201-11CC-4256-BF39-A860B9DF963C}.Release|Win32.ActiveCfg = Release|Win32
+		{FBAE8201-11CC-4256-BF39-A860B9DF963C}.Release|Win32.Build.0 = Release|Win32
+		{3753EF20-2330-415E-B933-2560A474498B}.Debug|Win32.ActiveCfg = Debug|Win32
+		{3753EF20-2330-415E-B933-2560A474498B}.Debug|Win32.Build.0 = Debug|Win32
+		{3753EF20-2330-415E-B933-2560A474498B}.Release|Win32.ActiveCfg = Release|Win32
+		{3753EF20-2330-415E-B933-2560A474498B}.Release|Win32.Build.0 = Release|Win32
+		{2C548AAB-A9F7-496F-BCF5-6185BDA304D2}.Debug|Win32.ActiveCfg = Debug|Win32
+		{2C548AAB-A9F7-496F-BCF5-6185BDA304D2}.Debug|Win32.Build.0 = Debug|Win32
+		{2C548AAB-A9F7-496F-BCF5-6185BDA304D2}.Release|Win32.ActiveCfg = Release|Win32
+		{2C548AAB-A9F7-496F-BCF5-6185BDA304D2}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,155 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{FBAE8201-11CC-4256-BF39-A860B9DF963C}</ProjectGuid>
+    <RootNamespace>DStarRepeaterConfig</RootNamespace>
+    <Keyword>Win32Proj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>14.0.24720.0</_ProjectFileVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
+    <IntDir>$(Configuration)\</IntDir>
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
+    <IntDir>$(Configuration)\</IntDir>
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>$(WXWIN)\include\msvc;$(SolutionDir)..\portaudio\include;$(SolutionDir)Common;$(SolutionDir)GUICommon;$(WXWIN)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;WINVER=0x0400;__WXMSW__;WXUSINGDLL;wxUSE_GUI=1;__WXDEBUG__;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PrecompiledHeader />
+      <WarningLevel>Level4</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>portaudio_x86.lib;wsock32.lib;setupapi.lib;hid.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)..\portaudio\build\msvc\Win32\Debug;$(SolutionDir)..\HID;$(WXWIN)\lib\vc_dll;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <AdditionalIncludeDirectories>C:\wxWidgets-2.8.12\include\msvc;$(SolutionDir)..\portaudio\include;$(SolutionDir)Common;$(SolutionDir)GUICommon;C:\wxWidgets-2.8.12\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;WINVER=0x0400;__WXMSW__;WXUSINGDLL;wxUSE_GUI=1;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PrecompiledHeader />
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>portaudio_x86.lib;wsock32.lib;setupapi.lib;hid.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)..\portaudio\build\msvc\Win32\Release;$(SolutionDir)..\HID;C:\wxWidgets-2.8.12\lib\vc_dll;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="DStarRepeaterConfigActiveHangSet.cpp" />
+    <ClCompile Include="DStarRepeaterConfigAnnouncementSet.cpp" />
+    <ClCompile Include="DStarRepeaterConfigApp.cpp" />
+    <ClCompile Include="DStarRepeaterConfigBeaconSet.cpp" />
+    <ClCompile Include="DStarRepeaterConfigCallsignSet.cpp" />
+    <ClCompile Include="DStarRepeaterConfigControl1Set.cpp" />
+    <ClCompile Include="DStarRepeaterConfigControl2Set.cpp" />
+    <ClCompile Include="DStarRepeaterConfigControllerSet.cpp" />
+    <ClCompile Include="DStarRepeaterConfigDVAPSet.cpp" />
+    <ClCompile Include="DStarRepeaterConfigDVMegaSet.cpp" />
+    <ClCompile Include="DStarRepeaterConfigDVRPTR1Set.cpp" />
+    <ClCompile Include="DStarRepeaterConfigDVRPTR2Set.cpp" />
+    <ClCompile Include="DStarRepeaterConfigDVRPTR3Set.cpp" />
+    <ClCompile Include="DStarRepeaterConfigFrame.cpp" />
+    <ClCompile Include="DStarRepeaterConfigGMSKSet.cpp" />
+    <ClCompile Include="DStarRepeaterConfigMMDVMSet.cpp" />
+    <ClCompile Include="DStarRepeaterConfigModemSet.cpp" />
+    <ClCompile Include="DStarRepeaterConfigNetworkSet.cpp" />
+    <ClCompile Include="DStarRepeaterConfigSoundCardSet.cpp" />
+    <ClCompile Include="DStarRepeaterConfigSplitSet.cpp" />
+    <ClCompile Include="DStarRepeaterConfigTimesSet.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="DStarRepeaterConfigActiveHangSet.h" />
+    <ClInclude Include="DStarRepeaterConfigAnnouncementSet.h" />
+    <ClInclude Include="DStarRepeaterConfigApp.h" />
+    <ClInclude Include="DStarRepeaterConfigBeaconSet.h" />
+    <ClInclude Include="DStarRepeaterConfigCallsignSet.h" />
+    <ClInclude Include="DStarRepeaterConfigControl1Set.h" />
+    <ClInclude Include="DStarRepeaterConfigControl2Set.h" />
+    <ClInclude Include="DStarRepeaterConfigControllerSet.h" />
+    <ClInclude Include="DStarRepeaterConfigDefs.h" />
+    <ClInclude Include="DStarRepeaterConfigDVAPSet.h" />
+    <ClInclude Include="DStarRepeaterConfigDVMegaSet.h" />
+    <ClInclude Include="DStarRepeaterConfigDVRPTR1Set.h" />
+    <ClInclude Include="DStarRepeaterConfigDVRPTR2Set.h" />
+    <ClInclude Include="DStarRepeaterConfigDVRPTR3Set.h" />
+    <ClInclude Include="DStarRepeaterConfigFrame.h" />
+    <ClInclude Include="DStarRepeaterConfigGMSKSet.h" />
+    <ClInclude Include="DStarRepeaterConfigMMDVMSet.h" />
+    <ClInclude Include="DStarRepeaterConfigModemSet.h" />
+    <ClInclude Include="DStarRepeaterConfigNetworkSet.h" />
+    <ClInclude Include="DStarRepeaterConfigSoundCardSet.h" />
+    <ClInclude Include="DStarRepeaterConfigSplitSet.h" />
+    <ClInclude Include="DStarRepeaterConfigTimesSet.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Common\Common.vcxproj">
+      <Project>{3753ef20-2330-415e-b933-2560a474498b}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\GUICommon\GUICommon.vcxproj">
+      <Project>{2c548aab-a9f7-496f-bcf5-6185bda304d2}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
