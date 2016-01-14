@@ -25,7 +25,12 @@
 #include <wx/wx.h>
 #if defined(WIN32)
 #include <wx/dynlib.h>
+#if _MSC_VER == 1900
+#undef __USB_H__
+#include <lusb0_usb.h>
+#else
 #include "lusb0_usb.h"
+#endif
 #else
 #include <libusb-1.0/libusb.h>
 #endif
