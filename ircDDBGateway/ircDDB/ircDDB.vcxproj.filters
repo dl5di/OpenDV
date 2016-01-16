@@ -14,9 +14,6 @@
     <ClCompile Include="IRCClient.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="IRCDDB.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="IRCDDBApp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -35,15 +32,21 @@
     <ClCompile Include="IRCutils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="IRCDDBClient.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IRCDDB.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IRCDDBMultiClient.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="IRCApplication.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="IRCClient.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="IRCDDB.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="IRCDDBApp.h">
@@ -64,5 +67,17 @@
     <ClInclude Include="IRCutils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="IRCDDBClient.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IRCDDB.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IRCDDBMultiClient.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ClassDiagram.cd" />
   </ItemGroup>
 </Project>
