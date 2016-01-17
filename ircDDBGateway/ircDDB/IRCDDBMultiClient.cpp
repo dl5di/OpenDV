@@ -50,7 +50,7 @@ CIRCDDBMultiClient::~CIRCDDBMultiClient()
 
 bool CIRCDDBMultiClient::open()
 {
-	bool result = false;
+	bool result = true;
 
 	for (unsigned int i = 0; i < m_clientCount; i++) {
 		result = m_clients[i]->open() && result;
