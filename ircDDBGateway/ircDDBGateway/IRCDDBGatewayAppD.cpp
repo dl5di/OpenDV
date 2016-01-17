@@ -27,6 +27,8 @@
 #include "Version.h"
 #include "Logger.h"
 #include "IRCDDB.h"
+#include "IRCDDBClient.h"
+#include "IRCDDBMultiClient.h"
 #include "Utils.h"
 
 #include <wx/cmdline.h>
@@ -633,10 +635,19 @@ bool CIRCDDBGatewayAppD::createThread()
 
 	if (ircDDBEnabled) {
 #if defined(__WINDOWS__)
-		CIRCDDB* ircDDB = new CIRCDDB(ircDDBHostname, 9007U, ircDDBUsername, ircDDBPassword, wxT("win_") + LOG_BASE_NAME + wxT("-") + VERSION, gatewayAddress); 
+		wxString versionInfo = wxT("win_") + LOG_BASE_NAME + wxT("-") + VERSION;
 #else
-		CIRCDDB* ircDDB = new CIRCDDB(ircDDBHostname, 9007U, ircDDBUsername, ircDDBPassword, wxT("linux_") + LOG_BASE_NAME + wxT("-") + VERSION, gatewayAddress); 
+		wxString versionInfo = wxT("linux_") + LOG_BASE_NAME + wxT("-") + VERSION;
 #endif
+		//First test of multi ircddb
+		CIRCDDB ** ircDDBClients = new CIRCDDB*[2];
+		ircDDBClients[0] = new CIRCDDBClient(ircDDBHostname, 9007U, ircDDBUsername, ircDDBPassword, versionInfo, gatewayAddress);
+		ircDDBClients[1] = new CIRCDDBClient(wxT("rr.openquad.net"), 9007U, ircDDBUsername, wxEmptyString, versionInfo, gatewayAddress);
+
+		CIRCDDBMultiClient * ircDDB = new CIRCDDBMultiClient(ircDDBClients, 2U);
+
+		delete[] ircDDBClients;//delete the array but not its items !!
+
 		bool res = ircDDB->open();
 		if (!res) {
 			wxLogError(wxT("Cannot initialise the ircDDB protocol handler"));

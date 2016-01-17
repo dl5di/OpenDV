@@ -41,7 +41,7 @@ m_currentClientLock()
 
 CIRCDDBMultiClient::~CIRCDDBMultiClient()
 {
-	for (int i = 0; i < m_clientCount; i++) {
+	for (unsigned int i = 0; i < m_clientCount; i++) {
 		delete m_clients[i];
 	}
 
@@ -52,7 +52,7 @@ bool CIRCDDBMultiClient::open()
 {
 	bool result = false;
 
-	for (int i = 0; i < m_clientCount; i++) {
+	for (unsigned int i = 0; i < m_clientCount; i++) {
 		result = m_clients[i]->open() && result;
 	}
 
@@ -63,28 +63,28 @@ bool CIRCDDBMultiClient::open()
 
 void CIRCDDBMultiClient::rptrQTH(const wxString & callsign, double latitude, double longitude, const wxString & desc1, const wxString & desc2, const wxString & infoURL)
 {
-	for (int i = 0; i < m_clientCount; i++) {
+	for (unsigned int i = 0; i < m_clientCount; i++) {
 		m_clients[i]->rptrQTH(callsign, latitude, longitude, desc1, desc2, infoURL);
 	}
 }
 
 void CIRCDDBMultiClient::rptrQRG(const wxString & callsign, double txFrequency, double duplexShift, double range, double agl)
 {
-	for (int i = 0; i < m_clientCount; i++) {
+	for (unsigned int i = 0; i < m_clientCount; i++) {
 		m_clients[i]->rptrQRG(callsign, txFrequency, duplexShift, range, agl);
 	}
 }
 
 void CIRCDDBMultiClient::kickWatchdog(const wxString & callsign, const wxString & wdInfo)
 {
-	for (int i = 0; i < m_clientCount; i++) {
+	for (unsigned int i = 0; i < m_clientCount; i++) {
 		m_clients[i]->kickWatchdog(callsign, wdInfo);
 	}
 }
 
 int CIRCDDBMultiClient::getConnectionState()
 {
-	for (int i = 0; i < m_clientCount; i++) {
+	for (unsigned int i = 0; i < m_clientCount; i++) {
 		int state = m_clients[i]->getConnectionState();
 		if (state != 7)
 			return state;
@@ -97,7 +97,7 @@ bool CIRCDDBMultiClient::sendHeard(const wxString & myCall, const wxString & myC
 {
 	bool result = true;
 
-	for (int i = 0; i < m_clientCount; i++) {
+	for (unsigned int i = 0; i < m_clientCount; i++) {
 		result = m_clients[i]->sendHeard(myCall, myCallExt, yourCall, rpt1, rpt2, flag1, flag2, flag3) && result;
 	}
 
@@ -108,7 +108,7 @@ bool CIRCDDBMultiClient::sendHeardWithTXMsg(const wxString & myCall, const wxStr
 {
 	bool result = true;
 
-	for (int i = 0; i < m_clientCount; i++) {
+	for (unsigned int i = 0; i < m_clientCount; i++) {
 		result = m_clients[i]->sendHeardWithTXMsg(myCall, myCallExt, yourCall, rpt1, rpt2, flag1, flag2, flag3, network_destination, tx_message) && result;
 	}
 
@@ -119,7 +119,7 @@ bool CIRCDDBMultiClient::sendHeardWithTXStats(const wxString & myCall, const wxS
 {
 	bool result = true;
 
-	for (int i = 0; i < m_clientCount; i++) {
+	for (unsigned int i = 0; i < m_clientCount; i++) {
 		result = m_clients[i]->sendHeardWithTXStats(myCall, myCallExt, yourCall, rpt1, rpt2, flag1, flag2, flag3, num_dv_frames, num_dv_silent_frames, num_bit_errors) && result;
 	}
 
@@ -130,7 +130,7 @@ bool CIRCDDBMultiClient::findGateway(const wxString & gatewayCallsign)
 {
 	bool result = true;
 
-	for (int i = 0; i < m_clientCount; i++) {
+	for (unsigned int i = 0; i < m_clientCount; i++) {
 		result = m_clients[i]->findGateway(gatewayCallsign) && result;
 	}
 
@@ -141,7 +141,7 @@ bool CIRCDDBMultiClient::findRepeater(const wxString & repeaterCallsign)
 {
 	bool result = true;
 
-	for (int i = 0; i < m_clientCount; i++) {
+	for (unsigned int i = 0; i < m_clientCount; i++) {
 		result = m_clients[i]->findRepeater(repeaterCallsign) && result;
 	}
 
@@ -152,7 +152,7 @@ bool CIRCDDBMultiClient::findUser(const wxString & userCallsign)
 {
 	bool result = true;
 
-	for (int i = 0; i < m_clientCount; i++) {
+	for (unsigned int i = 0; i < m_clientCount; i++) {
 		result = m_clients[i]->findUser(userCallsign) && result;
 	}
 
@@ -195,7 +195,7 @@ bool CIRCDDBMultiClient::receiveUser(wxString & userCallsign, wxString & repeate
 
 void CIRCDDBMultiClient::close()
 {
-	for (int i = 0; i < m_clientCount; i++) {
+	for (unsigned int i = 0; i < m_clientCount; i++) {
 		m_clients[i]->close();
 	}
 }
