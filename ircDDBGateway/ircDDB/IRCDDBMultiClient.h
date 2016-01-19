@@ -34,23 +34,23 @@ public:
 	~CIRCDDBMultiClient();
 
 	// Inherited via CIRCDDB
-	virtual bool open() override;
-	virtual void rptrQTH(const wxString & callsign, double latitude, double longitude, const wxString & desc1, const wxString & desc2, const wxString & infoURL) override;
-	virtual void rptrQRG(const wxString & callsign, double txFrequency, double duplexShift, double range, double agl) override;
-	virtual void kickWatchdog(const wxString & callsign, const wxString & wdInfo) override;
-	virtual int getConnectionState() override;
-	virtual bool sendHeard(const wxString & myCall, const wxString & myCallExt, const wxString & yourCall, const wxString & rpt1, const wxString & rpt2, unsigned char flag1, unsigned char flag2, unsigned char flag3) override;
-	virtual bool sendHeardWithTXMsg(const wxString & myCall, const wxString & myCallExt, const wxString & yourCall, const wxString & rpt1, const wxString & rpt2, unsigned char flag1, unsigned char flag2, unsigned char flag3, const wxString & network_destination, const wxString & tx_message) override;
-	virtual bool sendHeardWithTXStats(const wxString & myCall, const wxString & myCallExt, const wxString & yourCall, const wxString & rpt1, const wxString & rpt2, unsigned char flag1, unsigned char flag2, unsigned char flag3, int num_dv_frames, int num_dv_silent_frames, int num_bit_errors) override;
-	virtual bool findGateway(const wxString & gatewayCallsign) override;
-	virtual bool findRepeater(const wxString & repeaterCallsign) override;
-	virtual bool findUser(const wxString & userCallsign) override;
-	virtual IRCDDB_RESPONSE_TYPE getMessageType() override;
-	virtual bool receiveRepeater(wxString & repeaterCallsign, wxString & gatewayCallsign, wxString & address) override;
-	virtual bool receiveGateway(wxString & gatewayCallsign, wxString & address) override;
-	virtual bool receiveUser(wxString & userCallsign, wxString & repeaterCallsign, wxString & gatewayCallsign, wxString & address) override;
-	virtual bool receiveUser(wxString & userCallsign, wxString & repeaterCallsign, wxString & gatewayCallsign, wxString & address, wxString & timeStamp) override;
-	virtual void close() override;
+	virtual bool open();
+	virtual void rptrQTH(const wxString & callsign, double latitude, double longitude, const wxString & desc1, const wxString & desc2, const wxString & infoURL);
+	virtual void rptrQRG(const wxString & callsign, double txFrequency, double duplexShift, double range, double agl);
+	virtual void kickWatchdog(const wxString & callsign, const wxString & wdInfo);
+	virtual int getConnectionState() ;
+	virtual bool sendHeard(const wxString & myCall, const wxString & myCallExt, const wxString & yourCall, const wxString & rpt1, const wxString & rpt2, unsigned char flag1, unsigned char flag2, unsigned char flag3);
+	virtual bool sendHeardWithTXMsg(const wxString & myCall, const wxString & myCallExt, const wxString & yourCall, const wxString & rpt1, const wxString & rpt2, unsigned char flag1, unsigned char flag2, unsigned char flag3, const wxString & network_destination, const wxString & tx_message);
+	virtual bool sendHeardWithTXStats(const wxString & myCall, const wxString & myCallExt, const wxString & yourCall, const wxString & rpt1, const wxString & rpt2, unsigned char flag1, unsigned char flag2, unsigned char flag3, int num_dv_frames, int num_dv_silent_frames, int num_bit_errors);
+	virtual bool findGateway(const wxString & gatewayCallsign);
+	virtual bool findRepeater(const wxString & repeaterCallsign);
+	virtual bool findUser(const wxString & userCallsign);
+	virtual IRCDDB_RESPONSE_TYPE getMessageType();
+	virtual bool receiveRepeater(wxString & repeaterCallsign, wxString & gatewayCallsign, wxString & address);
+	virtual bool receiveGateway(wxString & gatewayCallsign, wxString & address);
+	virtual bool receiveUser(wxString & userCallsign, wxString & repeaterCallsign, wxString & gatewayCallsign, wxString & address);
+	virtual bool receiveUser(wxString & userCallsign, wxString & repeaterCallsign, wxString & gatewayCallsign, wxString & address, wxString & timeStamp);
+	virtual void close();
 
 private :
 	CIRCDDB * * m_clients;

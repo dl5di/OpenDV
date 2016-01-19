@@ -35,7 +35,7 @@ class CIRCDDB
 {
 public:
 	CIRCDDB();
-	~CIRCDDB();
+	virtual ~CIRCDDB();
 
 	// A false return implies a network error, or unable to log in
 	virtual bool open() = 0;
