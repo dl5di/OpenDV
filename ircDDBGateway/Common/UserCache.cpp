@@ -36,16 +36,18 @@ CUserRecord* CUserCache::find(const wxString& user)
 	return m_cache[user];
 }
 
-void CUserCache::update(const wxString& user, const wxString& repeater)
+void CUserCache::update(const wxString& user, const wxString& repeater, const wxString& timestamp)
 {
 	CUserRecord* rec = m_cache[user];
 
 	if (rec == NULL)
 		// A brand new record is needed
-		m_cache[user] = new CUserRecord(user, repeater);
-	else
-		// Update an existing record
+		m_cache[user] = new CUserRecord(user, repeater, timestamp);
+	else if(timestamp.Cmp(rec->getTimeStamp()) > 0) {
+		// Update an existing record, but only if the received timestamp is newer
 		rec->setRepeater(repeater);
+		rec->setTimestamp(timestamp);
+	}
 }
 
 unsigned int CUserCache::getCount() const

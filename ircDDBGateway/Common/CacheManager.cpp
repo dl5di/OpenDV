@@ -90,14 +90,14 @@ CRepeaterData* CCacheManager::findRepeater(const wxString& repeater)
 	return new CRepeaterData(repeater, gr->getGateway(), gr->getAddress(), gr->getProtocol());
 }
 
-void CCacheManager::updateUser(const wxString& user, const wxString& repeater, const wxString& gateway, const wxString& address, DSTAR_PROTOCOL protocol, bool addrLock, bool protoLock)
+void CCacheManager::updateUser(const wxString& user, const wxString& repeater, const wxString& gateway, const wxString& address, const wxString& timestamp, DSTAR_PROTOCOL protocol, bool addrLock, bool protoLock)
 {
 	wxMutexLocker locker(m_mutex);
 
 	wxString repeater7 = repeater.Left(LONG_CALLSIGN_LENGTH - 1U);
 	wxString gateway7  = gateway.Left(LONG_CALLSIGN_LENGTH - 1U);
 
-	m_userCache.update(user, repeater);
+	m_userCache.update(user, repeater, timestamp);
 
 	// Only store non-standard repeater-gateway pairs
 	if (!repeater7.IsSameAs(gateway7))

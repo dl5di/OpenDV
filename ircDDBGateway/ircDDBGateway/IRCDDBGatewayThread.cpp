@@ -44,6 +44,12 @@
 #include <wx/textfile.h>
 #include <wx/ffile.h>
 
+#if defined(__WINDOWS__)
+#include "Inaddr.h"
+#else
+#include <arpa/inet.h>
+#endif
+
 const wxString LOOPBACK_ADDRESS = wxT("127.0.0.1");
 
 const unsigned int REMOTE_DUMMY_PORT = 65016U;
@@ -660,6 +666,16 @@ void CIRCDDBGatewayThread::setRestrictList(CCallsignList* list)
 	m_restrictList = list;
 }
 
+static wxString addrTowxString(in_addr addr)
+{
+	const char * res = ::inet_ntoa(addr);//Todo upgrade to inet_ntop to support ip v6
+
+	if (res != NULL)
+		return wxString(res);
+
+	return wxEmptyString;
+}
+
 void CIRCDDBGatewayThread::processIrcDDB()
 {
 	// Once per second
@@ -702,18 +718,22 @@ void CIRCDDBGatewayThread::processIrcDDB()
 
 		switch (type) {
 			case IDRT_USER: {
-					wxString user, repeater, gateway, address;
-					bool res = m_irc->receiveUser(user, repeater, gateway, address);
+					wxString user, repeater, gateway, address, timestamp;
+					bool res = m_irc->receiveUser(user, repeater, gateway, address, timestamp);
 					if (!res)
 						break;
 
-					CRepeaterHandler::resolveUser(user, repeater, gateway, address);
 					if (!address.IsEmpty()) {
 						wxLogMessage(wxT("USER: %s %s %s %s"), user.c_str(), repeater.c_str(), gateway.c_str(), address.c_str());
-						m_cache.updateUser(user, repeater, gateway, address, DP_DEXTRA, false, false);
+						m_cache.updateUser(user, repeater, gateway, address, timestamp, DP_DEXTRA, false, false);
 					} else {
 						wxLogMessage(wxT("USER: %s NOT FOUND"), user.c_str());
 					}
+
+					/* get the user from the cache, this ensures we get user data with the latest timestamp
+					   in case the user changed network between two transmissions */
+					CUserData * usrData = m_cache.findUser(user);
+					CRepeaterHandler::resolveUser(user, usrData->getRepeater(), usrData->getGateway(), ::addrTowxString(usrData->getAddress()));
 				}
 				break;
 
