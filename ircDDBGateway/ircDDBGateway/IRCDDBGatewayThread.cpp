@@ -733,7 +733,10 @@ void CIRCDDBGatewayThread::processIrcDDB()
 					/* get the user from the cache, this ensures we get user data with the latest timestamp
 					   in case the user changed network between two transmissions */
 					CUserData * usrData = m_cache.findUser(user);
-					CRepeaterHandler::resolveUser(user, usrData->getRepeater(), usrData->getGateway(), ::addrTowxString(usrData->getAddress()));
+					if(usrData != NULL)
+						CRepeaterHandler::resolveUser(user, usrData->getRepeater(), usrData->getGateway(), ::addrTowxString(usrData->getAddress()));
+					else
+						CRepeaterHandler::resolveUser(user, repeater, address, timestamp);
 				}
 				break;
 
