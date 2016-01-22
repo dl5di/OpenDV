@@ -42,8 +42,8 @@ public:
 		m_gateway(gateway.Clone()),
 		m_address(address.Clone()),
 		m_timestamp(timestamp.Clone()),
-		m_responseCount(0),
-		m_type(type)
+		m_type(type),
+		m_responseCount(0)
 	{
 
 	}
