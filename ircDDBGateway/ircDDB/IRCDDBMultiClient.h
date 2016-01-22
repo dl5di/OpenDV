@@ -25,7 +25,96 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define _IRCDDBMULTICLIENT_H
 
 #include "IRCDDB.h"
+#include <wx/wx.h>
 #include <wx/thread.h>
+
+class CIRCDDBMultiClientEntry
+{
+public:
+	CIRCDDBMultiClientEntry(const wxString& user,
+							const wxString& repeater,
+							const wxString& gateway,
+							const wxString& address,
+							const wxString& timestamp,
+							IRCDDB_RESPONSE_TYPE type) :
+		m_user(user.Clone()),
+		m_repeater(repeater.Clone()),
+		m_gateway(gateway.Clone()),
+		m_address(address.Clone()),
+		m_timestamp(timestamp.Clone()),
+		m_responseCount(0),
+		m_type(type)
+	{
+
+	}
+
+	wxString getUser() const
+	{
+		return m_user;
+	}
+
+	wxString getRepeater() const
+	{
+		return m_repeater;
+	}
+
+	wxString getGateway() const
+	{
+		return m_gateway;
+	}
+
+	wxString getAddress() const
+	{
+		return m_address;
+	}
+
+	wxString getTimestamp() const
+	{
+		return m_timestamp;
+	}
+
+	unsigned int getResponseCount()
+	{
+		return m_responseCount;
+	}
+
+	unsigned int incrementResponseCount()
+	{
+		return ++m_responseCount;
+	}
+
+	/*
+		Updates the entry, but only if the timestamp is newer. if an address was already specified it is kept.
+	*/
+	void Update(const wxString& user, const wxString& repeater, const wxString& gateway, const wxString& address, const wxString& timestamp)
+	{
+		if (timestamp.IsEmpty() || timestamp.Cmp(m_timestamp) > 0) {
+			m_user = user.Clone();
+			m_repeater = repeater.Clone();
+			m_gateway = gateway.Clone();
+
+			if(m_address.IsEmpty())
+				m_address = address.Clone();
+		}
+	}
+
+	IRCDDB_RESPONSE_TYPE getType()
+	{
+		return m_type;
+	}
+
+private:
+	wxString m_user;
+	wxString m_repeater;
+	wxString m_gateway;
+	wxString m_address;
+	wxString m_timestamp;
+	IRCDDB_RESPONSE_TYPE m_type;
+	unsigned int m_responseCount;
+};
+
+WX_DECLARE_STRING_HASH_MAP(CIRCDDBMultiClientEntry*, CIRCDDBMultiClientEntry_HashMap);
+WX_DECLARE_OBJARRAY(CIRCDDBMultiClientEntry*, CIRCDDBMultiClientEntry_Array);
 
 class CIRCDDBMultiClient : public CIRCDDB
 {
@@ -52,14 +141,21 @@ public:
 	virtual bool receiveUser(wxString & userCallsign, wxString & repeaterCallsign, wxString & gatewayCallsign, wxString & address, wxString & timeStamp);
 	virtual void close();
 
+	//
+
 private :
 	CIRCDDB * * m_clients;
 	unsigned int m_clientCount;
-	unsigned int m_currentClient;
-	wxMutex m_currentClientLock;
+	wxMutex m_queriesLock, m_responseQueueLock;
 
-	void LockCurrentClient();
-	void ReleaseCurrentClient();
+	CIRCDDBMultiClientEntry_HashMap m_userQueries;
+	CIRCDDBMultiClientEntry_HashMap m_repeaterQueries;
+	CIRCDDBMultiClientEntry_HashMap m_gatewayQueries;
+	CIRCDDBMultiClientEntry_Array m_responseQueue;
+
+	CIRCDDBMultiClientEntry * checkAndGetNextResponse(IRCDDB_RESPONSE_TYPE expectedType, wxString errorMessage);
+	void pushQuery(CIRCDDBMultiClientEntry_HashMap queries, const wxString& key,  CIRCDDBMultiClientEntry * query);
+	CIRCDDBMultiClientEntry * popQuery(CIRCDDBMultiClientEntry_HashMap queries, const wxString& key);
 };
 #endif
 

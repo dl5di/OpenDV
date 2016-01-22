@@ -666,16 +666,6 @@ void CIRCDDBGatewayThread::setRestrictList(CCallsignList* list)
 	m_restrictList = list;
 }
 
-static wxString addrTowxString(in_addr addr)
-{
-	const char * res = ::inet_ntoa(addr);//Todo upgrade to inet_ntop to support ip v6
-
-	if (res != NULL)
-		return wxString(res);
-
-	return wxEmptyString;
-}
-
 void CIRCDDBGatewayThread::processIrcDDB()
 {
 	// Once per second
@@ -729,14 +719,6 @@ void CIRCDDBGatewayThread::processIrcDDB()
 					} else {
 						wxLogMessage(wxT("USER: %s NOT FOUND"), user.c_str());
 					}
-
-					/* get the user from the cache, this ensures we get user data with the latest timestamp
-					   in case the user changed network between two transmissions */
-					CUserData * usrData = m_cache.findUser(user);
-					if(usrData != NULL)
-						CRepeaterHandler::resolveUser(user, usrData->getRepeater(), usrData->getGateway(), ::addrTowxString(usrData->getAddress()));
-					else
-						CRepeaterHandler::resolveUser(user, repeater, address, timestamp);
 				}
 				break;
 
