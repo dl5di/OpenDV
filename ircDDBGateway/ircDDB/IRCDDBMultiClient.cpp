@@ -219,7 +219,7 @@ IRCDDB_RESPONSE_TYPE CIRCDDBMultiClient::getMessageType()
 			CIRCDDBMultiClientEntry * item = popQuery(type, key);
 			if (item != NULL) {//is this a response to a query we've sent ?
 				item->Update(user, repeater, gateway, address, timestamp);//update item (if needed)
-				canAddToQueue = !address.IsEmpty() || (item->incrementResponseCount() >= m_clientCount); //did all the clients respond or did we have an answer ?
+				canAddToQueue = (item->incrementResponseCount() >= m_clientCount); //did all the clients respond or did we have an answer ?
 				wasQuery = true;
 			}
 			else {
