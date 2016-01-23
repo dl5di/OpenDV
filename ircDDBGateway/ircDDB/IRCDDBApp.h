@@ -96,6 +96,7 @@ class IRCDDBApp : public IRCApplication, wxThread
     void doNotFound ( wxString& msg, wxString& retval );
     wxString getIPAddress( wxString& zonerp_cs );
     bool findServerUser();
+	unsigned int calculateUsn(const wxString& nick);
     IRCDDBAppPrivate * d;
 
 #ifdef __UNIT_TEST__

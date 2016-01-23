@@ -64,14 +64,15 @@ class IRCDDBAppUserObject
     name = nm;
     host = h;
     op = false;
-    usn = counter;
-    counter ++;
+	usn = 0;
+    //usn = counter;
+    //counter ++;
   }
 
-  static unsigned int counter;
+  //static unsigned int counter;
 };
 
-unsigned int IRCDDBAppUserObject::counter = 0;
+//unsigned int IRCDDBAppUserObject::counter = 0;
 
 
 WX_DECLARE_STRING_HASH_MAP( IRCDDBAppUserObject, IRCDDBAppUserMap );
@@ -327,6 +328,22 @@ void IRCDDBApp::stopWork()
     Wait();
 }
 
+unsigned int IRCDDBApp::calculateUsn(const wxString& nick)
+{
+	wxString lnick = nick.BeforeLast('-');
+	unsigned int maxUsn = 0;
+	for (int i = 1; i <= 4; i++) {
+		wxString ircUser = lnick + wxString::Format(wxT("-%d"), i);
+
+		if (d->user.count(ircUser) == 1) {
+			IRCDDBAppUserObject obj = d->user[ircUser];
+			if (obj.usn > maxUsn)
+				maxUsn = obj.usn;
+		}
+	}
+
+	return maxUsn + 1;
+}
 
 void IRCDDBApp::userJoin (const wxString& nick, const wxString& name, const wxString& host)
 {
@@ -336,6 +353,7 @@ void IRCDDBApp::userJoin (const wxString& nick, const wxString& name, const wxSt
   lnick.MakeLower();
 
   IRCDDBAppUserObject u( lnick, name, host );
+  u.usn = calculateUsn(lnick);
 
   d->user[lnick] = u;
 
