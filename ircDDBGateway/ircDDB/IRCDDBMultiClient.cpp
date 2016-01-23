@@ -182,7 +182,7 @@ IRCDDB_RESPONSE_TYPE CIRCDDBMultiClient::getMessageType()
 {
 	//procees the inner clients at each call
 	for (unsigned int i = 0; i < m_clientCount; i++) {
-		wxString user, repeater, gateway, address, timestamp;
+		wxString user = wxEmptyString, repeater = wxEmptyString, gateway = wxEmptyString, address = wxEmptyString, timestamp = wxEmptyString;
 		IRCDDB_RESPONSE_TYPE type = m_clients[i]->getMessageType();
 
 		switch (type) {
@@ -223,6 +223,7 @@ IRCDDB_RESPONSE_TYPE CIRCDDBMultiClient::getMessageType()
 				canAddToQueue = true;
 			}
 
+			wxLogMessage(wxT("After process : %s %s %s %s %s canAdd %d wasQuery %d"), user, repeater, gateway, address, timestamp, (int)canAddToQueue, (int)wasQuery);
 			if (canAddToQueue) {
 				wxMutexLocker responselocker(m_responseQueueLock);
 				m_responseQueue.Add(item);

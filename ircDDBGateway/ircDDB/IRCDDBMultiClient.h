@@ -91,10 +91,11 @@ public:
 	void Update(const wxString& user, const wxString& repeater, const wxString& gateway, const wxString& address, const wxString& timestamp)
 	{
 		wxLogMessage(wxT("Before : %s %s %s %s %s"), m_user, m_repeater, m_gateway, m_address, m_timestamp);
-		if (timestamp.IsEmpty() || timestamp.Cmp(m_timestamp) > 0) {
+		if (timestamp.IsEmpty() || timestamp.Cmp(m_timestamp) >= 0) {
 			m_user = user.Clone();
 			m_repeater = repeater.Clone();
 			m_gateway = gateway.Clone();
+			m_timestamp = timestamp.Clone();
 
 			if(m_address.IsEmpty() && !address.IsEmpty())
 				m_address = address.Clone();
