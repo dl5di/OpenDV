@@ -90,7 +90,7 @@ public:
 	*/
 	void Update(const wxString& user, const wxString& repeater, const wxString& gateway, const wxString& address, const wxString& timestamp)
 	{
-		wxLogMessage(wxT("Before : %s %s %s %s %s"), m_user, m_repeater, m_gateway, m_address, m_timestamp);
+		wxLogMessage(wxT("Before : %s"), toString());
 		if (timestamp.IsEmpty() || timestamp.Cmp(m_timestamp) >= 0) {
 			m_user = user.Clone();
 			m_repeater = repeater.Clone();
@@ -100,12 +100,17 @@ public:
 			if(m_address.IsEmpty() && !address.IsEmpty())
 				m_address = address.Clone();
 		}
-		wxLogMessage(wxT("After : %s %s %s %s %s"), m_user, m_repeater, m_gateway, m_address, m_timestamp);
+		wxLogMessage(wxT("After : %s"), toString());
 	}
 
 	IRCDDB_RESPONSE_TYPE getType()
 	{
 		return m_type;
+	}
+
+	wxString toString()
+	{
+		return wxString::Format(wxT("%s %s %s %s %s"), m_user, m_repeater, m_gateway, m_address, m_timestamp);
 	}
 
 private:

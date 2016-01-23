@@ -277,14 +277,18 @@ bool CIRCDDBMultiClient::receiveUser(wxString & userCallsign, wxString & repeate
 bool CIRCDDBMultiClient::receiveUser(wxString & userCallsign, wxString & repeaterCallsign, wxString & gatewayCallsign, wxString & address, wxString & timeStamp)
 {
 	CIRCDDBMultiClientEntry * item = checkAndGetNextResponse(IDRT_USER, wxT("CIRCDDBMultiClient::receiveUser: unexpected response type"));
-	if (item == NULL)
+	if (item == NULL) {
+		wxLogMessage(wxT("CIRCDDBMultiClient::receiveUser NO USER IN QUEUE"));
 		return false;
+	}
 
-	userCallsign = item->getUser();
-	repeaterCallsign = item->getRepeater();
-	gatewayCallsign = item->getGateway();
-	address = item->getAddress();
-	timeStamp = item->getTimestamp();
+	wxLogMessage(wxT("CIRCDDBMultiClient::receiveUser : %s"), item->toString());
+
+	userCallsign = item->getUser().Clone();
+	repeaterCallsign = item->getRepeater().Clone();
+	gatewayCallsign = item->getGateway().Clone();
+	address = item->getAddress().Clone();
+	timeStamp = item->getTimestamp().Clone();
 	delete item;
 	return true;
 }
