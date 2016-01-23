@@ -182,24 +182,27 @@ IRCDDB_RESPONSE_TYPE CIRCDDBMultiClient::getMessageType()
 {
 	//procees the inner clients at each call
 	for (unsigned int i = 0; i < m_clientCount; i++) {
-		wxString user = wxEmptyString, repeater = wxEmptyString, gateway = wxEmptyString, address = wxEmptyString, timestamp = wxEmptyString;
+		wxString user = wxEmptyString, repeater = wxEmptyString, gateway = wxEmptyString, address = wxEmptyString, timestamp = wxEmptyString, key = wxEmptyString;
 		IRCDDB_RESPONSE_TYPE type = m_clients[i]->getMessageType();
 
 		switch (type) {
 			case IDRT_USER: {
 				if (!m_clients[i]->receiveUser(user, repeater, gateway, address, timestamp))
 					type = IDRT_NONE;
-				wxLogMessage(wxT("After receive user : %s %s %s %s %s client idx %d"), user, repeater, gateway, address, timestamp, i);
+				key = user;
+				//wxLogMessage(wxT("After receive user : %s %s %s %s %s client idx %d"), user, repeater, gateway, address, timestamp, i);
 				break;
 			}
 			case IDRT_GATEWAY: {
 				if (!m_clients[i]->receiveGateway(gateway, address))
 					type = IDRT_NONE;
+				key = gateway;
 				break;
 			}
 			case IDRT_REPEATER: {
 				if (!m_clients[i]->receiveRepeater(repeater, gateway, address))
 					type = IDRT_NONE;
+				key = repeater;
 				break;
 			}
 			case IDRT_NONE: {
@@ -213,7 +216,7 @@ IRCDDB_RESPONSE_TYPE CIRCDDBMultiClient::getMessageType()
 			wxMutexLocker locker(m_queriesLock);
 			bool canAddToQueue = false;
 			bool wasQuery = false;
-			CIRCDDBMultiClientEntry * item = popQuery(type, user);
+			CIRCDDBMultiClientEntry * item = popQuery(type, key);
 			if (item != NULL) {//is this a response to a query we've sent ?
 				item->Update(user, repeater, gateway, address, timestamp);//update item (if needed)
 				canAddToQueue = !address.IsEmpty() || (item->incrementResponseCount() >= m_clientCount); //did all the clients respond or did we have an answer ?
@@ -230,7 +233,7 @@ IRCDDB_RESPONSE_TYPE CIRCDDBMultiClient::getMessageType()
 				m_responseQueue.Add(item);
 			}
 			else if (wasQuery)
-				pushQuery(type, user, item);
+				pushQuery(type, key, item);
 		}
 	}
 
