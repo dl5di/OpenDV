@@ -147,7 +147,7 @@ bool CIRCDDBMultiClient::sendHeardWithTXStats(const wxString & myCall, const wxS
 
 bool CIRCDDBMultiClient::findGateway(const wxString & gatewayCallsign)
 {
-	pushQuery(m_gatewayQueries, gatewayCallsign, new CIRCDDBMultiClientEntry(wxEmptyString, wxEmptyString, gatewayCallsign, wxEmptyString, wxEmptyString, IDRT_GATEWAY));
+	pushQuery(IDRT_GATEWAY, gatewayCallsign, new CIRCDDBMultiClientEntry(wxEmptyString, wxEmptyString, gatewayCallsign, wxEmptyString, wxEmptyString, IDRT_GATEWAY));
 	bool result = true;
 	for (unsigned int i = 0; i < m_clientCount; i++) {
 		result = m_clients[i]->findGateway(gatewayCallsign) && result;
@@ -158,7 +158,7 @@ bool CIRCDDBMultiClient::findGateway(const wxString & gatewayCallsign)
 
 bool CIRCDDBMultiClient::findRepeater(const wxString & repeaterCallsign)
 {
-	pushQuery(m_repeaterQueries, repeaterCallsign, new CIRCDDBMultiClientEntry(wxEmptyString, repeaterCallsign, wxEmptyString, wxEmptyString, wxEmptyString, IDRT_REPEATER));
+	pushQuery(IDRT_REPEATER, repeaterCallsign, new CIRCDDBMultiClientEntry(wxEmptyString, repeaterCallsign, wxEmptyString, wxEmptyString, wxEmptyString, IDRT_REPEATER));
 	bool result = true;
 	for (unsigned int i = 0; i < m_clientCount; i++) {
 		result = m_clients[i]->findRepeater(repeaterCallsign) && result;
@@ -169,7 +169,7 @@ bool CIRCDDBMultiClient::findRepeater(const wxString & repeaterCallsign)
 
 bool CIRCDDBMultiClient::findUser(const wxString & userCallsign)
 {
-	pushQuery(m_userQueries, userCallsign, new CIRCDDBMultiClientEntry(userCallsign, wxEmptyString, wxEmptyString, wxEmptyString, wxEmptyString, IDRT_USER));
+	pushQuery(IDRT_USER, userCallsign, new CIRCDDBMultiClientEntry(userCallsign, wxEmptyString, wxEmptyString, wxEmptyString, wxEmptyString, IDRT_USER));
 	bool result = true;
 	for (unsigned int i = 0; i < m_clientCount; i++) {
 		result = m_clients[i]->findUser(userCallsign) && result;
@@ -184,86 +184,25 @@ IRCDDB_RESPONSE_TYPE CIRCDDBMultiClient::getMessageType()
 	for (unsigned int i = 0; i < m_clientCount; i++) {
 		IRCDDB_RESPONSE_TYPE type = m_clients[i]->getMessageType();
 
+
+
+		wxString user, repeater, gateway, address, timestamp;
 		switch (type) {
 			case IDRT_USER: {
-				wxString user, repeater, gateway, address, timestamp;
 				if (!m_clients[i]->receiveUser(user, repeater, gateway, address, timestamp))
-					break;
-
-				wxMutexLocker locker(m_queriesLock);
-				bool canAddToQueue = false;
-				bool wasQuery = false;
-				CIRCDDBMultiClientEntry * item = popQuery(m_userQueries, user);
-				if (item != NULL) {//is this a response to a query we've sent ?
-					item->Update(user, repeater, gateway, address, timestamp);//update item (if needed)
-					canAddToQueue = (item->incrementResponseCount() >= m_clientCount); //did all the clients respond ?
-					wasQuery = true;
-				}
-				else {
-					item = new CIRCDDBMultiClientEntry(user, repeater, gateway, address, timestamp, type);
-					canAddToQueue = true;
-				}
-				
-				if(canAddToQueue){
-					wxMutexLocker locker(m_responseQueueLock);
-					m_responseQueue.Add(item);
-				}
-				else if(wasQuery)
-					pushQuery(m_userQueries, user, item);
+					type = IDRT_NONE;
 				break;
 			}
 			case IDRT_GATEWAY: {
 				wxString gateway, address;
 				if (!m_clients[i]->receiveGateway(gateway, address))
-					break;
-
-				wxMutexLocker locker(m_queriesLock);
-				bool canAddToQueue = false;
-				bool wasQuery = false;
-				CIRCDDBMultiClientEntry * item = popQuery(m_gatewayQueries, gateway);
-				if (item != NULL) {//is this a response to a query we've sent ?
-					item->Update(wxEmptyString, wxEmptyString, gateway, address, wxEmptyString);//update item (if needed)
-					canAddToQueue = (item->incrementResponseCount() >= m_clientCount); //did all the clients respond ?
-					wasQuery = true;
-				}
-				else {
-					item = new CIRCDDBMultiClientEntry(wxEmptyString, wxEmptyString, gateway, address, wxEmptyString, type);
-					canAddToQueue = true;
-				}
-
-				if (canAddToQueue) {
-					wxMutexLocker locker(m_responseQueueLock);
-					m_responseQueue.Add(item);
-				}
-				else if (wasQuery)
-					pushQuery(m_gatewayQueries, gateway, item);
+					type = IDRT_NONE;
 				break;
 			}
 			case IDRT_REPEATER: {
 				wxString repeater, gateway, address;
 				if (!m_clients[i]->receiveRepeater(repeater, gateway, address))
-					break;
-
-				wxMutexLocker locker(m_queriesLock);
-				bool canAddToQueue = false;
-				bool wasQuery = false;
-				CIRCDDBMultiClientEntry * item = popQuery(m_repeaterQueries, repeater);
-				if (item != NULL) {//is this a response to a query we've sent ?
-					item->Update(wxEmptyString, repeater, gateway, address, wxEmptyString);//update item (if needed)
-					canAddToQueue = (item->incrementResponseCount() >= m_clientCount); //did all the clients respond ?
-					wasQuery = true;
-				}
-				else {
-					item = new CIRCDDBMultiClientEntry(wxEmptyString, repeater, gateway, address, wxEmptyString, type);
-					canAddToQueue = true;
-				}
-
-				if (canAddToQueue) {
-					wxMutexLocker locker(m_responseQueueLock);
-					m_responseQueue.Add(item);
-				}
-				else if (wasQuery)
-					pushQuery(m_repeaterQueries, repeater, item);
+					type = IDRT_NONE;
 				break;
 			}
 			case IDRT_NONE: {
@@ -271,14 +210,42 @@ IRCDDB_RESPONSE_TYPE CIRCDDBMultiClient::getMessageType()
 				break;
 			}
 		}
+
+		if (type == IDRT_NONE)
+			continue;
+
+		{//artificial scope to keep lock short
+			wxMutexLocker locker(m_queriesLock);
+			bool canAddToQueue = false;
+			bool wasQuery = false;
+			CIRCDDBMultiClientEntry * item = popQuery(type, user);
+			if (item != NULL) {//is this a response to a query we've sent ?
+				item->Update(user, repeater, gateway, address, timestamp);//update item (if needed)
+				canAddToQueue = (item->incrementResponseCount() >= m_clientCount); //did all the clients respond ?
+				wasQuery = true;
+			}
+			else {
+				item = new CIRCDDBMultiClientEntry(user, repeater, gateway, address, timestamp, type);
+				canAddToQueue = true;
+			}
+
+			if (canAddToQueue) {
+				wxMutexLocker locker(m_responseQueueLock);
+				m_responseQueue.Add(item);
+			}
+			else if (wasQuery)
+				pushQuery(type, user, item);
+		}
 	}
 
-	wxMutexLocker locker(m_responseQueueLock);
+	{
+		//finally send the first item we queued
+		wxMutexLocker locker(m_responseQueueLock);
+		if (m_responseQueue.Count() == 0)
+			return IDRT_NONE;
 
-	if (m_responseQueue.Count() == 0)
-		return IDRT_NONE;
-
-	return m_responseQueue[0]->getType();
+		return m_responseQueue[0]->getType();
+	}
 }
 
 bool CIRCDDBMultiClient::receiveRepeater(wxString & repeaterCallsign, wxString & gatewayCallsign, wxString & address)
@@ -339,7 +306,7 @@ CIRCDDBMultiClientEntry * CIRCDDBMultiClient::checkAndGetNextResponse(IRCDDB_RES
 	CIRCDDBMultiClientEntry * item = NULL;
 	wxMutexLocker locker(m_responseQueueLock);
 
-	if (m_responseQueue.Count() == 0 || m_responseQueue[0]->getType() != IDRT_REPEATER)	{
+	if (m_responseQueue.Count() == 0 || m_responseQueue[0]->getType() != expectedType)	{
 		wxLogError(errorMessage);
 	}
 	else {
@@ -350,24 +317,44 @@ CIRCDDBMultiClientEntry * CIRCDDBMultiClient::checkAndGetNextResponse(IRCDDB_RES
 	return item;
 }
 
-void CIRCDDBMultiClient::pushQuery(CIRCDDBMultiClientEntry_HashMap queries, const wxString& key, CIRCDDBMultiClientEntry * query)
+void CIRCDDBMultiClient::pushQuery(IRCDDB_RESPONSE_TYPE type, const wxString& key, CIRCDDBMultiClientEntry * query)
 {
+	CIRCDDBMultiClientEntry_HashMap * queries = getQueriesHashMap(type);
 	wxMutexLocker locker(m_queriesLock);
-	if (m_userQueries[key] == NULL)
-		m_userQueries[key] = query;
+	if (queries != NULL && (*queries)[key] == NULL)
+		(*queries)[key] = query;
 	else
 		delete query;
 }
 
 
-CIRCDDBMultiClientEntry * CIRCDDBMultiClient::popQuery(CIRCDDBMultiClientEntry_HashMap queries, const wxString & key)
+CIRCDDBMultiClientEntry * CIRCDDBMultiClient::popQuery(IRCDDB_RESPONSE_TYPE type, const wxString & key)
 {
-	CIRCDDBMultiClientEntry * item = queries[key];
+	CIRCDDBMultiClientEntry_HashMap * queries = getQueriesHashMap(type);
+	wxMutexLocker locker(m_queriesLock);
 
-	if (item != NULL)
-		queries.erase(key);
+	CIRCDDBMultiClientEntry * item = NULL;
+
+	if (queries != NULL && (item = (*queries)[key]) != NULL)
+		queries->erase(key);
 	
 	return item;
+}
+
+CIRCDDBMultiClientEntry_HashMap * CIRCDDBMultiClient::getQueriesHashMap(IRCDDB_RESPONSE_TYPE type)
+{
+	switch (type)
+	{
+	case IDRT_USER:
+		return &m_userQueries;
+	case IDRT_GATEWAY:
+		return &m_gatewayQueries;
+	case IDRT_REPEATER:
+		return &m_repeaterQueries;
+	case IDRT_NONE:
+	default:
+		return NULL;
+	}
 }
 
 

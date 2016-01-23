@@ -154,8 +154,9 @@ private :
 	CIRCDDBMultiClientEntry_Array m_responseQueue;
 
 	CIRCDDBMultiClientEntry * checkAndGetNextResponse(IRCDDB_RESPONSE_TYPE expectedType, wxString errorMessage);
-	void pushQuery(CIRCDDBMultiClientEntry_HashMap queries, const wxString& key,  CIRCDDBMultiClientEntry * query);
-	CIRCDDBMultiClientEntry * popQuery(CIRCDDBMultiClientEntry_HashMap queries, const wxString& key);
+	void pushQuery(IRCDDB_RESPONSE_TYPE type, const wxString& key,  CIRCDDBMultiClientEntry * query);
+	CIRCDDBMultiClientEntry * popQuery(IRCDDB_RESPONSE_TYPE type, const wxString& key);
+	CIRCDDBMultiClientEntry_HashMap * getQueriesHashMap(IRCDDB_RESPONSE_TYPE type);
 };
 #endif
 
