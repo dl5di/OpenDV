@@ -80,7 +80,9 @@ public:
 
 	unsigned int incrementResponseCount()
 	{
-		return ++m_responseCount;
+		++m_responseCount;
+		wxLogMessage(wxT("Resp Count : %s %s %s %s %s %d"), m_user, m_repeater, m_gateway, m_address, m_timestamp, m_responseCount);
+		return m_responseCount;
 	}
 
 	/*
@@ -88,14 +90,16 @@ public:
 	*/
 	void Update(const wxString& user, const wxString& repeater, const wxString& gateway, const wxString& address, const wxString& timestamp)
 	{
+		wxLogMessage(wxT("Before : %s %s %s %s %s"), m_user, m_repeater, m_gateway, m_address, m_timestamp);
 		if (timestamp.IsEmpty() || timestamp.Cmp(m_timestamp) > 0) {
 			m_user = user.Clone();
 			m_repeater = repeater.Clone();
 			m_gateway = gateway.Clone();
 
-			if(m_address.IsEmpty())
+			if(m_address.IsEmpty() && !address.IsEmpty())
 				m_address = address.Clone();
 		}
+		wxLogMessage(wxT("After : %s %s %s %s %s"), m_user, m_repeater, m_gateway, m_address, m_timestamp);
 	}
 
 	IRCDDB_RESPONSE_TYPE getType()
