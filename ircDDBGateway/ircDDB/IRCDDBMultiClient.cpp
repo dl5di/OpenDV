@@ -182,11 +182,9 @@ IRCDDB_RESPONSE_TYPE CIRCDDBMultiClient::getMessageType()
 {
 	//procees the inner clients at each call
 	for (unsigned int i = 0; i < m_clientCount; i++) {
+		wxString user, repeater, gateway, address, timestamp;
 		IRCDDB_RESPONSE_TYPE type = m_clients[i]->getMessageType();
 
-
-
-		wxString user, repeater, gateway, address, timestamp;
 		switch (type) {
 			case IDRT_USER: {
 				if (!m_clients[i]->receiveUser(user, repeater, gateway, address, timestamp))
@@ -194,13 +192,11 @@ IRCDDB_RESPONSE_TYPE CIRCDDBMultiClient::getMessageType()
 				break;
 			}
 			case IDRT_GATEWAY: {
-				wxString gateway, address;
 				if (!m_clients[i]->receiveGateway(gateway, address))
 					type = IDRT_NONE;
 				break;
 			}
 			case IDRT_REPEATER: {
-				wxString repeater, gateway, address;
 				if (!m_clients[i]->receiveRepeater(repeater, gateway, address))
 					type = IDRT_NONE;
 				break;
@@ -211,10 +207,8 @@ IRCDDB_RESPONSE_TYPE CIRCDDBMultiClient::getMessageType()
 			}
 		}
 
-		if (type == IDRT_NONE)
-			continue;
-
-		{//artificial scope to keep lock short
+		if (type != IDRT_NONE)
+		{
 			wxMutexLocker locker(m_queriesLock);
 			bool canAddToQueue = false;
 			bool wasQuery = false;
@@ -230,7 +224,7 @@ IRCDDB_RESPONSE_TYPE CIRCDDBMultiClient::getMessageType()
 			}
 
 			if (canAddToQueue) {
-				wxMutexLocker locker(m_responseQueueLock);
+				wxMutexLocker responselocker(m_responseQueueLock);
 				m_responseQueue.Add(item);
 			}
 			else if (wasQuery)
@@ -238,7 +232,7 @@ IRCDDB_RESPONSE_TYPE CIRCDDBMultiClient::getMessageType()
 		}
 	}
 
-	{
+	{   //this is an artificial scope, I'm not sure if compiler optimization would move instantiation of locker or not hence this
 		//finally send the first item we queued
 		wxMutexLocker locker(m_responseQueueLock);
 		if (m_responseQueue.Count() == 0)
