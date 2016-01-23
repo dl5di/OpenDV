@@ -90,7 +90,7 @@ class IRCDDBAppRptrObject
   {
   }
 
-  IRCDDBAppRptrObject (wxDateTime& dt, wxString& repeaterCallsign, wxString& gatewayCallsign)
+  IRCDDBAppRptrObject (wxDateTime& dt, wxString& repeaterCallsign, wxString& gatewayCallsign, wxDateTime& maxTime)
   {
     arearp_cs = repeaterCallsign;
     lastChanged = dt;
@@ -102,10 +102,10 @@ class IRCDDBAppRptrObject
     }
   }
 
-  static wxDateTime maxTime;
+  //static wxDateTime maxTime;
 };
 
-wxDateTime IRCDDBAppRptrObject::maxTime((time_t) 950000000);  // February 2000
+//wxDateTime IRCDDBAppRptrObject::maxTime((time_t) 950000000);  // February 2000
 
 
 WX_DECLARE_STRING_HASH_MAP( IRCDDBAppRptrObject, IRCDDBAppRptrMap );
@@ -173,7 +173,8 @@ class IRCDDBAppPrivate
 
 IRCDDBApp::IRCDDBApp( const wxString& u_chan )
   : wxThread(wxTHREAD_JOINABLE),
-    d(new IRCDDBAppPrivate)
+    d(new IRCDDBAppPrivate),
+	m_maxTime((time_t)950000000)//februray 2000
 {
 
   d->sendQ = NULL;
@@ -924,7 +925,7 @@ void IRCDDBApp::doUpdate ( wxString& msg )
 	{
 	  wxMutexLocker lock(d->rptrMapMutex);
 
-	  IRCDDBAppRptrObject newRptr(dt, key, value);
+	  IRCDDBAppRptrObject newRptr(dt, key, value, m_maxTime);
 
 	  d->rptrMap[key] = newRptr;
 
@@ -1075,12 +1076,12 @@ IRCMessageQueue * IRCDDBApp::getSendQ()
 }
 
 
-static wxString getLastEntryTime(int tableID)
+wxString IRCDDBApp::getLastEntryTime(int tableID)
 {
 
   if (tableID == 1)
   {
-    wxString max = IRCDDBAppRptrObject::maxTime.Format( wxT("%Y-%m-%d %H:%M:%S") );
+    wxString max = /*IRCDDBAppRptrObject::maxTime*/m_maxTime.Format( wxT("%Y-%m-%d %H:%M:%S") );
     return max;
   }
 

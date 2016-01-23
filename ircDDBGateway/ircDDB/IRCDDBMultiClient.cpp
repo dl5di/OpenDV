@@ -224,7 +224,7 @@ IRCDDB_RESPONSE_TYPE CIRCDDBMultiClient::getMessageType()
 				canAddToQueue = true;
 			}
 
-			wxLogMessage(wxT("After process : %s %s %s %s %s canAdd %d wasQuery %d"), user, repeater, gateway, address, timestamp, (int)canAddToQueue, (int)wasQuery);
+			//wxLogMessage(wxT("After process : %s %s %s %s %s canAdd %d wasQuery %d"), user, repeater, gateway, address, timestamp, (int)canAddToQueue, (int)wasQuery);
 			if (canAddToQueue) {
 				wxMutexLocker responselocker(m_responseQueueLock);
 				m_responseQueue.Add(item);
@@ -279,11 +279,11 @@ bool CIRCDDBMultiClient::receiveUser(wxString & userCallsign, wxString & repeate
 {
 	CIRCDDBMultiClientEntry * item = checkAndGetNextResponse(IDRT_USER, wxT("CIRCDDBMultiClient::receiveUser: unexpected response type"));
 	if (item == NULL) {
-		wxLogMessage(wxT("CIRCDDBMultiClient::receiveUser NO USER IN QUEUE"));
+		//wxLogMessage(wxT("CIRCDDBMultiClient::receiveUser NO USER IN QUEUE"));
 		return false;
 	}
 
-	wxLogMessage(wxT("CIRCDDBMultiClient::receiveUser : %s"), item->toString());
+	//wxLogMessage(wxT("CIRCDDBMultiClient::receiveUser : %s"), item->toString());
 
 	userCallsign = item->getUser().Clone();
 	repeaterCallsign = item->getRepeater().Clone();
