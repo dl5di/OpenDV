@@ -657,7 +657,7 @@ void CIRCDDBGatewayApp::createThread()
 		ircDDBClients[0] = new CIRCDDBClient(ircDDBHostname, 9007U, ircDDBUsername, ircDDBPassword, versionInfo, gatewayAddress);
 		ircDDBClients[1] = new CIRCDDBClient(wxT("rr.openquad.net"), 9007U, ircDDBUsername, wxEmptyString, versionInfo, gatewayAddress);
 
-		CIRCDDBMultiClient * ircDDB = new CIRCDDBMultiClient(ircDDBClients, 2U);
+		CIRCDDBMultiClient * ircDDB = new CIRCDDBMultiClient(ircDDBClients + 1, 1U);
 
 		delete[] ircDDBClients;//delete the array but not its items !!
 

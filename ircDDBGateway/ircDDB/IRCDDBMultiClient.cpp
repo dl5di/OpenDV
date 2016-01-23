@@ -189,6 +189,7 @@ IRCDDB_RESPONSE_TYPE CIRCDDBMultiClient::getMessageType()
 			case IDRT_USER: {
 				if (!m_clients[i]->receiveUser(user, repeater, gateway, address, timestamp))
 					type = IDRT_NONE;
+				wxLogMessage(wxT("After receive user : %s %s %s %s %s client idx %d"), user, repeater, gateway, address, timestamp, i);
 				break;
 			}
 			case IDRT_GATEWAY: {

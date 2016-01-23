@@ -81,7 +81,7 @@ public:
 	unsigned int incrementResponseCount()
 	{
 		++m_responseCount;
-		wxLogMessage(wxT("Resp Count : %s %s %s %s %s %d"), m_user, m_repeater, m_gateway, m_address, m_timestamp, m_responseCount);
+		wxLogMessage(wxT("Resp Count : %s %d"), toString(), m_responseCount);
 		return m_responseCount;
 	}
 
