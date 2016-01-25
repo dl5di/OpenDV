@@ -1333,6 +1333,33 @@ m_y(DEFAULT_WINDOW_Y)
 			m_ircddbUsername = val;
 		} else if (key.IsSameAs(KEY_IRCDDB_PASSWORD)) {
 			m_ircddbPassword = val;
+		} else if (key.IsSameAs(KEY_IRCDDB_ENABLED2)) {
+			val.ToLong(&temp1);
+			m_ircddbEnabled2 = temp1 == 1L;
+		} else if (key.IsSameAs(KEY_IRCDDB_HOSTNAME2)) {
+			m_ircddbHostname2 = val;
+		} else if (key.IsSameAs(KEY_IRCDDB_USERNAME2)) {
+			m_ircddbUsername2 = val;
+		} else if (key.IsSameAs(KEY_IRCDDB_PASSWORD2)) {
+			m_ircddbPassword2 = val;
+		} else if (key.IsSameAs(KEY_IRCDDB_ENABLED3)) {
+			val.ToLong(&temp1);
+			m_ircddbEnabled3 = temp1 == 1L;
+		} else if (key.IsSameAs(KEY_IRCDDB_HOSTNAME3)) {
+			m_ircddbHostname3 = val;
+		} else if (key.IsSameAs(KEY_IRCDDB_USERNAME3)) {
+			m_ircddbUsername3 = val;
+		} else if (key.IsSameAs(KEY_IRCDDB_PASSWORD3)) {
+			m_ircddbPassword3 = val;
+		} else if (key.IsSameAs(KEY_IRCDDB_ENABLED4)) {
+			val.ToLong(&temp1);
+			m_ircddbEnabled4 = temp1 == 1L;
+		} else if (key.IsSameAs(KEY_IRCDDB_HOSTNAME4)) {
+			m_ircddbHostname4 = val;
+		} else if (key.IsSameAs(KEY_IRCDDB_USERNAME4)) {
+			m_ircddbUsername4 = val;
+		} else if (key.IsSameAs(KEY_IRCDDB_PASSWORD4)) {
+			m_ircddbPassword4 = val;
 		} else if (key.IsSameAs(KEY_APRS_ENABLED)) {
 			val.ToLong(&temp1);
 			m_aprsEnabled = temp1 == 1L;
