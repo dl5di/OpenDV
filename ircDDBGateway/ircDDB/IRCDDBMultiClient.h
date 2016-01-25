@@ -125,12 +125,12 @@ private:
 };
 
 WX_DECLARE_STRING_HASH_MAP(CIRCDDBMultiClientQuery*, CIRCDDBMultiClientQuery_HashMap);
-WX_DECLARE_OBJARRAY(CIRCDDBMultiClientQuery*, CIRCDDBMultiClientQuery_Array);
+WX_DEFINE_ARRAY_PTR(CIRCDDBMultiClientQuery*, CIRCDDBMultiClientQuery_Array);
 
 class CIRCDDBMultiClient : public CIRCDDB
 {
 public:
-	CIRCDDBMultiClient(CIRCDDB * * clients, unsigned int count);
+	CIRCDDBMultiClient(const CIRCDDB_Array& clients);
 	~CIRCDDBMultiClient();
 
 	// Inherited via CIRCDDB
@@ -155,8 +155,7 @@ public:
 	//
 
 private :
-	CIRCDDB * * m_clients;
-	unsigned int m_clientCount;
+	CIRCDDB_Array m_clients;
 	wxMutex m_queriesLock, m_responseQueueLock;
 
 	CIRCDDBMultiClientQuery_HashMap m_userQueries;

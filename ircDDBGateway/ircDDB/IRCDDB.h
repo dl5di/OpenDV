@@ -20,6 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
+#include <wx/wx.h>
+
 #if !defined(_IRCDDB_H)
 #define _IRCDDB_H
 
@@ -30,7 +32,7 @@ enum IRCDDB_RESPONSE_TYPE {
 	IDRT_REPEATER
 };
 
-#include <wx/wx.h>
+
 class CIRCDDB
 {
 public:
@@ -155,5 +157,7 @@ public:
 	virtual void close() = 0;		// Implictely kills any threads in the IRC code
 
 };
+
+WX_DEFINE_ARRAY_PTR(CIRCDDB*, CIRCDDB_Array);
 #endif
 

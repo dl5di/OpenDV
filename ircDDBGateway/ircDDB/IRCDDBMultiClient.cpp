@@ -22,32 +22,23 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "IRCDDBMultiClient.h"
 #include <wx/wx.h>
-#include <wx/arrimpl.cpp>
-WX_DEFINE_OBJARRAY(CIRCDDBMultiClientQuery_Array);
 
-CIRCDDBMultiClient::CIRCDDBMultiClient(CIRCDDB * * clients, unsigned int count) :
-m_clients(new CIRCDDB*[count]),
-m_clientCount(count),
+CIRCDDBMultiClient::CIRCDDBMultiClient(const CIRCDDB_Array& clients) :
+m_clients(clients.Count()),
 m_queriesLock(),
 m_responseQueueLock()
 {
-	wxASSERT(clients != NULL);
-	::memcpy(m_clients, clients, count * sizeof(CIRCDDB *));
-
-#if _DEBUG
-	for (unsigned int i = 0; i < count; i++) {
-		wxASSERT(m_clients[i] != NULL);
+	for (unsigned int i = 0; i < clients.Count(); i++)	{
+		if (clients[i] != NULL)
+			m_clients.Add(clients[i]);
 	}
-#endif
 }
 
 CIRCDDBMultiClient::~CIRCDDBMultiClient()
 {
-	for (unsigned int i = 0; i < m_clientCount; i++) {
+	for (unsigned int i = 0; i < m_clients.Count(); i++) {
 		delete m_clients[i];
 	}
-
-	delete[] m_clients;
 
 	while (m_responseQueue.Count() > 0) {
 		delete m_responseQueue[0];
@@ -71,7 +62,7 @@ bool CIRCDDBMultiClient::open()
 {
 	bool result = true;
 
-	for (unsigned int i = 0; i < m_clientCount; i++) {
+	for (unsigned int i = 0; i < m_clients.Count(); i++) {
 		result = m_clients[i]->open() && result;
 	}
 
@@ -82,28 +73,28 @@ bool CIRCDDBMultiClient::open()
 
 void CIRCDDBMultiClient::rptrQTH(const wxString & callsign, double latitude, double longitude, const wxString & desc1, const wxString & desc2, const wxString & infoURL)
 {
-	for (unsigned int i = 0; i < m_clientCount; i++) {
+	for (unsigned int i = 0; i < m_clients.Count(); i++) {
 		m_clients[i]->rptrQTH(callsign, latitude, longitude, desc1, desc2, infoURL);
 	}
 }
 
 void CIRCDDBMultiClient::rptrQRG(const wxString & callsign, double txFrequency, double duplexShift, double range, double agl)
 {
-	for (unsigned int i = 0; i < m_clientCount; i++) {
+	for (unsigned int i = 0; i < m_clients.Count(); i++) {
 		m_clients[i]->rptrQRG(callsign, txFrequency, duplexShift, range, agl);
 	}
 }
 
 void CIRCDDBMultiClient::kickWatchdog(const wxString & callsign, const wxString & wdInfo)
 {
-	for (unsigned int i = 0; i < m_clientCount; i++) {
+	for (unsigned int i = 0; i < m_clients.Count(); i++) {
 		m_clients[i]->kickWatchdog(callsign, wdInfo);
 	}
 }
 
 int CIRCDDBMultiClient::getConnectionState()
 {
-	for (unsigned int i = 0; i < m_clientCount; i++) {
+	for (unsigned int i = 0; i < m_clients.Count(); i++) {
 		int state = m_clients[i]->getConnectionState();
 		if (state != 7)
 			return state;
@@ -116,7 +107,7 @@ bool CIRCDDBMultiClient::sendHeard(const wxString & myCall, const wxString & myC
 {
 	bool result = true;
 
-	for (unsigned int i = 0; i < m_clientCount; i++) {
+	for (unsigned int i = 0; i < m_clients.Count(); i++) {
 		result = m_clients[i]->sendHeard(myCall, myCallExt, yourCall, rpt1, rpt2, flag1, flag2, flag3) && result;
 	}
 
@@ -127,7 +118,7 @@ bool CIRCDDBMultiClient::sendHeardWithTXMsg(const wxString & myCall, const wxStr
 {
 	bool result = true;
 
-	for (unsigned int i = 0; i < m_clientCount; i++) {
+	for (unsigned int i = 0; i < m_clients.Count(); i++) {
 		result = m_clients[i]->sendHeardWithTXMsg(myCall, myCallExt, yourCall, rpt1, rpt2, flag1, flag2, flag3, network_destination, tx_message) && result;
 	}
 
@@ -138,7 +129,7 @@ bool CIRCDDBMultiClient::sendHeardWithTXStats(const wxString & myCall, const wxS
 {
 	bool result = true;
 
-	for (unsigned int i = 0; i < m_clientCount; i++) {
+	for (unsigned int i = 0; i < m_clients.Count(); i++) {
 		result = m_clients[i]->sendHeardWithTXStats(myCall, myCallExt, yourCall, rpt1, rpt2, flag1, flag2, flag3, num_dv_frames, num_dv_silent_frames, num_bit_errors) && result;
 	}
 
@@ -149,7 +140,7 @@ bool CIRCDDBMultiClient::findGateway(const wxString & gatewayCallsign)
 {
 	pushQuery(IDRT_GATEWAY, gatewayCallsign, new CIRCDDBMultiClientQuery(wxEmptyString, wxEmptyString, gatewayCallsign, wxEmptyString, wxEmptyString, IDRT_GATEWAY));
 	bool result = true;
-	for (unsigned int i = 0; i < m_clientCount; i++) {
+	for (unsigned int i = 0; i < m_clients.Count(); i++) {
 		result = m_clients[i]->findGateway(gatewayCallsign) && result;
 	}
 
@@ -160,7 +151,7 @@ bool CIRCDDBMultiClient::findRepeater(const wxString & repeaterCallsign)
 {
 	pushQuery(IDRT_REPEATER, repeaterCallsign, new CIRCDDBMultiClientQuery(wxEmptyString, repeaterCallsign, wxEmptyString, wxEmptyString, wxEmptyString, IDRT_REPEATER));
 	bool result = true;
-	for (unsigned int i = 0; i < m_clientCount; i++) {
+	for (unsigned int i = 0; i < m_clients.Count(); i++) {
 		result = m_clients[i]->findRepeater(repeaterCallsign) && result;
 	}
 
@@ -171,7 +162,7 @@ bool CIRCDDBMultiClient::findUser(const wxString & userCallsign)
 {
 	pushQuery(IDRT_USER, userCallsign, new CIRCDDBMultiClientQuery(userCallsign, wxEmptyString, wxEmptyString, wxEmptyString, wxEmptyString, IDRT_USER));
 	bool result = true;
-	for (unsigned int i = 0; i < m_clientCount; i++) {
+	for (unsigned int i = 0; i < m_clients.Count(); i++) {
 		result = m_clients[i]->findUser(userCallsign) && result;
 	}
 
@@ -181,7 +172,7 @@ bool CIRCDDBMultiClient::findUser(const wxString & userCallsign)
 IRCDDB_RESPONSE_TYPE CIRCDDBMultiClient::getMessageType()
 {
 	//procees the inner clients at each call
-	for (unsigned int i = 0; i < m_clientCount; i++) {
+	for (unsigned int i = 0; i < m_clients.Count(); i++) {
 		wxString user = wxEmptyString, repeater = wxEmptyString, gateway = wxEmptyString, address = wxEmptyString, timestamp = wxEmptyString, key = wxEmptyString;
 		IRCDDB_RESPONSE_TYPE type = m_clients[i]->getMessageType();
 
@@ -219,7 +210,7 @@ IRCDDB_RESPONSE_TYPE CIRCDDBMultiClient::getMessageType()
 			CIRCDDBMultiClientQuery * item = popQuery(type, key);
 			if (item != NULL) {//is this a response to a query we've sent ?
 				item->Update(user, repeater, gateway, address, timestamp);//update item (if needed)
-				canAddToQueue = (item->incrementResponseCount() >= m_clientCount); //did all the clients respond or did we have an answer ?
+				canAddToQueue = (item->incrementResponseCount() >= m_clients.Count()); //did all the clients respond or did we have an answer ?
 				wasQuery = true;
 			}
 			else {
@@ -299,7 +290,7 @@ bool CIRCDDBMultiClient::receiveUser(wxString & userCallsign, wxString & repeate
 
 void CIRCDDBMultiClient::close()
 {
-	for (unsigned int i = 0; i < m_clientCount; i++) {
+	for (unsigned int i = 0; i < m_clients.Count(); i++) {
 		m_clients[i]->close();
 	}
 }
