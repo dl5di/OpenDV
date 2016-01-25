@@ -50,7 +50,14 @@ public:
 	void setRepeater4(const wxString& band, HW_TYPE type, const wxString& address, unsigned int port, unsigned char band1, unsigned char band2, unsigned char band3, const wxString& reflector, bool atStartup, RECONNECT reconnect, double frequency, double offset, double range, double latitude, double longitude, double agl, const wxString& description1, const wxString& description2, const wxString& url);
 
 	void getIrcDDB(bool& enabled, wxString& hostname, wxString& username, wxString& password) const;
+	void getIrcDDB2(bool& enabled, wxString& hostname, wxString& username, wxString& password) const;
+	void getIrcDDB3(bool& enabled, wxString& hostname, wxString& username, wxString& password) const;
+	void getIrcDDB4(bool& enabled, wxString& hostname, wxString& username, wxString& password) const;
+
 	void setIrcDDB(bool enabled, const wxString& hostname, const wxString& username, const wxString& password);
+	void setIrcDDB2(bool enabled, const wxString& hostname, const wxString& username, const wxString& password);
+	void setIrcDDB3(bool enabled, const wxString& hostname, const wxString& username, const wxString& password);
+	void setIrcDDB4(bool enabled, const wxString& hostname, const wxString& username, const wxString& password);
 
 	void getDPRS(bool& enabled, wxString& hostname, unsigned int& port) const;
 	void setDPRS(bool enabled, const wxString& hostname, unsigned int port);
@@ -209,6 +216,18 @@ private:
 	wxString      m_ircddbHostname;
 	wxString      m_ircddbUsername;
 	wxString      m_ircddbPassword;
+	bool          m_ircddbEnabled2;
+	wxString      m_ircddbHostname2;
+	wxString      m_ircddbUsername2;
+	wxString      m_ircddbPassword2;
+	bool          m_ircddbEnabled3;
+	wxString      m_ircddbHostname3;
+	wxString      m_ircddbUsername3;
+	wxString      m_ircddbPassword3;
+	bool          m_ircddbEnabled4;
+	wxString      m_ircddbHostname4;
+	wxString      m_ircddbUsername4;
+	wxString      m_ircddbPassword4;
 	bool          m_aprsEnabled;
 	wxString      m_aprsHostname;
 	unsigned int  m_aprsPort;
