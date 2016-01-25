@@ -634,16 +634,16 @@ bool CIRCDDBGatewayAppD::createThread()
 	wxString ircDDBHostname3, ircDDBUsername3, ircDDBPassword3;
 	wxString ircDDBHostname4, ircDDBUsername4, ircDDBPassword4;
 
-	m_config->getIrcDDB(ircDDBEnabled1, ircDDBHostname1, ircDDBUsername1, ircDDBPassword1);
+	config->getIrcDDB(ircDDBEnabled1, ircDDBHostname1, ircDDBUsername1, ircDDBPassword1);
 	wxLogInfo(wxT("ircDDB 1 enabled: %d, host: %s, username: %s"), int(ircDDBEnabled1), ircDDBHostname1.c_str(), ircDDBUsername1.c_str());
 
-	m_config->getIrcDDB2(ircDDBEnabled2, ircDDBHostname2, ircDDBUsername2, ircDDBPassword2);
+	config->getIrcDDB2(ircDDBEnabled2, ircDDBHostname2, ircDDBUsername2, ircDDBPassword2);
 	wxLogInfo(wxT("ircDDB 2 enabled: %d, host: %s, username: %s"), int(ircDDBEnabled2), ircDDBHostname2.c_str(), ircDDBUsername2.c_str());
 
-	m_config->getIrcDDB3(ircDDBEnabled3, ircDDBHostname3, ircDDBUsername3, ircDDBPassword3);
+	config->getIrcDDB3(ircDDBEnabled3, ircDDBHostname3, ircDDBUsername3, ircDDBPassword3);
 	wxLogInfo(wxT("ircDDB 3 enabled: %d, host: %s, username: %s"), int(ircDDBEnabled3), ircDDBHostname3.c_str(), ircDDBUsername3.c_str());
 
-	m_config->getIrcDDB4(ircDDBEnabled4, ircDDBHostname4, ircDDBUsername4, ircDDBPassword4);
+	config->getIrcDDB4(ircDDBEnabled4, ircDDBHostname4, ircDDBUsername4, ircDDBPassword4);
 	wxLogInfo(wxT("ircDDB 4 enabled: %d, host: %s, username: %s"), int(ircDDBEnabled4), ircDDBHostname4.c_str(), ircDDBUsername4.c_str());
 
 	ircDDBAtLeastOneEnabled = ircDDBEnabled1 || ircDDBEnabled2 || ircDDBEnabled3 || ircDDBEnabled4;
@@ -672,7 +672,7 @@ bool CIRCDDBGatewayAppD::createThread()
 			ircDDBAtLeastOneEnabled = false;
 		}
 		else {
-			thread->setIRC(ircDDB);
+			m_thread->setIRC(ircDDB);
 		}
 	}
 
