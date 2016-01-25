@@ -28,10 +28,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <wx/wx.h>
 #include <wx/thread.h>
 
-class CIRCDDBMultiClientEntry
+//Small data container to keep track of queries with sent to the inner clients
+class CIRCDDBMultiClientQuery
 {
 public:
-	CIRCDDBMultiClientEntry(const wxString& user,
+	CIRCDDBMultiClientQuery(const wxString& user,
 							const wxString& repeater,
 							const wxString& gateway,
 							const wxString& address,
@@ -123,8 +124,8 @@ private:
 	unsigned int m_responseCount;
 };
 
-WX_DECLARE_STRING_HASH_MAP(CIRCDDBMultiClientEntry*, CIRCDDBMultiClientEntry_HashMap);
-WX_DECLARE_OBJARRAY(CIRCDDBMultiClientEntry*, CIRCDDBMultiClientEntry_Array);
+WX_DECLARE_STRING_HASH_MAP(CIRCDDBMultiClientQuery*, CIRCDDBMultiClientEntry_HashMap);
+WX_DECLARE_OBJARRAY(CIRCDDBMultiClientQuery*, CIRCDDBMultiClientEntry_Array);
 
 class CIRCDDBMultiClient : public CIRCDDB
 {
@@ -163,9 +164,9 @@ private :
 	CIRCDDBMultiClientEntry_HashMap m_gatewayQueries;
 	CIRCDDBMultiClientEntry_Array m_responseQueue;
 
-	CIRCDDBMultiClientEntry * checkAndGetNextResponse(IRCDDB_RESPONSE_TYPE expectedType, wxString errorMessage);
-	void pushQuery(IRCDDB_RESPONSE_TYPE type, const wxString& key,  CIRCDDBMultiClientEntry * query);
-	CIRCDDBMultiClientEntry * popQuery(IRCDDB_RESPONSE_TYPE type, const wxString& key);
+	CIRCDDBMultiClientQuery * checkAndGetNextResponse(IRCDDB_RESPONSE_TYPE expectedType, wxString errorMessage);
+	void pushQuery(IRCDDB_RESPONSE_TYPE type, const wxString& key,  CIRCDDBMultiClientQuery * query);
+	CIRCDDBMultiClientQuery * popQuery(IRCDDB_RESPONSE_TYPE type, const wxString& key);
 	CIRCDDBMultiClientEntry_HashMap * getQueriesHashMap(IRCDDB_RESPONSE_TYPE type);
 };
 #endif
