@@ -124,8 +124,8 @@ private:
 	unsigned int m_responseCount;
 };
 
-WX_DECLARE_STRING_HASH_MAP(CIRCDDBMultiClientQuery*, CIRCDDBMultiClientEntry_HashMap);
-WX_DECLARE_OBJARRAY(CIRCDDBMultiClientQuery*, CIRCDDBMultiClientEntry_Array);
+WX_DECLARE_STRING_HASH_MAP(CIRCDDBMultiClientQuery*, CIRCDDBMultiClientQuery_HashMap);
+WX_DECLARE_OBJARRAY(CIRCDDBMultiClientQuery*, CIRCDDBMultiClientQuery_Array);
 
 class CIRCDDBMultiClient : public CIRCDDB
 {
@@ -159,15 +159,15 @@ private :
 	unsigned int m_clientCount;
 	wxMutex m_queriesLock, m_responseQueueLock;
 
-	CIRCDDBMultiClientEntry_HashMap m_userQueries;
-	CIRCDDBMultiClientEntry_HashMap m_repeaterQueries;
-	CIRCDDBMultiClientEntry_HashMap m_gatewayQueries;
-	CIRCDDBMultiClientEntry_Array m_responseQueue;
+	CIRCDDBMultiClientQuery_HashMap m_userQueries;
+	CIRCDDBMultiClientQuery_HashMap m_repeaterQueries;
+	CIRCDDBMultiClientQuery_HashMap m_gatewayQueries;
+	CIRCDDBMultiClientQuery_Array m_responseQueue;
 
 	CIRCDDBMultiClientQuery * checkAndGetNextResponse(IRCDDB_RESPONSE_TYPE expectedType, wxString errorMessage);
 	void pushQuery(IRCDDB_RESPONSE_TYPE type, const wxString& key,  CIRCDDBMultiClientQuery * query);
 	CIRCDDBMultiClientQuery * popQuery(IRCDDB_RESPONSE_TYPE type, const wxString& key);
-	CIRCDDBMultiClientEntry_HashMap * getQueriesHashMap(IRCDDB_RESPONSE_TYPE type);
+	CIRCDDBMultiClientQuery_HashMap * getQueriesHashMap(IRCDDB_RESPONSE_TYPE type);
 };
 #endif
 

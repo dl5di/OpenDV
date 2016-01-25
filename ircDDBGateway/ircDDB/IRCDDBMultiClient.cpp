@@ -23,7 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "IRCDDBMultiClient.h"
 #include <wx/wx.h>
 #include <wx/arrimpl.cpp>
-WX_DEFINE_OBJARRAY(CIRCDDBMultiClientEntry_Array);
+WX_DEFINE_OBJARRAY(CIRCDDBMultiClientQuery_Array);
 
 CIRCDDBMultiClient::CIRCDDBMultiClient(CIRCDDB * * clients, unsigned int count) :
 m_clients(new CIRCDDB*[count]),
@@ -54,15 +54,15 @@ CIRCDDBMultiClient::~CIRCDDBMultiClient()
 		m_responseQueue.RemoveAt(0);
 	}
 
-	for (CIRCDDBMultiClientEntry_HashMap::iterator it = m_userQueries.begin(); it != m_userQueries.end(); it++)
+	for (CIRCDDBMultiClientQuery_HashMap::iterator it = m_userQueries.begin(); it != m_userQueries.end(); it++)
 		delete it->second;
 	m_userQueries.clear();
 
-	for (CIRCDDBMultiClientEntry_HashMap::iterator it = m_repeaterQueries.begin(); it != m_repeaterQueries.end(); it++)
+	for (CIRCDDBMultiClientQuery_HashMap::iterator it = m_repeaterQueries.begin(); it != m_repeaterQueries.end(); it++)
 		delete it->second;
 	m_repeaterQueries.clear();
 
-	for (CIRCDDBMultiClientEntry_HashMap::iterator it = m_gatewayQueries.begin(); it != m_gatewayQueries.end(); it++)
+	for (CIRCDDBMultiClientQuery_HashMap::iterator it = m_gatewayQueries.begin(); it != m_gatewayQueries.end(); it++)
 		delete it->second;
 	m_gatewayQueries.clear();
 }
@@ -322,7 +322,7 @@ CIRCDDBMultiClientQuery * CIRCDDBMultiClient::checkAndGetNextResponse(IRCDDB_RES
 
 void CIRCDDBMultiClient::pushQuery(IRCDDB_RESPONSE_TYPE type, const wxString& key, CIRCDDBMultiClientQuery * query)
 {
-	CIRCDDBMultiClientEntry_HashMap * queries = getQueriesHashMap(type);
+	CIRCDDBMultiClientQuery_HashMap * queries = getQueriesHashMap(type);
 	wxMutexLocker locker(m_queriesLock);
 	if (queries != NULL && (*queries)[key] == NULL)
 		(*queries)[key] = query;
@@ -333,7 +333,7 @@ void CIRCDDBMultiClient::pushQuery(IRCDDB_RESPONSE_TYPE type, const wxString& ke
 
 CIRCDDBMultiClientQuery * CIRCDDBMultiClient::popQuery(IRCDDB_RESPONSE_TYPE type, const wxString & key)
 {
-	CIRCDDBMultiClientEntry_HashMap * queries = getQueriesHashMap(type);
+	CIRCDDBMultiClientQuery_HashMap * queries = getQueriesHashMap(type);
 	wxMutexLocker locker(m_queriesLock);
 
 	CIRCDDBMultiClientQuery * item = NULL;
@@ -344,7 +344,7 @@ CIRCDDBMultiClientQuery * CIRCDDBMultiClient::popQuery(IRCDDB_RESPONSE_TYPE type
 	return item;
 }
 
-CIRCDDBMultiClientEntry_HashMap * CIRCDDBMultiClient::getQueriesHashMap(IRCDDB_RESPONSE_TYPE type)
+CIRCDDBMultiClientQuery_HashMap * CIRCDDBMultiClient::getQueriesHashMap(IRCDDB_RESPONSE_TYPE type)
 {
 	switch (type)
 	{
