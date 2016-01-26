@@ -1800,6 +1800,14 @@ void CIRCDDBGatewayConfig::getIrcDDB2(bool& enabled, wxString& hostname, wxStrin
 	enabled = m_ircddbEnabled2;
 	hostname = m_ircddbHostname2;
 	username = m_ircddbUsername2;
+
+	if(username.IsEmpty()){
+		//no user specified for openquad? use the one from the default network !
+		username = m_ircddbUsername;
+		if(username[0] >= '0' &&  username[0] <= '9')
+			username = wxT("r") + username;
+	}
+
 	password = m_ircddbPassword2;
 }
 

@@ -24,7 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <wx/wx.h>
 
 CIRCDDBMultiClient::CIRCDDBMultiClient(const CIRCDDB_Array& clients) :
-m_clients(clients.Count()),
+m_clients(),
 m_queriesLock(),
 m_responseQueueLock()
 {
