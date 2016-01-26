@@ -621,9 +621,10 @@ ircddbEnabled:
 ircddbHostname: 
 ircddbHostname:Waehle die ircDDB-Server-Gruppe um eine beste Anbindung zu ermoeglichen:  
 ircddbHostname: 
-ircddbHostname: 1   fuer Gateways in Europa, Asien, Afrika, Australien 
-ircddbHostname: 2   fuer Gateways in Nord-/Sued-Amerika 
-ircddbHostname: 3   Italienischer Testserver ohne Anbindung ans Routing-Netz 
+ircddbHostname: 1   (Original ircddb.net european server) if you are located in Europe, Asia, Africa, Australia 
+ircddbHostname: 2   (Original ircddb.net american server) if you are located in North-/South-America 
+ircddbHostname: 3   (Original ircddb.net european testvserver) Italian Testserver, not connected to the routing network 
+ircddbHostname: 4   (Openquad.net ircddb network) Network which accepts repeaters and personal hotspots.
 ircddbHostname: 
 
 ircddbUsername: 
