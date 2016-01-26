@@ -591,7 +591,9 @@ ircddb_setup:*** ircDDB network setup
 ircddb_setup: 
 ircddb_setup:The next part configures the access information to connect to the ircDDB
 ircddb_setup:routing network which is necessary for callsign routing and reporting. 
-ircddb_setup: 
+ircddb_setup:You can configure up to 4 networks, when doing call sign routing the program
+ircddb_setup:will query all of those network to find the called user.
+ircddb_setup:
 ircddb_setup:********************************************************************************
 
 ircddbEnabled: 

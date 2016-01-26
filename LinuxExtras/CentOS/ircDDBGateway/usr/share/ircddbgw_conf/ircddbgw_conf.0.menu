@@ -1,6 +1,6 @@
 
-filename of menu file:  /usr/share/ircddb_conf.#.menu
-filename of help file:  /usr/share/ircddb_conf.#.hlp
+filename of menu file:  /opt/opendv/ircddbgateway/ircddb_conf.#.menu
+filename of help file:  /opt/opendv/ircddbgateway/ircddb_conf.#.hlp
 
 where # is:
 
@@ -17,7 +17,8 @@ where # is:
   10   Nederland (BE) 
 
 
-PLEASE DO NOT TOUCH /usr/share/ircddb_conf.0.menu and /usr/share/ircddb_conf.0.hlp
+PLEASE DO NOT TOUCH /opt/opendv/ircddbgateway/ircddb_conf.0.menu and 
+/opt/opendv/ircddbgateway/ircddb_conf.0.hlp
 
 This files will be updated autotically by the YUM package!
 
@@ -361,23 +362,23 @@ rptr_setup:
 rptr_setup:********************************************************************************
 
 rptr_edit: 
-rptr_edit: Enter the index of the repeater module which should be configured.
+rptr_edit: Enter the index of the repeater module which should be configured (1-4).
 rptr_edit: Note that you will need hardware information / devicenames for homebrew hardware. 
 rptr_edit: The order of modules is variable (no matter if A,B,C,D or D,A,C,B) but repeater
 rptr_edit: modules have to be configured in sequence (1-4) without gap!
 rptr_edit: 
-rptr_edit: Press 0 or <ENTER> to skip the repeater module setup.
-rptr_edit: The following modules are already configured:
+rptr_edit: 0 or <ENTER> to skip the repeater module setup.
 rptr_edit:
 
 rptr_init: 
-rptr_init: Enter the number of repeater modules that you want to configure (1-4).
+rptr_init: Enter the number of the repeater module which should be configured (1-4).
 rptr_init: Note that you will need hardware information / devicenames for homebrew hardware. 
 rptr_init: The order of modules is variable (no matter if A,B,C,D or D,A,C,B) but repeater
 rptr_init: modules have to be configured in sequence (1-4) without gap!
 rptr_init: 
-rptr_init: Press 0 or <ENTER> to skip the repeater module setup.
-rptr_init: 
+rptr_init: 0 or <ENTER> to skip the repeater module setup.
+rptr_init:
+
 
 rptr_stop:  
 rptr_stop: Stop repeater configuration! 
@@ -446,6 +447,26 @@ extraOptions:
 extraOptions: Do you want to enter 'Extra Options' ?
 extraOptions: 0 = NO, 1 = YES
 extraOptions:
+
+rptr_edit: 
+rptr_edit: Enter the index of the repeater module which should be configured (1-4).
+rptr_edit: Note that you will need hardware information / devicenames for homebrew hardware. 
+rptr_edit: The order of modules is variable (no matter if A,B,C,D or D,A,C,B) but repeater
+rptr_edit: modules have to be configured in sequence (1-4) without gap!
+rptr_edit: 
+rptr_edit: 0 or <ENTER> to skip the repeater module setup.
+rptr_edit:
+
+rptr_init: 
+rptr_init: Enter the number of the repeater module which should be configured (1-4).
+rptr_init: Note that you will need hardware information / devicenames for homebrew hardware. 
+rptr_init: The order of modules is variable (no matter if A,B,C,D or D,A,C,B) but repeater
+rptr_init: modules have to be configured in sequence (1-4) without gap!
+rptr_init: 
+rptr_init: 0 or <ENTER> to skip the repeater module setup.
+rptr_init:
+
+
 
 repeaterCall:
 repeaterCall: !!! ATTENTION !!! ATTENTION !!! ATTENTION !!! ATTENTION !!! ATTENTION !!!
@@ -570,7 +591,9 @@ ircddb_setup:*** ircDDB network setup
 ircddb_setup: 
 ircddb_setup:The next part configures the access information to connect to the ircDDB
 ircddb_setup:routing network which is necessary for callsign routing and reporting. 
-ircddb_setup: 
+ircddb_setup:You can configure up to 4 networks, when doing call sign routing the program
+ircddb_setup:will query all of those network to find the called user.
+ircddb_setup:
 ircddb_setup:********************************************************************************
 
 ircddbEnabled: 
@@ -654,7 +677,7 @@ ccsEnabled: <CR> Keep old value
 ccsEnabled: 
 
 ccsHostmissing: 
-ccsHostmissing:File CCS_Host.txt is missing! 
+ccsHostmissing:File CCS_Hosts.txt is missing! 
 ccsHostmissing: 
 
 ccsHostentries:
@@ -973,6 +996,25 @@ dtmfEnabled:
 dtmfEnabled:(DTMF is used to controle repeater status, linking, unlinking) 
 dtmfEnabled: 
 
+rptr_edit: 
+rptr_edit: Enter the index of the repeater module which should be reconfigured.
+rptr_edit: Note that you will need hardware information / devicenames for homebrew hardware. 
+rptr_edit: The order of modules is variable (no matter if A,B,C,D or D,A,C,B), but repeater
+rptr_edit: modules have to be configured in sequence (1-4) without gap!
+rptr_edit: 
+rptr_edit: Press 0 or <ENTER> to skip the repeater module setup.
+rptr_edit: The following modules are currently configured:
+rptr_edit:
+
+rptr_init: 
+rptr_init: Enter the number of the repeater module which should be configured (1-4).
+rptr_init: Note that you will need hardware information / devicenames for homebrew hardware. 
+rptr_init: The order of modules is variable (no matter if A,B,C,D or D,A,C,B), but repeater
+rptr_init: modules have to be configured in sequence (1-4) without gap!
+rptr_init: 
+rptr_init: Press 0 or <ENTER> to skip the repeater module setup.
+rptr_init:
+
 nolog_ircddbgateway:
 nolog_ircddbgateway: Switch logging of ircDDBGateway on/off
 nolog_ircddbgateway:
@@ -992,7 +1034,6 @@ nolog_timeserver: 1  NOLOG ENDABLED    (logging is off)
 nolog_timeserver:
 nolog_timeserver: Note: Growing logfiles may need a lot of disk space.
 nolog_timeserver:
-
 
 logpath:
 logpath: Enter the directory where logfiles are created.
@@ -1066,7 +1107,7 @@ mainmenu:11    CCS/DCS setup    (CCS/DCS network access)
 mainmenu:12    STARnet setup    (STARnet server setup) 
 mainmenu:13    Timeserver setup (Timeserver setup) 
 mainmenu:14    Misc setup       (dtmf, echo, info and other settings) 
-mainmenu:15    Logging          (log on/off, logdir) 
+mainmenu:15    Logging          (logging on/off, log directory) 
 mainmenu:--------------------------------------------------------------------------------
 mainmenu:Configure the autostart system:
 mainmenu: ircDDBGateway:  20) ON       21) OFF

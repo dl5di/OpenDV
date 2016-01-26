@@ -591,7 +591,9 @@ ircddb_setup:*** ircDDB network setup
 ircddb_setup: 
 ircddb_setup:The next part configures the access information to connect to the ircDDB
 ircddb_setup:routing network which is necessary for callsign routing and reporting. 
-ircddb_setup: 
+ircddb_setup:You can configure up to 4 networks, when doing call sign routing the program
+ircddb_setup:will query all of those network to find the called user.
+ircddb_setup:
 ircddb_setup:********************************************************************************
 
 ircddbEnabled: 
@@ -1057,14 +1059,14 @@ dashboard_path: The dashboard configuration will be changed:
 header:--------------------------------------------------------------------------------
 header: 
 header: Configuration script for ircDDBGateway from Jonathan Naylor, G4KLX 
-header: Copyright (C) 2012   Hans-J. Barthen, DL5DI (dl5di@gmx.de) 
+header: Copyright (C) 2012-2014   Hans-J. Barthen, DL5DI (dl5di@gmx.de) 
 header: 
 header:--------------------------------------------------------------------------------
 
 copyright:-------------------------------------------------------------------------------- 
 copyright: 
 copyright: Configuration script for ircDDBGateway from Jonathan Naylor, G4KLX 
-copyright: Copyright (C) 2012   Hans-J. Barthen, DL5DI (dl5di@gmx.de) 
+copyright: Copyright (C) 2012-2014   Hans-J. Barthen, DL5DI (dl5di@gmx.de) 
 copyright: Basic components from ircddbconfig (C) 2011 Michael Dirska, DL1BFF
 copyright: 
 copyright: This program is free software: you can redistribute it and/or modify 

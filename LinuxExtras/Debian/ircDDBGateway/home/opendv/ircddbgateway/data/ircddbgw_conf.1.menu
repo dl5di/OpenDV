@@ -606,7 +606,8 @@ ircddb_setup:
 ircddb_setup:*** ircDDB network setup 
 ircddb_setup: 
 ircddb_setup:Der naechste Konfigurationsteil erfasst die Zugangsdaten zum ircDDB Routing-Netz
-ircddb_setup: 
+ircddb_setup:Sie können bis zu 4 Netzen eintragen. Wenn man callsign routing macht werden
+ircddb_setup:diese netze abgefragt. 
 ircddb_setup:******************************************************************************** 
 
 ircddbEnabled: 
