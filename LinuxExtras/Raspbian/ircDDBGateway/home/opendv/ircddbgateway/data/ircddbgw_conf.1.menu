@@ -608,6 +608,9 @@ ircddb_setup:
 ircddb_setup:Der naechste Konfigurationsteil erfasst die Zugangsdaten zum ircDDB Routing-Netz
 ircddb_setup:Sie können bis zu 4 Netzen eintragen. Wenn man callsign routing macht werden
 ircddb_setup:diese netze abgefragt. 
+ircddb_setup:
+ircddb_setup:Hier konfigurieren wir das ersten netzwerk
+ircddb_setup:
 ircddb_setup:******************************************************************************** 
 
 ircddbEnabled: 
@@ -638,6 +641,147 @@ ircddbPassword:Gib das Passwort ein, das Dubei der Registrierung erhalten hast (
 ircddbPassword:Achte auf die richtige Eingabe, incl. Gross-/Kleinschrift, am besten per 
 ircddbPassword:Copy&Paste uebertragen.
 ircddbPassword: 
+
+ircddb_setup2: 
+ircddb_setup2: 
+ircddb_setup2: 
+ircddb_setup2: 
+ircddb_setup2: 
+ircddb_setup2: 
+ircddb_setup2:********************************************************************************
+ircddb_setup2: 
+ircddb_setup2:*** ircDDB network setup 
+ircddb_setup2: 
+ircddb_setup2:Der naechste Konfigurationsteil erfasst die Zugangsdaten zum ircDDB Routing-Netz
+ircddb_setup2:Sie können bis zu 4 Netzen eintragen. Wenn man callsign routing macht werden
+ircddb_setup2:diese netze abgefragt. 
+ircddb_setup2:
+ircddb_setup2:Hier konfigurieren wir das zweiten netzwerk
+ircddb_setup2:
+ircddb_setup2:******************************************************************************** 
+
+ircddbEnabled2: 
+ircddbEnabled2:      0  ircDDB-Service AUSschalten 
+ircddbEnabled2:      1  ircDDB-Service EINschalten
+ircddbEnabled2: 
+ircddbEnabled2: -       Zuruecksetzen der Einstellung
+ircddbEnabled2: <ENTER> Den alten Wert beibehalten (Wert in [])
+ircddbEnabled2: 
+
+ircddbHostname2: 
+ircddbHostname2:Waehle die ircDDB-Server-Gruppe um eine beste Anbindung zu ermoeglichen:  
+ircddbHostname2: 
+ircddbHostname2: 1   (Original ircddb.net european server) if you are located in Europe, Asia, Africa, Australia 
+ircddbHostname2: 2   (Original ircddb.net american server) if you are located in North-/South-America 
+ircddbHostname2: 3   (Original ircddb.net european testvserver) Italian Testserver, not connected to the routing network 
+ircddbHostname2: 4   (Openquad.net ircddb network) Network which accepts repeaters and personal hotspots.
+ircddbHostname2: 
+
+ircddbUsername2: 
+ircddbUsername2:Gib den Benutzernamen ein, der Dir bei der Registrierung mitgeteilt wurde.  
+ircddbUsername2:(normalerweise das Rufzeichen des Gateways in Kleinschrift) 
+ircddbUsername2:Die Registrierung erfolgt hier: http://regsrv.ircddb.net/index.htm
+ircddbUsername2: 
+
+ircddbPassword2: 
+ircddbPassword2:Gib das Passwort ein, das Dubei der Registrierung erhalten hast (16 Stellen)
+ircddbPassword2:Achte auf die richtige Eingabe, incl. Gross-/Kleinschrift, am besten per 
+ircddbPassword2:Copy&Paste uebertragen.
+ircddbPassword2: 
+
+ircddb_setup3: 
+ircddb_setup3: 
+ircddb_setup3: 
+ircddb_setup3: 
+ircddb_setup3: 
+ircddb_setup3: 
+ircddb_setup3:********************************************************************************
+ircddb_setup3: 
+ircddb_setup3:*** ircDDB network setup 
+ircddb_setup3: 
+ircddb_setup3:Der naechste Konfigurationsteil erfasst die Zugangsdaten zum ircDDB Routing-Netz
+ircddb_setup3:Sie können bis zu 4 Netzen eintragen. Wenn man callsign routing macht werden
+ircddb_setup3:diese netze abgefragt. 
+ircddb_setup3:
+ircddb_setup3:Hier konfigurieren wir das dritten netzwerk
+ircddb_setup3:
+ircddb_setup3:******************************************************************************** 
+
+ircddbEnabled3: 
+ircddbEnabled3:      0  ircDDB-Service AUSschalten 
+ircddbEnabled3:      1  ircDDB-Service EINschalten
+ircddbEnabled3: 
+ircddbEnabled3: -       Zuruecksetzen der Einstellung
+ircddbEnabled3: <ENTER> Den alten Wert beibehalten (Wert in [])
+ircddbEnabled3: 
+
+ircddbHostname3: 
+ircddbHostname3:Waehle die ircDDB-Server-Gruppe um eine beste Anbindung zu ermoeglichen:  
+ircddbHostname3: 
+ircddbHostname3: 1   (Original ircddb.net european server) if you are located in Europe, Asia, Africa, Australia 
+ircddbHostname3: 2   (Original ircddb.net american server) if you are located in North-/South-America 
+ircddbHostname3: 3   (Original ircddb.net european testvserver) Italian Testserver, not connected to the routing network 
+ircddbHostname3: 4   (Openquad.net ircddb network) Network which accepts repeaters and personal hotspots.
+ircddbHostname3: 
+
+ircddbUsername3: 
+ircddbUsername3:Gib den Benutzernamen ein, der Dir bei der Registrierung mitgeteilt wurde.  
+ircddbUsername3:(normalerweise das Rufzeichen des Gateways in Kleinschrift) 
+ircddbUsername3:Die Registrierung erfolgt hier: http://regsrv.ircddb.net/index.htm
+ircddbUsername3: 
+
+ircddbPassword3: 
+ircddbPassword3:Gib das Passwort ein, das Dubei der Registrierung erhalten hast (16 Stellen)
+ircddbPassword3:Achte auf die richtige Eingabe, incl. Gross-/Kleinschrift, am besten per 
+ircddbPassword3:Copy&Paste uebertragen.
+ircddbPassword3: 
+
+ircddb_setup4: 
+ircddb_setup4: 
+ircddb_setup4: 
+ircddb_setup4: 
+ircddb_setup4: 
+ircddb_setup4: 
+ircddb_setup4:********************************************************************************
+ircddb_setup4: 
+ircddb_setup4:*** ircDDB network setup 
+ircddb_setup4: 
+ircddb_setup4:Der naechste Konfigurationsteil erfasst die Zugangsdaten zum ircDDB Routing-Netz
+ircddb_setup4:Sie können bis zu 4 Netzen eintragen. Wenn man callsign routing macht werden
+ircddb_setup4:diese netze abgefragt. 
+ircddb_setup4:
+ircddb_setup4:Hier konfigurieren wir das vierten netzwerk
+ircddb_setup4:
+ircddb_setup4:******************************************************************************** 
+
+ircddbEnabled4: 
+ircddbEnabled4:      0  ircDDB-Service AUSschalten 
+ircddbEnabled4:      1  ircDDB-Service EINschalten
+ircddbEnabled4: 
+ircddbEnabled4: -       Zuruecksetzen der Einstellung
+ircddbEnabled4: <ENTER> Den alten Wert beibehalten (Wert in [])
+ircddbEnabled4: 
+
+ircddbHostname4: 
+ircddbHostname4:Waehle die ircDDB-Server-Gruppe um eine beste Anbindung zu ermoeglichen:  
+ircddbHostname4: 
+ircddbHostname4: 1   (Original ircddb.net european server) if you are located in Europe, Asia, Africa, Australia 
+ircddbHostname4: 2   (Original ircddb.net american server) if you are located in North-/South-America 
+ircddbHostname4: 3   (Original ircddb.net european testvserver) Italian Testserver, not connected to the routing network 
+ircddbHostname4: 4   (Openquad.net ircddb network) Network which accepts repeaters and personal hotspots.
+ircddbHostname4: 
+
+ircddbUsername4: 
+ircddbUsername4:Gib den Benutzernamen ein, der Dir bei der Registrierung mitgeteilt wurde.  
+ircddbUsername4:(normalerweise das Rufzeichen des Gateways in Kleinschrift) 
+ircddbUsername4:Die Registrierung erfolgt hier: http://regsrv.ircddb.net/index.htm
+ircddbUsername4: 
+
+ircddbPassword4: 
+ircddbPassword4:Gib das Passwort ein, das Dubei der Registrierung erhalten hast (16 Stellen)
+ircddbPassword4:Achte auf die richtige Eingabe, incl. Gross-/Kleinschrift, am besten per 
+ircddbPassword4:Copy&Paste uebertragen.
+ircddbPassword4: 
 
 aprs_setup: 
 aprs_setup: 
