@@ -1690,7 +1690,7 @@ function repeater_setup(){
 
 function ircddb_setup(){
 
-    print_text "ircddb_setup"
+    print_text "ircddb_setup$1"
 #
 # ircddbEnabled = 0/1 (default 1)
 #
