@@ -1883,7 +1883,7 @@ function ircddb_setup(){
 #
 # ircddbEnabled = 0/1 (default 1)
 #
-	var="ircddbEnabled$1"
+	var="ircddbEnabled$ircddbnum"
 	Dat=`date +%Y%m%d%H%M`
 	echo "$Dat: $var" >> $LOG
 	read_default $var
@@ -1911,9 +1911,11 @@ function ircddb_setup(){
 	fi
 #
 # ircddbHostname=group1-irc.ircddb.net	
-# /etc/ircddbd/ircDDB.properties:irc_server_name
+# ircddbHostname2=rr.openquad.net
+# ircddbHostname3=
+# ircddbHostname4=
 #
-	var="ircddbHostname$1"
+	var="ircddbHostname$ircddbnum"
 	Dat=`date +%Y%m%d%H%M`
 	echo "$Dat: $var" >> $LOG
 	read_default $var
@@ -1939,7 +1941,7 @@ function ircddb_setup(){
 	RET=0
 	while [ $RET -eq 0 ]; do
 		print_text $var 
-		select_item $var 3 "$inp"
+		select_item $var 4 "$inp"
 		RET=$?
 
 		case $RET in
@@ -1975,15 +1977,13 @@ function ircddb_setup(){
 	done
 
 	echo ""
-	echo "ircddbHostname$1=$VALUE"
+	echo "ircddbHostname$ircddbnum=$VALUE"
 	echo ""
 	write_value ${IRCDDBGWCONFIG} $var "$VALUE"
 #
-# ircddbUsername=db0lj
-# /etc/ircddbd/ircDDB.properties: 
-# (rptr_call converted to lcase)
+# ircddbUsername#=db0lj
 #
-	var="ircddbUsername$1"
+	var="ircddbUsername$ircddbnum"
 	Dat=`date +%Y%m%d%H%M`
 	echo "$Dat: $var" >> $LOG
 	read_value ${IRCDDBGWCONFIG} $var
@@ -2007,7 +2007,7 @@ function ircddb_setup(){
 # ircddbPassword=
 # /etc/ircddbd/ircDDB.properties:irc_password
 #
-	var="ircddbPassword$1"
+	var="ircddbPassword$ircddbnum"
 	Dat=`date +%Y%m%d%H%M`
 	echo "$Dat: $var" >> $LOG
 	read_value ${IRCDDBGWCONFIG} $var

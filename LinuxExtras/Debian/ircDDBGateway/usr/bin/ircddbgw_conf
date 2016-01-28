@@ -1690,11 +1690,12 @@ function repeater_setup(){
 
 function ircddb_setup(){
 
-    print_text "ircddb_setup$1"
+    ircddbnum=$1
+    print_text "ircddb_setup$ircddbnum"
 #
-# ircddbEnabled = 0/1 (default 1)
+# ircddbEnabled# = 0/1 (default 1)
 #
-	var="ircddbEnabled$1"
+	var="ircddbEnabled$ircddbnum"
 	Dat=`date +%Y%m%d%H%M`
 	echo "$Dat: $var" >> $LOG
 	read_default $var
@@ -1721,10 +1722,12 @@ function ircddb_setup(){
 		return 0
 	fi
 #
-# ircddbHostname=group1-irc.ircddb.net	
-# /etc/ircddbd/ircDDB.properties:irc_server_name
+# ircddbHostname=group1-irc.ircddb.net
+# ircddbHostname2=rr.openquad.net
+# ircddbHostname3=
+# ircddbHostname4=
 #
-	var="ircddbHostname$1"
+	var="ircddbHostname$ircddbnum"
 	Dat=`date +%Y%m%d%H%M`
 	echo "$Dat: $var" >> $LOG
 	read_default $var
@@ -1744,7 +1747,7 @@ function ircddb_setup(){
 	RET=0
 	while [ $RET -eq 0 ]; do
 		print_text $var 
-		select_item $var 3 "$inp"
+		select_item $var 4 "$inp"
 		RET=$?
 
 		case $RET in
@@ -1780,15 +1783,13 @@ function ircddb_setup(){
 	done
 	
 	echo ""
-	echo "ircddbHostname$1=$VALUE"
+	echo "ircddbHostname$ircddbnum=$VALUE"
 	echo ""
-	write_value $IRCDDBGWCONFIG $var "$VALUE"
+	write_value ${IRCDDBGWCONFIG} $var "$VALUE"
 #
-# ircddbUsername=db0lj
-# /etc/ircddbd/ircDDB.properties: 
-# (rptr_call converted to lcase)
+# ircddbUsername#=db0lj
 #
-	var="ircddbUsername$1"
+	var="ircddbUsername$ircddbnum"
 	Dat=`date +%Y%m%d%H%M`
 	echo "$Dat: $var" >> $LOG
 	read_value $IRCDDBGWCONFIG $var
@@ -1809,10 +1810,9 @@ function ircddb_setup(){
 		write_value $IRCDDBGWCONFIG $var "$INPUT"
 	fi
 #
-# ircddbPassword=
-# /etc/ircddbd/ircDDB.properties:irc_password
+# ircddbPassword#=
 #
-	var="ircddbPassword$1"
+	var="ircddbPassword$ircddbnum"
 	Dat=`date +%Y%m%d%H%M`
 	echo "$Dat: $var" >> $LOG
 	read_value $IRCDDBGWCONFIG $var
@@ -3047,6 +3047,9 @@ while [ "$SELECT" -ne 99 ]; do
 			print_text "hw_setup"
 			repeater_init
 			ircddb_setup
+			ircddb_setup 2
+			ircddb_setup 3
+			ircddb_setup 4
 			aprs_setup
 			ccs_setup
 			dextra_setup
