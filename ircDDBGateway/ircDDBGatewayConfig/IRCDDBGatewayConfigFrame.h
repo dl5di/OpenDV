@@ -57,6 +57,9 @@ private:
 	CRepeaterDataSet*                     m_repeaterData4;
 	CRepeaterInfoSet*                     m_repeaterInfo4;
 	CIRCDDBGatewayConfigIrcDDBSet*        m_ircDDB;
+	CIRCDDBGatewayConfigIrcDDBSet*        m_ircDDB2;
+	CIRCDDBGatewayConfigIrcDDBSet*        m_ircDDB3;
+	CIRCDDBGatewayConfigIrcDDBSet*        m_ircDDB4;
 	CDPRSSet*                             m_dprs;
 	CDExtraSet*                           m_dextra;
 	CDPlusSet*                            m_dplus;

@@ -1,6 +1,6 @@
 
-filename of menu file:  /usr/share/ircddb_conf.#.menu
-filename of help file:  /usr/share/ircddb_conf.#.hlp
+filename of menu file:  /opt/opendv/ircddbgateway/ircddb_conf.#.menu
+filename of help file:  /opt/opendv/ircddbgateway/ircddb_conf.#.hlp
 
 where # is:
 
@@ -17,7 +17,8 @@ where # is:
   10   Nederland (BE) 
 
 
-PLEASE DO NOT TOUCH /usr/share/ircddb_conf.0.menu and /usr/share/ircddb_conf.0.hlp
+PLEASE DO NOT TOUCH /opt/opendv/ircddbgateway/ircddb_conf.0.menu and 
+/opt/opendv/ircddbgateway/ircddb_conf.0.hlp
 
 This files will be updated autotically by the YUM package!
 
@@ -361,23 +362,23 @@ rptr_setup:
 rptr_setup:********************************************************************************
 
 rptr_edit: 
-rptr_edit: Enter the index of the repeater module which should be configured.
+rptr_edit: Enter the index of the repeater module which should be configured (1-4).
 rptr_edit: Note that you will need hardware information / devicenames for homebrew hardware. 
 rptr_edit: The order of modules is variable (no matter if A,B,C,D or D,A,C,B) but repeater
 rptr_edit: modules have to be configured in sequence (1-4) without gap!
 rptr_edit: 
-rptr_edit: Press 0 or <ENTER> to skip the repeater module setup.
-rptr_edit: The following modules are already configured:
+rptr_edit: 0 or <ENTER> to skip the repeater module setup.
 rptr_edit:
 
 rptr_init: 
-rptr_init: Enter the number of repeater modules that you want to configure (1-4).
+rptr_init: Enter the number of the repeater module which should be configured (1-4).
 rptr_init: Note that you will need hardware information / devicenames for homebrew hardware. 
 rptr_init: The order of modules is variable (no matter if A,B,C,D or D,A,C,B) but repeater
 rptr_init: modules have to be configured in sequence (1-4) without gap!
 rptr_init: 
-rptr_init: Press 0 or <ENTER> to skip the repeater module setup.
-rptr_init: 
+rptr_init: 0 or <ENTER> to skip the repeater module setup.
+rptr_init:
+
 
 rptr_stop:  
 rptr_stop: Stop repeater configuration! 
@@ -446,6 +447,26 @@ extraOptions:
 extraOptions: Do you want to enter 'Extra Options' ?
 extraOptions: 0 = NO, 1 = YES
 extraOptions:
+
+rptr_edit: 
+rptr_edit: Enter the index of the repeater module which should be configured (1-4).
+rptr_edit: Note that you will need hardware information / devicenames for homebrew hardware. 
+rptr_edit: The order of modules is variable (no matter if A,B,C,D or D,A,C,B) but repeater
+rptr_edit: modules have to be configured in sequence (1-4) without gap!
+rptr_edit: 
+rptr_edit: 0 or <ENTER> to skip the repeater module setup.
+rptr_edit:
+
+rptr_init: 
+rptr_init: Enter the number of the repeater module which should be configured (1-4).
+rptr_init: Note that you will need hardware information / devicenames for homebrew hardware. 
+rptr_init: The order of modules is variable (no matter if A,B,C,D or D,A,C,B) but repeater
+rptr_init: modules have to be configured in sequence (1-4) without gap!
+rptr_init: 
+rptr_init: 0 or <ENTER> to skip the repeater module setup.
+rptr_init:
+
+
 
 repeaterCall:
 repeaterCall: !!! ATTENTION !!! ATTENTION !!! ATTENTION !!! ATTENTION !!! ATTENTION !!!
@@ -570,29 +591,35 @@ ircddb_setup:*** ircDDB network setup
 ircddb_setup: 
 ircddb_setup:The next part configures the access information to connect to the ircDDB
 ircddb_setup:routing network which is necessary for callsign routing and reporting. 
-ircddb_setup: 
+ircddb_setup:You can configure up to 4 networks, when doing call sign routing the program
+ircddb_setup:will query all of those network to find the called user.
+ircddb_setup:
+ircddb_setup:This will configure the first network.
+ircddb_setup:
 ircddb_setup:********************************************************************************
 
 ircddbEnabled: 
-ircddbEnabled: 0    DISABLE ircDDB service  
-ircddbEnabled: 1    ENABLE  ircDDB service  
+ircddbEnabled: 0    DISABLE ircDDB first network  
+ircddbEnabled: 1    ENABLE  ircDDB first network  
 ircddbEnabled: 
 ircddbEnabled: -    RESET to default
 ircddbEnabled: <CR> Keep old value
 ircddbEnabled: 
 
 ircddbHostname: 
-ircddbHostname:Select the ircDDB server group to get best network connectivity:  
+ircddbHostname:Select the ircDDB server group :  
 ircddbHostname: 
-ircddbHostname: 1   if you are located in Europe, Asia, Africa, Australia 
-ircddbHostname: 2   if you are located in North-/South-America 
-ircddbHostname: 3   Italian Testserver, not connected to the routing network 
+ircddbHostname: 1   (Original ircddb.net european server) if you are located in Europe, Asia, Africa, Australia 
+ircddbHostname: 2   (Original ircddb.net american server) if you are located in North-/South-America 
+ircddbHostname: 3   (Original ircddb.net european testvserver) Italian Testserver, not connected to the routing network 
+ircddbHostname: 4   (Openquad.net ircddb network) Network which accepts repeaters and personal hotspots.
 ircddbHostname: 
 
 ircddbUsername: 
 ircddbUsername:Enter the username that you have got with the registration information  
 ircddbUsername:(usually the callsign of the gateway) 
 ircddbUsername:Registration here: http://regsrv.ircddb.net/index.htm
+ircddbUsername:Quadnet does not require a registration. plase see http://www.openquad.net
 ircddbUsername: 
 
 ircddbPassword: 
@@ -600,6 +627,153 @@ ircddbPassword:Enter the password that you have got with the registration inform
 ircddbPassword:Make sure that you enter it complete and case-sensitive! 
 ircddbPassword:We recommend to use copy&paste.
 ircddbPassword: 
+
+ircddb_setup2: 
+ircddb_setup2: 
+ircddb_setup2: 
+ircddb_setup2: 
+ircddb_setup2: 
+ircddb_setup2: 
+ircddb_setup2:********************************************************************************
+ircddb_setup2: 
+ircddb_setup2:*** ircDDB network setup 
+ircddb_setup2: 
+ircddb_setup2:The next part configures the access information to connect to the ircDDB
+ircddb_setup2:routing network which is necessary for callsign routing and reporting. 
+ircddb_setup2:You can configure up to 4 networks, when doing call sign routing the program
+ircddb_setup2:will query all of those network to find the called user.
+ircddb_setup2:
+ircddb_setup2:This will configure the second network.
+ircddb_setup2:
+ircddb_setup2:********************************************************************************
+
+ircddbEnabled2: 
+ircddbEnabled2: 0    DISABLE ircDDB second network  
+ircddbEnabled2: 1    ENABLE  ircDDB second network  
+ircddbEnabled2: 
+ircddbEnabled2: -    RESET to default
+ircddbEnabled2: <CR> Keep old value
+ircddbEnabled2: 
+
+ircddbHostname2: 
+ircddbHostname2:Select the ircDDB server group :  
+ircddbHostname2: 
+ircddbHostname2: 1   (Original ircddb.net european server) if you are located in Europe, Asia, Africa, Australia 
+ircddbHostname2: 2   (Original ircddb.net american server) if you are located in North-/South-America 
+ircddbHostname2: 3   (Original ircddb.net european testvserver) Italian Testserver, not connected to the routing network 
+ircddbHostname2: 4   (Openquad.net ircddb network) Network which accepts repeaters and personal hotspots.
+ircddbHostname2: 
+
+ircddbUsername2: 
+ircddbUsername2:Enter the username that you have got with the registration information  
+ircddbUsername2:(usually the callsign of the gateway) 
+ircddbUsername2:Registration here: http://regsrv.ircddb.net/index.htm
+ircddbUsername2:Quadnet does not require a registration. plase see http://www.openquad.net
+ircddbUsername2: 
+
+ircddbPassword2: 
+ircddbPassword2:Enter the password that you have got with the registration information  
+ircddbPassword2:Make sure that you enter it complete and case-sensitive! 
+ircddbPassword2:We recommend to use copy&paste.
+ircddbPassword2: 
+
+ircddb_setup3: 
+ircddb_setup3: 
+ircddb_setup3: 
+ircddb_setup3: 
+ircddb_setup3: 
+ircddb_setup3: 
+ircddb_setup3:********************************************************************************
+ircddb_setup3: 
+ircddb_setup3:*** ircDDB network setup 
+ircddb_setup3: 
+ircddb_setup3:The next part configures the access information to connect to the ircDDB
+ircddb_setup3:routing network which is necessary for callsign routing and reporting. 
+ircddb_setup3:You can configure up to 4 networks, when doing call sign routing the program
+ircddb_setup3:will query all of those network to find the called user.
+ircddb_setup3:
+ircddb_setup3:This will configure the third network.
+ircddb_setup3:
+ircddb_setup3:********************************************************************************
+
+ircddbEnabled3: 
+ircddbEnabled3: 0    DISABLE ircDDB third network  
+ircddbEnabled3: 1    ENABLE  ircDDB third network  
+ircddbEnabled3: 
+ircddbEnabled3: -    RESET to default
+ircddbEnabled3: <CR> Keep old value
+ircddbEnabled3: 
+
+ircddbHostname3: 
+ircddbHostname3:Select the ircDDB server group:  
+ircddbHostname3: 
+ircddbHostname3: 1   (Original ircddb.net european server) if you are located in Europe, Asia, Africa, Australia 
+ircddbHostname3: 2   (Original ircddb.net american server) if you are located in North-/South-America 
+ircddbHostname3: 3   (Original ircddb.net european testvserver) Italian Testserver, not connected to the routing network 
+ircddbHostname3: 4   (Openquad.net ircddb network) Network which accepts repeaters and personal hotspots.
+ircddbHostname3: 
+
+ircddbUsername3: 
+ircddbUsername3:Enter the username that you have got with the registration information  
+ircddbUsername3:(usually the callsign of the gateway) 
+ircddbUsername3:Registration here: http://regsrv.ircddb.net/index.htm
+ircddbUsername3:Quadnet does not require a registration. plase see http://www.openquad.net
+ircddbUsername3: 
+
+ircddbPassword3: 
+ircddbPassword3:Enter the password that you have got with the registration information  
+ircddbPassword3:Make sure that you enter it complete and case-sensitive! 
+ircddbPassword3:We recommend to use copy&paste.
+ircddbPassword3: 
+
+ircddb_setup4: 
+ircddb_setup4: 
+ircddb_setup4: 
+ircddb_setup4: 
+ircddb_setup4: 
+ircddb_setup4: 
+ircddb_setup4:********************************************************************************
+ircddb_setup4: 
+ircddb_setup4:*** ircDDB network setup 
+ircddb_setup4: 
+ircddb_setup4:The next part configures the access information to connect to the ircDDB
+ircddb_setup4:routing network which is necessary for callsign routing and reporting. 
+ircddb_setup4:You can configure up to 4 networks, when doing call sign routing the program
+ircddb_setup4:will query all of those network to find the called user.
+ircddb_setup4:
+ircddb_setup4:This will configure the fourth network.
+ircddb_setup4:
+ircddb_setup4:********************************************************************************
+
+ircddbEnabled4: 
+ircddbEnabled4: 0    DISABLE ircDDB fourth network  
+ircddbEnabled4: 1    ENABLE  ircDDB fourth network    
+ircddbEnabled4: 
+ircddbEnabled4: -    RESET to default
+ircddbEnabled4: <CR> Keep old value
+ircddbEnabled4: 
+
+ircddbHostname4: 
+ircddbHostname4:Select the ircDDB server:  
+ircddbHostname4: 
+ircddbHostname4: 1   (Original ircddb.net european server) if you are located in Europe, Asia, Africa, Australia 
+ircddbHostname4: 2   (Original ircddb.net american server) if you are located in North-/South-America 
+ircddbHostname4: 3   (Original ircddb.net european testvserver) Italian Testserver, not connected to the routing network 
+ircddbHostname4: 4   (Openquad.net ircddb network) Network which accepts repeaters and personal hotspots.
+ircddbHostname4: 
+
+ircddbUsername4: 
+ircddbUsername4:Enter the username that you have got with the registration information  
+ircddbUsername4:(usually the callsign of the gateway) 
+ircddbUsername4:Registration here: http://regsrv.ircddb.net/index.htm
+ircddbUsername4:Quadnet does not require a registration. plase see http://www.openquad.net
+ircddbUsername4: 
+
+ircddbPassword4: 
+ircddbPassword4:Enter the password that you have got with the registration information  
+ircddbPassword4:Make sure that you enter it complete and case-sensitive! 
+ircddbPassword4:We recommend to use copy&paste.
+ircddbPassword4: 
 
 aprs_setup: 
 aprs_setup: 
@@ -654,7 +828,7 @@ ccsEnabled: <CR> Keep old value
 ccsEnabled: 
 
 ccsHostmissing: 
-ccsHostmissing:File CCS_Host.txt is missing! 
+ccsHostmissing:File CCS_Hosts.txt is missing! 
 ccsHostmissing: 
 
 ccsHostentries:
@@ -973,6 +1147,25 @@ dtmfEnabled:
 dtmfEnabled:(DTMF is used to controle repeater status, linking, unlinking) 
 dtmfEnabled: 
 
+rptr_edit: 
+rptr_edit: Enter the index of the repeater module which should be reconfigured.
+rptr_edit: Note that you will need hardware information / devicenames for homebrew hardware. 
+rptr_edit: The order of modules is variable (no matter if A,B,C,D or D,A,C,B), but repeater
+rptr_edit: modules have to be configured in sequence (1-4) without gap!
+rptr_edit: 
+rptr_edit: Press 0 or <ENTER> to skip the repeater module setup.
+rptr_edit: The following modules are currently configured:
+rptr_edit:
+
+rptr_init: 
+rptr_init: Enter the number of the repeater module which should be configured (1-4).
+rptr_init: Note that you will need hardware information / devicenames for homebrew hardware. 
+rptr_init: The order of modules is variable (no matter if A,B,C,D or D,A,C,B), but repeater
+rptr_init: modules have to be configured in sequence (1-4) without gap!
+rptr_init: 
+rptr_init: Press 0 or <ENTER> to skip the repeater module setup.
+rptr_init:
+
 nolog_ircddbgateway:
 nolog_ircddbgateway: Switch logging of ircDDBGateway on/off
 nolog_ircddbgateway:
@@ -992,7 +1185,6 @@ nolog_timeserver: 1  NOLOG ENDABLED    (logging is off)
 nolog_timeserver:
 nolog_timeserver: Note: Growing logfiles may need a lot of disk space.
 nolog_timeserver:
-
 
 logpath:
 logpath: Enter the directory where logfiles are created.
@@ -1066,7 +1258,7 @@ mainmenu:11    CCS/DCS setup    (CCS/DCS network access)
 mainmenu:12    STARnet setup    (STARnet server setup) 
 mainmenu:13    Timeserver setup (Timeserver setup) 
 mainmenu:14    Misc setup       (dtmf, echo, info and other settings) 
-mainmenu:15    Logging          (log on/off, logdir) 
+mainmenu:15    Logging          (logging on/off, log directory) 
 mainmenu:--------------------------------------------------------------------------------
 mainmenu:Configure the autostart system:
 mainmenu: ircDDBGateway:  20) ON       21) OFF

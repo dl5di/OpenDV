@@ -356,14 +356,14 @@ void CStarNetServerThread::processIrcDDB()
 				return;
 
 			case IDRT_USER: {
-					wxString user, repeater, gateway, address;
-					bool res = m_irc->receiveUser(user, repeater, gateway, address);
+					wxString user, repeater, gateway, address, timestamp;
+					bool res = m_irc->receiveUser(user, repeater, gateway, address, timestamp);
 					if (!res)
 						break;
 
 					if (!address.IsEmpty()) {
 						wxLogMessage(wxT("USER: %s %s %s %s"), user.c_str(), repeater.c_str(), gateway.c_str(), address.c_str());
-						m_cache.updateUser(user, repeater, gateway, address, DP_DEXTRA, false, false);
+						m_cache.updateUser(user, repeater, gateway, address, timestamp, DP_DEXTRA, false, false);
 					} else {
 						wxLogMessage(wxT("USER: %s NOT FOUND"), user.c_str());
 					}

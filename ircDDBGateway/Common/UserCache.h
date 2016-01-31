@@ -24,9 +24,10 @@
 
 class CUserRecord {
 public:
-	CUserRecord(const wxString& user, const wxString& repeater) :
+	CUserRecord(const wxString& user, const wxString& repeater, const wxString& timestamp) :
 	m_user(user),
-	m_repeater(repeater)
+	m_repeater(repeater),
+	m_timestamp(timestamp)
 	{
 	}
 
@@ -40,14 +41,25 @@ public:
 		return m_repeater;
 	}
 
+	wxString getTimeStamp() const
+	{
+		return m_timestamp;
+	}
+
 	void setRepeater(const wxString& repeater)
 	{
 		m_repeater = repeater;
 	}
 
+	void setTimestamp(const wxString& timestamp)
+	{
+		m_timestamp = timestamp;
+	}
+
 private:
 	wxString m_user;
 	wxString m_repeater;
+	wxString m_timestamp;
 };
 
 WX_DECLARE_STRING_HASH_MAP(CUserRecord*, CUserCache_t);
@@ -59,7 +71,7 @@ public:
 
 	CUserRecord* find(const wxString& user);
 
-	void update(const wxString& user, const wxString& repeater);
+	void update(const wxString& user, const wxString& repeater, const wxString& timestamp);
 
 	unsigned int getCount() const;
 

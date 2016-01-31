@@ -116,6 +116,18 @@ const wxString  KEY_IRCDDB_ENABLED       = wxT("ircddbEnabled");
 const wxString  KEY_IRCDDB_HOSTNAME      = wxT("ircddbHostname");
 const wxString  KEY_IRCDDB_USERNAME      = wxT("ircddbUsername");
 const wxString  KEY_IRCDDB_PASSWORD      = wxT("ircddbPassword");
+const wxString  KEY_IRCDDB_ENABLED2		 = wxT("ircddbEnabled2");
+const wxString  KEY_IRCDDB_HOSTNAME2	 = wxT("ircddbHostname2");
+const wxString  KEY_IRCDDB_USERNAME2	 = wxT("ircddbUsername2");
+const wxString  KEY_IRCDDB_PASSWORD2	 = wxT("ircddbPassword2");
+const wxString  KEY_IRCDDB_ENABLED3		 = wxT("ircddbEnabled3");
+const wxString  KEY_IRCDDB_HOSTNAME3     = wxT("ircddbHostname3");
+const wxString  KEY_IRCDDB_USERNAME3	 = wxT("ircddbUsername3");
+const wxString  KEY_IRCDDB_PASSWORD3	 = wxT("ircddbPassword3");
+const wxString  KEY_IRCDDB_ENABLED4	     = wxT("ircddbEnabled4");
+const wxString  KEY_IRCDDB_HOSTNAME4     = wxT("ircddbHostname4");
+const wxString  KEY_IRCDDB_USERNAME4     = wxT("ircddbUsername4");
+const wxString  KEY_IRCDDB_PASSWORD4     = wxT("ircddbPassword4");
 const wxString  KEY_APRS_ENABLED         = wxT("aprsEnabled");
 const wxString  KEY_APRS_HOSTNAME        = wxT("aprsHostname");
 const wxString  KEY_APRS_PORT            = wxT("aprsPort");
@@ -223,6 +235,18 @@ const bool         DEFAULT_IRCDDB_ENABLED        = true;
 const wxString     DEFAULT_IRCDDB_HOSTNAME       = wxT("group1-irc.ircddb.net");
 const wxString     DEFAULT_IRCDDB_USERNAME       = wxEmptyString;
 const wxString     DEFAULT_IRCDDB_PASSWORD       = wxEmptyString;
+const bool         DEFAULT_IRCDDB_ENABLED2		 = true;
+const wxString     DEFAULT_IRCDDB_HOSTNAME2		 = wxT("rr.openquad.net");
+const wxString     DEFAULT_IRCDDB_USERNAME2		 = wxEmptyString;
+const wxString     DEFAULT_IRCDDB_PASSWORD2		 = wxEmptyString;
+const bool         DEFAULT_IRCDDB_ENABLED3		 = false;
+const wxString     DEFAULT_IRCDDB_HOSTNAME3      = wxEmptyString;
+const wxString     DEFAULT_IRCDDB_USERNAME3		 = wxEmptyString;
+const wxString     DEFAULT_IRCDDB_PASSWORD3		 = wxEmptyString;
+const bool         DEFAULT_IRCDDB_ENABLED4		 = false;
+const wxString     DEFAULT_IRCDDB_HOSTNAME4		 = wxEmptyString;
+const wxString     DEFAULT_IRCDDB_USERNAME4		 = wxEmptyString;
+const wxString     DEFAULT_IRCDDB_PASSWORD4		 = wxEmptyString;
 const bool         DEFAULT_APRS_ENABLED          = true;
 const wxString     DEFAULT_APRS_HOSTNAME         = wxT("rotate.aprs2.net");
 const unsigned int DEFAULT_APRS_PORT             = 14580U;
@@ -359,6 +383,18 @@ m_ircddbEnabled(DEFAULT_IRCDDB_ENABLED),
 m_ircddbHostname(DEFAULT_IRCDDB_HOSTNAME),
 m_ircddbUsername(DEFAULT_IRCDDB_USERNAME),
 m_ircddbPassword(DEFAULT_IRCDDB_PASSWORD),
+m_ircddbEnabled2(DEFAULT_IRCDDB_ENABLED2),
+m_ircddbHostname2(DEFAULT_IRCDDB_HOSTNAME2),
+m_ircddbUsername2(DEFAULT_IRCDDB_USERNAME2),
+m_ircddbPassword2(DEFAULT_IRCDDB_PASSWORD2),
+m_ircddbEnabled3(DEFAULT_IRCDDB_ENABLED3),
+m_ircddbHostname3(DEFAULT_IRCDDB_HOSTNAME3),
+m_ircddbUsername3(DEFAULT_IRCDDB_USERNAME3),
+m_ircddbPassword3(DEFAULT_IRCDDB_PASSWORD3),
+m_ircddbEnabled4(DEFAULT_IRCDDB_ENABLED4),
+m_ircddbHostname4(DEFAULT_IRCDDB_HOSTNAME4),
+m_ircddbUsername4(DEFAULT_IRCDDB_USERNAME4),
+m_ircddbPassword4(DEFAULT_IRCDDB_PASSWORD4),
 m_aprsEnabled(DEFAULT_APRS_ENABLED),
 m_aprsHostname(DEFAULT_APRS_HOSTNAME),
 m_aprsPort(DEFAULT_APRS_PORT),
@@ -657,12 +693,24 @@ m_y(DEFAULT_WINDOW_Y)
 	m_repeater4Band3 = (unsigned char)temp;
 
 	m_config->Read(m_name + KEY_IRCDDB_ENABLED, &m_ircddbEnabled, DEFAULT_IRCDDB_ENABLED);
-
 	m_config->Read(m_name + KEY_IRCDDB_HOSTNAME, &m_ircddbHostname, DEFAULT_IRCDDB_HOSTNAME);
-
 	m_config->Read(m_name + KEY_IRCDDB_USERNAME, &m_ircddbUsername, DEFAULT_IRCDDB_USERNAME);
-
 	m_config->Read(m_name + KEY_IRCDDB_PASSWORD, &m_ircddbPassword, DEFAULT_IRCDDB_PASSWORD);
+
+	m_config->Read(m_name + KEY_IRCDDB_ENABLED2, &m_ircddbEnabled, DEFAULT_IRCDDB_ENABLED2);
+	m_config->Read(m_name + KEY_IRCDDB_HOSTNAME2, &m_ircddbHostname, DEFAULT_IRCDDB_HOSTNAME2);
+	m_config->Read(m_name + KEY_IRCDDB_USERNAME2, &m_ircddbUsername, DEFAULT_IRCDDB_USERNAME2);
+	m_config->Read(m_name + KEY_IRCDDB_PASSWORD2, &m_ircddbPassword, DEFAULT_IRCDDB_PASSWORD2);
+
+	m_config->Read(m_name + KEY_IRCDDB_ENABLED3, &m_ircddbEnabled, DEFAULT_IRCDDB_ENABLED3);
+	m_config->Read(m_name + KEY_IRCDDB_HOSTNAME3, &m_ircddbHostname, DEFAULT_IRCDDB_HOSTNAME3);
+	m_config->Read(m_name + KEY_IRCDDB_USERNAME3, &m_ircddbUsername, DEFAULT_IRCDDB_USERNAME3);
+	m_config->Read(m_name + KEY_IRCDDB_PASSWORD3, &m_ircddbPassword, DEFAULT_IRCDDB_PASSWORD3);
+
+	m_config->Read(m_name + KEY_IRCDDB_ENABLED4, &m_ircddbEnabled, DEFAULT_IRCDDB_ENABLED4);
+	m_config->Read(m_name + KEY_IRCDDB_HOSTNAME4, &m_ircddbHostname, DEFAULT_IRCDDB_HOSTNAME4);
+	m_config->Read(m_name + KEY_IRCDDB_USERNAME4, &m_ircddbUsername, DEFAULT_IRCDDB_USERNAME4);
+	m_config->Read(m_name + KEY_IRCDDB_PASSWORD4, &m_ircddbPassword, DEFAULT_IRCDDB_PASSWORD4);
 
 	m_config->Read(m_name + KEY_APRS_ENABLED, &m_aprsEnabled, DEFAULT_APRS_ENABLED);
 
@@ -936,6 +984,18 @@ m_ircddbEnabled(DEFAULT_IRCDDB_ENABLED),
 m_ircddbHostname(DEFAULT_IRCDDB_HOSTNAME),
 m_ircddbUsername(DEFAULT_IRCDDB_USERNAME),
 m_ircddbPassword(DEFAULT_IRCDDB_PASSWORD),
+m_ircddbEnabled2(DEFAULT_IRCDDB_ENABLED2),
+m_ircddbHostname2(DEFAULT_IRCDDB_HOSTNAME2),
+m_ircddbUsername2(DEFAULT_IRCDDB_USERNAME2),
+m_ircddbPassword2(DEFAULT_IRCDDB_PASSWORD2),
+m_ircddbEnabled3(DEFAULT_IRCDDB_ENABLED3),
+m_ircddbHostname3(DEFAULT_IRCDDB_HOSTNAME3),
+m_ircddbUsername3(DEFAULT_IRCDDB_USERNAME3),
+m_ircddbPassword3(DEFAULT_IRCDDB_PASSWORD3),
+m_ircddbEnabled4(DEFAULT_IRCDDB_ENABLED4),
+m_ircddbHostname4(DEFAULT_IRCDDB_HOSTNAME4),
+m_ircddbUsername4(DEFAULT_IRCDDB_USERNAME4),
+m_ircddbPassword4(DEFAULT_IRCDDB_PASSWORD4),
 m_aprsEnabled(DEFAULT_APRS_ENABLED),
 m_aprsHostname(DEFAULT_APRS_HOSTNAME),
 m_aprsPort(DEFAULT_APRS_PORT),
@@ -1273,6 +1333,33 @@ m_y(DEFAULT_WINDOW_Y)
 			m_ircddbUsername = val;
 		} else if (key.IsSameAs(KEY_IRCDDB_PASSWORD)) {
 			m_ircddbPassword = val;
+		} else if (key.IsSameAs(KEY_IRCDDB_ENABLED2)) {
+			val.ToLong(&temp1);
+			m_ircddbEnabled2 = temp1 == 1L;
+		} else if (key.IsSameAs(KEY_IRCDDB_HOSTNAME2)) {
+			m_ircddbHostname2 = val;
+		} else if (key.IsSameAs(KEY_IRCDDB_USERNAME2)) {
+			m_ircddbUsername2 = val;
+		} else if (key.IsSameAs(KEY_IRCDDB_PASSWORD2)) {
+			m_ircddbPassword2 = val;
+		} else if (key.IsSameAs(KEY_IRCDDB_ENABLED3)) {
+			val.ToLong(&temp1);
+			m_ircddbEnabled3 = temp1 == 1L;
+		} else if (key.IsSameAs(KEY_IRCDDB_HOSTNAME3)) {
+			m_ircddbHostname3 = val;
+		} else if (key.IsSameAs(KEY_IRCDDB_USERNAME3)) {
+			m_ircddbUsername3 = val;
+		} else if (key.IsSameAs(KEY_IRCDDB_PASSWORD3)) {
+			m_ircddbPassword3 = val;
+		} else if (key.IsSameAs(KEY_IRCDDB_ENABLED4)) {
+			val.ToLong(&temp1);
+			m_ircddbEnabled4 = temp1 == 1L;
+		} else if (key.IsSameAs(KEY_IRCDDB_HOSTNAME4)) {
+			m_ircddbHostname4 = val;
+		} else if (key.IsSameAs(KEY_IRCDDB_USERNAME4)) {
+			m_ircddbUsername4 = val;
+		} else if (key.IsSameAs(KEY_IRCDDB_PASSWORD4)) {
+			m_ircddbPassword4 = val;
 		} else if (key.IsSameAs(KEY_APRS_ENABLED)) {
 			val.ToLong(&temp1);
 			m_aprsEnabled = temp1 == 1L;
@@ -1706,6 +1793,62 @@ void CIRCDDBGatewayConfig::setIrcDDB(bool enabled, const wxString& hostname, con
 	m_ircddbHostname = hostname;
 	m_ircddbUsername = username;
 	m_ircddbPassword = password;
+}
+
+void CIRCDDBGatewayConfig::getIrcDDB2(bool& enabled, wxString& hostname, wxString& username, wxString& password) const
+{
+	enabled = m_ircddbEnabled2;
+	hostname = m_ircddbHostname2;
+	username = m_ircddbUsername2;
+
+	/*if(username.IsEmpty()){
+		//no user specified for openquad? use the one from the default network !
+		username = m_ircddbUsername;
+		if(username[0] >= '0' &&  username[0] <= '9')
+			username = wxT("r") + username;
+	}*/
+
+	password = m_ircddbPassword2;
+}
+
+void CIRCDDBGatewayConfig::setIrcDDB2(bool enabled, const wxString& hostname, const wxString& username, const wxString& password)
+{
+	m_ircddbEnabled2 = enabled;
+	m_ircddbHostname2 = hostname;
+	m_ircddbUsername2 = username;
+	m_ircddbPassword2 = password;
+}
+
+void CIRCDDBGatewayConfig::getIrcDDB3(bool& enabled, wxString& hostname, wxString& username, wxString& password) const
+{
+	enabled = m_ircddbEnabled3;
+	hostname = m_ircddbHostname3;
+	username = m_ircddbUsername3;
+	password = m_ircddbPassword3;
+}
+
+void CIRCDDBGatewayConfig::setIrcDDB3(bool enabled, const wxString& hostname, const wxString& username, const wxString& password)
+{
+	m_ircddbEnabled3 = enabled;
+	m_ircddbHostname3 = hostname;
+	m_ircddbUsername3 = username;
+	m_ircddbPassword3 = password;
+}
+
+void CIRCDDBGatewayConfig::getIrcDDB4(bool& enabled, wxString& hostname, wxString& username, wxString& password) const
+{
+	enabled = m_ircddbEnabled4;
+	hostname = m_ircddbHostname4;
+	username = m_ircddbUsername4;
+	password = m_ircddbPassword4;
+}
+
+void CIRCDDBGatewayConfig::setIrcDDB4(bool enabled, const wxString& hostname, const wxString& username, const wxString& password)
+{
+	m_ircddbEnabled4 = enabled;
+	m_ircddbHostname4 = hostname;
+	m_ircddbUsername4 = username;
+	m_ircddbPassword4 = password;
 }
 
 void CIRCDDBGatewayConfig::getDPRS(bool& enabled, wxString& hostname, unsigned int& port) const

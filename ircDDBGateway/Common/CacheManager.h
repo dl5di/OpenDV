@@ -144,7 +144,7 @@ public:
 	CGatewayData*  findGateway(const wxString& gateway);
 	CRepeaterData* findRepeater(const wxString& repeater);
 
-	void updateUser(const wxString& user, const wxString& repeater, const wxString& gateway, const wxString& address, DSTAR_PROTOCOL protocol, bool addrLock, bool protoLock);
+	void updateUser(const wxString& user, const wxString& repeater, const wxString& gateway, const wxString& address, const wxString& timeStamp, DSTAR_PROTOCOL protocol, bool addrLock, bool protoLock);
 	void updateRepeater(const wxString& repeater, const wxString& gateway, const wxString& address, DSTAR_PROTOCOL protocol, bool addrLock, bool protoLock);
 	void updateGateway(const wxString& gateway, const wxString& address, DSTAR_PROTOCOL protocol, bool addrLock, bool protoLock);
 

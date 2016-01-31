@@ -1,6 +1,6 @@
 
-filename of menu file:  /usr/share/ircddb_conf.#.menu
-filename of help file:  /usr/share/ircddb_conf.#.hlp
+filename of menu file:  /opt/opendv/ircddbgateway/ircddb_conf.#.menu
+filename of help file:  /opt/opendv/ircddbgateway/ircddb_conf.#.hlp
 
 where # is:
 
@@ -17,7 +17,8 @@ where # is:
   10   Nederland (BE) 
 
 
-BITTE DIE DATEIEN /usr/share/ircddb_conf.0.menu und /usr/share/ircddb_conf.0.hlp NICHT EDITIEREN!
+BITTE DIE DATEIEN /opt/opendv/ircddbgateway/ircddb_conf.0.menu und 
+/opt/opendv/ircddbgateway/ircddb_conf.0.hlp NICHT EDITIEREN!
 
 Diese Dateien werden automatisch beim YUM-Update ueberschrieben!
 
@@ -400,24 +401,23 @@ rptr_init: 0 oder <ENTER> um die Konfiguration der Repeater-Module zu uebersprin
 rptr_init: 
 
 rptr_edit:
-rptr_edit:Welches Repeater-Modul soll neu konfiguriert werden?
+rptr_edit:Welches Repeater-Modul soll konfiguriert werden? (1-4).
 rptr_edit:Bitte beachte, dass Du die Hardware-Informationen und Device-Namen benoetigst. 
 rptr_edit:Die Reihenfolge der Module spielt keine Rolle (egal ob A,B,C,D oder D,A,C,B),
 rptr_edit:jedoch muss die Konfiguration lueckenlos sein!
 rptr_edit: 
 rptr_edit: 0 oder <ENTER> um die Konfiguration der Repeater-Module zu ueberspringen.
 rptr_edit: Folgende Module sind derzeit konfiguriert:
-rptr_edit:
+rptr_edit: 
 
 rptr_stop:  
 rptr_stop:Die Repeater-Konfiguration wird abgebrochen! 
 rptr_stop: 
 	 
-
 repeaterBand: 
 repeaterBand:Gib das Kennzeichen fuer das Repeater-Band ein. 
 repeaterBand:A, B, C, D, E fuer Sprachmodule, AD, BD, CD, DD, ED fuer DD-Daten-Module. 
-repeaterBand:Der uebliche Standard ist A=SHF, B=UHF, C=VHF, DD=SHF/Data, E=HF. 
+repeaterBand:Der uebliche Standard ist A=SHF, B=UHF, C=VHF, DD=SHF/Data, E=HF.
 repeaterBand:Beachte: jedes Bandkennzeichen kann nur einmal verwendet werden! 
 repeaterBand: 
 repeaterBand:'-' wird das Modul loeschen, alle Einstellungen zuruecksetzen.
@@ -484,7 +484,7 @@ repeaterCall:
 repeaterCall: GIB HIER KEIN RUFZEICHEN EIN, ES SEI DENN, DAS CALLS DES REPEATERMODULS
 repeaterCall:            WEICHT VOM CALL DES GATEWAYS AB !!
 repeaterCall:
-repeaterCall:Dies ist eine Spezialfunktion, die benoetigt wird falls Gateway und 
+repeaterCall:Dies ist eine Spezialfunktion, die benoetigt wird falls Gateway und
 repeaterCall:Repeater an unterschiedlichen Orten stehen.
 repeaterCall:Dieser Spezialfall benoetigt auch eine spezielle Konfiguration im ircDDB-
 repeaterCall:Netz, bitte kontaktiere das ircDDB-Team in einem solchen Fall.
@@ -606,7 +606,11 @@ ircddb_setup:
 ircddb_setup:*** ircDDB network setup 
 ircddb_setup: 
 ircddb_setup:Der naechste Konfigurationsteil erfasst die Zugangsdaten zum ircDDB Routing-Netz
-ircddb_setup: 
+ircddb_setup:Sie können bis zu 4 Netzen eintragen. Wenn man callsign routing macht werden
+ircddb_setup:diese netze abgefragt. 
+ircddb_setup:
+ircddb_setup:Hier konfigurieren wir das ersten netzwerk
+ircddb_setup:
 ircddb_setup:******************************************************************************** 
 
 ircddbEnabled: 
@@ -620,9 +624,10 @@ ircddbEnabled:
 ircddbHostname: 
 ircddbHostname:Waehle die ircDDB-Server-Gruppe um eine beste Anbindung zu ermoeglichen:  
 ircddbHostname: 
-ircddbHostname: 1   fuer Gateways in Europa, Asien, Afrika, Australien 
-ircddbHostname: 2   fuer Gateways in Nord-/Sued-Amerika 
-ircddbHostname: 3   Italienischer Testserver ohne Anbindung ans Routing-Netz 
+ircddbHostname: 1   (Original ircddb.net european server) if you are located in Europe, Asia, Africa, Australia 
+ircddbHostname: 2   (Original ircddb.net american server) if you are located in North-/South-America 
+ircddbHostname: 3   (Original ircddb.net european testvserver) Italian Testserver, not connected to the routing network 
+ircddbHostname: 4   (Openquad.net ircddb network) Network which accepts repeaters and personal hotspots.
 ircddbHostname: 
 
 ircddbUsername: 
@@ -636,6 +641,147 @@ ircddbPassword:Gib das Passwort ein, das Dubei der Registrierung erhalten hast (
 ircddbPassword:Achte auf die richtige Eingabe, incl. Gross-/Kleinschrift, am besten per 
 ircddbPassword:Copy&Paste uebertragen.
 ircddbPassword: 
+
+ircddb_setup2: 
+ircddb_setup2: 
+ircddb_setup2: 
+ircddb_setup2: 
+ircddb_setup2: 
+ircddb_setup2: 
+ircddb_setup2:********************************************************************************
+ircddb_setup2: 
+ircddb_setup2:*** ircDDB network setup 
+ircddb_setup2: 
+ircddb_setup2:Der naechste Konfigurationsteil erfasst die Zugangsdaten zum ircDDB Routing-Netz
+ircddb_setup2:Sie können bis zu 4 Netzen eintragen. Wenn man callsign routing macht werden
+ircddb_setup2:diese netze abgefragt. 
+ircddb_setup2:
+ircddb_setup2:Hier konfigurieren wir das zweiten netzwerk
+ircddb_setup2:
+ircddb_setup2:******************************************************************************** 
+
+ircddbEnabled2: 
+ircddbEnabled2:      0  ircDDB-Service AUSschalten 
+ircddbEnabled2:      1  ircDDB-Service EINschalten
+ircddbEnabled2: 
+ircddbEnabled2: -       Zuruecksetzen der Einstellung
+ircddbEnabled2: <ENTER> Den alten Wert beibehalten (Wert in [])
+ircddbEnabled2: 
+
+ircddbHostname2: 
+ircddbHostname2:Waehle die ircDDB-Server-Gruppe um eine beste Anbindung zu ermoeglichen:  
+ircddbHostname2: 
+ircddbHostname2: 1   (Original ircddb.net european server) if you are located in Europe, Asia, Africa, Australia 
+ircddbHostname2: 2   (Original ircddb.net american server) if you are located in North-/South-America 
+ircddbHostname2: 3   (Original ircddb.net european testvserver) Italian Testserver, not connected to the routing network 
+ircddbHostname2: 4   (Openquad.net ircddb network) Network which accepts repeaters and personal hotspots.
+ircddbHostname2: 
+
+ircddbUsername2: 
+ircddbUsername2:Gib den Benutzernamen ein, der Dir bei der Registrierung mitgeteilt wurde.  
+ircddbUsername2:(normalerweise das Rufzeichen des Gateways in Kleinschrift) 
+ircddbUsername2:Die Registrierung erfolgt hier: http://regsrv.ircddb.net/index.htm
+ircddbUsername2: 
+
+ircddbPassword2: 
+ircddbPassword2:Gib das Passwort ein, das Dubei der Registrierung erhalten hast (16 Stellen)
+ircddbPassword2:Achte auf die richtige Eingabe, incl. Gross-/Kleinschrift, am besten per 
+ircddbPassword2:Copy&Paste uebertragen.
+ircddbPassword2: 
+
+ircddb_setup3: 
+ircddb_setup3: 
+ircddb_setup3: 
+ircddb_setup3: 
+ircddb_setup3: 
+ircddb_setup3: 
+ircddb_setup3:********************************************************************************
+ircddb_setup3: 
+ircddb_setup3:*** ircDDB network setup 
+ircddb_setup3: 
+ircddb_setup3:Der naechste Konfigurationsteil erfasst die Zugangsdaten zum ircDDB Routing-Netz
+ircddb_setup3:Sie können bis zu 4 Netzen eintragen. Wenn man callsign routing macht werden
+ircddb_setup3:diese netze abgefragt. 
+ircddb_setup3:
+ircddb_setup3:Hier konfigurieren wir das dritten netzwerk
+ircddb_setup3:
+ircddb_setup3:******************************************************************************** 
+
+ircddbEnabled3: 
+ircddbEnabled3:      0  ircDDB-Service AUSschalten 
+ircddbEnabled3:      1  ircDDB-Service EINschalten
+ircddbEnabled3: 
+ircddbEnabled3: -       Zuruecksetzen der Einstellung
+ircddbEnabled3: <ENTER> Den alten Wert beibehalten (Wert in [])
+ircddbEnabled3: 
+
+ircddbHostname3: 
+ircddbHostname3:Waehle die ircDDB-Server-Gruppe um eine beste Anbindung zu ermoeglichen:  
+ircddbHostname3: 
+ircddbHostname3: 1   (Original ircddb.net european server) if you are located in Europe, Asia, Africa, Australia 
+ircddbHostname3: 2   (Original ircddb.net american server) if you are located in North-/South-America 
+ircddbHostname3: 3   (Original ircddb.net european testvserver) Italian Testserver, not connected to the routing network 
+ircddbHostname3: 4   (Openquad.net ircddb network) Network which accepts repeaters and personal hotspots.
+ircddbHostname3: 
+
+ircddbUsername3: 
+ircddbUsername3:Gib den Benutzernamen ein, der Dir bei der Registrierung mitgeteilt wurde.  
+ircddbUsername3:(normalerweise das Rufzeichen des Gateways in Kleinschrift) 
+ircddbUsername3:Die Registrierung erfolgt hier: http://regsrv.ircddb.net/index.htm
+ircddbUsername3: 
+
+ircddbPassword3: 
+ircddbPassword3:Gib das Passwort ein, das Dubei der Registrierung erhalten hast (16 Stellen)
+ircddbPassword3:Achte auf die richtige Eingabe, incl. Gross-/Kleinschrift, am besten per 
+ircddbPassword3:Copy&Paste uebertragen.
+ircddbPassword3: 
+
+ircddb_setup4: 
+ircddb_setup4: 
+ircddb_setup4: 
+ircddb_setup4: 
+ircddb_setup4: 
+ircddb_setup4: 
+ircddb_setup4:********************************************************************************
+ircddb_setup4: 
+ircddb_setup4:*** ircDDB network setup 
+ircddb_setup4: 
+ircddb_setup4:Der naechste Konfigurationsteil erfasst die Zugangsdaten zum ircDDB Routing-Netz
+ircddb_setup4:Sie können bis zu 4 Netzen eintragen. Wenn man callsign routing macht werden
+ircddb_setup4:diese netze abgefragt. 
+ircddb_setup4:
+ircddb_setup4:Hier konfigurieren wir das vierten netzwerk
+ircddb_setup4:
+ircddb_setup4:******************************************************************************** 
+
+ircddbEnabled4: 
+ircddbEnabled4:      0  ircDDB-Service AUSschalten 
+ircddbEnabled4:      1  ircDDB-Service EINschalten
+ircddbEnabled4: 
+ircddbEnabled4: -       Zuruecksetzen der Einstellung
+ircddbEnabled4: <ENTER> Den alten Wert beibehalten (Wert in [])
+ircddbEnabled4: 
+
+ircddbHostname4: 
+ircddbHostname4:Waehle die ircDDB-Server-Gruppe um eine beste Anbindung zu ermoeglichen:  
+ircddbHostname4: 
+ircddbHostname4: 1   (Original ircddb.net european server) if you are located in Europe, Asia, Africa, Australia 
+ircddbHostname4: 2   (Original ircddb.net american server) if you are located in North-/South-America 
+ircddbHostname4: 3   (Original ircddb.net european testvserver) Italian Testserver, not connected to the routing network 
+ircddbHostname4: 4   (Openquad.net ircddb network) Network which accepts repeaters and personal hotspots.
+ircddbHostname4: 
+
+ircddbUsername4: 
+ircddbUsername4:Gib den Benutzernamen ein, der Dir bei der Registrierung mitgeteilt wurde.  
+ircddbUsername4:(normalerweise das Rufzeichen des Gateways in Kleinschrift) 
+ircddbUsername4:Die Registrierung erfolgt hier: http://regsrv.ircddb.net/index.htm
+ircddbUsername4: 
+
+ircddbPassword4: 
+ircddbPassword4:Gib das Passwort ein, das Dubei der Registrierung erhalten hast (16 Stellen)
+ircddbPassword4:Achte auf die richtige Eingabe, incl. Gross-/Kleinschrift, am besten per 
+ircddbPassword4:Copy&Paste uebertragen.
+ircddbPassword4: 
 
 aprs_setup: 
 aprs_setup: 
@@ -692,7 +838,7 @@ ccsEnabled: <ENTER> Den alten Wert beibehalten (Wert in [])
 ccsEnabled: 
 
 ccsHostmissing: 
-ccsHostmissing:Das File CCS_Host.txt fehlt! 
+ccsHostmissing:Das File CCS_Hosts.txt fehlt! 
 ccsHostmissing: 
 
 ccsHostentries:
@@ -707,7 +853,7 @@ dextra_setup:
 dextra_setup: 
 dextra_setup:********************************************************************************
 dextra_setup: 
-dextra_setup:*** DExtra Reflektor-Netwerk Einstellungen 
+dextra_setup:*** DExtra Reflektor-Netzwerk Einstellungen 
 dextra_setup: 
 dextra_setup:********************************************************************************
 
@@ -731,7 +877,7 @@ dplus_setup:
 dplus_setup: 
 dplus_setup:********************************************************************************
 dplus_setup: 
-dplus_setup:*** DPlus Reflektor-Netwerk Einstellungen
+dplus_setup:*** DPlus Reflektor-Netzwerk Einstellungen
 dplus_setup: 
 dplus_setup:********************************************************************************
 
@@ -942,6 +1088,7 @@ tsrv_send: 0  Nein
 tsrv_send: 1  Ja
 tsrv_send:
 
+
 tsrv_language:
 tsrv_language: Waehle die Sprache fuer die Zeitansage:
 tsrv_language:
@@ -1033,20 +1180,12 @@ nolog_timeserver: 0  LOGBUCHABSCHALTUNG AUS
 nolog_timeserver: 1  LOGBUCHABSCHAlTUNG EIN
 nolog_timeserver:
 
-logdir:
-logdir: Gib das Verzeichnis ein wo Logfiles angelegt werden sollen.
-logdir: Das Verzeichnis muss existieren und die richtigen Zugriffsrechte besitzen!!
-logdir: Die Einstellung ist auch erforderlich, wenn das Logbuch abgeschaltet wurde,
-logdir: da es auch für wichtige Statusfiles verwendet wird.
-logdir: Wenn nicht unbedingt anders erforderlich, sollte die Voreinstellung beibehalten werden!
-logdir:
-
 logpath:
 logpath: Gib das Verzeichnis ein wo Logfiles angelegt werden sollen.
 logpath: Das Verzeichnis muss existieren und die richtigen Zugriffsrechte besitzen!!
 logpath: Die Einstellung ist auch erforderlich, wenn das Logbuch abgeschaltet wurde,
 logpath: da es auch für wichtige Statusfiles verwendet wird.
-logpath: Wenn nicht unbedingt anders erforderlich, sollte die Voreinstellung beibehalten werden!
+logpath: Wenn nicht unbedingt anders erforderlich, sollte die Voreinstellung bebehalten werden!
 logpath:
 
 log_path:
@@ -1101,11 +1240,11 @@ mainmenu: 7    ircDDB                     (ircDDB Routing-Nezwerk Einstellungen)
 mainmenu: 8    APRS                       (APRS-Netzwerk Einstellungen) 
 mainmenu: 9    DExtra                     (DExtra-Reflektornetz) 
 mainmenu:10    DPlus                      (DPlus-Reflektornetzwerk) 
-mainmenu:11    CCS/DCS                    (CCS/DCS-Netzwerke) 
+mainmenu:11    CCS/DCS                    (CCS/DCS-Netzwerk) 
 mainmenu:12    STARnet                    (STARnet-Server) 
 mainmenu:13    Timeserver/Zeitansage      (Zeitansagen Einstellungen) 
 mainmenu:14    Verschiedenes              (DTMF, Echo, Info etc.) 
-mainmenu:15    Logbuchfuehrung            (Log ein/aus, Logverzeichnis) 
+mainmenu:15    Logbuchfuehrung            (Logbuch ein/aus, Logverzeichnis) 
 mainmenu:---------------------------------------------------------------------------------
 mainmenu:Konfiguration der Startskripte fuer den automatischen Start nach dem Booten: 
 mainmenu: ircDDBGateway:  20) EIN     21) AUS

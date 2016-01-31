@@ -27,6 +27,8 @@
 #include "Version.h"
 #include "Logger.h"
 #include "IRCDDB.h"
+#include "IRCDDBClient.h"
+#include "IRCDDBMultiClient.h"
 #include "Utils.h"
 
 #include <wx/cmdline.h>
@@ -626,27 +628,55 @@ bool CIRCDDBGatewayAppD::createThread()
 	if (icomRepeaterHandler != NULL)
 		icomRepeaterHandler->setCount(icomCount);
 
-	bool ircDDBEnabled;
-	wxString ircDDBHostname, ircDDBUsername, ircDDBPassword;
-	config.getIrcDDB(ircDDBEnabled, ircDDBHostname, ircDDBUsername, ircDDBPassword);
-	wxLogInfo(wxT("ircDDB enabled: %d, host: %s, username: %s"), int(ircDDBEnabled), ircDDBHostname.c_str(), ircDDBUsername.c_str());
+	bool ircDDBAtLeastOneEnabled, ircDDBEnabled1, ircDDBEnabled2, ircDDBEnabled3, ircDDBEnabled4;
+	wxString ircDDBHostname1, ircDDBUsername1, ircDDBPassword1;
+	wxString ircDDBHostname2, ircDDBUsername2, ircDDBPassword2;
+	wxString ircDDBHostname3, ircDDBUsername3, ircDDBPassword3;
+	wxString ircDDBHostname4, ircDDBUsername4, ircDDBPassword4;
 
-	if (ircDDBEnabled) {
+	config.getIrcDDB(ircDDBEnabled1, ircDDBHostname1, ircDDBUsername1, ircDDBPassword1);
+	wxLogInfo(wxT("ircDDB 1 enabled: %d, host: %s, username: %s"), int(ircDDBEnabled1), ircDDBHostname1.c_str(), ircDDBUsername1.c_str());
+
+	config.getIrcDDB2(ircDDBEnabled2, ircDDBHostname2, ircDDBUsername2, ircDDBPassword2);
+	wxLogInfo(wxT("ircDDB 2 enabled: %d, host: %s, username: %s"), int(ircDDBEnabled2), ircDDBHostname2.c_str(), ircDDBUsername2.c_str());
+
+	config.getIrcDDB3(ircDDBEnabled3, ircDDBHostname3, ircDDBUsername3, ircDDBPassword3);
+	wxLogInfo(wxT("ircDDB 3 enabled: %d, host: %s, username: %s"), int(ircDDBEnabled3), ircDDBHostname3.c_str(), ircDDBUsername3.c_str());
+
+	config.getIrcDDB4(ircDDBEnabled4, ircDDBHostname4, ircDDBUsername4, ircDDBPassword4);
+	wxLogInfo(wxT("ircDDB 4 enabled: %d, host: %s, username: %s"), int(ircDDBEnabled4), ircDDBHostname4.c_str(), ircDDBUsername4.c_str());
+
+	ircDDBAtLeastOneEnabled = ircDDBEnabled1 || ircDDBEnabled2 || ircDDBEnabled3 || ircDDBEnabled4;
+
+	if (ircDDBAtLeastOneEnabled) {
 #if defined(__WINDOWS__)
-		CIRCDDB* ircDDB = new CIRCDDB(ircDDBHostname, 9007U, ircDDBUsername, ircDDBPassword, wxT("win_") + LOG_BASE_NAME + wxT("-") + VERSION, gatewayAddress); 
+		wxString versionInfo = wxT("win_") + LOG_BASE_NAME + wxT("-") + VERSION;
 #else
-		CIRCDDB* ircDDB = new CIRCDDB(ircDDBHostname, 9007U, ircDDBUsername, ircDDBPassword, wxT("linux_") + LOG_BASE_NAME + wxT("-") + VERSION, gatewayAddress); 
+		wxString versionInfo = wxT("linux_") + LOG_BASE_NAME + wxT("-") + VERSION;
 #endif
+		CIRCDDB_Array ircDDBClients;
+		if (ircDDBEnabled1)
+			ircDDBClients.Add(new CIRCDDBClient(ircDDBHostname1, 9007U, ircDDBUsername1, ircDDBPassword1, versionInfo, gatewayAddress));
+		if (ircDDBEnabled2)
+			ircDDBClients.Add(new CIRCDDBClient(ircDDBHostname2, 9007U, ircDDBUsername2, ircDDBPassword2, versionInfo, gatewayAddress));
+		if (ircDDBEnabled3)
+			ircDDBClients.Add(new CIRCDDBClient(ircDDBHostname3, 9007U, ircDDBUsername3, ircDDBPassword3, versionInfo, gatewayAddress));
+		if (ircDDBEnabled4)
+			ircDDBClients.Add(new CIRCDDBClient(ircDDBHostname4, 9007U, ircDDBUsername4, ircDDBPassword4, versionInfo, gatewayAddress));
+
+		CIRCDDBMultiClient * ircDDB = new CIRCDDBMultiClient(ircDDBClients);
+
 		bool res = ircDDB->open();
 		if (!res) {
 			wxLogError(wxT("Cannot initialise the ircDDB protocol handler"));
-			ircDDBEnabled = false;
-		} else {
+			ircDDBAtLeastOneEnabled = false;
+		}
+		else {
 			m_thread->setIRC(ircDDB);
 		}
 	}
 
-	if (ircDDBEnabled) {
+	if (ircDDBAtLeastOneEnabled) {
 		wxString starNetBand1, starNetCallsign1, starNetLogoff1, starNetInfo1, starNetPermanent1, link1;		// DEXTRA_LINK || DCS_LINK
 		unsigned int starNetUserTimeout1, starNetGroupTimeout1;
 		STARNET_CALLSIGN_SWITCH starNetCallsignSwitch1;

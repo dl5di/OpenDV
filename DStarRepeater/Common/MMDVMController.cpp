@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2011-2016 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2011-2015 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -208,14 +208,6 @@ void* CMMDVMController::Entry()
 					bool adcOverflow = (m_buffer[5U] & 0x02U) == 0x02U;
 					if (adcOverflow)
 						wxLogWarning(wxT("MMDVM ADC levels have overflowed"));
-
-					bool rxOverflow = (m_buffer[5U] & 0x04U) == 0x04U;
-					if (rxOverflow)
-						wxLogWarning(wxT("MMDVM RX buffer have overflowed"));
-
-					bool txOverflow = (m_buffer[5U] & 0x08U) == 0x08U;
-					if (txOverflow)
-						wxLogWarning(wxT("MMDVM TX buffer have overflowed"));
 
 					space = m_buffer[6U];
 					// CUtils::dump(wxT("GET_STATUS"), m_buffer, length);

@@ -591,29 +591,35 @@ ircddb_setup:*** ircDDB network setup
 ircddb_setup: 
 ircddb_setup:The next part configures the access information to connect to the ircDDB
 ircddb_setup:routing network which is necessary for callsign routing and reporting. 
-ircddb_setup: 
+ircddb_setup:You can configure up to 4 networks, when doing call sign routing the program
+ircddb_setup:will query all of those network to find the called user.
+ircddb_setup:
+ircddb_setup:This will configure the first network.
+ircddb_setup:
 ircddb_setup:********************************************************************************
 
 ircddbEnabled: 
-ircddbEnabled: 0    DISABLE ircDDB service  
-ircddbEnabled: 1    ENABLE  ircDDB service  
+ircddbEnabled: 0    DISABLE ircDDB first network  
+ircddbEnabled: 1    ENABLE  ircDDB first network  
 ircddbEnabled: 
 ircddbEnabled: -    RESET to default
 ircddbEnabled: <CR> Keep old value
 ircddbEnabled: 
 
 ircddbHostname: 
-ircddbHostname:Select the ircDDB server group to get best network connectivity:  
+ircddbHostname:Select the ircDDB server group :  
 ircddbHostname: 
-ircddbHostname: 1   if you are located in Europe, Asia, Africa, Australia 
-ircddbHostname: 2   if you are located in North-/South-America 
-ircddbHostname: 3   Italian Testserver, not connected to the routing network 
+ircddbHostname: 1   (Original ircddb.net european server) if you are located in Europe, Asia, Africa, Australia 
+ircddbHostname: 2   (Original ircddb.net american server) if you are located in North-/South-America 
+ircddbHostname: 3   (Original ircddb.net european testvserver) Italian Testserver, not connected to the routing network 
+ircddbHostname: 4   (Openquad.net ircddb network) Network which accepts repeaters and personal hotspots.
 ircddbHostname: 
 
 ircddbUsername: 
 ircddbUsername:Enter the username that you have got with the registration information  
 ircddbUsername:(usually the callsign of the gateway) 
 ircddbUsername:Registration here: http://regsrv.ircddb.net/index.htm
+ircddbUsername:Quadnet does not require a registration. plase see http://www.openquad.net
 ircddbUsername: 
 
 ircddbPassword: 
@@ -621,6 +627,153 @@ ircddbPassword:Enter the password that you have got with the registration inform
 ircddbPassword:Make sure that you enter it complete and case-sensitive! 
 ircddbPassword:We recommend to use copy&paste.
 ircddbPassword: 
+
+ircddb_setup2: 
+ircddb_setup2: 
+ircddb_setup2: 
+ircddb_setup2: 
+ircddb_setup2: 
+ircddb_setup2: 
+ircddb_setup2:********************************************************************************
+ircddb_setup2: 
+ircddb_setup2:*** ircDDB network setup 
+ircddb_setup2: 
+ircddb_setup2:The next part configures the access information to connect to the ircDDB
+ircddb_setup2:routing network which is necessary for callsign routing and reporting. 
+ircddb_setup2:You can configure up to 4 networks, when doing call sign routing the program
+ircddb_setup2:will query all of those network to find the called user.
+ircddb_setup2:
+ircddb_setup2:This will configure the second network.
+ircddb_setup2:
+ircddb_setup2:********************************************************************************
+
+ircddbEnabled2: 
+ircddbEnabled2: 0    DISABLE ircDDB second network  
+ircddbEnabled2: 1    ENABLE  ircDDB second network  
+ircddbEnabled2: 
+ircddbEnabled2: -    RESET to default
+ircddbEnabled2: <CR> Keep old value
+ircddbEnabled2: 
+
+ircddbHostname2: 
+ircddbHostname2:Select the ircDDB server group :  
+ircddbHostname2: 
+ircddbHostname2: 1   (Original ircddb.net european server) if you are located in Europe, Asia, Africa, Australia 
+ircddbHostname2: 2   (Original ircddb.net american server) if you are located in North-/South-America 
+ircddbHostname2: 3   (Original ircddb.net european testvserver) Italian Testserver, not connected to the routing network 
+ircddbHostname2: 4   (Openquad.net ircddb network) Network which accepts repeaters and personal hotspots.
+ircddbHostname2: 
+
+ircddbUsername2: 
+ircddbUsername2:Enter the username that you have got with the registration information  
+ircddbUsername2:(usually the callsign of the gateway) 
+ircddbUsername2:Registration here: http://regsrv.ircddb.net/index.htm
+ircddbUsername2:Quadnet does not require a registration. plase see http://www.openquad.net
+ircddbUsername2: 
+
+ircddbPassword2: 
+ircddbPassword2:Enter the password that you have got with the registration information  
+ircddbPassword2:Make sure that you enter it complete and case-sensitive! 
+ircddbPassword2:We recommend to use copy&paste.
+ircddbPassword2: 
+
+ircddb_setup3: 
+ircddb_setup3: 
+ircddb_setup3: 
+ircddb_setup3: 
+ircddb_setup3: 
+ircddb_setup3: 
+ircddb_setup3:********************************************************************************
+ircddb_setup3: 
+ircddb_setup3:*** ircDDB network setup 
+ircddb_setup3: 
+ircddb_setup3:The next part configures the access information to connect to the ircDDB
+ircddb_setup3:routing network which is necessary for callsign routing and reporting. 
+ircddb_setup3:You can configure up to 4 networks, when doing call sign routing the program
+ircddb_setup3:will query all of those network to find the called user.
+ircddb_setup3:
+ircddb_setup3:This will configure the third network.
+ircddb_setup3:
+ircddb_setup3:********************************************************************************
+
+ircddbEnabled3: 
+ircddbEnabled3: 0    DISABLE ircDDB third network  
+ircddbEnabled3: 1    ENABLE  ircDDB third network  
+ircddbEnabled3: 
+ircddbEnabled3: -    RESET to default
+ircddbEnabled3: <CR> Keep old value
+ircddbEnabled3: 
+
+ircddbHostname3: 
+ircddbHostname3:Select the ircDDB server group:  
+ircddbHostname3: 
+ircddbHostname3: 1   (Original ircddb.net european server) if you are located in Europe, Asia, Africa, Australia 
+ircddbHostname3: 2   (Original ircddb.net american server) if you are located in North-/South-America 
+ircddbHostname3: 3   (Original ircddb.net european testvserver) Italian Testserver, not connected to the routing network 
+ircddbHostname3: 4   (Openquad.net ircddb network) Network which accepts repeaters and personal hotspots.
+ircddbHostname3: 
+
+ircddbUsername3: 
+ircddbUsername3:Enter the username that you have got with the registration information  
+ircddbUsername3:(usually the callsign of the gateway) 
+ircddbUsername3:Registration here: http://regsrv.ircddb.net/index.htm
+ircddbUsername3:Quadnet does not require a registration. plase see http://www.openquad.net
+ircddbUsername3: 
+
+ircddbPassword3: 
+ircddbPassword3:Enter the password that you have got with the registration information  
+ircddbPassword3:Make sure that you enter it complete and case-sensitive! 
+ircddbPassword3:We recommend to use copy&paste.
+ircddbPassword3: 
+
+ircddb_setup4: 
+ircddb_setup4: 
+ircddb_setup4: 
+ircddb_setup4: 
+ircddb_setup4: 
+ircddb_setup4: 
+ircddb_setup4:********************************************************************************
+ircddb_setup4: 
+ircddb_setup4:*** ircDDB network setup 
+ircddb_setup4: 
+ircddb_setup4:The next part configures the access information to connect to the ircDDB
+ircddb_setup4:routing network which is necessary for callsign routing and reporting. 
+ircddb_setup4:You can configure up to 4 networks, when doing call sign routing the program
+ircddb_setup4:will query all of those network to find the called user.
+ircddb_setup4:
+ircddb_setup4:This will configure the fourth network.
+ircddb_setup4:
+ircddb_setup4:********************************************************************************
+
+ircddbEnabled4: 
+ircddbEnabled4: 0    DISABLE ircDDB fourth network  
+ircddbEnabled4: 1    ENABLE  ircDDB fourth network    
+ircddbEnabled4: 
+ircddbEnabled4: -    RESET to default
+ircddbEnabled4: <CR> Keep old value
+ircddbEnabled4: 
+
+ircddbHostname4: 
+ircddbHostname4:Select the ircDDB server:  
+ircddbHostname4: 
+ircddbHostname4: 1   (Original ircddb.net european server) if you are located in Europe, Asia, Africa, Australia 
+ircddbHostname4: 2   (Original ircddb.net american server) if you are located in North-/South-America 
+ircddbHostname4: 3   (Original ircddb.net european testvserver) Italian Testserver, not connected to the routing network 
+ircddbHostname4: 4   (Openquad.net ircddb network) Network which accepts repeaters and personal hotspots.
+ircddbHostname4: 
+
+ircddbUsername4: 
+ircddbUsername4:Enter the username that you have got with the registration information  
+ircddbUsername4:(usually the callsign of the gateway) 
+ircddbUsername4:Registration here: http://regsrv.ircddb.net/index.htm
+ircddbUsername4:Quadnet does not require a registration. plase see http://www.openquad.net
+ircddbUsername4: 
+
+ircddbPassword4: 
+ircddbPassword4:Enter the password that you have got with the registration information  
+ircddbPassword4:Make sure that you enter it complete and case-sensitive! 
+ircddbPassword4:We recommend to use copy&paste.
+ircddbPassword4: 
 
 aprs_setup: 
 aprs_setup: 
@@ -1057,14 +1210,14 @@ dashboard_path: The dashboard configuration will be changed:
 header:--------------------------------------------------------------------------------
 header: 
 header: Configuration script for ircDDBGateway from Jonathan Naylor, G4KLX 
-header: Copyright (C) 2012   Hans-J. Barthen, DL5DI (dl5di@gmx.de) 
+header: Copyright (C) 2012-2014   Hans-J. Barthen, DL5DI (dl5di@gmx.de) 
 header: 
 header:--------------------------------------------------------------------------------
 
 copyright:-------------------------------------------------------------------------------- 
 copyright: 
 copyright: Configuration script for ircDDBGateway from Jonathan Naylor, G4KLX 
-copyright: Copyright (C) 2012   Hans-J. Barthen, DL5DI (dl5di@gmx.de) 
+copyright: Copyright (C) 2012-2014   Hans-J. Barthen, DL5DI (dl5di@gmx.de) 
 copyright: Basic components from ircddbconfig (C) 2011 Michael Dirska, DL1BFF
 copyright: 
 copyright: This program is free software: you can redistribute it and/or modify 

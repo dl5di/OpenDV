@@ -68,6 +68,7 @@
 # 2013-08-29 dl5di    read more parameters from ircddb-addon configuration
 # 2014-02-16 dl5di    check for dstarrepeater_conf 
 # 2014-02-18 dl5di    bugfix configuration of empty parameters
+# 2016-01-26 f4fxl    Added quadnet, added multiple connection
 #
 # Todo / known issues:
 # - implement sanity check for config file 
@@ -1878,11 +1879,11 @@ function repeater_setup(){
 
 function ircddb_setup(){
 
-	print_text "ircddb_setup" 
+	print_text "ircddb_setup$1" 
 #
 # ircddbEnabled = 0/1 (default 1)
 #
-	var="ircddbEnabled"
+	var="ircddbEnabled$ircddbnum"
 	Dat=`date +%Y%m%d%H%M`
 	echo "$Dat: $var" >> $LOG
 	read_default $var
@@ -1910,9 +1911,11 @@ function ircddb_setup(){
 	fi
 #
 # ircddbHostname=group1-irc.ircddb.net	
-# /etc/ircddbd/ircDDB.properties:irc_server_name
+# ircddbHostname2=rr.openquad.net
+# ircddbHostname3=
+# ircddbHostname4=
 #
-	var="ircddbHostname"
+	var="ircddbHostname$ircddbnum"
 	Dat=`date +%Y%m%d%H%M`
 	echo "$Dat: $var" >> $LOG
 	read_default $var
@@ -1930,13 +1933,15 @@ function ircddb_setup(){
 		inp=1
 	elif [ "$VALUE" = "group2-irc.ircddb.net" ]; then
 		inp=2
-	else
+	elif [ "$VALUE" = "server1-ik2xyp.ods.org" ]; then
 		inp=3
+	else
+		inp=4
 	fi
 	RET=0
 	while [ $RET -eq 0 ]; do
 		print_text $var 
-		select_item $var 3 "$inp"
+		select_item $var 4 "$inp"
 		RET=$?
 
 		case $RET in
@@ -1952,6 +1957,9 @@ function ircddb_setup(){
 						;;
 					3)
 						VALUE="server1-ik2xyp.ods.org"
+						;;
+					4)
+						VALUE="rr.openquad.net"
 						;;
 					*)
 						;;
@@ -1969,15 +1977,13 @@ function ircddb_setup(){
 	done
 
 	echo ""
-	echo "ircddbHostname=$VALUE"
+	echo "ircddbHostname$ircddbnum=$VALUE"
 	echo ""
 	write_value ${IRCDDBGWCONFIG} $var "$VALUE"
 #
-# ircddbUsername=db0lj
-# /etc/ircddbd/ircDDB.properties: 
-# (rptr_call converted to lcase)
+# ircddbUsername#=db0lj
 #
-	var="ircddbUsername"
+	var="ircddbUsername$ircddbnum"
 	Dat=`date +%Y%m%d%H%M`
 	echo "$Dat: $var" >> $LOG
 	read_value ${IRCDDBGWCONFIG} $var
@@ -2001,7 +2007,7 @@ function ircddb_setup(){
 # ircddbPassword=
 # /etc/ircddbd/ircDDB.properties:irc_password
 #
-	var="ircddbPassword"
+	var="ircddbPassword$ircddbnum"
 	Dat=`date +%Y%m%d%H%M`
 	echo "$Dat: $var" >> $LOG
 	read_value ${IRCDDBGWCONFIG} $var

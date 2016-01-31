@@ -64,14 +64,15 @@ class IRCDDBAppUserObject
     name = nm;
     host = h;
     op = false;
-    usn = counter;
-    counter ++;
+	usn = 0;
+    //usn = counter;
+    //counter ++;
   }
 
-  static unsigned int counter;
+  //static unsigned int counter;
 };
 
-unsigned int IRCDDBAppUserObject::counter = 0;
+//unsigned int IRCDDBAppUserObject::counter = 0;
 
 
 WX_DECLARE_STRING_HASH_MAP( IRCDDBAppUserObject, IRCDDBAppUserMap );
@@ -89,7 +90,7 @@ class IRCDDBAppRptrObject
   {
   }
 
-  IRCDDBAppRptrObject (wxDateTime& dt, wxString& repeaterCallsign, wxString& gatewayCallsign)
+  IRCDDBAppRptrObject (wxDateTime& dt, wxString& repeaterCallsign, wxString& gatewayCallsign, wxDateTime& maxTime)
   {
     arearp_cs = repeaterCallsign;
     lastChanged = dt;
@@ -101,10 +102,10 @@ class IRCDDBAppRptrObject
     }
   }
 
-  static wxDateTime maxTime;
+  //static wxDateTime maxTime;
 };
 
-wxDateTime IRCDDBAppRptrObject::maxTime((time_t) 950000000);  // February 2000
+//wxDateTime IRCDDBAppRptrObject::maxTime((time_t) 950000000);  // February 2000
 
 
 WX_DECLARE_STRING_HASH_MAP( IRCDDBAppRptrObject, IRCDDBAppRptrMap );
@@ -172,7 +173,8 @@ class IRCDDBAppPrivate
 
 IRCDDBApp::IRCDDBApp( const wxString& u_chan )
   : wxThread(wxTHREAD_JOINABLE),
-    d(new IRCDDBAppPrivate)
+    d(new IRCDDBAppPrivate),
+	m_maxTime((time_t)950000000)//februray 2000
 {
 
   d->sendQ = NULL;
@@ -327,6 +329,22 @@ void IRCDDBApp::stopWork()
     Wait();
 }
 
+unsigned int IRCDDBApp::calculateUsn(const wxString& nick)
+{
+	wxString lnick = nick.BeforeLast('-');
+	unsigned int maxUsn = 0;
+	for (int i = 1; i <= 4; i++) {
+		wxString ircUser = lnick + wxString::Format(wxT("-%d"), i);
+
+		if (d->user.count(ircUser) == 1) {
+			IRCDDBAppUserObject obj = d->user[ircUser];
+			if (obj.usn > maxUsn)
+				maxUsn = obj.usn;
+		}
+	}
+
+	return maxUsn + 1;
+}
 
 void IRCDDBApp::userJoin (const wxString& nick, const wxString& name, const wxString& host)
 {
@@ -336,6 +354,7 @@ void IRCDDBApp::userJoin (const wxString& nick, const wxString& name, const wxSt
   lnick.MakeLower();
 
   IRCDDBAppUserObject u( lnick, name, host );
+  u.usn = calculateUsn(lnick);
 
   d->user[lnick] = u;
 
@@ -906,7 +925,7 @@ void IRCDDBApp::doUpdate ( wxString& msg )
 	{
 	  wxMutexLocker lock(d->rptrMapMutex);
 
-	  IRCDDBAppRptrObject newRptr(dt, key, value);
+	  IRCDDBAppRptrObject newRptr(dt, key, value, m_maxTime);
 
 	  d->rptrMap[key] = newRptr;
 
@@ -1057,12 +1076,12 @@ IRCMessageQueue * IRCDDBApp::getSendQ()
 }
 
 
-static wxString getLastEntryTime(int tableID)
+wxString IRCDDBApp::getLastEntryTime(int tableID)
 {
 
   if (tableID == 1)
   {
-    wxString max = IRCDDBAppRptrObject::maxTime.Format( wxT("%Y-%m-%d %H:%M:%S") );
+    wxString max = /*IRCDDBAppRptrObject::maxTime*/m_maxTime.Format( wxT("%Y-%m-%d %H:%M:%S") );
     return max;
   }
 

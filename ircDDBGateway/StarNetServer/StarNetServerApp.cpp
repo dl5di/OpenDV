@@ -22,7 +22,7 @@
 #include "StarNetServerApp.h"
 #include "Version.h"
 #include "Logger.h"
-#include "IRCDDB.h"
+#include "IRCDDBClient.h"
 
 #include <wx/config.h>
 #include <wx/cmdline.h>
@@ -559,9 +559,9 @@ void CStarNetServerApp::createThread()
 
 	if (!hostname.IsEmpty() && !username.IsEmpty() && !password.IsEmpty()) {
 #if defined(__WINDOWS__)
-		CIRCDDB* ircDDB = new CIRCDDB(hostname, 9007U, username, password, wxT("win_") + LOG_BASE_NAME + wxT("-") + VERSION, address); 
+		CIRCDDB* ircDDB = new CIRCDDBClient(hostname, 9007U, username, password, wxT("win_") + LOG_BASE_NAME + wxT("-") + VERSION, address); 
 #else
-		CIRCDDB* ircDDB = new CIRCDDB(hostname, 9007U, username, password, wxT("linux_") + LOG_BASE_NAME + wxT("-") + VERSION, address); 
+		CIRCDDB* ircDDB = new CIRCDDBClient(hostname, 9007U, username, password, wxT("linux_") + LOG_BASE_NAME + wxT("-") + VERSION, address);
 #endif
 		bool res = ircDDB->open();
 		if (!res)

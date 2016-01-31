@@ -51,6 +51,9 @@ m_repeaterInfo3(NULL),
 m_repeaterData4(NULL),
 m_repeaterInfo4(NULL),
 m_ircDDB(NULL),
+m_ircDDB2(NULL),
+m_ircDDB3(NULL),
+m_ircDDB4(NULL),
 m_dprs(NULL),
 m_dextra(NULL),
 m_dplus(NULL),
@@ -170,9 +173,20 @@ m_miscellaneous(NULL)
 	bool ircDDBEnabled;
 	wxString ircDDBHostname, ircDDBUsername, ircDDBPassword;
 	m_config->getIrcDDB(ircDDBEnabled, ircDDBHostname, ircDDBUsername, ircDDBPassword);
-
 	m_ircDDB = new CIRCDDBGatewayConfigIrcDDBSet(noteBook, -1, APPLICATION_NAME, ircDDBEnabled, ircDDBHostname, ircDDBUsername, ircDDBPassword);
-	noteBook->AddPage(m_ircDDB, wxT("ircDDB"), false);
+	noteBook->AddPage(m_ircDDB, wxT("ircDDB 1st Network"), false);
+
+	m_config->getIrcDDB2(ircDDBEnabled, ircDDBHostname, ircDDBUsername, ircDDBPassword);
+	m_ircDDB2 = new CIRCDDBGatewayConfigIrcDDBSet(noteBook, -1, APPLICATION_NAME, ircDDBEnabled, ircDDBHostname, ircDDBUsername, ircDDBPassword);
+	noteBook->AddPage(m_ircDDB2, wxT("ircDDB 2nd Network"), false);
+
+	m_config->getIrcDDB3(ircDDBEnabled, ircDDBHostname, ircDDBUsername, ircDDBPassword);
+	m_ircDDB3 = new CIRCDDBGatewayConfigIrcDDBSet(noteBook, -1, APPLICATION_NAME, ircDDBEnabled, ircDDBHostname, ircDDBUsername, ircDDBPassword);
+	noteBook->AddPage(m_ircDDB3, wxT("ircDDB 3rd Network"), false);
+
+	m_config->getIrcDDB4(ircDDBEnabled, ircDDBHostname, ircDDBUsername, ircDDBPassword);
+	m_ircDDB4 = new CIRCDDBGatewayConfigIrcDDBSet(noteBook, -1, APPLICATION_NAME, ircDDBEnabled, ircDDBHostname, ircDDBUsername, ircDDBPassword);
+	noteBook->AddPage(m_ircDDB4, wxT("ircDDB 4th Network"), false);
 
 	wxString aprsHostname;
 	unsigned int aprsPort;
@@ -345,7 +359,8 @@ void CIRCDDBGatewayConfigFrame::onSave(wxCommandEvent&)
 {
 	if (!m_gateway->Validate() || !m_repeaterData1->Validate() || !m_repeaterInfo1->Validate() || !m_repeaterData2->Validate() ||
 		!m_repeaterInfo2->Validate() || !m_repeaterData3->Validate() || !m_repeaterInfo3->Validate() || !m_repeaterData4->Validate() ||
-		!m_repeaterInfo4->Validate() || !m_ircDDB->Validate() || !m_dprs->Validate() || !m_dplus->Validate() || !m_dcs->Validate() ||
+		!m_repeaterInfo4->Validate() ||
+		!m_ircDDB->Validate() || !m_ircDDB2->Validate() || !m_ircDDB3->Validate() || !m_ircDDB4->Validate() || !m_dprs->Validate() || !m_dplus->Validate() || !m_dcs->Validate() ||
 		!m_starNet1->Validate() || !m_starNet2->Validate() || !m_starNet3->Validate() || !m_starNet4->Validate() ||
 		!m_starNet5->Validate() || !m_remote->Validate() || !m_miscellaneous->Validate())
 		return;
@@ -448,11 +463,29 @@ void CIRCDDBGatewayConfigFrame::onSave(wxCommandEvent&)
 	wxString url4              = m_repeaterInfo4->getURL();
 	m_config->setRepeater4(repeaterBand4, repeaterType4, repeaterAddress4, repeaterPort4, band41, band42, band43, reflector4, atStartup4, reconnect4, frequency4, offset4, range4, latitude4, longitude4, agl4, description41, description42, url4);
 
-	bool ircDDBEnabled      = m_ircDDB->getEnabled();
-	wxString ircDDBHostname = m_ircDDB->getHostname();
-	wxString ircDDBUsername = m_ircDDB->getUsername();
-	wxString ircDDBPassword = m_ircDDB->getPassword();
+	bool ircDDBEnabled		   = m_ircDDB->getEnabled();
+	wxString ircDDBHostname	   = m_ircDDB->getHostname();
+	wxString ircDDBUsername    = m_ircDDB->getUsername();
+	wxString ircDDBPassword    = m_ircDDB->getPassword();
 	m_config->setIrcDDB(ircDDBEnabled, ircDDBHostname, ircDDBUsername, ircDDBPassword);
+
+	ircDDBEnabled			   = m_ircDDB2->getEnabled();
+	ircDDBHostname			   = m_ircDDB2->getHostname();
+	ircDDBUsername			   = m_ircDDB2->getUsername();
+	ircDDBPassword			   = m_ircDDB2->getPassword();
+	m_config->setIrcDDB2(ircDDBEnabled, ircDDBHostname, ircDDBUsername, ircDDBPassword);
+
+	ircDDBEnabled			   = m_ircDDB3->getEnabled();
+	ircDDBHostname			   = m_ircDDB3->getHostname();
+	ircDDBUsername			   = m_ircDDB3->getUsername();
+	ircDDBPassword			   = m_ircDDB3->getPassword();
+	m_config->setIrcDDB3(ircDDBEnabled, ircDDBHostname, ircDDBUsername, ircDDBPassword);
+
+	ircDDBEnabled			   = m_ircDDB4->getEnabled();
+	ircDDBHostname			   = m_ircDDB4->getHostname();
+	ircDDBUsername			   = m_ircDDB4->getUsername();
+	ircDDBPassword			   = m_ircDDB4->getPassword();
+	m_config->setIrcDDB4(ircDDBEnabled, ircDDBHostname, ircDDBUsername, ircDDBPassword);
 
 	bool aprsEnabled      = m_dprs->getEnabled();
 	wxString aprsHostname = m_dprs->getHostname();

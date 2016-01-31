@@ -78,8 +78,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="IRCClient.cpp" />
-    <ClCompile Include="IRCDDB.cpp" />
+    <ClCompile Include="IRCDDBClient.cpp" />
     <ClCompile Include="IRCDDBApp.cpp" />
+    <ClCompile Include="IRCDDB.cpp" />
+    <ClCompile Include="IRCDDBMultiClient.cpp" />
     <ClCompile Include="IRCMessage.cpp" />
     <ClCompile Include="IRCMessageQueue.cpp" />
     <ClCompile Include="IRCProtocol.cpp" />
@@ -89,8 +91,10 @@
   <ItemGroup>
     <ClInclude Include="IRCApplication.h" />
     <ClInclude Include="IRCClient.h" />
-    <ClInclude Include="IRCDDB.h" />
+    <ClInclude Include="IRCDDBClient.h" />
     <ClInclude Include="IRCDDBApp.h" />
+    <ClInclude Include="IRCDDB.h" />
+    <ClInclude Include="IRCDDBMultiClient.h" />
     <ClInclude Include="IRCMessage.h" />
     <ClInclude Include="IRCMessageQueue.h" />
     <ClInclude Include="IRCProtocol.h" />
@@ -102,6 +106,9 @@
       <Project>{e793cb8e-2ac9-431a-bbfc-3f52537bb3cf}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ClassDiagram.cd" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

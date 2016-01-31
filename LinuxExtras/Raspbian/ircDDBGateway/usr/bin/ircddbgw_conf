@@ -47,6 +47,7 @@
 # 2013-11-25 dl5di    bugfix update-rc
 # 2014-02-16 dl5di    check for dstarrepeater_conf 
 # 2014-02-18 dl5di    bugfix configuration of empty parameters
+# 2016-01-26 f4fxl    Added quadnet, added multiple connection
 #
 # Todo / known issues:
 # - implement sanity check for config file 
@@ -1689,11 +1690,12 @@ function repeater_setup(){
 
 function ircddb_setup(){
 
-    print_text "ircddb_setup" 
+    ircddbnum=$1
+    print_text "ircddb_setup$ircddbnum"
 #
-# ircddbEnabled = 0/1 (default 1)
+# ircddbEnabled# = 0/1 (default 1)
 #
-	var="ircddbEnabled"
+	var="ircddbEnabled$ircddbnum"
 	Dat=`date +%Y%m%d%H%M`
 	echo "$Dat: $var" >> $LOG
 	read_default $var
@@ -1721,9 +1723,11 @@ function ircddb_setup(){
 	fi
 #
 # ircddbHostname=group1-irc.ircddb.net	
-# /etc/ircddbd/ircDDB.properties:irc_server_name
+# ircddbHostname2=rr.openquad.net
+# ircddbHostname3=
+# ircddbHostname4=
 #
-	var="ircddbHostname"
+	var="ircddbHostname$ircddbnum"
 	Dat=`date +%Y%m%d%H%M`
 	echo "$Dat: $var" >> $LOG
 	read_default $var
@@ -1735,13 +1739,15 @@ function ircddb_setup(){
 		inp=1
 	elif [ "$VALUE" = "group2-irc.ircddb.net" ]; then
 		inp=2
-	else
+	elif [ "$VALUE" = "server1-ik2xyp.ods.org" ]; then
 		inp=3
+	else
+		inp=4
 	fi
 	RET=0
 	while [ $RET -eq 0 ]; do
 		print_text $var 
-		select_item $var 3 "$inp"
+		select_item $var 4 "$inp"
 		RET=$?
 
 		case $RET in
@@ -1757,6 +1763,9 @@ function ircddb_setup(){
 					;;
 					3)
 					VALUE="server1-ik2xyp.ods.org"
+					;;
+					4)
+					VALUE="rr.openquad.net"
 					;;
 					*)
 					;;
@@ -1774,15 +1783,13 @@ function ircddb_setup(){
 	done
 	
 	echo ""
-	echo "ircddbHostname=$VALUE"
+	echo "ircddbHostname$ircddbnum=$VALUE"
 	echo ""
-	write_value $IRCDDBGWCONFIG $var "$VALUE"
+	write_value ${IRCDDBGWCONFIG} $var "$VALUE"
 #
-# ircddbUsername=db0lj
-# /etc/ircddbd/ircDDB.properties: 
-# (rptr_call converted to lcase)
+# ircddbUsername#=db0lj
 #
-	var="ircddbUsername"
+	var="ircddbUsername$ircddbnum"
 	Dat=`date +%Y%m%d%H%M`
 	echo "$Dat: $var" >> $LOG
 	read_value $IRCDDBGWCONFIG $var
@@ -1803,10 +1810,9 @@ function ircddb_setup(){
 		write_value $IRCDDBGWCONFIG $var "$INPUT"
 	fi
 #
-# ircddbPassword=
-# /etc/ircddbd/ircDDB.properties:irc_password
+# ircddbPassword#=
 #
-	var="ircddbPassword"
+	var="ircddbPassword$ircddbnum"
 	Dat=`date +%Y%m%d%H%M`
 	echo "$Dat: $var" >> $LOG
 	read_value $IRCDDBGWCONFIG $var
@@ -3041,6 +3047,9 @@ while [ "$SELECT" -ne 99 ]; do
 			print_text "hw_setup"
 			repeater_init
 			ircddb_setup
+			ircddb_setup 2
+			ircddb_setup 3
+			ircddb_setup 4
 			aprs_setup
 			ccs_setup
 			dextra_setup
@@ -3066,6 +3075,9 @@ while [ "$SELECT" -ne 99 ]; do
 			;;
 		7)
 			ircddb_setup
+			ircddb_setup 2
+			ircddb_setup 3
+			ircddb_setup 4
 			;;
 		8)
 			aprs_setup

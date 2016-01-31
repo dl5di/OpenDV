@@ -44,6 +44,12 @@
 #include <wx/textfile.h>
 #include <wx/ffile.h>
 
+#if defined(__WINDOWS__)
+#include "Inaddr.h"
+#else
+#include <arpa/inet.h>
+#endif
+
 const wxString LOOPBACK_ADDRESS = wxT("127.0.0.1");
 
 const unsigned int REMOTE_DUMMY_PORT = 65016U;
@@ -702,15 +708,14 @@ void CIRCDDBGatewayThread::processIrcDDB()
 
 		switch (type) {
 			case IDRT_USER: {
-					wxString user, repeater, gateway, address;
-					bool res = m_irc->receiveUser(user, repeater, gateway, address);
+					wxString user, repeater, gateway, address, timestamp;
+					bool res = m_irc->receiveUser(user, repeater, gateway, address, timestamp);
 					if (!res)
 						break;
 
-					CRepeaterHandler::resolveUser(user, repeater, gateway, address);
 					if (!address.IsEmpty()) {
 						wxLogMessage(wxT("USER: %s %s %s %s"), user.c_str(), repeater.c_str(), gateway.c_str(), address.c_str());
-						m_cache.updateUser(user, repeater, gateway, address, DP_DEXTRA, false, false);
+						m_cache.updateUser(user, repeater, gateway, address, timestamp, DP_DEXTRA, false, false);
 					} else {
 						wxLogMessage(wxT("USER: %s NOT FOUND"), user.c_str());
 					}
