@@ -113,6 +113,7 @@ XRF714	xrf714.ea3hkb.com
 XRF720	204.45.107.21 
 XRF727	108.33.72.83 
 XRF740	imagewell.duckdns.org
+XRF747	xrf747.de
 XRF748	104.167.109.27 
 XRF757	xrf757.openquad.net
 XRF773	xrf773.iz0rin.it
