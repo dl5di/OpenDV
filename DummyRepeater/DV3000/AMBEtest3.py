@@ -19,7 +19,7 @@ def main(argv):
 		opts, args = getopt.getopt(argv,"hns:",["serial="])
 	except getopt.GetoptError:
 		print 'AMBEtest3.py -s <serial port>'
-		print 'AMBEtest3.py -h -s <serial port> (for ThumbDV Model A'
+		print 'AMBEtest3.py -n -s <serial port> (for ThumbDV Model A'
 		sys.exit(2)
 	for opt, arg in opts:
 		if opt == '-h':
