@@ -1,7 +1,9 @@
 SUBDIRS = LinuxUSB 
 
-DEFS += -DDATA_DIR=\"/home/opendv/data\" -DLOG_DIR=\"/var/log/opendv\" \
-        -DCONF_DIR=\"/home/opendv/dstarrepeater\"
+DEFS += \
+	-DDATA_DIR=\"${datadir}\" \
+	-DLOG_DIR=\"${localstatedir}/log/opendv\" \
+        -DCONF_DIR=\"${sysconfdir}\"
 
 AM_CPPFLAGS = -ICommon
 

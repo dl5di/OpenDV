@@ -3,6 +3,17 @@ AC_INIT([dstarrepeater], [1.0])
 AM_INIT_AUTOMAKE([-Wall -Werror -Wno-extra-portability foreign no-define subdir-objects])
 m4_ifdef([AM_PROG_AR], [AM_PROG_AR])
 
+#  XXX These need to go away as non-standard paths
+if test "x$prefix" = "xNONE"; then
+	prefix=""
+fi
+if test "x$datadir" = 'x${datarootdir}'; then
+	datadir="/home/opendv/data"
+fi
+if test "x$sysconfdir" = 'x${prefix}/etc'; then
+	sysconfdir="/home/opendv/dstarrepeater"
+fi
+
 # Checks for programs.
 AC_PROG_CXX
 AC_PROG_CC
