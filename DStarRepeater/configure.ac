@@ -58,21 +58,10 @@ AS_IF([test "x$with_gpio" != xno],
 )
 
 # Checks for header files.
-AC_CHECK_HEADERS([arpa/inet.h fcntl.h netdb.h netinet/in.h stdlib.h string.h sys/ioctl.h sys/param.h sys/socket.h sys/time.h termios.h unistd.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
-AC_CHECK_HEADER_STDBOOL
-AC_TYPE_PID_T
-AC_TYPE_SIZE_T
-AC_TYPE_SSIZE_T
-AC_TYPE_UINT16_T
-AC_TYPE_UINT8_T
 
 # Checks for library functions.
-AC_FUNC_ERROR_AT_LINE
-AC_FUNC_FORK
-AC_FUNC_MALLOC
-AC_CHECK_FUNCS([gethostbyname inet_ntoa memset select socket strchr])
 
 AC_CONFIG_FILES([LinuxUSB/Makefile
                  Makefile])
