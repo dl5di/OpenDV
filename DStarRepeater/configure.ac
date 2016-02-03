@@ -3,6 +3,8 @@ AC_INIT([dstarrepeater], [1.0])
 AM_INIT_AUTOMAKE([-Wall -Werror -Wno-extra-portability foreign no-define subdir-objects])
 m4_ifdef([AM_PROG_AR], [AM_PROG_AR])
 
+AM_MAINTAINER_MODE
+
 #  XXX These need to go away as non-standard paths
 if test "x$prefix" = "xNONE"; then
 	prefix=""
@@ -13,6 +15,14 @@ fi
 if test "x$sysconfdir" = 'x${prefix}/etc'; then
 	sysconfdir="/home/opendv/dstarrepeater"
 fi
+
+AC_ARG_WITH([gui],
+  [AS_HELP_STRING([--without-gui],
+    [disable building the GUI programs])])
+AS_IF([test "x$with_gui" != "xno"],
+  [AM_CONDITIONAL([WITH_GUI], true)],
+  [AM_CONDITIONAL([WITH_GUI], false)]
+)
 
 # Checks for programs.
 AC_PROG_CXX
@@ -36,9 +46,10 @@ if test "$wxWin" != 1; then
 		wxWidgets version is $reqwx or above.
 		])
 fi
- 
+
 CXXFLAGS="$CXXFLAGS $WX_CXXFLAGS_ONLY"
 CFLAGS="$CFLAGS $WX_CFLAGS_ONLY"
+
 AC_SUBST([GUI_WX_CPPFLAGS], $WX_CPPFLAGS)
 AC_SUBST([GUI_WX_LIBS], $WX_LIBS)
 
@@ -59,7 +70,7 @@ AC_ARG_WITH([gpio],
 GPIO=
 AS_IF([test "x$with_gpio" != xno],
   [AC_CHECK_LIB([wiringPi], [wiringPiSetup],
-    [AC_DEFINE([GPIO], [1], [Define if you have GPIO])
+    [AC_DEFINE([GPIO])
     AM_CONDITIONAL([WITH_GPIO], true)
     ],
     [AC_MSG_FAILURE(
