@@ -1,6 +1,6 @@
 AC_PREREQ([2.69])
 AC_INIT([dstarrepeater], [1.0])
-AM_INIT_AUTOMAKE([-Wall -Werror -Wno-extra-portability foreign no-define])
+AM_INIT_AUTOMAKE([-Wall -Werror -Wno-extra-portability foreign no-define subdir-objects])
 m4_ifdef([AM_PROG_AR], [AM_PROG_AR])
 
 # Checks for programs.
@@ -26,10 +26,14 @@ if test "$wxWin" != 1; then
 		])
 fi
  
-CPPFLAGS="$CPPFLAGS $WX_CPPFLAGS"
 CXXFLAGS="$CXXFLAGS $WX_CXXFLAGS_ONLY"
 CFLAGS="$CFLAGS $WX_CFLAGS_ONLY"
-LIBS="$LIBS $WX_LIBS"
+AC_SUBST([GUI_WX_CPPFLAGS], $WX_CPPFLAGS)
+AC_SUBST([GUI_WX_LIBS], $WX_LIBS)
+
+WX_CONFIG_CHECK($reqwx, wxWin=1, wxWin=0, [base])
+AC_SUBST([BASE_WX_CPPFLAGS], $WX_CPPFLAGS)
+AC_SUBST([BASE_WX_LIBS], $WX_LIBS)
 
 PKG_CHECK_MODULES([LIBUSB], [libusb-1.0 >= 1.0.0])
 
@@ -70,15 +74,6 @@ AC_FUNC_FORK
 AC_FUNC_MALLOC
 AC_CHECK_FUNCS([gethostbyname inet_ntoa memset select socket strchr])
 
-#AC_CONFIG_FILES([Common/Makefile
-#                 DStarRepeater/Makefile
-#                 DStarRepeaterConfig/Makefile
-#                 Data/Makefile
-#                 GUICommon/Makefile
-#                 Makefile])
-AC_CONFIG_FILES([Common/Makefile
-		 GUICommon/Makefile
-                 LinuxUSB/Makefile
-                 DStarRepeater/Makefile
+AC_CONFIG_FILES([LinuxUSB/Makefile
                  Makefile])
 AC_OUTPUT
