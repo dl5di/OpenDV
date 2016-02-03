@@ -1,3 +1,5 @@
+DEFS += -DDATA_DIR=\"/home/opendv/data\"
+
 noinst_LIBRARIES = libcommon.a
 libcommon_a_SOURCES = AMBEFEC.cpp AnnouncementUnit.cpp ArduinoController.cpp \
                    BeaconUnit.cpp CallsignList.cpp CCITTChecksum.cpp \
@@ -8,7 +10,7 @@ libcommon_a_SOURCES = AMBEFEC.cpp AnnouncementUnit.cpp ArduinoController.cpp \
                    DVRPTRV3Controller.cpp DVTOOLFileReader.cpp \
                    DVTOOLFileWriter.cpp ExternalController.cpp FIRFilter.cpp \
                    GatewayProtocolHandler.cpp GMSKController.cpp GMSKModem.cpp \
-                   GMSKModemLibUsb.cpp Golay.cpp GPIOController.cpp \
+                   GMSKModemLibUsb.cpp Golay.cpp \
                    HardwareController.cpp HeaderData.cpp K8055Controller.cpp \
                    LogEvent.cpp Logger.cpp MMDVMController.cpp Modem.cpp \
                    OutputQueue.cpp RepeaterProtocolHandler.cpp \
@@ -18,4 +20,8 @@ libcommon_a_SOURCES = AMBEFEC.cpp AnnouncementUnit.cpp ArduinoController.cpp \
                    SoundCardReaderWriter.cpp SplitController.cpp \
                    TCPReaderWriter.cpp Timer.cpp UDPReaderWriter.cpp \
                    URIUSBController.cpp Utils.cpp
-libcommon_a_CPPFLAGS = -DDATA_DIR=\'/home/opendv/data\'
+
+if WITH_GPIO
+	libcommon_a_SOURCES += GPIOController.cpp
+	libcommon_a_CPPFLAGS += -DGPIO
+endif

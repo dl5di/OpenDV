@@ -44,10 +44,13 @@ AC_ARG_WITH([gpio],
 GPIO=
 AS_IF([test "x$with_gpio" != xno],
   [AC_CHECK_LIB([wiringPi], [wiringPiSetup],
-    [AC_DEFINE([GPIO], [1], [Define if you have GPIO])],
+    [AC_DEFINE([GPIO], [1], [Define if you have GPIO])
+    AM_CONDITIONAL([WITH_GPIO], true)
+    ],
     [AC_MSG_FAILURE(
       [--with-gpio was given but the wiringPi library is not available])],
-  )]
+  )],
+  [AM_CONDITIONAL([WITH_GPIO], false)]
 )
 
 # Checks for header files.
