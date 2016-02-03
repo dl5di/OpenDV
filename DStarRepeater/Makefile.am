@@ -83,3 +83,38 @@ dstarrepeaterd_SOURCES = DStarRepeater/DStarRepeaterD.cpp \
                          $(CONTROLLER_SRCS)
 dstarrepeaterd_LDADD = $(BASE_WX_LIBS) $(LIBUSB_LIBS) $(ALSA_LIBS)
 dstarrepeaterd_CPPFLAGS = -ICommon $(BASE_WX_CPPFLAGS)
+
+bin_PROGRAMS += dstarrepeaterconfig
+dstarrepeaterconfig_SOURCES = \
+	DStarRepeaterConfig/DStarRepeaterConfigActiveHangSet.cpp \
+	DStarRepeaterConfig/DStarRepeaterConfigAnnouncementSet.cpp \
+	DStarRepeaterConfig/DStarRepeaterConfigApp.cpp \
+	DStarRepeaterConfig/DStarRepeaterConfigBeaconSet.cpp \
+	DStarRepeaterConfig/DStarRepeaterConfigCallsignSet.cpp \
+	DStarRepeaterConfig/DStarRepeaterConfigControl1Set.cpp \
+	DStarRepeaterConfig/DStarRepeaterConfigControl2Set.cpp \
+	DStarRepeaterConfig/DStarRepeaterConfigControllerSet.cpp \
+	DStarRepeaterConfig/DStarRepeaterConfigDVAPSet.cpp \
+	DStarRepeaterConfig/DStarRepeaterConfigDVMegaSet.cpp \
+	DStarRepeaterConfig/DStarRepeaterConfigDVRPTR1Set.cpp \
+	DStarRepeaterConfig/DStarRepeaterConfigDVRPTR2Set.cpp \
+	DStarRepeaterConfig/DStarRepeaterConfigDVRPTR3Set.cpp \
+	DStarRepeaterConfig/DStarRepeaterConfigFrame.cpp \
+	DStarRepeaterConfig/DStarRepeaterConfigGMSKSet.cpp \
+	DStarRepeaterConfig/DStarRepeaterConfigMMDVMSet.cpp \
+	DStarRepeaterConfig/DStarRepeaterConfigModemSet.cpp \
+	DStarRepeaterConfig/DStarRepeaterConfigNetworkSet.cpp \
+	DStarRepeaterConfig/DStarRepeaterConfigSoundCardSet.cpp \
+	DStarRepeaterConfig/DStarRepeaterConfigSplitSet.cpp \
+	DStarRepeaterConfig/DStarRepeaterConfigTimesSet.cpp \
+	GUICommon/AddressTextCtrl.cpp \
+	GUICommon/CallsignTextCtrl.cpp \
+	GUICommon/MessageTextCtrl.cpp \
+	GUICommon/PortTextCtrl.cpp \
+	GUICommon/RestrictedTextCtrl.cpp \
+ 	Common/SerialPortSelector.cpp \
+	Common/DStarRepeaterConfig.cpp \
+	Common/SoundCardReaderWriter.cpp
+
+dstarrepeaterconfig_LDADD = $(GUI_WX_LIBS) $(ALSA_LIBS)
+dstarrepeaterconfig_CPPFLAGS = -ICommon -IGUICommon $(GUI_WX_CPPFLAGS)
