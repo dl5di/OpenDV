@@ -159,12 +159,7 @@ bool CGMSKModemLibUsb::open()
 			wxString text((char *) buffer, wxConvLocal, ret2);
 			version.Append(text);
 		} else if (ret2 < 0) {
-#if defined(WIN32)
-			wxString error(m_usbStrerror(), wxConvLocal);
-#else
-			wxString error(libusb_error_name(ret2), wxConvLocal);
-#endif
-			wxLogError(wxT("GET_VERSION, ret: %d, err=%s"), ret2, error.c_str());
+			::libUsbLogError(ret2, "GET_VERSION");
 			close();
 			return false;
 		}
