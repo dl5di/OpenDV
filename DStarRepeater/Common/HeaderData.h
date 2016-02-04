@@ -20,6 +20,7 @@
 #define	HeaderData_H
 
 #include <wx/wx.h>
+#include <wx/datetime.h>
 
 class CHeaderData {
 public:

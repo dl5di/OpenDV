@@ -18,7 +18,6 @@
 
 #include "DStarRepeaterStatusData.h"
 #include "DStarRepeaterRXThread.h"
-#include "DStarRepeaterApp.h"
 #include "DVAPController.h"
 #include "DStarDefines.h"
 #include "HeaderData.h"
