@@ -63,6 +63,15 @@ char*           (*CGMSKModemLibUsb::m_usbStrerror)() = NULL;
 int             (*CGMSKModemLibUsb::m_usbClose)(usb_dev_handle*) = NULL;
 #endif
 
+static inline void libUsbLogError(int ret, const char *message) {
+#if defined(WIN32)
+			wxString errorText(m_usbStrerror(), wxConvLocal);
+#else
+			wxString errorText(libusb_error_name(ret), wxConvLocal);
+#endif
+			wxLogMessage(wxT("%s, ret: %d, err=%s"), message, ret, errorText.c_str());
+}
+
 CGMSKModemLibUsb::CGMSKModemLibUsb(unsigned int address) :
 m_address(address),
 m_dev(NULL),
@@ -188,12 +197,7 @@ bool CGMSKModemLibUsb::readHeader(unsigned char* header, unsigned int length)
 	while (offset < RADIO_HEADER_LENGTH_BYTES) {
 		int ret = io(0xC0, GET_HEADER, 0, 0, (header + offset), 8, USB_TIMEOUT);
 		if (ret < 0) {
-#if defined(WIN32)
-			wxString errorText(m_usbStrerror(), wxConvLocal);
-#else
-			wxString errorText(libusb_error_name(ret), wxConvLocal);
-#endif
-			wxLogMessage(wxT("GET_HEADER, ret: %d, err=%s"), ret, errorText.c_str());
+			::libUsbLogError(ret, "GET_HEADER");
 
 			if (ret == -19)				// -ENODEV
 				return false;
@@ -208,12 +212,7 @@ bool CGMSKModemLibUsb::readHeader(unsigned char* header, unsigned int length)
 			unsigned char status;
 			int ret = io(0xC0, GET_AD_STATUS, 0, 0, &status, 1, USB_TIMEOUT);
 			if (ret < 0) {
-#if defined(WIN32)
-				wxString errorText(m_usbStrerror(), wxConvLocal);
-#else
-				wxString errorText(libusb_error_name(ret), wxConvLocal);
-#endif
-				wxLogMessage(wxT("GET_COS, ret: %d, err=%s"), ret, errorText.c_str());
+				::libUsbLogError(ret, "GET_COS");
 
 				if (ret == -19)			// -ENODEV
 					return false;
@@ -231,12 +230,7 @@ bool CGMSKModemLibUsb::readHeader(unsigned char* header, unsigned int length)
 	unsigned char status;
 	int ret = io(0xC0, GET_AD_STATUS, 0, 0, &status, 1, USB_TIMEOUT);
 	if (ret < 0) {
-#if defined(WIN32)
-		wxString errorText(m_usbStrerror(), wxConvLocal);
-#else
-		wxString errorText(libusb_error_name(ret), wxConvLocal);
-#endif
-		wxLogMessage(wxT("GET_CRC, ret: %d, err=%s"), ret, errorText.c_str());
+		::libUsbLogError(ret, "GET_CRC");
 		return false;
 	}
 
@@ -258,12 +252,7 @@ int CGMSKModemLibUsb::readData(unsigned char* data, unsigned int length, bool& e
 	int ret = io(0xC0, GET_DATA, 0, 0, data, GMSK_MODEM_DATA_LENGTH, USB_TIMEOUT);
 	if (ret < 0) {
 		if (ret == -19) {		// -ENODEV
-#if defined(WIN32)
-			wxString errorText(m_usbStrerror(), wxConvLocal);
-#else
-			wxString errorText(libusb_error_name(ret), wxConvLocal);
-#endif
-			wxLogMessage(wxT("GET_DATA, ret: %d, err=%s"), ret, errorText.c_str());
+			::libUsbLogError(ret, "GET_DATA");
 			return ret;
 		}
 
@@ -272,12 +261,7 @@ int CGMSKModemLibUsb::readData(unsigned char* data, unsigned int length, bool& e
 		unsigned char status;
 		int ret = io(0xC0, GET_AD_STATUS, 0, 0, &status, 1, USB_TIMEOUT);
 		if (ret < 0) {
-#if defined(WIN32)
-			wxString error(m_usbStrerror(), wxConvLocal);
-#else
-			wxString error(libusb_error_name(ret), wxConvLocal);
-#endif
-			wxLogMessage(wxT("LAST_FRAME, ret: %d, err=%s"), ret, error.c_str());
+			::libUsbLogError(ret, "LAST_FRAME");
 
 			if (ret == -19)		// -ENODEV
 				return ret;
@@ -310,12 +294,7 @@ TRISTATE CGMSKModemLibUsb::hasSpace()
 	unsigned char space;
 	int rc = io(0xC0, GET_REMAINSPACE, 0, 0, &space, 1, USB_TIMEOUT);
 	if (rc != 1) {
-#if defined(WIN32)
-		wxString errorText(m_usbStrerror(), wxConvLocal);
-#else
-		wxString errorText(libusb_error_name(rc), wxConvLocal);
-#endif
-		wxLogMessage(wxT("GET_REMAINSPACE, ret: %d, err=%s"), rc, errorText.c_str());
+		::libUsbLogError(rc, "GET_REMAINSPACE");
 		return STATE_UNKNOWN;
 	}
 
@@ -330,12 +309,7 @@ TRISTATE CGMSKModemLibUsb::getPTT()
 	unsigned char status;
 	int rc = io(0xC0, GET_AD_STATUS, 0, 0, &status, 1, USB_TIMEOUT);
 	if (rc < 1) {
-#if defined(WIN32)
-		wxString errorText(m_usbStrerror(), wxConvLocal);
-#else
-		wxString errorText(libusb_error_name(rc), wxConvLocal);
-#endif
-		wxLogMessage(wxT("GET_PTT, ret: %d, err=%s"), rc, errorText.c_str());
+		::libUsbLogError(rc, "GET_PTT");
 		return STATE_UNKNOWN;
 	}
 
@@ -360,12 +334,7 @@ int CGMSKModemLibUsb::writeData(unsigned char* data, unsigned int length)
 		int ret = io(0x40, PUT_DATA, 0, 0, data, GMSK_MODEM_DATA_LENGTH, USB_TIMEOUT);
 		if (ret < 0) {
 			if (ret == -19) {		// -ENODEV
-#if defined(WIN32)
-				wxString errorText(m_usbStrerror(), wxConvLocal);
-#else
-				wxString errorText(libusb_error_name(ret), wxConvLocal);
-#endif
-				wxLogMessage(wxT("PUT_DATA 1, ret: %d, err=%s"), ret, errorText.c_str());
+				::libUsbLogError(ret, "PUT_DATA 1");
 				return ret;
 			}
 
@@ -378,12 +347,7 @@ int CGMSKModemLibUsb::writeData(unsigned char* data, unsigned int length)
 		ret = io(0x40, PUT_DATA, 0, 0, (data + GMSK_MODEM_DATA_LENGTH), length - GMSK_MODEM_DATA_LENGTH, USB_TIMEOUT);
 		if (ret < 0) {
 			if (ret == -19) {		// -ENODEV
-#if defined(WIN32)
-				wxString errorText(m_usbStrerror(), wxConvLocal);
-#else
-				wxString errorText(libusb_error_name(ret), wxConvLocal);
-#endif
-				wxLogMessage(wxT("PUT_DATA 2, ret: %d, err=%s"), ret, errorText.c_str());
+				::libUsbLogError(ret, "PUT_DATA 2");
 				return ret;
 			}
 
@@ -395,12 +359,7 @@ int CGMSKModemLibUsb::writeData(unsigned char* data, unsigned int length)
 		int ret = io(0x40, PUT_DATA, 0, 0, data, length, USB_TIMEOUT);
 		if (ret < 0) {
 			if (ret == -19) {			// -ENODEV
-#if defined(WIN32)
-				wxString errorText(m_usbStrerror(), wxConvLocal);
-#else
-				wxString errorText(libusb_error_name(ret), wxConvLocal);
-#endif
-				wxLogMessage(wxT("PUT_DATA, ret: %d, err=%s"), ret, errorText.c_str());
+				::libUsbLogError(ret, "PUT_DATA");
 				return ret;
 			}
 
