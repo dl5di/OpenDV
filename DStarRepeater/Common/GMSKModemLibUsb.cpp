@@ -111,6 +111,8 @@ m_context(NULL)
 	wxLogMessage(wxT("Successfully loaded library %s"), LIBNAME.c_str());
 	
 	m_loaded = true;
+#else
+	::libusb_init(&m_context);
 #endif
 }
 
