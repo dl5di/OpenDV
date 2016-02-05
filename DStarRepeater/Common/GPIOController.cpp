@@ -30,27 +30,6 @@ CGPIOController::~CGPIOController()
 {
 }
 
-#if !defined(GPIO)
-
-bool CGPIOController::open()
-{
-	return false;
-}
-
-void CGPIOController::getDigitalInputs(bool&, bool&, bool&, bool&, bool&)
-{
-}
-
-void CGPIOController::setDigitalOutputs(bool, bool, bool, bool, bool, bool, bool, bool)
-{
-}
-
-void CGPIOController::close()
-{
-}
-
-#else
-
 #include <wiringPi.h>
 
 bool CGPIOController::open()
@@ -189,5 +168,3 @@ void CGPIOController::setDigitalOutputs(bool outp1, bool outp2, bool outp3, bool
 void CGPIOController::close()
 {
 }
-
-#endif

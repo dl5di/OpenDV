@@ -13,3 +13,12 @@ Release
 HID
 WinUSB
 portaudio
+Makefile
+autom4te.cache/
+config.*
+m4/
+stamp-h?
+.deps/
+.dirstamp
+*.o
+*~
