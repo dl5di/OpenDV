@@ -109,7 +109,6 @@
     <ClCompile Include="GMSKModemLibUsb.cpp" />
     <ClCompile Include="GMSKModemWinUSB.cpp" />
     <ClCompile Include="Golay.cpp" />
-    <ClCompile Include="GPIOController.cpp" />
     <ClCompile Include="HardwareController.cpp" />
     <ClCompile Include="HeaderData.cpp" />
     <ClCompile Include="K8055Controller.cpp" />
@@ -164,7 +163,6 @@
     <ClInclude Include="GMSKModemLibUsb.h" />
     <ClInclude Include="GMSKModemWinUSB.h" />
     <ClInclude Include="Golay.h" />
-    <ClInclude Include="GPIOController.h" />
     <ClInclude Include="HardwareController.h" />
     <ClInclude Include="HeaderData.h" />
     <ClInclude Include="K8055Controller.h" />
