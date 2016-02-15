@@ -89,9 +89,6 @@
     <ClCompile Include="Golay.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GPIOController.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="HardwareController.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -248,9 +245,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Golay.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GPIOController.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="HardwareController.h">
