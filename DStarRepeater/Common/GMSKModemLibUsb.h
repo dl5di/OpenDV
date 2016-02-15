@@ -73,13 +73,13 @@ private:
 	static char*           (*m_usbStrerror)();
 	static int             (*m_usbClose)(usb_dev_handle*);
 
-	int io(int requestType, int request, int value, int index, char* bytes, int size, int timeout);
 #else
 	libusb_context*          m_context;
-	libusb_device_handle*    m_handle;
+	libusb_device_handle*    m_dev;
 
-	int io(uint8_t requestType, uint8_t request, uint16_t value, uint16_t index, unsigned char* data, uint16_t length, unsigned int timeout);
 #endif
+	int io(uint8_t requestType, uint8_t request, uint16_t value, uint16_t index, unsigned char* data, uint16_t length, unsigned int timeout);
+
 	bool                     m_brokenSpace;
 
 	bool openModem();
