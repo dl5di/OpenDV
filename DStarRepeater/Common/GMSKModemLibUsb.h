@@ -54,6 +54,9 @@ public:
 	virtual int  writeData(unsigned char* data, unsigned int length);
 
 	virtual void close();
+#if defined(WIN32)
+	static char*           (*m_usbStrerror)();
+#endif
 
 private:
 	unsigned int             m_address;
@@ -69,8 +72,7 @@ private:
 	static usb_bus*        (*m_usbGetBusses)();
 	static usb_dev_handle* (*m_usbOpen)(struct usb_device*);
 	static int             (*m_usbSetConfiguration)(usb_dev_handle*, int);
-	static int             (*m_usbControlMsg)(usb_dev_handle*, int, int, int, int, char*, int, int);
-	static char*           (*m_usbStrerror)();
+	static int             (*m_usbControlMsg)(usb_dev_handle*, int, int, int, int, unsigned char*, int, int);
 	static int             (*m_usbClose)(usb_dev_handle*);
 
 #else
