@@ -58,14 +58,14 @@ int             (*CGMSKModemLibUsb::m_usbFindDevices)() = NULL;
 usb_bus*        (*CGMSKModemLibUsb::m_usbGetBusses)() = NULL;
 usb_dev_handle* (*CGMSKModemLibUsb::m_usbOpen)(struct usb_device*) = NULL;
 int             (*CGMSKModemLibUsb::m_usbSetConfiguration)(usb_dev_handle*, int) = NULL;
-int             (*CGMSKModemLibUsb::m_usbControlMsg)(usb_dev_handle*, int, int, int, int, char*, int, int) = NULL;
+int             (*CGMSKModemLibUsb::m_usbControlMsg)(usb_dev_handle*, int, int, int, int, unsigned char*, int, int) = NULL;
 char*           (*CGMSKModemLibUsb::m_usbStrerror)() = NULL;
 int             (*CGMSKModemLibUsb::m_usbClose)(usb_dev_handle*) = NULL;
 #endif
 
-static inline void libUsbLogError(int ret, const char *message) {
+static void libUsbLogError(int ret, const char *message) {
 #if defined(WIN32)
-			wxString errorText(m_usbStrerror(), wxConvLocal);
+			wxString errorText(CGMSKModemLibUsb::m_usbStrerror(), wxConvLocal);
 #else
 			wxString errorText(libusb_error_name(ret), wxConvLocal);
 #endif
@@ -75,9 +75,9 @@ static inline void libUsbLogError(int ret, const char *message) {
 CGMSKModemLibUsb::CGMSKModemLibUsb(unsigned int address) :
 m_address(address),
 m_dev(NULL),
-m_brokenSpace(false),
+m_brokenSpace(false)
 #if !defined(WIN32)
-m_context(NULL)
+,m_context(NULL)
 #endif
 {
 
@@ -113,7 +113,7 @@ m_context(NULL)
 	m_usbGetBusses        = (usb_bus* (*)())ptr4;
 	m_usbOpen             = (usb_dev_handle* (*)(struct usb_device*))ptr5;
 	m_usbSetConfiguration = (int      (*)(usb_dev_handle*, int))ptr6;
-	m_usbControlMsg       = (int      (*)(usb_dev_handle*, int, int, int, int, char*, int, int))ptr7;
+	m_usbControlMsg       = (int      (*)(usb_dev_handle*, int, int, int, int, unsigned char*, int, int))ptr7;
 	m_usbStrerror         = (char*    (*)())ptr8;
 	m_usbClose            = (int      (*)(usb_dev_handle*))ptr9;
 
@@ -421,7 +421,7 @@ int CGMSKModemLibUsb::io(uint8_t requestType, uint8_t request, uint16_t value,
                          unsigned int timeout)
 {
 	wxASSERT(m_dev != NULL);
-	wxASSERT(bytes != NULL);
+	wxASSERT(data != NULL);
 
 	int ret = 0;
 	for (unsigned int i = 0U; i < 4U; i++) {
