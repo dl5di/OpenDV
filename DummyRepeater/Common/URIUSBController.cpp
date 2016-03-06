@@ -37,7 +37,11 @@ const char HID_IR0_VU    = 0x01;	// Volume-Up, CTCSS_DET
 #if defined(__WINDOWS__)
 
 #include <Setupapi.h>
+#if _MSC_VER == 1900
+#include <hidsdi.h>
+#else
 #include "HID.h"
+#endif
 
 const ULONG USB_BUFSIZE = 5UL;
 

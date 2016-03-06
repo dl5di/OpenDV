@@ -1,0 +1,179 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{3753EF20-2330-415E-B933-2560A474498B}</ProjectGuid>
+    <RootNamespace>Common</RootNamespace>
+    <Keyword>Win32Proj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>14.0.24720.0</_ProjectFileVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
+    <IntDir>$(Configuration)\</IntDir>
+    <IncludePath>$(WXWIN)\include;$(IncludePath);$(WXWIN)\lib\vc_dll\mswud</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
+    <IntDir>$(Configuration)\</IntDir>
+    <IncludePath>$(WXWIN)\include;$(IncludePath);$(WXWIN)\lib\vc_dll\mswu</IncludePath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <PreBuildEvent>
+      <Command />
+    </PreBuildEvent>
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\WinUSB;$(SolutionDir)..\HID;$(SolutionDir)..\portaudio\include;$(WXWIN)\include\msvc;$(WXWIN)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;WINVER=0x0400;__WXMSW__;WXUSINGDLL;wxUSE_GUI=1;__WXDEBUG__;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <IgnoreStandardIncludePath>false</IgnoreStandardIncludePath>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PrecompiledHeader />
+      <WarningLevel>Level4</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <PreBuildEvent>
+      <Command />
+    </PreBuildEvent>
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\WinUSB;$(SolutionDir)..\HID;$(SolutionDir)..\portaudio\include;$(WXWIN)\include\msvc;$(WXWIN)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;_WINDOWS;WINVER=0x0400;__WXMSW__;WXUSINGDLL;wxUSE_GUI=1;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PrecompiledHeader />
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="AddressTextCtrl.cpp" />
+    <ClCompile Include="ArduinoController.cpp" />
+    <ClCompile Include="Bleeper.cpp" />
+    <ClCompile Include="CallsignTextCtrl.cpp" />
+    <ClCompile Include="CCITTChecksumReverse.cpp" />
+    <ClCompile Include="DongleThread.cpp" />
+    <ClCompile Include="DummyController.cpp" />
+    <ClCompile Include="DV3000Controller.cpp" />
+    <ClCompile Include="DV3000NetworkController.cpp" />
+    <ClCompile Include="DV3000SerialController.cpp" />
+    <ClCompile Include="DV3000Thread.cpp" />
+    <ClCompile Include="DVDongleController.cpp" />
+    <ClCompile Include="DVDongleThread.cpp" />
+    <ClCompile Include="DVMEGAAMBEController.cpp" />
+    <ClCompile Include="DVMEGAAMBEThread.cpp" />
+    <ClCompile Include="ExternalController.cpp" />
+    <ClCompile Include="FIRFilter.cpp" />
+    <ClCompile Include="GPIOController.cpp" />
+    <ClCompile Include="HardwareController.cpp" />
+    <ClCompile Include="HeaderData.cpp" />
+    <ClCompile Include="K8055Controller.cpp" />
+    <ClCompile Include="Logger.cpp" />
+    <ClCompile Include="MessageData.cpp" />
+    <ClCompile Include="MessageTextCtrl.cpp" />
+    <ClCompile Include="PortTextCtrl.cpp" />
+    <ClCompile Include="RepeaterProtocolHandler.cpp" />
+    <ClCompile Include="RestrictedTextCtrl.cpp" />
+    <ClCompile Include="SerialDataController.cpp" />
+    <ClCompile Include="SerialLineController.cpp" />
+    <ClCompile Include="SerialPortSelector.cpp" />
+    <ClCompile Include="SlowDataDecoder.cpp" />
+    <ClCompile Include="SlowDataEncoder.cpp" />
+    <ClCompile Include="SoundCardReaderWriter.cpp" />
+    <ClCompile Include="STARDVController.cpp" />
+    <ClCompile Include="STARDVNetworkController.cpp" />
+    <ClCompile Include="STARDVThread.cpp" />
+    <ClCompile Include="Timer.cpp" />
+    <ClCompile Include="UDPReaderWriter.cpp" />
+    <ClCompile Include="URIUSBController.cpp" />
+    <ClCompile Include="Utils.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="AddressTextCtrl.h" />
+    <ClInclude Include="ArduinoController.h" />
+    <ClInclude Include="AudioCallback.h" />
+    <ClInclude Include="Bleeper.h" />
+    <ClInclude Include="CallsignTextCtrl.h" />
+    <ClInclude Include="CCITTChecksumReverse.h" />
+    <ClInclude Include="DecodeCallback.h" />
+    <ClInclude Include="DongleThread.h" />
+    <ClInclude Include="DStarDefines.h" />
+    <ClInclude Include="DummyController.h" />
+    <ClInclude Include="DV3000Controller.h" />
+    <ClInclude Include="DV3000NetworkController.h" />
+    <ClInclude Include="DV3000SerialController.h" />
+    <ClInclude Include="DV3000Thread.h" />
+    <ClInclude Include="DVDongleController.h" />
+    <ClInclude Include="DVDongleThread.h" />
+    <ClInclude Include="DVMEGAAMBEController.h" />
+    <ClInclude Include="DVMEGAAMBEThread.h" />
+    <ClInclude Include="EncodeCallback.h" />
+    <ClInclude Include="ExternalController.h" />
+    <ClInclude Include="FIRFilter.h" />
+    <ClInclude Include="GPIOController.h" />
+    <ClInclude Include="HardwareController.h" />
+    <ClInclude Include="HeaderData.h" />
+    <ClInclude Include="K8055Controller.h" />
+    <ClInclude Include="Logger.h" />
+    <ClInclude Include="MessageData.h" />
+    <ClInclude Include="MessageTextCtrl.h" />
+    <ClInclude Include="PortTextCtrl.h" />
+    <ClInclude Include="RepeaterProtocolHandler.h" />
+    <ClInclude Include="RestrictedTextCtrl.h" />
+    <ClInclude Include="RingBuffer.h" />
+    <ClInclude Include="SerialDataController.h" />
+    <ClInclude Include="SerialLineController.h" />
+    <ClInclude Include="SerialPortSelector.h" />
+    <ClInclude Include="SlowDataDecoder.h" />
+    <ClInclude Include="SlowDataEncoder.h" />
+    <ClInclude Include="SoundCardReaderWriter.h" />
+    <ClInclude Include="STARDVController.h" />
+    <ClInclude Include="STARDVNetworkController.h" />
+    <ClInclude Include="STARDVThread.h" />
+    <ClInclude Include="Timer.h" />
+    <ClInclude Include="UDPReaderWriter.h" />
+    <ClInclude Include="URIUSBController.h" />
+    <ClInclude Include="Utils.h" />
+    <ClInclude Include="Version.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
