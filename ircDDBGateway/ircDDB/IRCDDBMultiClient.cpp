@@ -279,11 +279,11 @@ bool CIRCDDBMultiClient::receiveUser(wxString & userCallsign, wxString & repeate
 
 	//wxLogMessage(wxT("CIRCDDBMultiClient::receiveUser : %s"), item->toString());
 
-	userCallsign = item->getUser().Clone();
-	repeaterCallsign = item->getRepeater().Clone();
-	gatewayCallsign = item->getGateway().Clone();
-	address = item->getAddress().Clone();
-	timeStamp = item->getTimestamp().Clone();
+	userCallsign = wxString(item->getUser().c_str());
+	repeaterCallsign = wxString(item->getRepeater().c_str());
+	gatewayCallsign = wxString(item->getGateway().c_str());
+	address = wxString(item->getAddress().c_str());
+	timeStamp = wxString(item->getTimestamp().c_str());
 	delete item;
 	return true;
 }

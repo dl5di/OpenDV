@@ -38,11 +38,11 @@ public:
 							const wxString& address,
 							const wxString& timestamp,
 							IRCDDB_RESPONSE_TYPE type) :
-		m_user(user.Clone()),
-		m_repeater(repeater.Clone()),
-		m_gateway(gateway.Clone()),
-		m_address(address.Clone()),
-		m_timestamp(timestamp.Clone()),
+		m_user(wxString(user.c_str())),
+		m_repeater(wxString(repeater.c_str())),
+		m_gateway(wxString(gateway.c_str())),
+		m_address(wxString(address.c_str())),
+		m_timestamp(wxString(timestamp.c_str())),
 		m_type(type),
 		m_responseCount(0)
 	{
@@ -93,13 +93,13 @@ public:
 	{
 		//wxLogMessage(wxT("Before : %s"), toString());
 		if (timestamp.IsEmpty() || timestamp.Cmp(m_timestamp) >= 0) {
-			m_user = user.Clone();
-			m_repeater = repeater.Clone();
-			m_gateway = gateway.Clone();
-			m_timestamp = timestamp.Clone();
+			m_user = wxString(user.c_str());
+			m_repeater = wxString(repeater.c_str());
+			m_gateway = wxString(gateway.c_str());
+			m_timestamp = wxString(timestamp.c_str());
 
 			if(m_address.IsEmpty() && !address.IsEmpty())
-				m_address = address.Clone();
+				m_address = wxString(address.c_str());
 		}
 		//wxLogMessage(wxT("After : %s"), toString());
 	}
