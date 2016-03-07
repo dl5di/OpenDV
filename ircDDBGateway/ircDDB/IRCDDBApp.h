@@ -28,6 +28,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "IRCApplication.h"
 
 #include <wx/wx.h>
+#include <wx/datetime.h>
 
 #ifdef __UNIT_TEST__
 	class IRCDDBAppTest;

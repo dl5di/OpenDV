@@ -18,6 +18,8 @@
 
 #include "HeaderData.h"
 
+#include <wx/datetime.h>
+
 #include "CCITTChecksum.h"
 #include "DStarDefines.h"
 #include "Utils.h"
