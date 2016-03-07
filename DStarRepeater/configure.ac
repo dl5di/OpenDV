@@ -33,7 +33,7 @@ AC_PROG_RANLIB
 
 # Checks for libraries.
 AM_OPTIONS_WXCONFIG
-reqwx=2.4.0
+reqwx=3.0.0
 AM_PATH_WXCONFIG($reqwx, wxWin=1)
 if test "$wxWin" != 1; then
 	AC_MSG_ERROR([

@@ -5089,7 +5089,7 @@ else
 fi
 
 
-reqwx=2.4.0
+reqwx=3.0.0
 
 
     if test x${WX_CONFIG_NAME+set} != xset ; then
