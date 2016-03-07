@@ -25,6 +25,7 @@
 #include <wx/textfile.h>
 #include <wx/cmdline.h>
 #include <signal.h>
+#include <iostream>
 
 #if defined(__WINDOWS__)
 #include <Windows.h>
