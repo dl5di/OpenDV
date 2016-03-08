@@ -12,6 +12,7 @@
  */
 
 #include "GPIOController.h"
+#include <wiringPi.h>
 
 CGPIOController::CGPIOController(unsigned int config) :
 m_config(config),
@@ -29,29 +30,6 @@ m_outp8(false)
 CGPIOController::~CGPIOController()
 {
 }
-
-#if !defined(GPIO)
-
-bool CGPIOController::open()
-{
-	return false;
-}
-
-void CGPIOController::getDigitalInputs(bool&, bool&, bool&, bool&, bool&)
-{
-}
-
-void CGPIOController::setDigitalOutputs(bool, bool, bool, bool, bool, bool, bool, bool)
-{
-}
-
-void CGPIOController::close()
-{
-}
-
-#else
-
-#include <wiringPi.h>
 
 bool CGPIOController::open()
 {
@@ -189,5 +167,3 @@ void CGPIOController::setDigitalOutputs(bool outp1, bool outp2, bool outp3, bool
 void CGPIOController::close()
 {
 }
-
-#endif
