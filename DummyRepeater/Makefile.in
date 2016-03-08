@@ -15,6 +15,7 @@
 @SET_MAKE@
 
 
+
 VPATH = @srcdir@
 am__is_gnu_make = { \
   if test -z '$(MAKELEVEL)'; then \
@@ -87,16 +88,21 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
-bin_PROGRAMS = dummyrepeater$(EXEEXT)
+bin_PROGRAMS = dummyrepeater$(EXEEXT) $(am__EXEEXT_1) $(am__EXEEXT_2) \
+	$(am__EXEEXT_3)
 @WITH_GPIO_TRUE@am__append_1 = Common/GPIOController.cpp
 @WITH_GPIO_TRUE@am__append_2 = -lwiringPi
+@WITH_STARDV_TRUE@am__append_3 = dvemu
+@WITH_AMBESERVER_TRUE@am__append_4 = AMBEserver
+@WITH_AMBESERVER_TRUE@@WITH_GPIO_TRUE@am__append_5 = dv3000d
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 DIST_COMMON = $(srcdir)/Makefile.am $(top_srcdir)/configure \
-	$(am__configure_deps) $(am__DIST_COMMON)
+	$(am__configure_deps) $(am__dist_init_d_SCRIPTS_DIST) \
+	$(am__DIST_COMMON)
 am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
  configure.lineno config.status.lineno
 mkinstalldirs = $(install_sh) -d
@@ -151,8 +157,16 @@ am_libCommon_a_OBJECTS = Common/libCommon_a-AddressTextCtrl.$(OBJEXT) \
 	Common/libCommon_a-URIUSBController.$(OBJEXT) \
 	Common/libCommon_a-Utils.$(OBJEXT)
 libCommon_a_OBJECTS = $(am_libCommon_a_OBJECTS)
-am__installdirs = "$(DESTDIR)$(bindir)"
+@WITH_STARDV_TRUE@am__EXEEXT_1 = dvemu$(EXEEXT)
+@WITH_AMBESERVER_TRUE@am__EXEEXT_2 = AMBEserver$(EXEEXT)
+@WITH_AMBESERVER_TRUE@@WITH_GPIO_TRUE@am__EXEEXT_3 = dv3000d$(EXEEXT)
+am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(init_ddir)"
 PROGRAMS = $(bin_PROGRAMS)
+am__AMBEserver_SOURCES_DIST = DV3000/AMBEserver.c
+@WITH_AMBESERVER_TRUE@am_AMBEserver_OBJECTS =  \
+@WITH_AMBESERVER_TRUE@	DV3000/AMBEserver-AMBEserver.$(OBJEXT)
+AMBEserver_OBJECTS = $(am_AMBEserver_OBJECTS)
+AMBEserver_DEPENDENCIES =
 am__dummyrepeater_SOURCES_DIST = DummyRepeater/DummyRepeaterApp.cpp \
 	DummyRepeater/DummyRepeaterBleepSet.cpp \
 	DummyRepeater/DummyRepeaterCallsignSet.cpp \
@@ -199,6 +213,44 @@ am__DEPENDENCIES_1 =
 dummyrepeater_DEPENDENCIES = libCommon.a $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1)
+am__dv3000d_SOURCES_DIST = DV3000/dv3000d.c
+@WITH_AMBESERVER_TRUE@@WITH_GPIO_TRUE@am_dv3000d_OBJECTS = DV3000/dv3000d-dv3000d.$(OBJEXT)
+dv3000d_OBJECTS = $(am_dv3000d_OBJECTS)
+dv3000d_DEPENDENCIES =
+am__dvemu_SOURCES_DIST = STARDV/dvemu.cpp STARDV/sdvtools.cpp
+@WITH_STARDV_TRUE@am_dvemu_OBJECTS = STARDV/dvemu-dvemu.$(OBJEXT) \
+@WITH_STARDV_TRUE@	STARDV/dvemu-sdvtools.$(OBJEXT)
+dvemu_OBJECTS = $(am_dvemu_OBJECTS)
+dvemu_DEPENDENCIES =
+am__dist_init_d_SCRIPTS_DIST = DV3000/init.d/AMBEserver
+am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
+am__vpath_adj = case $$p in \
+    $(srcdir)/*) f=`echo "$$p" | sed "s|^$$srcdirstrip/||"`;; \
+    *) f=$$p;; \
+  esac;
+am__strip_dir = f=`echo $$p | sed -e 's|^.*/||'`;
+am__install_max = 40
+am__nobase_strip_setup = \
+  srcdirstrip=`echo "$(srcdir)" | sed 's/[].[^$$\\*|]/\\\\&/g'`
+am__nobase_strip = \
+  for p in $$list; do echo "$$p"; done | sed -e "s|$$srcdirstrip/||"
+am__nobase_list = $(am__nobase_strip_setup); \
+  for p in $$list; do echo "$$p $$p"; done | \
+  sed "s| $$srcdirstrip/| |;"' / .*\//!s/ .*/ ./; s,\( .*\)/[^/]*$$,\1,' | \
+  $(AWK) 'BEGIN { files["."] = "" } { files[$$2] = files[$$2] " " $$1; \
+    if (++n[$$2] == $(am__install_max)) \
+      { print $$2, files[$$2]; n[$$2] = 0; files[$$2] = "" } } \
+    END { for (dir in files) print dir, files[dir] }'
+am__base_list = \
+  sed '$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;s/\n/ /g' | \
+  sed '$$!N;$$!N;$$!N;$$!N;s/\n/ /g'
+am__uninstall_files_from_dir = { \
+  test -z "$$files" \
+    || { test ! -d "$$dir" && test ! -f "$$dir" && test ! -r "$$dir"; } \
+    || { echo " ( cd '$$dir' && rm -f" $$files ")"; \
+         $(am__cd) "$$dir" && rm -f $$files; }; \
+  }
+SCRIPTS = $(dist_init_d_SCRIPTS)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -219,6 +271,18 @@ AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
 am__v_lt_0 = --silent
 am__v_lt_1 = 
+COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
+	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+AM_V_CC = $(am__v_CC_@AM_V@)
+am__v_CC_ = $(am__v_CC_@AM_DEFAULT_V@)
+am__v_CC_0 = @echo "  CC      " $@;
+am__v_CC_1 = 
+CCLD = $(CC)
+LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
+AM_V_CCLD = $(am__v_CCLD_@AM_V@)
+am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
+am__v_CCLD_0 = @echo "  CCLD    " $@;
+am__v_CCLD_1 = 
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
 AM_V_CXX = $(am__v_CXX_@AM_V@)
@@ -232,9 +296,11 @@ AM_V_CXXLD = $(am__v_CXXLD_@AM_V@)
 am__v_CXXLD_ = $(am__v_CXXLD_@AM_DEFAULT_V@)
 am__v_CXXLD_0 = @echo "  CXXLD   " $@;
 am__v_CXXLD_1 = 
-SOURCES = $(libCommon_a_SOURCES) $(dummyrepeater_SOURCES)
-DIST_SOURCES = $(libCommon_a_SOURCES) \
-	$(am__dummyrepeater_SOURCES_DIST)
+SOURCES = $(libCommon_a_SOURCES) $(AMBEserver_SOURCES) \
+	$(dummyrepeater_SOURCES) $(dv3000d_SOURCES) $(dvemu_SOURCES)
+DIST_SOURCES = $(libCommon_a_SOURCES) $(am__AMBEserver_SOURCES_DIST) \
+	$(am__dummyrepeater_SOURCES_DIST) $(am__dv3000d_SOURCES_DIST) \
+	$(am__dvemu_SOURCES_DIST)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -372,6 +438,7 @@ host_alias = @host_alias@
 htmldir = @htmldir@
 includedir = @includedir@
 infodir = @infodir@
+init_ddir = @init_ddir@
 install_sh = @install_sh@
 libdir = @libdir@
 libexecdir = @libexecdir@
@@ -456,10 +523,23 @@ dummyrepeater_SOURCES = DummyRepeater/DummyRepeaterApp.cpp \
 dummyrepeater_LDADD = libCommon.a $(WX_LIBS) $(LIBUSB_LIBS) \
 	$(ALSA_LIBS) $(am__append_2)
 dummyrepeater_CPPFLAGS = -ICommon $(WX_CPPFLAGS)
+@WITH_STARDV_TRUE@dvemu_SOURCES = \
+@WITH_STARDV_TRUE@	STARDV/dvemu.cpp \
+@WITH_STARDV_TRUE@	STARDV/sdvtools.cpp
+
+@WITH_STARDV_TRUE@dvemu_CPPFLAGS = -ISTARDV
+@WITH_STARDV_TRUE@dvemu_LDADD = -lftd2xx
+@WITH_AMBESERVER_TRUE@AMBEserver_SOURCES = DV3000/AMBEserver.c
+@WITH_AMBESERVER_TRUE@dist_init_d_SCRIPTS = DV3000/init.d/AMBEserver
+@WITH_AMBESERVER_TRUE@@WITH_GPIO_TRUE@dv3000d_SOURCES = DV3000/dv3000d.c
+@WITH_AMBESERVER_TRUE@@WITH_GPIO_TRUE@dv3000d_LDADD = -lwiringPi
+@WITH_AMBESERVER_TRUE@@WITH_GPIO_TRUE@dv3000d_CPPFLAGS = -DRASPBERRY_PI
+@WITH_AMBESERVER_TRUE@@WITH_GPIO_TRUE@AMBEserver_LDADD = -lwiringPi
+@WITH_AMBESERVER_TRUE@@WITH_GPIO_TRUE@AMBEserver_CPPFLAGS = -DRASPBERRY_PI
 all: all-am
 
 .SUFFIXES:
-.SUFFIXES: .cpp .o .obj
+.SUFFIXES: .c .cpp .o .obj
 am--refresh: Makefile
 	@:
 $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__configure_deps)
@@ -627,6 +707,18 @@ uninstall-binPROGRAMS:
 
 clean-binPROGRAMS:
 	-test -z "$(bin_PROGRAMS)" || rm -f $(bin_PROGRAMS)
+DV3000/$(am__dirstamp):
+	@$(MKDIR_P) DV3000
+	@: > DV3000/$(am__dirstamp)
+DV3000/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) DV3000/$(DEPDIR)
+	@: > DV3000/$(DEPDIR)/$(am__dirstamp)
+DV3000/AMBEserver-AMBEserver.$(OBJEXT): DV3000/$(am__dirstamp) \
+	DV3000/$(DEPDIR)/$(am__dirstamp)
+
+AMBEserver$(EXEEXT): $(AMBEserver_OBJECTS) $(AMBEserver_DEPENDENCIES) $(EXTRA_AMBEserver_DEPENDENCIES) 
+	@rm -f AMBEserver$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(AMBEserver_OBJECTS) $(AMBEserver_LDADD) $(LIBS)
 DummyRepeater/$(am__dirstamp):
 	@$(MKDIR_P) DummyRepeater
 	@: > DummyRepeater/$(am__dirstamp)
@@ -693,11 +785,68 @@ Common/dummyrepeater-GPIOController.$(OBJEXT): Common/$(am__dirstamp) \
 dummyrepeater$(EXEEXT): $(dummyrepeater_OBJECTS) $(dummyrepeater_DEPENDENCIES) $(EXTRA_dummyrepeater_DEPENDENCIES) 
 	@rm -f dummyrepeater$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(dummyrepeater_OBJECTS) $(dummyrepeater_LDADD) $(LIBS)
+DV3000/dv3000d-dv3000d.$(OBJEXT): DV3000/$(am__dirstamp) \
+	DV3000/$(DEPDIR)/$(am__dirstamp)
+
+dv3000d$(EXEEXT): $(dv3000d_OBJECTS) $(dv3000d_DEPENDENCIES) $(EXTRA_dv3000d_DEPENDENCIES) 
+	@rm -f dv3000d$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(dv3000d_OBJECTS) $(dv3000d_LDADD) $(LIBS)
+STARDV/$(am__dirstamp):
+	@$(MKDIR_P) STARDV
+	@: > STARDV/$(am__dirstamp)
+STARDV/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) STARDV/$(DEPDIR)
+	@: > STARDV/$(DEPDIR)/$(am__dirstamp)
+STARDV/dvemu-dvemu.$(OBJEXT): STARDV/$(am__dirstamp) \
+	STARDV/$(DEPDIR)/$(am__dirstamp)
+STARDV/dvemu-sdvtools.$(OBJEXT): STARDV/$(am__dirstamp) \
+	STARDV/$(DEPDIR)/$(am__dirstamp)
+
+dvemu$(EXEEXT): $(dvemu_OBJECTS) $(dvemu_DEPENDENCIES) $(EXTRA_dvemu_DEPENDENCIES) 
+	@rm -f dvemu$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(dvemu_OBJECTS) $(dvemu_LDADD) $(LIBS)
+install-dist_init_dSCRIPTS: $(dist_init_d_SCRIPTS)
+	@$(NORMAL_INSTALL)
+	@list='$(dist_init_d_SCRIPTS)'; test -n "$(init_ddir)" || list=; \
+	if test -n "$$list"; then \
+	  echo " $(MKDIR_P) '$(DESTDIR)$(init_ddir)'"; \
+	  $(MKDIR_P) "$(DESTDIR)$(init_ddir)" || exit 1; \
+	fi; \
+	for p in $$list; do \
+	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	  if test -f "$$d$$p"; then echo "$$d$$p"; echo "$$p"; else :; fi; \
+	done | \
+	sed -e 'p;s,.*/,,;n' \
+	    -e 'h;s|.*|.|' \
+	    -e 'p;x;s,.*/,,;$(transform)' | sed 'N;N;N;s,\n, ,g' | \
+	$(AWK) 'BEGIN { files["."] = ""; dirs["."] = 1; } \
+	  { d=$$3; if (dirs[d] != 1) { print "d", d; dirs[d] = 1 } \
+	    if ($$2 == $$4) { files[d] = files[d] " " $$1; \
+	      if (++n[d] == $(am__install_max)) { \
+		print "f", d, files[d]; n[d] = 0; files[d] = "" } } \
+	    else { print "f", d "/" $$4, $$1 } } \
+	  END { for (d in files) print "f", d, files[d] }' | \
+	while read type dir files; do \
+	     if test "$$dir" = .; then dir=; else dir=/$$dir; fi; \
+	     test -z "$$files" || { \
+	       echo " $(INSTALL_SCRIPT) $$files '$(DESTDIR)$(init_ddir)$$dir'"; \
+	       $(INSTALL_SCRIPT) $$files "$(DESTDIR)$(init_ddir)$$dir" || exit $$?; \
+	     } \
+	; done
+
+uninstall-dist_init_dSCRIPTS:
+	@$(NORMAL_UNINSTALL)
+	@list='$(dist_init_d_SCRIPTS)'; test -n "$(init_ddir)" || exit 0; \
+	files=`for p in $$list; do echo "$$p"; done | \
+	       sed -e 's,.*/,,;$(transform)'`; \
+	dir='$(DESTDIR)$(init_ddir)'; $(am__uninstall_files_from_dir)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
 	-rm -f Common/*.$(OBJEXT)
+	-rm -f DV3000/*.$(OBJEXT)
 	-rm -f DummyRepeater/*.$(OBJEXT)
+	-rm -f STARDV/*.$(OBJEXT)
 
 distclean-compile:
 	-rm -f *.tab.c
@@ -742,6 +891,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@Common/$(DEPDIR)/libCommon_a-UDPReaderWriter.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@Common/$(DEPDIR)/libCommon_a-URIUSBController.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@Common/$(DEPDIR)/libCommon_a-Utils.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@DV3000/$(DEPDIR)/AMBEserver-AMBEserver.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@DV3000/$(DEPDIR)/dv3000d-dv3000d.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@DummyRepeater/$(DEPDIR)/dummyrepeater-DummyRepeaterApp.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@DummyRepeater/$(DEPDIR)/dummyrepeater-DummyRepeaterBleepSet.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@DummyRepeater/$(DEPDIR)/dummyrepeater-DummyRepeaterCallsignSet.Po@am__quote@
@@ -760,6 +911,52 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@DummyRepeater/$(DEPDIR)/dummyrepeater-DummyRepeaterTXEvent.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@DummyRepeater/$(DEPDIR)/dummyrepeater-DummyRepeaterThread.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@DummyRepeater/$(DEPDIR)/dummyrepeater-DummyRepeaterTimeoutSet.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@STARDV/$(DEPDIR)/dvemu-dvemu.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@STARDV/$(DEPDIR)/dvemu-sdvtools.Po@am__quote@
+
+.c.o:
+@am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
+@am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ $< &&\
+@am__fastdepCC_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c -o $@ $<
+
+.c.obj:
+@am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.obj$$||'`;\
+@am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ `$(CYGPATH_W) '$<'` &&\
+@am__fastdepCC_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
+
+DV3000/AMBEserver-AMBEserver.o: DV3000/AMBEserver.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AMBEserver_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT DV3000/AMBEserver-AMBEserver.o -MD -MP -MF DV3000/$(DEPDIR)/AMBEserver-AMBEserver.Tpo -c -o DV3000/AMBEserver-AMBEserver.o `test -f 'DV3000/AMBEserver.c' || echo '$(srcdir)/'`DV3000/AMBEserver.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) DV3000/$(DEPDIR)/AMBEserver-AMBEserver.Tpo DV3000/$(DEPDIR)/AMBEserver-AMBEserver.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='DV3000/AMBEserver.c' object='DV3000/AMBEserver-AMBEserver.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AMBEserver_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o DV3000/AMBEserver-AMBEserver.o `test -f 'DV3000/AMBEserver.c' || echo '$(srcdir)/'`DV3000/AMBEserver.c
+
+DV3000/AMBEserver-AMBEserver.obj: DV3000/AMBEserver.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AMBEserver_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT DV3000/AMBEserver-AMBEserver.obj -MD -MP -MF DV3000/$(DEPDIR)/AMBEserver-AMBEserver.Tpo -c -o DV3000/AMBEserver-AMBEserver.obj `if test -f 'DV3000/AMBEserver.c'; then $(CYGPATH_W) 'DV3000/AMBEserver.c'; else $(CYGPATH_W) '$(srcdir)/DV3000/AMBEserver.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) DV3000/$(DEPDIR)/AMBEserver-AMBEserver.Tpo DV3000/$(DEPDIR)/AMBEserver-AMBEserver.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='DV3000/AMBEserver.c' object='DV3000/AMBEserver-AMBEserver.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AMBEserver_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o DV3000/AMBEserver-AMBEserver.obj `if test -f 'DV3000/AMBEserver.c'; then $(CYGPATH_W) 'DV3000/AMBEserver.c'; else $(CYGPATH_W) '$(srcdir)/DV3000/AMBEserver.c'; fi`
+
+DV3000/dv3000d-dv3000d.o: DV3000/dv3000d.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dv3000d_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT DV3000/dv3000d-dv3000d.o -MD -MP -MF DV3000/$(DEPDIR)/dv3000d-dv3000d.Tpo -c -o DV3000/dv3000d-dv3000d.o `test -f 'DV3000/dv3000d.c' || echo '$(srcdir)/'`DV3000/dv3000d.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) DV3000/$(DEPDIR)/dv3000d-dv3000d.Tpo DV3000/$(DEPDIR)/dv3000d-dv3000d.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='DV3000/dv3000d.c' object='DV3000/dv3000d-dv3000d.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dv3000d_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o DV3000/dv3000d-dv3000d.o `test -f 'DV3000/dv3000d.c' || echo '$(srcdir)/'`DV3000/dv3000d.c
+
+DV3000/dv3000d-dv3000d.obj: DV3000/dv3000d.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dv3000d_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT DV3000/dv3000d-dv3000d.obj -MD -MP -MF DV3000/$(DEPDIR)/dv3000d-dv3000d.Tpo -c -o DV3000/dv3000d-dv3000d.obj `if test -f 'DV3000/dv3000d.c'; then $(CYGPATH_W) 'DV3000/dv3000d.c'; else $(CYGPATH_W) '$(srcdir)/DV3000/dv3000d.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) DV3000/$(DEPDIR)/dv3000d-dv3000d.Tpo DV3000/$(DEPDIR)/dv3000d-dv3000d.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='DV3000/dv3000d.c' object='DV3000/dv3000d-dv3000d.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dv3000d_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o DV3000/dv3000d-dv3000d.obj `if test -f 'DV3000/dv3000d.c'; then $(CYGPATH_W) 'DV3000/dv3000d.c'; else $(CYGPATH_W) '$(srcdir)/DV3000/dv3000d.c'; fi`
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
@@ -1589,6 +1786,34 @@ Common/dummyrepeater-GPIOController.obj: Common/GPIOController.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dummyrepeater_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o Common/dummyrepeater-GPIOController.obj `if test -f 'Common/GPIOController.cpp'; then $(CYGPATH_W) 'Common/GPIOController.cpp'; else $(CYGPATH_W) '$(srcdir)/Common/GPIOController.cpp'; fi`
 
+STARDV/dvemu-dvemu.o: STARDV/dvemu.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dvemu_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT STARDV/dvemu-dvemu.o -MD -MP -MF STARDV/$(DEPDIR)/dvemu-dvemu.Tpo -c -o STARDV/dvemu-dvemu.o `test -f 'STARDV/dvemu.cpp' || echo '$(srcdir)/'`STARDV/dvemu.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) STARDV/$(DEPDIR)/dvemu-dvemu.Tpo STARDV/$(DEPDIR)/dvemu-dvemu.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='STARDV/dvemu.cpp' object='STARDV/dvemu-dvemu.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dvemu_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o STARDV/dvemu-dvemu.o `test -f 'STARDV/dvemu.cpp' || echo '$(srcdir)/'`STARDV/dvemu.cpp
+
+STARDV/dvemu-dvemu.obj: STARDV/dvemu.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dvemu_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT STARDV/dvemu-dvemu.obj -MD -MP -MF STARDV/$(DEPDIR)/dvemu-dvemu.Tpo -c -o STARDV/dvemu-dvemu.obj `if test -f 'STARDV/dvemu.cpp'; then $(CYGPATH_W) 'STARDV/dvemu.cpp'; else $(CYGPATH_W) '$(srcdir)/STARDV/dvemu.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) STARDV/$(DEPDIR)/dvemu-dvemu.Tpo STARDV/$(DEPDIR)/dvemu-dvemu.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='STARDV/dvemu.cpp' object='STARDV/dvemu-dvemu.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dvemu_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o STARDV/dvemu-dvemu.obj `if test -f 'STARDV/dvemu.cpp'; then $(CYGPATH_W) 'STARDV/dvemu.cpp'; else $(CYGPATH_W) '$(srcdir)/STARDV/dvemu.cpp'; fi`
+
+STARDV/dvemu-sdvtools.o: STARDV/sdvtools.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dvemu_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT STARDV/dvemu-sdvtools.o -MD -MP -MF STARDV/$(DEPDIR)/dvemu-sdvtools.Tpo -c -o STARDV/dvemu-sdvtools.o `test -f 'STARDV/sdvtools.cpp' || echo '$(srcdir)/'`STARDV/sdvtools.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) STARDV/$(DEPDIR)/dvemu-sdvtools.Tpo STARDV/$(DEPDIR)/dvemu-sdvtools.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='STARDV/sdvtools.cpp' object='STARDV/dvemu-sdvtools.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dvemu_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o STARDV/dvemu-sdvtools.o `test -f 'STARDV/sdvtools.cpp' || echo '$(srcdir)/'`STARDV/sdvtools.cpp
+
+STARDV/dvemu-sdvtools.obj: STARDV/sdvtools.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dvemu_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT STARDV/dvemu-sdvtools.obj -MD -MP -MF STARDV/$(DEPDIR)/dvemu-sdvtools.Tpo -c -o STARDV/dvemu-sdvtools.obj `if test -f 'STARDV/sdvtools.cpp'; then $(CYGPATH_W) 'STARDV/sdvtools.cpp'; else $(CYGPATH_W) '$(srcdir)/STARDV/sdvtools.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) STARDV/$(DEPDIR)/dvemu-sdvtools.Tpo STARDV/$(DEPDIR)/dvemu-sdvtools.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='STARDV/sdvtools.cpp' object='STARDV/dvemu-sdvtools.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dvemu_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o STARDV/dvemu-sdvtools.obj `if test -f 'STARDV/sdvtools.cpp'; then $(CYGPATH_W) 'STARDV/sdvtools.cpp'; else $(CYGPATH_W) '$(srcdir)/STARDV/sdvtools.cpp'; fi`
+
 ID: $(am__tagged_files)
 	$(am__define_uniq_tagged_files); mkid -fID $$unique
 tags: tags-am
@@ -1813,9 +2038,9 @@ distcleancheck: distclean
 	       exit 1; } >&2
 check-am: all-am
 check: check-am
-all-am: Makefile $(LIBRARIES) $(PROGRAMS)
+all-am: Makefile $(LIBRARIES) $(PROGRAMS) $(SCRIPTS)
 installdirs:
-	for dir in "$(DESTDIR)$(bindir)"; do \
+	for dir in "$(DESTDIR)$(bindir)" "$(DESTDIR)$(init_ddir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
 install: install-am
@@ -1846,8 +2071,12 @@ distclean-generic:
 	-test . = "$(srcdir)" || test -z "$(CONFIG_CLEAN_VPATH_FILES)" || rm -f $(CONFIG_CLEAN_VPATH_FILES)
 	-rm -f Common/$(DEPDIR)/$(am__dirstamp)
 	-rm -f Common/$(am__dirstamp)
+	-rm -f DV3000/$(DEPDIR)/$(am__dirstamp)
+	-rm -f DV3000/$(am__dirstamp)
 	-rm -f DummyRepeater/$(DEPDIR)/$(am__dirstamp)
 	-rm -f DummyRepeater/$(am__dirstamp)
+	-rm -f STARDV/$(DEPDIR)/$(am__dirstamp)
+	-rm -f STARDV/$(am__dirstamp)
 
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
@@ -1859,7 +2088,7 @@ clean-am: clean-binPROGRAMS clean-generic clean-noinstLIBRARIES \
 
 distclean: distclean-am
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
-	-rm -rf Common/$(DEPDIR) DummyRepeater/$(DEPDIR)
+	-rm -rf Common/$(DEPDIR) DV3000/$(DEPDIR) DummyRepeater/$(DEPDIR) STARDV/$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -1876,7 +2105,7 @@ info: info-am
 
 info-am:
 
-install-data-am:
+install-data-am: install-dist_init_dSCRIPTS
 
 install-dvi: install-dvi-am
 
@@ -1907,7 +2136,7 @@ installcheck-am:
 maintainer-clean: maintainer-clean-am
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
 	-rm -rf $(top_srcdir)/autom4te.cache
-	-rm -rf Common/$(DEPDIR) DummyRepeater/$(DEPDIR)
+	-rm -rf Common/$(DEPDIR) DV3000/$(DEPDIR) DummyRepeater/$(DEPDIR) STARDV/$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 
@@ -1923,7 +2152,7 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-binPROGRAMS
+uninstall-am: uninstall-binPROGRAMS uninstall-dist_init_dSCRIPTS
 
 .MAKE: install-am install-strip
 
@@ -1935,14 +2164,15 @@ uninstall-am: uninstall-binPROGRAMS
 	distclean-generic distclean-tags distcleancheck distdir \
 	distuninstallcheck dvi dvi-am html html-am info info-am \
 	install install-am install-binPROGRAMS install-data \
-	install-data-am install-dvi install-dvi-am install-exec \
-	install-exec-am install-html install-html-am install-info \
-	install-info-am install-man install-pdf install-pdf-am \
-	install-ps install-ps-am install-strip installcheck \
-	installcheck-am installdirs maintainer-clean \
-	maintainer-clean-generic mostlyclean mostlyclean-compile \
-	mostlyclean-generic pdf pdf-am ps ps-am tags tags-am uninstall \
-	uninstall-am uninstall-binPROGRAMS
+	install-data-am install-dist_init_dSCRIPTS install-dvi \
+	install-dvi-am install-exec install-exec-am install-html \
+	install-html-am install-info install-info-am install-man \
+	install-pdf install-pdf-am install-ps install-ps-am \
+	install-strip installcheck installcheck-am installdirs \
+	maintainer-clean maintainer-clean-generic mostlyclean \
+	mostlyclean-compile mostlyclean-generic pdf pdf-am ps ps-am \
+	tags tags-am uninstall uninstall-am uninstall-binPROGRAMS \
+	uninstall-dist_init_dSCRIPTS
 
 .PRECIOUS: Makefile
 

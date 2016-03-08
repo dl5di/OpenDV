@@ -9,7 +9,13 @@ AM_MAINTAINER_MODE
 if test "x$prefix" = "xNONE"; then
 	prefix=""
 	bindir="/usr/bin"
+	init_ddir="/etc/init.d"
+else
+	init_ddir="${sysconfdir}/init.d"
 fi
+
+AC_SUBST([init_ddir])
+
 if test "x$datadir" = 'x${datarootdir}'; then
 	datadir="/home/opendv/data"
 fi
@@ -64,6 +70,29 @@ AS_IF([test "x$with_gpio" != xno],
   )],
   [AM_CONDITIONAL([WITH_GPIO], false)]
 )
+
+AC_ARG_WITH([stardv],
+  [AS_HELP_STRING([--with-stardv],
+    [enable support for Star*DV dongle])],
+  [],
+  [with_stardv=no])
+
+STARDV=
+AS_IF([test "x$with_stardv" != xno],
+  [AC_CHECK_LIB([ftd2xx], [FT_Open],
+    [AM_CONDITIONAL([WITH_STARDV], true)
+    ],
+    [AC_MSG_FAILURE(
+      [--with-stardv was given but the ftd2xx library is not available])],
+  )],
+  [AM_CONDITIONAL([WITH_STARDV], false)]
+)
+
+AC_ARG_WITH([ambeserver],
+  [AS_HELP_STRING([--with-ambeserver],
+    [enable support for AMBEserver on the PiDV/ThumbDV])],
+  [AM_CONDITIONAL([WITH_AMBESERVER], true)],
+  [AM_CONDITIONAL([WITH_AMBESERVER], false)])
 
 # Checks for header files.
 

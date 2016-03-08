@@ -585,6 +585,10 @@ ac_subst_vars='am__EXEEXT_FALSE
 am__EXEEXT_TRUE
 LTLIBOBJS
 LIBOBJS
+WITH_AMBESERVER_FALSE
+WITH_AMBESERVER_TRUE
+WITH_STARDV_FALSE
+WITH_STARDV_TRUE
 WITH_GPIO_FALSE
 WITH_GPIO_TRUE
 ALSA_LIBS
@@ -614,6 +618,7 @@ CXXDEPMODE
 ac_ct_CXX
 CXXFLAGS
 CXX
+init_ddir
 MAINT
 MAINTAINER_MODE_FALSE
 MAINTAINER_MODE_TRUE
@@ -712,6 +717,8 @@ with_wx_config
 with_wx_prefix
 with_wx_exec_prefix
 with_gpio
+with_stardv
+with_ambeserver
 '
       ac_precious_vars='build_alias
 host_alias
@@ -1364,6 +1371,8 @@ Optional Packages:
   --with-wx-exec-prefix=PREFIX
                           Exec prefix where wxWidgets is installed (optional)
   --with-gpio             enable support for WiringPi GPIO signalling
+  --with-stardv           enable support for Star*DV dongle
+  --with-ambeserver       enable support for AMBEserver on the PiDV/ThumbDV
 
 Some influential environment variables:
   CC          C compiler command
@@ -3778,7 +3787,13 @@ fi
 if test "x$prefix" = "xNONE"; then
 	prefix=""
 	bindir="/usr/bin"
+	init_ddir="/etc/init.d"
+else
+	init_ddir="${sysconfdir}/init.d"
 fi
+
+
+
 if test "x$datadir" = 'x${datarootdir}'; then
 	datadir="/home/opendv/data"
 fi
@@ -5718,6 +5733,105 @@ fi
 
 fi
 
+
+# Check whether --with-stardv was given.
+if test "${with_stardv+set}" = set; then :
+  withval=$with_stardv;
+else
+  with_stardv=no
+fi
+
+
+STARDV=
+if test "x$with_stardv" != xno; then :
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for FT_Open in -lftd2xx" >&5
+$as_echo_n "checking for FT_Open in -lftd2xx... " >&6; }
+if ${ac_cv_lib_ftd2xx_FT_Open+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lftd2xx  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char FT_Open ();
+int
+main ()
+{
+return FT_Open ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_ftd2xx_FT_Open=yes
+else
+  ac_cv_lib_ftd2xx_FT_Open=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_ftd2xx_FT_Open" >&5
+$as_echo "$ac_cv_lib_ftd2xx_FT_Open" >&6; }
+if test "x$ac_cv_lib_ftd2xx_FT_Open" = xyes; then :
+   if true; then
+  WITH_STARDV_TRUE=
+  WITH_STARDV_FALSE='#'
+else
+  WITH_STARDV_TRUE='#'
+  WITH_STARDV_FALSE=
+fi
+
+
+else
+  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "--with-stardv was given but the ftd2xx library is not available
+See \`config.log' for more details" "$LINENO" 5; }
+fi
+
+else
+   if false; then
+  WITH_STARDV_TRUE=
+  WITH_STARDV_FALSE='#'
+else
+  WITH_STARDV_TRUE='#'
+  WITH_STARDV_FALSE=
+fi
+
+
+fi
+
+
+# Check whether --with-ambeserver was given.
+if test "${with_ambeserver+set}" = set; then :
+  withval=$with_ambeserver;  if true; then
+  WITH_AMBESERVER_TRUE=
+  WITH_AMBESERVER_FALSE='#'
+else
+  WITH_AMBESERVER_TRUE='#'
+  WITH_AMBESERVER_FALSE=
+fi
+
+else
+   if false; then
+  WITH_AMBESERVER_TRUE=
+  WITH_AMBESERVER_FALSE='#'
+else
+  WITH_AMBESERVER_TRUE='#'
+  WITH_AMBESERVER_FALSE=
+fi
+
+fi
+
+
 # Checks for header files.
 
 # Checks for typedefs, structures, and compiler characteristics.
@@ -5913,6 +6027,22 @@ Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${WITH_GPIO_TRUE}" && test -z "${WITH_GPIO_FALSE}"; then
   as_fn_error $? "conditional \"WITH_GPIO\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${WITH_STARDV_TRUE}" && test -z "${WITH_STARDV_FALSE}"; then
+  as_fn_error $? "conditional \"WITH_STARDV\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${WITH_STARDV_TRUE}" && test -z "${WITH_STARDV_FALSE}"; then
+  as_fn_error $? "conditional \"WITH_STARDV\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${WITH_AMBESERVER_TRUE}" && test -z "${WITH_AMBESERVER_FALSE}"; then
+  as_fn_error $? "conditional \"WITH_AMBESERVER\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${WITH_AMBESERVER_TRUE}" && test -z "${WITH_AMBESERVER_FALSE}"; then
+  as_fn_error $? "conditional \"WITH_AMBESERVER\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 

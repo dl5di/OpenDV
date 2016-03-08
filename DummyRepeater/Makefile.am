@@ -70,3 +70,32 @@ dummyrepeater_SOURCES += Common/GPIOController.cpp
 dummyrepeater_LDADD += -lwiringPi
 endif
 
+if WITH_STARDV
+bin_PROGRAMS += dvemu
+dvemu_SOURCES = \
+	STARDV/dvemu.cpp \
+	STARDV/sdvtools.cpp
+dvemu_CPPFLAGS = -ISTARDV
+dvemu_LDADD = -lftd2xx
+endif
+
+if WITH_AMBESERVER
+bin_PROGRAMS += AMBEserver
+
+AMBEserver_SOURCES = DV3000/AMBEserver.c
+
+dist_init_d_SCRIPTS = DV3000/init.d/AMBEserver
+
+if WITH_GPIO
+bin_PROGRAMS += dv3000d
+
+dv3000d_SOURCES = DV3000/dv3000d.c
+dv3000d_LDADD = -lwiringPi
+dv3000d_CPPFLAGS = -DRASPBERRY_PI
+
+AMBEserver_LDADD = -lwiringPi
+AMBEserver_CPPFLAGS = -DRASPBERRY_PI
+endif
+
+endif
+
