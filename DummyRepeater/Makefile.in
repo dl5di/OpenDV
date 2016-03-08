@@ -88,9 +88,8 @@ NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
 bin_PROGRAMS = dummyrepeater$(EXEEXT)
-@WITH_GPIO_TRUE@am__append_1 = -DGPIO
-@WITH_GPIO_TRUE@am__append_2 = Common/GPIOController.cpp
-@WITH_GPIO_TRUE@am__append_3 = -lwiringPi
+@WITH_GPIO_TRUE@am__append_1 = Common/GPIOController.cpp
+@WITH_GPIO_TRUE@am__append_2 = -lwiringPi
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
@@ -299,7 +298,7 @@ CXX = @CXX@
 CXXDEPMODE = @CXXDEPMODE@
 CXXFLAGS = @CXXFLAGS@
 CYGPATH_W = @CYGPATH_W@
-DEFS = @DEFS@ $(am__append_1)
+DEFS = @DEFS@
 DEPDIR = @DEPDIR@
 ECHO_C = @ECHO_C@
 ECHO_N = @ECHO_N@
@@ -453,9 +452,9 @@ dummyrepeater_SOURCES = DummyRepeater/DummyRepeaterApp.cpp \
 	DummyRepeater/DummyRepeaterStatusEvent.cpp \
 	DummyRepeater/DummyRepeaterThread.cpp \
 	DummyRepeater/DummyRepeaterTimeoutSet.cpp \
-	DummyRepeater/DummyRepeaterTXEvent.cpp $(am__append_2)
+	DummyRepeater/DummyRepeaterTXEvent.cpp $(am__append_1)
 dummyrepeater_LDADD = libCommon.a $(WX_LIBS) $(LIBUSB_LIBS) \
-	$(ALSA_LIBS) $(am__append_3)
+	$(ALSA_LIBS) $(am__append_2)
 dummyrepeater_CPPFLAGS = -ICommon $(WX_CPPFLAGS)
 all: all-am
 

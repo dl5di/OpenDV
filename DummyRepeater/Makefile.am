@@ -66,7 +66,6 @@ dummyrepeater_LDADD = libCommon.a $(WX_LIBS) $(LIBUSB_LIBS) $(ALSA_LIBS)
 dummyrepeater_CPPFLAGS = -ICommon $(WX_CPPFLAGS)
 
 if WITH_GPIO
-DEFS += -DGPIO
 dummyrepeater_SOURCES += Common/GPIOController.cpp
 dummyrepeater_LDADD += -lwiringPi
 endif
