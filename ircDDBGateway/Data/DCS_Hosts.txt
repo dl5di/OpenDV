@@ -35,3 +35,9 @@ DCS029	dcs028.xreflector.net
 DCS032	dcs033.xreflector.net
 DCS033	dcs033.xreflector.net
 DCS044	dcs044.xreflector.net
+DCS069  dcs069.sustrai.org
+DCS270  dcs270.epf.lu
+DCS300  300.xreflector.org
+DCS610  dcs610.vkradio.com
+DCS750  5051.duckdns.org
+DCS810  810.xreflector.org
