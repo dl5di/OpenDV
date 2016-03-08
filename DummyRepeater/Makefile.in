@@ -299,7 +299,7 @@ CXX = @CXX@
 CXXDEPMODE = @CXXDEPMODE@
 CXXFLAGS = @CXXFLAGS@
 CYGPATH_W = @CYGPATH_W@
-DEFS = @DEFS@ -DDATA_DIR=\"${datadir}\" $(am__append_1)
+DEFS = @DEFS@ $(am__append_1)
 DEPDIR = @DEPDIR@
 ECHO_C = @ECHO_C@
 ECHO_N = @ECHO_N@

@@ -1,6 +1,3 @@
-DEFS += \
-	-DDATA_DIR=\"${datadir}\"
-
 noinst_LIBRARIES = libCommon.a
 
 libCommon_a_SOURCES = \
