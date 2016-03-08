@@ -17,7 +17,6 @@
  */
 
 #include "AnalogueRepeaterThread.h"
-#include "AnalogueRepeaterApp.h"
 #include "FirstOrderIIR.h"
 #include "VOGAD.h"
 
