@@ -6,6 +6,25 @@ See the orginal documentation https://github.com/dl5di/OpenDV/tree/master/Docume
 
 Updated documentation is additionally here https://github.com/dl5di/OpenDV/wiki
 
+##How-to Build Code
+OpenDV project is build with WX3 Widgets see more details at
+https://github.com/dl5di/OpenDV/wiki/ircDDB-Gateway-Installation
+
+    ./configure
+    make
+    sudo make install
+
+./configure can be ran with optional flags, see OpenDV wiki for further details
+
+    --with-gpio to enable wiringPi on the RPi.
+    --without-gui no GUI build eliminating WX-GUI
+
+Spicific to DStarRepeater and DummyRepeater
+
+    --with-stardv        flag to compile the Star*DV adapter in the STARDV directory
+    --with-ambeserver        flag that compiles AMBEserver in the DV3000 directory.
+
+
 ##Support
 ```
 pre-compiled binary files are located in the Yahoo! groups including windows binary files.
