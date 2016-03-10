@@ -453,7 +453,7 @@ wxString CRepeaterDataSet::getReflector() const
 
 	reflector.Append(wxT("        "));
 	reflector.Truncate(LONG_CALLSIGN_LENGTH - 1U);
-	reflector.Append(wxT('A') + c);
+	reflector.Append((char)('A' + c));
 
 	return reflector;
 }
