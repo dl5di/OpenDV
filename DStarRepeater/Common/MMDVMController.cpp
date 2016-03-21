@@ -468,11 +468,11 @@ bool CMMDVMController::readStatus()
 
 bool CMMDVMController::setConfig()
 {
-	unsigned char buffer[11U];
+	unsigned char buffer[12U];
 
 	buffer[0U] = MMDVM_FRAME_START;
 
-	buffer[1U] = 11U;
+	buffer[1U] = 12U;
 
 	buffer[2U] = MMDVM_SET_CONFIG;
 
@@ -497,10 +497,12 @@ bool CMMDVMController::setConfig()
 
 	buffer[10U] = 0U;				// DMR Delay
 
-	// CUtils::dump(wxT("Written"), buffer, 11U);
+	buffer[11U] = 0U;				// Osc. Offset
 
-	int ret = m_serial.write(buffer, 11U);
-	if (ret != 11)
+	// CUtils::dump(wxT("Written"), buffer, 12U);
+
+	int ret = m_serial.write(buffer, 12U);
+	if (ret != 12)
 		return false;
 
 	unsigned int count = 0U;
