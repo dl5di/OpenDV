@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2011-2015 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2011-2016 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -468,11 +468,11 @@ bool CMMDVMController::readStatus()
 
 bool CMMDVMController::setConfig()
 {
-	unsigned char buffer[10U];
+	unsigned char buffer[11U];
 
 	buffer[0U] = MMDVM_FRAME_START;
 
-	buffer[1U] = 10U;
+	buffer[1U] = 11U;
 
 	buffer[2U] = MMDVM_SET_CONFIG;
 
@@ -495,10 +495,12 @@ bool CMMDVMController::setConfig()
 
 	buffer[9U] = 0U;				// DMR Color Code
 
-	// CUtils::dump(wxT("Written"), buffer, 10U);
+	buffer[10U] = 0U;				// DMR Delay
 
-	int ret = m_serial.write(buffer, 10U);
-	if (ret != 10)
+	// CUtils::dump(wxT("Written"), buffer, 11U);
+
+	int ret = m_serial.write(buffer, 11U);
+	if (ret != 11)
 		return false;
 
 	unsigned int count = 0U;
