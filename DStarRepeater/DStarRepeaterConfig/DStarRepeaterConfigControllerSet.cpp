@@ -44,6 +44,7 @@ m_time(NULL)
 
 #if defined(GPIO)
 	m_type->Append(wxT("GPIO"));
+	m_type->Append(wxT("UDRC"));
 #endif
 
 	m_type->Append(wxT("Velleman K8055 - 0"));
@@ -83,6 +84,7 @@ m_time(NULL)
 	m_config->Append(wxT("1"));
 	m_config->Append(wxT("2"));
 	m_config->Append(wxT("3"));
+	m_config->Append(wxT("4"));
 	sizer->Add(m_config, 0, wxALL | wxALIGN_LEFT, BORDER_SIZE);
 	m_config->SetSelection(config - 1);
 
