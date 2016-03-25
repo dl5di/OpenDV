@@ -38,6 +38,7 @@
 #include "SplitController.h"
 #if defined(GPIO)
 #include "GPIOController.h"
+#include "UDRCController.h"
 #endif
 #include "DVAPController.h"
 #include "GMSKController.h"
@@ -533,6 +534,8 @@ void CDStarRepeaterApp::createThread()
 #if defined(GPIO)
 	} else if (controllerType.IsSameAs(wxT("GPIO"))) {
 		controller = new CExternalController(new CGPIOController(portConfig), pttInvert);
+	} else if (controllerType.IsSameAs(wxT("UDRC"))) {
+		controller = new CExternalController(new CUDRCController(portConfig), pttInvert);
 #endif
 	} else {
 		controller = new CExternalController(new CDummyController, pttInvert);

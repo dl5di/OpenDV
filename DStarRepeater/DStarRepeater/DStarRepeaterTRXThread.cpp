@@ -16,12 +16,15 @@
  *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
+#include <iostream>
 #include "DStarRepeaterStatusData.h"
 #include "DStarRepeaterTRXThread.h"
+#include "DStarRepeaterApp.h"
 #include "DVAPController.h"
 #include "DStarDefines.h"
 #include "HeaderData.h"
 #include "Version.h"
+using namespace std;
 
 const unsigned char DTMF_MASK[] = {0x82U, 0x08U, 0x20U, 0x82U, 0x00U, 0x00U, 0x82U, 0x00U, 0x00U};
 const unsigned char DTMF_SIG[]  = {0x82U, 0x08U, 0x20U, 0x82U, 0x00U, 0x00U, 0x00U, 0x00U, 0x00U};
@@ -301,6 +304,7 @@ void CDStarRepeaterTRXThread::run()
 			// Check the shutdown state, state changes are done here to bypass the state machine which is
 			// frozen when m_disable or m_shutdown are asserted
 			m_disable = m_controller->getDisable();
+			// cout << m_disable << endl;
 			if (m_disable || m_shutdown) {
 				if (m_rptState != DSRS_SHUTDOWN) {
 					m_timeoutTimer.stop();
