@@ -69,7 +69,7 @@ dstarrepeaterd_LDADD = $(BASE_WX_LIBS) $(LIBUSB_LIBS) $(ALSA_LIBS)
 dstarrepeaterd_CPPFLAGS = -ICommon $(BASE_WX_CPPFLAGS)
 
 if WITH_GPIO
-COMMON_SRCS += Common/GPIOController.cpp
+COMMON_SRCS += Common/GPIOController.cpp Common/UDRCController.cpp
 dstarrepeaterd_LDADD += -lwiringPi
 endif
 
