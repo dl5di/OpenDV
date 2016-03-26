@@ -82,7 +82,7 @@ examplesdir = ${docdir}/examples
 examples_DATA = linux/dstarrepeater_1.example
 
 if WITH_GPIO
-COMMON_SRCS += Common/GPIOController.cpp
+COMMON_SRCS += Common/GPIOController.cpp Common/UDRCController.cpp
 dstarrepeaterd_LDADD += -lwiringPi
 endif
 

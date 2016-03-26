@@ -88,7 +88,7 @@ NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
 sbin_PROGRAMS = dstarrepeaterd$(EXEEXT)
-@WITH_GPIO_TRUE@am__append_1 = Common/GPIOController.cpp
+@WITH_GPIO_TRUE@am__append_1 = Common/GPIOController.cpp Common/UDRCController.cpp
 @WITH_GPIO_TRUE@am__append_2 = -lwiringPi
 @WITH_GUI_TRUE@bin_PROGRAMS = dstarrepeater$(EXEEXT) \
 @WITH_GUI_TRUE@	dstarrepeaterconfig$(EXEEXT)
@@ -137,16 +137,18 @@ am__libCommon_a_SOURCES_DIST = Common/AMBEFEC.cpp \
 	DStarRepeater/DStarRepeaterTXThread.cpp \
 	DStarRepeater/DStarRepeaterRXThread.cpp \
 	DStarRepeater/DStarRepeaterStatusData.cpp \
-	Common/GPIOController.cpp Common/ArduinoController.cpp \
-	Common/DummyController.cpp Common/DVAPController.cpp \
-	Common/DVMegaController.cpp Common/DVRPTRV1Controller.cpp \
-	Common/DVRPTRV2Controller.cpp Common/DVRPTRV3Controller.cpp \
-	Common/GMSKController.cpp Common/K8055Controller.cpp \
-	Common/MMDVMController.cpp Common/SerialDataController.cpp \
+	Common/GPIOController.cpp Common/UDRCController.cpp \
+	Common/ArduinoController.cpp Common/DummyController.cpp \
+	Common/DVAPController.cpp Common/DVMegaController.cpp \
+	Common/DVRPTRV1Controller.cpp Common/DVRPTRV2Controller.cpp \
+	Common/DVRPTRV3Controller.cpp Common/GMSKController.cpp \
+	Common/K8055Controller.cpp Common/MMDVMController.cpp \
+	Common/SerialDataController.cpp \
 	Common/SerialLineController.cpp Common/URIUSBController.cpp
 am__dirstamp = $(am__leading_dot)dirstamp
 @WITH_GPIO_TRUE@am__objects_1 =  \
-@WITH_GPIO_TRUE@	Common/libCommon_a-GPIOController.$(OBJEXT)
+@WITH_GPIO_TRUE@	Common/libCommon_a-GPIOController.$(OBJEXT) \
+@WITH_GPIO_TRUE@	Common/libCommon_a-UDRCController.$(OBJEXT)
 am__objects_2 = Common/libCommon_a-AMBEFEC.$(OBJEXT) \
 	Common/libCommon_a-AnnouncementUnit.$(OBJEXT) \
 	Common/libCommon_a-BeaconUnit.$(OBJEXT) \
@@ -780,6 +782,8 @@ DStarRepeater/libCommon_a-DStarRepeaterStatusData.$(OBJEXT):  \
 	DStarRepeater/$(DEPDIR)/$(am__dirstamp)
 Common/libCommon_a-GPIOController.$(OBJEXT): Common/$(am__dirstamp) \
 	Common/$(DEPDIR)/$(am__dirstamp)
+Common/libCommon_a-UDRCController.$(OBJEXT): Common/$(am__dirstamp) \
+	Common/$(DEPDIR)/$(am__dirstamp)
 Common/libCommon_a-ArduinoController.$(OBJEXT):  \
 	Common/$(am__dirstamp) Common/$(DEPDIR)/$(am__dirstamp)
 Common/libCommon_a-DummyController.$(OBJEXT): Common/$(am__dirstamp) \
@@ -1064,6 +1068,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@Common/$(DEPDIR)/libCommon_a-TCPReaderWriter.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@Common/$(DEPDIR)/libCommon_a-Timer.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@Common/$(DEPDIR)/libCommon_a-UDPReaderWriter.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@Common/$(DEPDIR)/libCommon_a-UDRCController.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@Common/$(DEPDIR)/libCommon_a-URIUSBController.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@Common/$(DEPDIR)/libCommon_a-Utils.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@DStarRepeater/$(DEPDIR)/dstarrepeater-DStarRepeaterApp.Po@am__quote@
@@ -1693,6 +1698,20 @@ Common/libCommon_a-GPIOController.obj: Common/GPIOController.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='Common/GPIOController.cpp' object='Common/libCommon_a-GPIOController.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libCommon_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o Common/libCommon_a-GPIOController.obj `if test -f 'Common/GPIOController.cpp'; then $(CYGPATH_W) 'Common/GPIOController.cpp'; else $(CYGPATH_W) '$(srcdir)/Common/GPIOController.cpp'; fi`
+
+Common/libCommon_a-UDRCController.o: Common/UDRCController.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libCommon_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT Common/libCommon_a-UDRCController.o -MD -MP -MF Common/$(DEPDIR)/libCommon_a-UDRCController.Tpo -c -o Common/libCommon_a-UDRCController.o `test -f 'Common/UDRCController.cpp' || echo '$(srcdir)/'`Common/UDRCController.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) Common/$(DEPDIR)/libCommon_a-UDRCController.Tpo Common/$(DEPDIR)/libCommon_a-UDRCController.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='Common/UDRCController.cpp' object='Common/libCommon_a-UDRCController.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libCommon_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o Common/libCommon_a-UDRCController.o `test -f 'Common/UDRCController.cpp' || echo '$(srcdir)/'`Common/UDRCController.cpp
+
+Common/libCommon_a-UDRCController.obj: Common/UDRCController.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libCommon_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT Common/libCommon_a-UDRCController.obj -MD -MP -MF Common/$(DEPDIR)/libCommon_a-UDRCController.Tpo -c -o Common/libCommon_a-UDRCController.obj `if test -f 'Common/UDRCController.cpp'; then $(CYGPATH_W) 'Common/UDRCController.cpp'; else $(CYGPATH_W) '$(srcdir)/Common/UDRCController.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) Common/$(DEPDIR)/libCommon_a-UDRCController.Tpo Common/$(DEPDIR)/libCommon_a-UDRCController.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='Common/UDRCController.cpp' object='Common/libCommon_a-UDRCController.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libCommon_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o Common/libCommon_a-UDRCController.obj `if test -f 'Common/UDRCController.cpp'; then $(CYGPATH_W) 'Common/UDRCController.cpp'; else $(CYGPATH_W) '$(srcdir)/Common/UDRCController.cpp'; fi`
 
 Common/libCommon_a-ArduinoController.o: Common/ArduinoController.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libCommon_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT Common/libCommon_a-ArduinoController.o -MD -MP -MF Common/$(DEPDIR)/libCommon_a-ArduinoController.Tpo -c -o Common/libCommon_a-ArduinoController.o `test -f 'Common/ArduinoController.cpp' || echo '$(srcdir)/'`Common/ArduinoController.cpp
