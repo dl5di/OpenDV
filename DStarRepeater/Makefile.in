@@ -87,7 +87,7 @@ NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
 sbin_PROGRAMS = dstarrepeaterd$(EXEEXT)
-@WITH_GPIO_TRUE@am__append_1 = Common/GPIOController.cpp
+@WITH_GPIO_TRUE@am__append_1 = Common/GPIOController.cpp Common/UDRCController.cpp
 @WITH_GPIO_TRUE@am__append_2 = -lwiringPi
 @WITH_GUI_TRUE@bin_PROGRAMS = dstarrepeater$(EXEEXT) \
 @WITH_GUI_TRUE@	dstarrepeaterconfig$(EXEEXT)
@@ -133,16 +133,18 @@ am__dstarrepeater_SOURCES_DIST = DStarRepeater/DStarRepeaterApp.cpp \
 	DStarRepeater/DStarRepeaterTXThread.cpp \
 	DStarRepeater/DStarRepeaterRXThread.cpp \
 	DStarRepeater/DStarRepeaterStatusData.cpp \
-	Common/GPIOController.cpp Common/ArduinoController.cpp \
-	Common/DummyController.cpp Common/DVAPController.cpp \
-	Common/DVMegaController.cpp Common/DVRPTRV1Controller.cpp \
-	Common/DVRPTRV2Controller.cpp Common/DVRPTRV3Controller.cpp \
-	Common/GMSKController.cpp Common/K8055Controller.cpp \
-	Common/MMDVMController.cpp Common/SerialDataController.cpp \
+	Common/GPIOController.cpp Common/UDRCController.cpp \
+	Common/ArduinoController.cpp Common/DummyController.cpp \
+	Common/DVAPController.cpp Common/DVMegaController.cpp \
+	Common/DVRPTRV1Controller.cpp Common/DVRPTRV2Controller.cpp \
+	Common/DVRPTRV3Controller.cpp Common/GMSKController.cpp \
+	Common/K8055Controller.cpp Common/MMDVMController.cpp \
+	Common/SerialDataController.cpp \
 	Common/SerialLineController.cpp Common/URIUSBController.cpp
 am__dirstamp = $(am__leading_dot)dirstamp
 @WITH_GPIO_TRUE@am__objects_1 =  \
-@WITH_GPIO_TRUE@	Common/dstarrepeater-GPIOController.$(OBJEXT)
+@WITH_GPIO_TRUE@	Common/dstarrepeater-GPIOController.$(OBJEXT) \
+@WITH_GPIO_TRUE@	Common/dstarrepeater-UDRCController.$(OBJEXT)
 am__objects_2 = Common/dstarrepeater-AMBEFEC.$(OBJEXT) \
 	Common/dstarrepeater-AnnouncementUnit.$(OBJEXT) \
 	Common/dstarrepeater-BeaconUnit.$(OBJEXT) \
@@ -290,14 +292,16 @@ am__dstarrepeaterd_SOURCES_DIST = DStarRepeater/DStarRepeaterD.cpp \
 	DStarRepeater/DStarRepeaterTXThread.cpp \
 	DStarRepeater/DStarRepeaterRXThread.cpp \
 	DStarRepeater/DStarRepeaterStatusData.cpp \
-	Common/GPIOController.cpp Common/ArduinoController.cpp \
-	Common/DummyController.cpp Common/DVAPController.cpp \
-	Common/DVMegaController.cpp Common/DVRPTRV1Controller.cpp \
-	Common/DVRPTRV2Controller.cpp Common/DVRPTRV3Controller.cpp \
-	Common/GMSKController.cpp Common/K8055Controller.cpp \
-	Common/MMDVMController.cpp Common/SerialDataController.cpp \
+	Common/GPIOController.cpp Common/UDRCController.cpp \
+	Common/ArduinoController.cpp Common/DummyController.cpp \
+	Common/DVAPController.cpp Common/DVMegaController.cpp \
+	Common/DVRPTRV1Controller.cpp Common/DVRPTRV2Controller.cpp \
+	Common/DVRPTRV3Controller.cpp Common/GMSKController.cpp \
+	Common/K8055Controller.cpp Common/MMDVMController.cpp \
+	Common/SerialDataController.cpp \
 	Common/SerialLineController.cpp Common/URIUSBController.cpp
-@WITH_GPIO_TRUE@am__objects_4 = Common/dstarrepeaterd-GPIOController.$(OBJEXT)
+@WITH_GPIO_TRUE@am__objects_4 = Common/dstarrepeaterd-GPIOController.$(OBJEXT) \
+@WITH_GPIO_TRUE@	Common/dstarrepeaterd-UDRCController.$(OBJEXT)
 am__objects_5 = Common/dstarrepeaterd-AMBEFEC.$(OBJEXT) \
 	Common/dstarrepeaterd-AnnouncementUnit.$(OBJEXT) \
 	Common/dstarrepeaterd-BeaconUnit.$(OBJEXT) \
@@ -922,6 +926,8 @@ DStarRepeater/dstarrepeater-DStarRepeaterStatusData.$(OBJEXT):  \
 	DStarRepeater/$(DEPDIR)/$(am__dirstamp)
 Common/dstarrepeater-GPIOController.$(OBJEXT): Common/$(am__dirstamp) \
 	Common/$(DEPDIR)/$(am__dirstamp)
+Common/dstarrepeater-UDRCController.$(OBJEXT): Common/$(am__dirstamp) \
+	Common/$(DEPDIR)/$(am__dirstamp)
 Common/dstarrepeater-ArduinoController.$(OBJEXT):  \
 	Common/$(am__dirstamp) Common/$(DEPDIR)/$(am__dirstamp)
 Common/dstarrepeater-DummyController.$(OBJEXT):  \
@@ -1138,6 +1144,8 @@ DStarRepeater/dstarrepeaterd-DStarRepeaterStatusData.$(OBJEXT):  \
 	DStarRepeater/$(DEPDIR)/$(am__dirstamp)
 Common/dstarrepeaterd-GPIOController.$(OBJEXT):  \
 	Common/$(am__dirstamp) Common/$(DEPDIR)/$(am__dirstamp)
+Common/dstarrepeaterd-UDRCController.$(OBJEXT):  \
+	Common/$(am__dirstamp) Common/$(DEPDIR)/$(am__dirstamp)
 Common/dstarrepeaterd-ArduinoController.$(OBJEXT):  \
 	Common/$(am__dirstamp) Common/$(DEPDIR)/$(am__dirstamp)
 Common/dstarrepeaterd-DummyController.$(OBJEXT):  \
@@ -1225,6 +1233,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@Common/$(DEPDIR)/dstarrepeater-TCPReaderWriter.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@Common/$(DEPDIR)/dstarrepeater-Timer.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@Common/$(DEPDIR)/dstarrepeater-UDPReaderWriter.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@Common/$(DEPDIR)/dstarrepeater-UDRCController.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@Common/$(DEPDIR)/dstarrepeater-URIUSBController.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@Common/$(DEPDIR)/dstarrepeater-Utils.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@Common/$(DEPDIR)/dstarrepeaterconfig-DStarRepeaterConfig.Po@am__quote@
@@ -1276,6 +1285,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@Common/$(DEPDIR)/dstarrepeaterd-TCPReaderWriter.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@Common/$(DEPDIR)/dstarrepeaterd-Timer.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@Common/$(DEPDIR)/dstarrepeaterd-UDPReaderWriter.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@Common/$(DEPDIR)/dstarrepeaterd-UDRCController.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@Common/$(DEPDIR)/dstarrepeaterd-URIUSBController.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@Common/$(DEPDIR)/dstarrepeaterd-Utils.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@DStarRepeater/$(DEPDIR)/dstarrepeater-DStarRepeaterApp.Po@am__quote@
@@ -1967,6 +1977,20 @@ Common/dstarrepeater-GPIOController.obj: Common/GPIOController.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='Common/GPIOController.cpp' object='Common/dstarrepeater-GPIOController.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dstarrepeater_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o Common/dstarrepeater-GPIOController.obj `if test -f 'Common/GPIOController.cpp'; then $(CYGPATH_W) 'Common/GPIOController.cpp'; else $(CYGPATH_W) '$(srcdir)/Common/GPIOController.cpp'; fi`
+
+Common/dstarrepeater-UDRCController.o: Common/UDRCController.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dstarrepeater_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT Common/dstarrepeater-UDRCController.o -MD -MP -MF Common/$(DEPDIR)/dstarrepeater-UDRCController.Tpo -c -o Common/dstarrepeater-UDRCController.o `test -f 'Common/UDRCController.cpp' || echo '$(srcdir)/'`Common/UDRCController.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) Common/$(DEPDIR)/dstarrepeater-UDRCController.Tpo Common/$(DEPDIR)/dstarrepeater-UDRCController.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='Common/UDRCController.cpp' object='Common/dstarrepeater-UDRCController.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dstarrepeater_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o Common/dstarrepeater-UDRCController.o `test -f 'Common/UDRCController.cpp' || echo '$(srcdir)/'`Common/UDRCController.cpp
+
+Common/dstarrepeater-UDRCController.obj: Common/UDRCController.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dstarrepeater_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT Common/dstarrepeater-UDRCController.obj -MD -MP -MF Common/$(DEPDIR)/dstarrepeater-UDRCController.Tpo -c -o Common/dstarrepeater-UDRCController.obj `if test -f 'Common/UDRCController.cpp'; then $(CYGPATH_W) 'Common/UDRCController.cpp'; else $(CYGPATH_W) '$(srcdir)/Common/UDRCController.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) Common/$(DEPDIR)/dstarrepeater-UDRCController.Tpo Common/$(DEPDIR)/dstarrepeater-UDRCController.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='Common/UDRCController.cpp' object='Common/dstarrepeater-UDRCController.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dstarrepeater_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o Common/dstarrepeater-UDRCController.obj `if test -f 'Common/UDRCController.cpp'; then $(CYGPATH_W) 'Common/UDRCController.cpp'; else $(CYGPATH_W) '$(srcdir)/Common/UDRCController.cpp'; fi`
 
 Common/dstarrepeater-ArduinoController.o: Common/ArduinoController.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dstarrepeater_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT Common/dstarrepeater-ArduinoController.o -MD -MP -MF Common/$(DEPDIR)/dstarrepeater-ArduinoController.Tpo -c -o Common/dstarrepeater-ArduinoController.o `test -f 'Common/ArduinoController.cpp' || echo '$(srcdir)/'`Common/ArduinoController.cpp
@@ -3143,6 +3167,20 @@ Common/dstarrepeaterd-GPIOController.obj: Common/GPIOController.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='Common/GPIOController.cpp' object='Common/dstarrepeaterd-GPIOController.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dstarrepeaterd_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o Common/dstarrepeaterd-GPIOController.obj `if test -f 'Common/GPIOController.cpp'; then $(CYGPATH_W) 'Common/GPIOController.cpp'; else $(CYGPATH_W) '$(srcdir)/Common/GPIOController.cpp'; fi`
+
+Common/dstarrepeaterd-UDRCController.o: Common/UDRCController.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dstarrepeaterd_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT Common/dstarrepeaterd-UDRCController.o -MD -MP -MF Common/$(DEPDIR)/dstarrepeaterd-UDRCController.Tpo -c -o Common/dstarrepeaterd-UDRCController.o `test -f 'Common/UDRCController.cpp' || echo '$(srcdir)/'`Common/UDRCController.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) Common/$(DEPDIR)/dstarrepeaterd-UDRCController.Tpo Common/$(DEPDIR)/dstarrepeaterd-UDRCController.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='Common/UDRCController.cpp' object='Common/dstarrepeaterd-UDRCController.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dstarrepeaterd_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o Common/dstarrepeaterd-UDRCController.o `test -f 'Common/UDRCController.cpp' || echo '$(srcdir)/'`Common/UDRCController.cpp
+
+Common/dstarrepeaterd-UDRCController.obj: Common/UDRCController.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dstarrepeaterd_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT Common/dstarrepeaterd-UDRCController.obj -MD -MP -MF Common/$(DEPDIR)/dstarrepeaterd-UDRCController.Tpo -c -o Common/dstarrepeaterd-UDRCController.obj `if test -f 'Common/UDRCController.cpp'; then $(CYGPATH_W) 'Common/UDRCController.cpp'; else $(CYGPATH_W) '$(srcdir)/Common/UDRCController.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) Common/$(DEPDIR)/dstarrepeaterd-UDRCController.Tpo Common/$(DEPDIR)/dstarrepeaterd-UDRCController.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='Common/UDRCController.cpp' object='Common/dstarrepeaterd-UDRCController.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dstarrepeaterd_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o Common/dstarrepeaterd-UDRCController.obj `if test -f 'Common/UDRCController.cpp'; then $(CYGPATH_W) 'Common/UDRCController.cpp'; else $(CYGPATH_W) '$(srcdir)/Common/UDRCController.cpp'; fi`
 
 Common/dstarrepeaterd-ArduinoController.o: Common/ArduinoController.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dstarrepeaterd_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT Common/dstarrepeaterd-ArduinoController.o -MD -MP -MF Common/$(DEPDIR)/dstarrepeaterd-ArduinoController.Tpo -c -o Common/dstarrepeaterd-ArduinoController.o `test -f 'Common/ArduinoController.cpp' || echo '$(srcdir)/'`Common/ArduinoController.cpp
