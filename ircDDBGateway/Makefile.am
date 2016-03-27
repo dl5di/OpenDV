@@ -1,8 +1,7 @@
 DEFS += \
 	-DDATA_DIR=\"${pkgdatadir}\" \
 	-DLOG_DIR=\"${localstatedir}/log/opendv\" \
-    -DCONF_DIR=\"${sysconfdir}\" \
-    -DBIN_DIR=\"${bindir}\"
+    -DCONF_DIR=\"${sysconfdir}\"
     
 STARNETSERVER_COMMON = \
 	StarNetServer/StarNetServerConfig.cpp \
