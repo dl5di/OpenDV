@@ -6,7 +6,7 @@ opendvlog_DATA =
 DEFS += \
 	-DDATA_DIR=\"${datadir}\" \
 	-DLOG_DIR=\"${opendvlogdir}\" \
-        -DCONF_DIR=\"${sysconfdir}\"
+    -DCONF_DIR=\"${sysconfdir}\"
 
 CONTROLLER_SRCS =  Common/ArduinoController.cpp \
                    Common/DummyController.cpp \

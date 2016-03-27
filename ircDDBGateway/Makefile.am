@@ -1,6 +1,9 @@
+opendvlogdir = ${localstatedir}/log/opendv
+opendvlog_DATA = 
+
 DEFS += \
 	-DDATA_DIR=\"${pkgdatadir}\" \
-	-DLOG_DIR=\"${localstatedir}/log/opendv\" \
+	-DLOG_DIR=\"${opendvlogdir}\" \
     -DCONF_DIR=\"${sysconfdir}\"
     
 STARNETSERVER_COMMON = \
