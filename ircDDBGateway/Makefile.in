@@ -218,7 +218,7 @@ libircDDB_a_OBJECTS = $(am_libircDDB_a_OBJECTS)
 @WITH_GUI_TRUE@	aprstransmit$(EXEEXT) timercontrol$(EXEEXT) \
 @WITH_GUI_TRUE@	timeserver$(EXEEXT)
 am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(sbindir)" \
-	"$(DESTDIR)$(pkgdatadir)"
+	"$(DESTDIR)$(opendvlogdir)" "$(DESTDIR)$(pkgdatadir)"
 PROGRAMS = $(bin_PROGRAMS) $(sbin_PROGRAMS)
 am__aprstransmit_SOURCES_DIST = APRSTransmit/APRSTransmitApp.cpp \
 	APRSTransmit/APRSParser.cpp APRSTransmit/APRSTransmit.cpp
@@ -493,7 +493,7 @@ am__uninstall_files_from_dir = { \
     || { echo " ( cd '$$dir' && rm -f" $$files ")"; \
          $(am__cd) "$$dir" && rm -f $$files; }; \
   }
-DATA = $(pkgdata_DATA)
+DATA = $(opendvlog_DATA) $(pkgdata_DATA)
 am__tagged_files = $(HEADERS) $(SOURCES) $(TAGS_FILES) $(LISP)
 # Read a list of newline-separated strings from the standard input,
 # and print each of them once, without duplicates.  Input order is
@@ -554,8 +554,7 @@ CXXDEPMODE = @CXXDEPMODE@
 CXXFLAGS = @CXXFLAGS@
 CYGPATH_W = @CYGPATH_W@
 DEFS = @DEFS@ -DDATA_DIR=\"${pkgdatadir}\" \
-	-DLOG_DIR=\"${localstatedir}/log/opendv\" \
-	-DCONF_DIR=\"${sysconfdir}\" -DBIN_DIR=\"${bindir}\"
+	-DLOG_DIR=\"${opendvlogdir}\" -DCONF_DIR=\"${sysconfdir}\"
 DEPDIR = @DEPDIR@
 ECHO_C = @ECHO_C@
 ECHO_N = @ECHO_N@
@@ -646,6 +645,8 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
+opendvlogdir = ${localstatedir}/log/opendv
+opendvlog_DATA = 
 STARNETSERVER_COMMON = \
 	StarNetServer/StarNetServerConfig.cpp \
 	StarNetServer/StarNetServerThread.cpp
@@ -4084,6 +4085,27 @@ VoiceTransmit/voicetransmit-VoiceStore.obj: VoiceTransmit/VoiceStore.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='VoiceTransmit/VoiceStore.cpp' object='VoiceTransmit/voicetransmit-VoiceStore.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(voicetransmit_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o VoiceTransmit/voicetransmit-VoiceStore.obj `if test -f 'VoiceTransmit/VoiceStore.cpp'; then $(CYGPATH_W) 'VoiceTransmit/VoiceStore.cpp'; else $(CYGPATH_W) '$(srcdir)/VoiceTransmit/VoiceStore.cpp'; fi`
+install-opendvlogDATA: $(opendvlog_DATA)
+	@$(NORMAL_INSTALL)
+	@list='$(opendvlog_DATA)'; test -n "$(opendvlogdir)" || list=; \
+	if test -n "$$list"; then \
+	  echo " $(MKDIR_P) '$(DESTDIR)$(opendvlogdir)'"; \
+	  $(MKDIR_P) "$(DESTDIR)$(opendvlogdir)" || exit 1; \
+	fi; \
+	for p in $$list; do \
+	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	  echo "$$d$$p"; \
+	done | $(am__base_list) | \
+	while read files; do \
+	  echo " $(INSTALL_DATA) $$files '$(DESTDIR)$(opendvlogdir)'"; \
+	  $(INSTALL_DATA) $$files "$(DESTDIR)$(opendvlogdir)" || exit $$?; \
+	done
+
+uninstall-opendvlogDATA:
+	@$(NORMAL_UNINSTALL)
+	@list='$(opendvlog_DATA)'; test -n "$(opendvlogdir)" || list=; \
+	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
+	dir='$(DESTDIR)$(opendvlogdir)'; $(am__uninstall_files_from_dir)
 install-pkgdataDATA: $(pkgdata_DATA)
 	@$(NORMAL_INSTALL)
 	@list='$(pkgdata_DATA)'; test -n "$(pkgdatadir)" || list=; \
@@ -4332,7 +4354,7 @@ check-am: all-am
 check: check-am
 all-am: Makefile $(LIBRARIES) $(PROGRAMS) $(DATA)
 installdirs:
-	for dir in "$(DESTDIR)$(bindir)" "$(DESTDIR)$(sbindir)" "$(DESTDIR)$(pkgdatadir)"; do \
+	for dir in "$(DESTDIR)$(bindir)" "$(DESTDIR)$(sbindir)" "$(DESTDIR)$(opendvlogdir)" "$(DESTDIR)$(pkgdatadir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
 install: install-am
@@ -4413,7 +4435,7 @@ info: info-am
 
 info-am:
 
-install-data-am: install-pkgdataDATA
+install-data-am: install-opendvlogDATA install-pkgdataDATA
 
 install-dvi: install-dvi-am
 
@@ -4460,8 +4482,8 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-binPROGRAMS uninstall-pkgdataDATA \
-	uninstall-sbinPROGRAMS
+uninstall-am: uninstall-binPROGRAMS uninstall-opendvlogDATA \
+	uninstall-pkgdataDATA uninstall-sbinPROGRAMS
 
 .MAKE: install-am install-strip
 
@@ -4475,14 +4497,14 @@ uninstall-am: uninstall-binPROGRAMS uninstall-pkgdataDATA \
 	html-am info info-am install install-am install-binPROGRAMS \
 	install-data install-data-am install-dvi install-dvi-am \
 	install-exec install-exec-am install-html install-html-am \
-	install-info install-info-am install-man install-pdf \
-	install-pdf-am install-pkgdataDATA install-ps install-ps-am \
-	install-sbinPROGRAMS install-strip installcheck \
+	install-info install-info-am install-man install-opendvlogDATA \
+	install-pdf install-pdf-am install-pkgdataDATA install-ps \
+	install-ps-am install-sbinPROGRAMS install-strip installcheck \
 	installcheck-am installdirs maintainer-clean \
 	maintainer-clean-generic mostlyclean mostlyclean-compile \
 	mostlyclean-generic pdf pdf-am ps ps-am tags tags-am uninstall \
-	uninstall-am uninstall-binPROGRAMS uninstall-pkgdataDATA \
-	uninstall-sbinPROGRAMS
+	uninstall-am uninstall-binPROGRAMS uninstall-opendvlogDATA \
+	uninstall-pkgdataDATA uninstall-sbinPROGRAMS
 
 .PRECIOUS: Makefile
 
