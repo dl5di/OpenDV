@@ -71,7 +71,6 @@ am__make_running_with_option = \
   test $$has_opt = yes
 am__make_dryrun = (target_option=n; $(am__make_running_with_option))
 am__make_keepgoing = (target_option=k; $(am__make_running_with_option))
-pkgdatadir = $(datadir)/@PACKAGE@
 pkgincludedir = $(includedir)/@PACKAGE@
 pkglibdir = $(libdir)/@PACKAGE@
 pkglibexecdir = $(libexecdir)/@PACKAGE@
@@ -106,7 +105,7 @@ mkinstalldirs = $(install_sh) -d
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(sbindir)" \
-	"$(DESTDIR)$(opendvlogdir)"
+	"$(DESTDIR)$(opendvlogdir)" "$(DESTDIR)$(pkgsysconfdir)"
 PROGRAMS = $(bin_PROGRAMS) $(sbin_PROGRAMS)
 am__dstarrepeater_SOURCES_DIST = DStarRepeater/DStarRepeaterApp.cpp \
 	DStarRepeater/DStarRepeaterFrame.cpp \
@@ -439,7 +438,7 @@ am__uninstall_files_from_dir = { \
     || { echo " ( cd '$$dir' && rm -f" $$files ")"; \
          $(am__cd) "$$dir" && rm -f $$files; }; \
   }
-DATA = $(opendvlog_DATA)
+DATA = $(opendvlog_DATA) $(pkgsysconf_DATA)
 RECURSIVE_CLEAN_TARGETS = mostlyclean-recursive clean-recursive	\
   distclean-recursive maintainer-clean-recursive
 am__recursive_targets = \
@@ -513,6 +512,7 @@ distuninstallcheck_listfiles = find . -type f -print
 am__distuninstallcheck_listfiles = $(distuninstallcheck_listfiles) \
   | sed 's|^\./|$(prefix)/|' | grep -v '$(infodir)/dir$$'
 distcleancheck_listfiles = find . -type f -print
+pkgdatadir = ${datadir}/opendv
 ACLOCAL = @ACLOCAL@
 ALSA_CFLAGS = @ALSA_CFLAGS@
 ALSA_LIBS = @ALSA_LIBS@
@@ -533,8 +533,8 @@ CXX = @CXX@
 CXXDEPMODE = @CXXDEPMODE@
 CXXFLAGS = @CXXFLAGS@
 CYGPATH_W = @CYGPATH_W@
-DEFS = @DEFS@ -DDATA_DIR=\"${datadir}\" -DLOG_DIR=\"${opendvlogdir}\" \
-	-DCONF_DIR=\"${sysconfdir}\"
+DEFS = @DEFS@ -DDATA_DIR=\"${pkgdatadir}\" \
+	-DLOG_DIR=\"${opendvlogdir}\" -DCONF_DIR=\"${pkgsysconfdir}\"
 DEPDIR = @DEPDIR@
 ECHO_C = @ECHO_C@
 ECHO_N = @ECHO_N@
@@ -633,6 +633,8 @@ top_srcdir = @top_srcdir@
 SUBDIRS = LinuxUSB 
 opendvlogdir = ${localstatedir}/log/opendv
 opendvlog_DATA = 
+pkgsysconfdir = ${sysconfdir}/opendv
+pkgsysconf_DATA = 
 CONTROLLER_SRCS = Common/ArduinoController.cpp \
                    Common/DummyController.cpp \
                    Common/DVAPController.cpp \
@@ -3377,6 +3379,27 @@ uninstall-opendvlogDATA:
 	@list='$(opendvlog_DATA)'; test -n "$(opendvlogdir)" || list=; \
 	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
 	dir='$(DESTDIR)$(opendvlogdir)'; $(am__uninstall_files_from_dir)
+install-pkgsysconfDATA: $(pkgsysconf_DATA)
+	@$(NORMAL_INSTALL)
+	@list='$(pkgsysconf_DATA)'; test -n "$(pkgsysconfdir)" || list=; \
+	if test -n "$$list"; then \
+	  echo " $(MKDIR_P) '$(DESTDIR)$(pkgsysconfdir)'"; \
+	  $(MKDIR_P) "$(DESTDIR)$(pkgsysconfdir)" || exit 1; \
+	fi; \
+	for p in $$list; do \
+	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	  echo "$$d$$p"; \
+	done | $(am__base_list) | \
+	while read files; do \
+	  echo " $(INSTALL_DATA) $$files '$(DESTDIR)$(pkgsysconfdir)'"; \
+	  $(INSTALL_DATA) $$files "$(DESTDIR)$(pkgsysconfdir)" || exit $$?; \
+	done
+
+uninstall-pkgsysconfDATA:
+	@$(NORMAL_UNINSTALL)
+	@list='$(pkgsysconf_DATA)'; test -n "$(pkgsysconfdir)" || list=; \
+	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
+	dir='$(DESTDIR)$(pkgsysconfdir)'; $(am__uninstall_files_from_dir)
 
 # This directory's subdirectories are mostly independent; you can cd
 # into them and run 'make' without going through this Makefile.
@@ -3677,7 +3700,7 @@ check: check-recursive
 all-am: Makefile $(PROGRAMS) $(DATA)
 installdirs: installdirs-recursive
 installdirs-am:
-	for dir in "$(DESTDIR)$(bindir)" "$(DESTDIR)$(sbindir)" "$(DESTDIR)$(opendvlogdir)"; do \
+	for dir in "$(DESTDIR)$(bindir)" "$(DESTDIR)$(sbindir)" "$(DESTDIR)$(opendvlogdir)" "$(DESTDIR)$(pkgsysconfdir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
 install: install-recursive
@@ -3742,7 +3765,7 @@ info: info-recursive
 
 info-am:
 
-install-data-am: install-opendvlogDATA
+install-data-am: install-opendvlogDATA install-pkgsysconfDATA
 
 install-dvi: install-dvi-recursive
 
@@ -3790,7 +3813,7 @@ ps: ps-recursive
 ps-am:
 
 uninstall-am: uninstall-binPROGRAMS uninstall-opendvlogDATA \
-	uninstall-sbinPROGRAMS
+	uninstall-pkgsysconfDATA uninstall-sbinPROGRAMS
 
 .MAKE: $(am__recursive_targets) install-am install-strip
 
@@ -3805,13 +3828,14 @@ uninstall-am: uninstall-binPROGRAMS uninstall-opendvlogDATA \
 	install-binPROGRAMS install-data install-data-am install-dvi \
 	install-dvi-am install-exec install-exec-am install-html \
 	install-html-am install-info install-info-am install-man \
-	install-opendvlogDATA install-pdf install-pdf-am install-ps \
-	install-ps-am install-sbinPROGRAMS install-strip installcheck \
+	install-opendvlogDATA install-pdf install-pdf-am \
+	install-pkgsysconfDATA install-ps install-ps-am \
+	install-sbinPROGRAMS install-strip installcheck \
 	installcheck-am installdirs installdirs-am maintainer-clean \
 	maintainer-clean-generic mostlyclean mostlyclean-compile \
 	mostlyclean-generic pdf pdf-am ps ps-am tags tags-am uninstall \
 	uninstall-am uninstall-binPROGRAMS uninstall-opendvlogDATA \
-	uninstall-sbinPROGRAMS
+	uninstall-pkgsysconfDATA uninstall-sbinPROGRAMS
 
 .PRECIOUS: Makefile
 
