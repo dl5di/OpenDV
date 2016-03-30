@@ -105,7 +105,8 @@ mkinstalldirs = $(install_sh) -d
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(sbindir)" \
-	"$(DESTDIR)$(opendvlogdir)" "$(DESTDIR)$(pkgsysconfdir)"
+	"$(DESTDIR)$(examplesdir)" "$(DESTDIR)$(opendvlogdir)" \
+	"$(DESTDIR)$(pkgsysconfdir)"
 PROGRAMS = $(bin_PROGRAMS) $(sbin_PROGRAMS)
 am__dstarrepeater_SOURCES_DIST = DStarRepeater/DStarRepeaterApp.cpp \
 	DStarRepeater/DStarRepeaterFrame.cpp \
@@ -438,7 +439,7 @@ am__uninstall_files_from_dir = { \
     || { echo " ( cd '$$dir' && rm -f" $$files ")"; \
          $(am__cd) "$$dir" && rm -f $$files; }; \
   }
-DATA = $(opendvlog_DATA) $(pkgsysconf_DATA)
+DATA = $(examples_DATA) $(opendvlog_DATA) $(pkgsysconf_DATA)
 RECURSIVE_CLEAN_TARGETS = mostlyclean-recursive clean-recursive	\
   distclean-recursive maintainer-clean-recursive
 am__recursive_targets = \
@@ -634,6 +635,7 @@ SUBDIRS = LinuxUSB
 opendvlogdir = ${localstatedir}/log/opendv
 opendvlog_DATA = 
 pkgsysconfdir = ${sysconfdir}/opendv
+pkgsysconf_DATA = 
 CONTROLLER_SRCS = Common/ArduinoController.cpp \
                    Common/DummyController.cpp \
                    Common/DVAPController.cpp \
@@ -678,7 +680,8 @@ dstarrepeaterd_SOURCES = DStarRepeater/DStarRepeaterD.cpp \
 dstarrepeaterd_LDADD = $(BASE_WX_LIBS) $(LIBUSB_LIBS) $(ALSA_LIBS) \
 	$(am__append_2)
 dstarrepeaterd_CPPFLAGS = -ICommon $(BASE_WX_CPPFLAGS)
-pkgsysconf_DATA = linux/dstarrepeater_1.example
+examplesdir = ${docdir}/examples
+examples_DATA = linux/dstarrepeater_1.example
 @WITH_GUI_TRUE@dstarrepeater_SOURCES = DStarRepeater/DStarRepeaterApp.cpp \
 @WITH_GUI_TRUE@                        DStarRepeater/DStarRepeaterFrame.cpp \
 @WITH_GUI_TRUE@                        DStarRepeater/DStarRepeaterLogger.cpp \
@@ -3358,6 +3361,27 @@ Common/dstarrepeaterd-URIUSBController.obj: Common/URIUSBController.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='Common/URIUSBController.cpp' object='Common/dstarrepeaterd-URIUSBController.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dstarrepeaterd_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o Common/dstarrepeaterd-URIUSBController.obj `if test -f 'Common/URIUSBController.cpp'; then $(CYGPATH_W) 'Common/URIUSBController.cpp'; else $(CYGPATH_W) '$(srcdir)/Common/URIUSBController.cpp'; fi`
+install-examplesDATA: $(examples_DATA)
+	@$(NORMAL_INSTALL)
+	@list='$(examples_DATA)'; test -n "$(examplesdir)" || list=; \
+	if test -n "$$list"; then \
+	  echo " $(MKDIR_P) '$(DESTDIR)$(examplesdir)'"; \
+	  $(MKDIR_P) "$(DESTDIR)$(examplesdir)" || exit 1; \
+	fi; \
+	for p in $$list; do \
+	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	  echo "$$d$$p"; \
+	done | $(am__base_list) | \
+	while read files; do \
+	  echo " $(INSTALL_DATA) $$files '$(DESTDIR)$(examplesdir)'"; \
+	  $(INSTALL_DATA) $$files "$(DESTDIR)$(examplesdir)" || exit $$?; \
+	done
+
+uninstall-examplesDATA:
+	@$(NORMAL_UNINSTALL)
+	@list='$(examples_DATA)'; test -n "$(examplesdir)" || list=; \
+	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
+	dir='$(DESTDIR)$(examplesdir)'; $(am__uninstall_files_from_dir)
 install-opendvlogDATA: $(opendvlog_DATA)
 	@$(NORMAL_INSTALL)
 	@list='$(opendvlog_DATA)'; test -n "$(opendvlogdir)" || list=; \
@@ -3700,7 +3724,7 @@ check: check-recursive
 all-am: Makefile $(PROGRAMS) $(DATA)
 installdirs: installdirs-recursive
 installdirs-am:
-	for dir in "$(DESTDIR)$(bindir)" "$(DESTDIR)$(sbindir)" "$(DESTDIR)$(opendvlogdir)" "$(DESTDIR)$(pkgsysconfdir)"; do \
+	for dir in "$(DESTDIR)$(bindir)" "$(DESTDIR)$(sbindir)" "$(DESTDIR)$(examplesdir)" "$(DESTDIR)$(opendvlogdir)" "$(DESTDIR)$(pkgsysconfdir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
 install: install-recursive
@@ -3765,7 +3789,8 @@ info: info-recursive
 
 info-am:
 
-install-data-am: install-opendvlogDATA install-pkgsysconfDATA
+install-data-am: install-examplesDATA install-opendvlogDATA \
+	install-pkgsysconfDATA
 
 install-dvi: install-dvi-recursive
 
@@ -3812,8 +3837,9 @@ ps: ps-recursive
 
 ps-am:
 
-uninstall-am: uninstall-binPROGRAMS uninstall-opendvlogDATA \
-	uninstall-pkgsysconfDATA uninstall-sbinPROGRAMS
+uninstall-am: uninstall-binPROGRAMS uninstall-examplesDATA \
+	uninstall-opendvlogDATA uninstall-pkgsysconfDATA \
+	uninstall-sbinPROGRAMS
 
 .MAKE: $(am__recursive_targets) install-am install-strip
 
@@ -3826,16 +3852,17 @@ uninstall-am: uninstall-binPROGRAMS uninstall-opendvlogDATA \
 	distclean-tags distcleancheck distdir distuninstallcheck dvi \
 	dvi-am html html-am info info-am install install-am \
 	install-binPROGRAMS install-data install-data-am install-dvi \
-	install-dvi-am install-exec install-exec-am install-html \
-	install-html-am install-info install-info-am install-man \
-	install-opendvlogDATA install-pdf install-pdf-am \
-	install-pkgsysconfDATA install-ps install-ps-am \
+	install-dvi-am install-examplesDATA install-exec \
+	install-exec-am install-html install-html-am install-info \
+	install-info-am install-man install-opendvlogDATA install-pdf \
+	install-pdf-am install-pkgsysconfDATA install-ps install-ps-am \
 	install-sbinPROGRAMS install-strip installcheck \
 	installcheck-am installdirs installdirs-am maintainer-clean \
 	maintainer-clean-generic mostlyclean mostlyclean-compile \
 	mostlyclean-generic pdf pdf-am ps ps-am tags tags-am uninstall \
-	uninstall-am uninstall-binPROGRAMS uninstall-opendvlogDATA \
-	uninstall-pkgsysconfDATA uninstall-sbinPROGRAMS
+	uninstall-am uninstall-binPROGRAMS uninstall-examplesDATA \
+	uninstall-opendvlogDATA uninstall-pkgsysconfDATA \
+	uninstall-sbinPROGRAMS
 
 .PRECIOUS: Makefile
 

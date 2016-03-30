@@ -4,6 +4,7 @@ opendvlogdir = ${localstatedir}/log/opendv
 opendvlog_DATA = 
 
 pkgsysconfdir = ${sysconfdir}/opendv
+pkgsysconf_DATA = 
 
 pkgdatadir = ${datadir}/opendv
 
@@ -75,7 +76,8 @@ dstarrepeaterd_SOURCES = DStarRepeater/DStarRepeaterD.cpp \
 dstarrepeaterd_LDADD = $(BASE_WX_LIBS) $(LIBUSB_LIBS) $(ALSA_LIBS)
 dstarrepeaterd_CPPFLAGS = -ICommon $(BASE_WX_CPPFLAGS)
 
-pkgsysconf_DATA = linux/dstarrepeater_1.example
+examplesdir = ${docdir}/examples
+examples_DATA = linux/dstarrepeater_1.example
 
 if WITH_GPIO
 COMMON_SRCS += Common/GPIOController.cpp
