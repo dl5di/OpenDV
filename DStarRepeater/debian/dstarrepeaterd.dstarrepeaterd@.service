@@ -4,7 +4,7 @@ After=network.target
 
 [Service]
 User=opendv
-ExecStart=/usr/sbin/dstarrepeaterd -nolog %i
+ExecStart=/usr/sbin/dstarrepeaterd %i
 Restart=on-abort
 
 [Install]
