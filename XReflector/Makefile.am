@@ -1,4 +1,15 @@
-DEFS += -DDATA_DIR=\"${pkgdatadir}\"
+pkgsysconfdir = ${sysconfdir}/opendv
+pkgsysconf_DATA = 
+
+pkgdatadir = ${datadir}/opendv
+
+opendvlogdir = ${localstatedir}/log/opendv
+opendvlog_DATA = 
+
+DEFS += \
+	-DDATA_DIR=\"${pkgdatadir}\" \
+	-DLOG_DIR=\"${opendvlogdir}\" \
+	-DCONF_DIR=\"${pkgsysconfdir}\"
     
 noinst_LIBRARIES = libCommon.a libircDDB.a
 

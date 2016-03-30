@@ -615,7 +615,6 @@ WITH_DEXTRA_FALSE
 WITH_DEXTRA_TRUE
 WITH_GUI_FALSE
 WITH_GUI_TRUE
-pkgdatadir
 MAINT
 MAINTAINER_MODE_FALSE
 MAINTAINER_MODE_TRUE
@@ -3716,19 +3715,6 @@ fi
   MAINT=$MAINTAINER_MODE_TRUE
 
 
-
-#  XXX These need to go away as non-standard paths
-if test "x$prefix" = "xNONE"; then
-	prefix=""
-fi
-if test "x$datadir" = 'x${datarootdir}'; then
-	datadir="/home/opendv/data"
-	pkgdatadir="/home/opendv/data"
-
-fi
-if test "x$sysconfdir" = 'x${prefix}/etc'; then
-	sysconfdir="/home/opendv/xreflector"
-fi
 
 
 # Check whether --with-gui was given.
