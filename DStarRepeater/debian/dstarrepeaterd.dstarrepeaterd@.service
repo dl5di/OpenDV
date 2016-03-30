@@ -1,0 +1,11 @@
+[Unit]
+Description=D-STAR Repeater Daemon
+After=network.target
+
+[Service]
+ExecStart=/usr/sbin/dstarrepeaterd -nolog %i
+Restart=on-abort
+
+[Install]
+WantedBy=multi-user.target
+DefaultInstance=1
