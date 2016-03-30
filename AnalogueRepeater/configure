@@ -3783,19 +3783,6 @@ fi
 
 
 
-#  XXX These need to go away as non-standard paths
-if test "x$prefix" = "xNONE"; then
-	prefix=""
-	bindir="/usr/bin"
-fi
-
-if test "x$datadir" = 'x${datarootdir}'; then
-	datadir="/home/opendv/data"
-fi
-if test "x$sysconfdir" = 'x${prefix}/etc'; then
-	sysconfdir="/home/opendv/analoguerepeater"
-fi
-
 
 # Check whether --with-gui was given.
 if test "${with_gui+set}" = set; then :
