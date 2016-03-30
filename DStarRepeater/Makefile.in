@@ -634,7 +634,6 @@ SUBDIRS = LinuxUSB
 opendvlogdir = ${localstatedir}/log/opendv
 opendvlog_DATA = 
 pkgsysconfdir = ${sysconfdir}/opendv
-pkgsysconf_DATA = 
 CONTROLLER_SRCS = Common/ArduinoController.cpp \
                    Common/DummyController.cpp \
                    Common/DVAPController.cpp \
@@ -679,6 +678,7 @@ dstarrepeaterd_SOURCES = DStarRepeater/DStarRepeaterD.cpp \
 dstarrepeaterd_LDADD = $(BASE_WX_LIBS) $(LIBUSB_LIBS) $(ALSA_LIBS) \
 	$(am__append_2)
 dstarrepeaterd_CPPFLAGS = -ICommon $(BASE_WX_CPPFLAGS)
+pkgsysconf_DATA = linux/dstarrepeater_1.example
 @WITH_GUI_TRUE@dstarrepeater_SOURCES = DStarRepeater/DStarRepeaterApp.cpp \
 @WITH_GUI_TRUE@                        DStarRepeater/DStarRepeaterFrame.cpp \
 @WITH_GUI_TRUE@                        DStarRepeater/DStarRepeaterLogger.cpp \
