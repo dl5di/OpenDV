@@ -218,7 +218,8 @@ libircDDB_a_OBJECTS = $(am_libircDDB_a_OBJECTS)
 @WITH_GUI_TRUE@	aprstransmit$(EXEEXT) timercontrol$(EXEEXT) \
 @WITH_GUI_TRUE@	timeserver$(EXEEXT)
 am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(sbindir)" \
-	"$(DESTDIR)$(opendvlogdir)" "$(DESTDIR)$(pkgdatadir)"
+	"$(DESTDIR)$(opendvlogdir)" "$(DESTDIR)$(pkgdatadir)" \
+	"$(DESTDIR)$(pkgsysconfdir)"
 PROGRAMS = $(bin_PROGRAMS) $(sbin_PROGRAMS)
 am__aprstransmit_SOURCES_DIST = APRSTransmit/APRSTransmitApp.cpp \
 	APRSTransmit/APRSParser.cpp APRSTransmit/APRSTransmit.cpp
@@ -493,7 +494,7 @@ am__uninstall_files_from_dir = { \
     || { echo " ( cd '$$dir' && rm -f" $$files ")"; \
          $(am__cd) "$$dir" && rm -f $$files; }; \
   }
-DATA = $(opendvlog_DATA) $(pkgdata_DATA)
+DATA = $(opendvlog_DATA) $(pkgdata_DATA) $(pkgsysconf_DATA)
 am__tagged_files = $(HEADERS) $(SOURCES) $(TAGS_FILES) $(LISP)
 # Read a list of newline-separated strings from the standard input,
 # and print each of them once, without duplicates.  Input order is
@@ -534,7 +535,7 @@ distuninstallcheck_listfiles = find . -type f -print
 am__distuninstallcheck_listfiles = $(distuninstallcheck_listfiles) \
   | sed 's|^\./|$(prefix)/|' | grep -v '$(infodir)/dir$$'
 distcleancheck_listfiles = find . -type f -print
-pkgdatadir = @pkgdatadir@
+pkgdatadir = ${datadir}/opendv
 ACLOCAL = @ACLOCAL@
 AMTAR = @AMTAR@
 AM_DEFAULT_VERBOSITY = @AM_DEFAULT_VERBOSITY@
@@ -554,7 +555,7 @@ CXXDEPMODE = @CXXDEPMODE@
 CXXFLAGS = @CXXFLAGS@
 CYGPATH_W = @CYGPATH_W@
 DEFS = @DEFS@ -DDATA_DIR=\"${pkgdatadir}\" \
-	-DLOG_DIR=\"${opendvlogdir}\" -DCONF_DIR=\"${sysconfdir}\"
+	-DLOG_DIR=\"${opendvlogdir}\" -DCONF_DIR=\"${pkgsysconfdir}\"
 DEPDIR = @DEPDIR@
 ECHO_C = @ECHO_C@
 ECHO_N = @ECHO_N@
@@ -645,6 +646,8 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
+pkgsysconfdir = ${sysconfdir}/opendv
+pkgsysconf_DATA = 
 opendvlogdir = ${localstatedir}/log/opendv
 opendvlog_DATA = 
 STARNETSERVER_COMMON = \
@@ -4127,6 +4130,27 @@ uninstall-pkgdataDATA:
 	@list='$(pkgdata_DATA)'; test -n "$(pkgdatadir)" || list=; \
 	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
 	dir='$(DESTDIR)$(pkgdatadir)'; $(am__uninstall_files_from_dir)
+install-pkgsysconfDATA: $(pkgsysconf_DATA)
+	@$(NORMAL_INSTALL)
+	@list='$(pkgsysconf_DATA)'; test -n "$(pkgsysconfdir)" || list=; \
+	if test -n "$$list"; then \
+	  echo " $(MKDIR_P) '$(DESTDIR)$(pkgsysconfdir)'"; \
+	  $(MKDIR_P) "$(DESTDIR)$(pkgsysconfdir)" || exit 1; \
+	fi; \
+	for p in $$list; do \
+	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	  echo "$$d$$p"; \
+	done | $(am__base_list) | \
+	while read files; do \
+	  echo " $(INSTALL_DATA) $$files '$(DESTDIR)$(pkgsysconfdir)'"; \
+	  $(INSTALL_DATA) $$files "$(DESTDIR)$(pkgsysconfdir)" || exit $$?; \
+	done
+
+uninstall-pkgsysconfDATA:
+	@$(NORMAL_UNINSTALL)
+	@list='$(pkgsysconf_DATA)'; test -n "$(pkgsysconfdir)" || list=; \
+	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
+	dir='$(DESTDIR)$(pkgsysconfdir)'; $(am__uninstall_files_from_dir)
 
 ID: $(am__tagged_files)
 	$(am__define_uniq_tagged_files); mkid -fID $$unique
@@ -4354,7 +4378,7 @@ check-am: all-am
 check: check-am
 all-am: Makefile $(LIBRARIES) $(PROGRAMS) $(DATA)
 installdirs:
-	for dir in "$(DESTDIR)$(bindir)" "$(DESTDIR)$(sbindir)" "$(DESTDIR)$(opendvlogdir)" "$(DESTDIR)$(pkgdatadir)"; do \
+	for dir in "$(DESTDIR)$(bindir)" "$(DESTDIR)$(sbindir)" "$(DESTDIR)$(opendvlogdir)" "$(DESTDIR)$(pkgdatadir)" "$(DESTDIR)$(pkgsysconfdir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
 install: install-am
@@ -4435,7 +4459,8 @@ info: info-am
 
 info-am:
 
-install-data-am: install-opendvlogDATA install-pkgdataDATA
+install-data-am: install-opendvlogDATA install-pkgdataDATA \
+	install-pkgsysconfDATA
 
 install-dvi: install-dvi-am
 
@@ -4483,7 +4508,8 @@ ps: ps-am
 ps-am:
 
 uninstall-am: uninstall-binPROGRAMS uninstall-opendvlogDATA \
-	uninstall-pkgdataDATA uninstall-sbinPROGRAMS
+	uninstall-pkgdataDATA uninstall-pkgsysconfDATA \
+	uninstall-sbinPROGRAMS
 
 .MAKE: install-am install-strip
 
@@ -4498,13 +4524,15 @@ uninstall-am: uninstall-binPROGRAMS uninstall-opendvlogDATA \
 	install-data install-data-am install-dvi install-dvi-am \
 	install-exec install-exec-am install-html install-html-am \
 	install-info install-info-am install-man install-opendvlogDATA \
-	install-pdf install-pdf-am install-pkgdataDATA install-ps \
-	install-ps-am install-sbinPROGRAMS install-strip installcheck \
+	install-pdf install-pdf-am install-pkgdataDATA \
+	install-pkgsysconfDATA install-ps install-ps-am \
+	install-sbinPROGRAMS install-strip installcheck \
 	installcheck-am installdirs maintainer-clean \
 	maintainer-clean-generic mostlyclean mostlyclean-compile \
 	mostlyclean-generic pdf pdf-am ps ps-am tags tags-am uninstall \
 	uninstall-am uninstall-binPROGRAMS uninstall-opendvlogDATA \
-	uninstall-pkgdataDATA uninstall-sbinPROGRAMS
+	uninstall-pkgdataDATA uninstall-pkgsysconfDATA \
+	uninstall-sbinPROGRAMS
 
 .PRECIOUS: Makefile
 
