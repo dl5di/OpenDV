@@ -84,6 +84,7 @@ bin_PROGRAMS += AMBEserver
 
 AMBEserver_SOURCES = DV3000/AMBEserver.c
 
+init_ddir = /etc/init.d
 dist_init_d_SCRIPTS = DV3000/init.d/AMBEserver
 
 if WITH_GPIO
