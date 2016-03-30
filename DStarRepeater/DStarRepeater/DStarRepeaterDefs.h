@@ -22,7 +22,6 @@
 #include <wx/wx.h>
 
 const wxString APPLICATION_NAME = wxT("D-Star Repeater");
-const wxString LOG_BASE_NAME    = wxT("DStarRepeater");
 const wxString CONFIG_FILE_NAME = wxT("dstarrepeater");
 
 const wxString PRIMARY_WHITELIST_FILE_NAME   = wxT("rptr_whitelist.dat");
