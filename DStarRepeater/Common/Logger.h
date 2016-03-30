@@ -35,7 +35,9 @@ private:
 	wxString   m_name;
 	wxFFile*   m_file;
 	wxFileName m_fileName;
+#if(defined(__WINDOWS__))
 	int        m_day;
+#endif
 };
 
 #endif

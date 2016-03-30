@@ -19,17 +19,20 @@
 #include "Logger.h"
 
 CLogger::CLogger(const wxString& directory, const wxString& name) :
+#if(defined(__WINDOWS__))
+m_day(0),
+#endif
 wxLog(),
 m_name(name),
 m_file(NULL),
-m_fileName(),
-m_day(0)
+m_fileName()
 {
 	m_file = new wxFFile;
 
 	m_fileName.SetPath(directory);
 	m_fileName.SetExt(wxT("log"));
 
+#if(defined(__WINDOWS__))
 	time_t timestamp;
 	::time(&timestamp);
 	struct tm* tm = ::gmtime(&timestamp);
@@ -39,6 +42,9 @@ m_day(0)
 
 	m_day = tm->tm_yday;
 	m_fileName.SetName(text);
+#else
+	m_fileName.SetName(m_name);
+#endif
 
 	bool ret = m_file->Open(m_fileName.GetFullPath(), wxT("a+t"));
 	if (!ret) {
@@ -92,6 +98,7 @@ void CLogger::DoLogString(const wxChar* msg, time_t timestamp)
 	wxASSERT(m_file->IsOpened());
 	wxASSERT(msg != NULL);
 
+#if(defined(__WINDOWS__))
 	struct tm* tm = ::gmtime(&timestamp);
 
 	int day = tm->tm_yday;
@@ -110,6 +117,7 @@ void CLogger::DoLogString(const wxChar* msg, time_t timestamp)
 			return;
 		}
 	}
+#endif
 
 	m_file->Write(wxString(msg));
 	m_file->Flush();
