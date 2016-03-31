@@ -131,7 +131,8 @@ int main(int argc, char** argv)
 		// We are the child from here onwards
 		::setsid();
 
-		::chdir("/");
+		if(::chdir("/") == -1)
+			::fprintf(stderr, "dstarrepeaterd: error changing directory: %s\n", strerror(errno));
 
 		::umask(0);
 	}
