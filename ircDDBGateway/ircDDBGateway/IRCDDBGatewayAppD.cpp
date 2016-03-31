@@ -110,7 +110,8 @@ int main(int argc, char** argv)
 		// We are the child from here onwards
 		::setsid();
 
-		::chdir("/");
+		if(::chdir("/") == -1)
+			::fprintf(stderr, "ircddbgatewayd: error changing directory %s\n", strerror(errno));
 
 		::umask(0);
 	}
