@@ -1,0 +1,36 @@
+Source: ircddbgateway
+Section: hamradio
+Priority: optional
+Maintainer: Jeremy McDermond <nh6z@nh6z.net>
+Build-Depends: debhelper (>= 9), autotools-dev , libwxgtk3.0-dev
+Standards-Version: 3.9.6
+Homepage: https://github.com/dl5di/OpenDV
+
+Package: ircddbgatewayd
+Architecture: armhf armel i386 amd64
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: D-STAR Digital Voice Internet Gateway Daemon Components
+ <insert long description, indented with spaces>
+
+Package: ircddbgateway
+Architecture: armhf armel i386 amd64
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: D-STAR Digital Voice Internet Gateway GUI Components
+ <insert long description, indented with spaces>
+
+Package: opendv-base
+Architecture: all
+Description: D-STAR Digital Voice Base Components
+ <insert long description, indented with spaces>
+
+Package: starnetserverd
+Architecture: armhf armel i386 amd64
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: D-STAR Digital Voice StarNet Daemon Components
+ <insert long description, indented with spaces>
+
+Package: starnetserver
+Architecture: armhf armel i386 amd64
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: D-STAR Digital Voice StarNet GUI Components
+ <insert long description, indented with spaces>
