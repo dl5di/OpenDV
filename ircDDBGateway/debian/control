@@ -8,13 +8,13 @@ Homepage: https://github.com/dl5di/OpenDV
 
 Package: ircddbgatewayd
 Architecture: armhf armel i386 amd64
-Depends: ${shlibs:Depends}, ${misc:Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends}, opendv-base
 Description: D-STAR Digital Voice Internet Gateway Daemon Components
  <insert long description, indented with spaces>
 
 Package: ircddbgateway
 Architecture: armhf armel i386 amd64
-Depends: ${shlibs:Depends}, ${misc:Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends}, opendv-base
 Description: D-STAR Digital Voice Internet Gateway GUI Components
  <insert long description, indented with spaces>
 
