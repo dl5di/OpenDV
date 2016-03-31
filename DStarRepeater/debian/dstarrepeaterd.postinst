@@ -27,6 +27,10 @@ case "$1" in
 	#  one.
 	usermod --groups audio --append || true
 	chown opendv:opendv /var/log/opendv
+
+	if ! chrooted ; then
+		udevadm control --reload-rules || true ;
+	fi
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)

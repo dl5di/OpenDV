@@ -8,7 +8,7 @@ Homepage: https://github.com/dl5di/OpenDV
 
 Package: dstarrepeater
 Architecture: i386 amd64 armel armhf
-Depends: ${shlibs:Depends}, ${misc:Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends} dstarrepeaterd
 Description: D-STAR Digital Voice Repeater Software GUI Components
   Provides an implementation of a D-STAR Digital Voice repeater in software.
   This package contains all of the GUI components that require X-Windows to
