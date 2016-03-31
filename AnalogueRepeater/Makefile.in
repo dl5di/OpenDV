@@ -15,6 +15,7 @@
 @SET_MAKE@
 
 
+
 VPATH = @srcdir@
 am__is_gnu_make = { \
   if test -z '$(MAKELEVEL)'; then \
@@ -160,7 +161,8 @@ am_libCommon_a_OBJECTS =  \
 	Common/libCommon_a-WAVFileReader.$(OBJEXT) \
 	Common/libCommon_a-WAVFileStore.$(OBJEXT) $(am__objects_1)
 libCommon_a_OBJECTS = $(am_libCommon_a_OBJECTS)
-am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(sbindir)"
+am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(sbindir)" \
+	"$(DESTDIR)$(opendvlogdir)" "$(DESTDIR)$(pkgsysconfdir)"
 PROGRAMS = $(bin_PROGRAMS) $(sbin_PROGRAMS)
 am__analoguerepeater_SOURCES_DIST = Common/ActiveHangSet.cpp \
 	Common/AddressTextCtrl.cpp Common/CallsignTextCtrl.cpp \
@@ -264,6 +266,34 @@ am__can_run_installinfo = \
     n|no|NO) false;; \
     *) (install-info --version) >/dev/null 2>&1;; \
   esac
+am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
+am__vpath_adj = case $$p in \
+    $(srcdir)/*) f=`echo "$$p" | sed "s|^$$srcdirstrip/||"`;; \
+    *) f=$$p;; \
+  esac;
+am__strip_dir = f=`echo $$p | sed -e 's|^.*/||'`;
+am__install_max = 40
+am__nobase_strip_setup = \
+  srcdirstrip=`echo "$(srcdir)" | sed 's/[].[^$$\\*|]/\\\\&/g'`
+am__nobase_strip = \
+  for p in $$list; do echo "$$p"; done | sed -e "s|$$srcdirstrip/||"
+am__nobase_list = $(am__nobase_strip_setup); \
+  for p in $$list; do echo "$$p $$p"; done | \
+  sed "s| $$srcdirstrip/| |;"' / .*\//!s/ .*/ ./; s,\( .*\)/[^/]*$$,\1,' | \
+  $(AWK) 'BEGIN { files["."] = "" } { files[$$2] = files[$$2] " " $$1; \
+    if (++n[$$2] == $(am__install_max)) \
+      { print $$2, files[$$2]; n[$$2] = 0; files[$$2] = "" } } \
+    END { for (dir in files) print dir, files[dir] }'
+am__base_list = \
+  sed '$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;s/\n/ /g' | \
+  sed '$$!N;$$!N;$$!N;$$!N;s/\n/ /g'
+am__uninstall_files_from_dir = { \
+  test -z "$$files" \
+    || { test ! -d "$$dir" && test ! -f "$$dir" && test ! -r "$$dir"; } \
+    || { echo " ( cd '$$dir' && rm -f" $$files ")"; \
+         $(am__cd) "$$dir" && rm -f $$files; }; \
+  }
+DATA = $(opendvlog_DATA) $(pkgsysconf_DATA)
 am__tagged_files = $(HEADERS) $(SOURCES) $(TAGS_FILES) $(LISP)
 # Read a list of newline-separated strings from the standard input,
 # and print each of them once, without duplicates.  Input order is
@@ -324,7 +354,8 @@ CXX = @CXX@
 CXXDEPMODE = @CXXDEPMODE@
 CXXFLAGS = @CXXFLAGS@
 CYGPATH_W = @CYGPATH_W@
-DEFS = @DEFS@
+DEFS = @DEFS@ -DLOG_DIR=\"${opendvlogdir}\" \
+	-DCONF_DIR=\"${pkgsysconfdir}\"
 DEPDIR = @DEPDIR@
 ECHO_C = @ECHO_C@
 ECHO_N = @ECHO_N@
@@ -420,6 +451,10 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
+opendvlogdir = ${localstatedir}/log/opendv
+opendvlog_DATA = 
+pkgsysconfdir = ${sysconfdir}/opendv
+pkgsysconf_DATA = 
 noinst_LIBRARIES = libCommon.a
 libCommon_a_SOURCES = Common/ArduinoController.cpp \
 	Common/AudioDelay.cpp Common/CWKeyer.cpp \
@@ -1640,6 +1675,48 @@ AnalogueRepeater/analoguerepeaterd-AnalogueRepeaterStatusData.obj: AnalogueRepea
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='AnalogueRepeater/AnalogueRepeaterStatusData.cpp' object='AnalogueRepeater/analoguerepeaterd-AnalogueRepeaterStatusData.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(analoguerepeaterd_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o AnalogueRepeater/analoguerepeaterd-AnalogueRepeaterStatusData.obj `if test -f 'AnalogueRepeater/AnalogueRepeaterStatusData.cpp'; then $(CYGPATH_W) 'AnalogueRepeater/AnalogueRepeaterStatusData.cpp'; else $(CYGPATH_W) '$(srcdir)/AnalogueRepeater/AnalogueRepeaterStatusData.cpp'; fi`
+install-opendvlogDATA: $(opendvlog_DATA)
+	@$(NORMAL_INSTALL)
+	@list='$(opendvlog_DATA)'; test -n "$(opendvlogdir)" || list=; \
+	if test -n "$$list"; then \
+	  echo " $(MKDIR_P) '$(DESTDIR)$(opendvlogdir)'"; \
+	  $(MKDIR_P) "$(DESTDIR)$(opendvlogdir)" || exit 1; \
+	fi; \
+	for p in $$list; do \
+	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	  echo "$$d$$p"; \
+	done | $(am__base_list) | \
+	while read files; do \
+	  echo " $(INSTALL_DATA) $$files '$(DESTDIR)$(opendvlogdir)'"; \
+	  $(INSTALL_DATA) $$files "$(DESTDIR)$(opendvlogdir)" || exit $$?; \
+	done
+
+uninstall-opendvlogDATA:
+	@$(NORMAL_UNINSTALL)
+	@list='$(opendvlog_DATA)'; test -n "$(opendvlogdir)" || list=; \
+	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
+	dir='$(DESTDIR)$(opendvlogdir)'; $(am__uninstall_files_from_dir)
+install-pkgsysconfDATA: $(pkgsysconf_DATA)
+	@$(NORMAL_INSTALL)
+	@list='$(pkgsysconf_DATA)'; test -n "$(pkgsysconfdir)" || list=; \
+	if test -n "$$list"; then \
+	  echo " $(MKDIR_P) '$(DESTDIR)$(pkgsysconfdir)'"; \
+	  $(MKDIR_P) "$(DESTDIR)$(pkgsysconfdir)" || exit 1; \
+	fi; \
+	for p in $$list; do \
+	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	  echo "$$d$$p"; \
+	done | $(am__base_list) | \
+	while read files; do \
+	  echo " $(INSTALL_DATA) $$files '$(DESTDIR)$(pkgsysconfdir)'"; \
+	  $(INSTALL_DATA) $$files "$(DESTDIR)$(pkgsysconfdir)" || exit $$?; \
+	done
+
+uninstall-pkgsysconfDATA:
+	@$(NORMAL_UNINSTALL)
+	@list='$(pkgsysconf_DATA)'; test -n "$(pkgsysconfdir)" || list=; \
+	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
+	dir='$(DESTDIR)$(pkgsysconfdir)'; $(am__uninstall_files_from_dir)
 
 ID: $(am__tagged_files)
 	$(am__define_uniq_tagged_files); mkid -fID $$unique
@@ -1865,9 +1942,9 @@ distcleancheck: distclean
 	       exit 1; } >&2
 check-am: all-am
 check: check-am
-all-am: Makefile $(LIBRARIES) $(PROGRAMS)
+all-am: Makefile $(LIBRARIES) $(PROGRAMS) $(DATA)
 installdirs:
-	for dir in "$(DESTDIR)$(bindir)" "$(DESTDIR)$(sbindir)"; do \
+	for dir in "$(DESTDIR)$(bindir)" "$(DESTDIR)$(sbindir)" "$(DESTDIR)$(opendvlogdir)" "$(DESTDIR)$(pkgsysconfdir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
 install: install-am
@@ -1928,7 +2005,7 @@ info: info-am
 
 info-am:
 
-install-data-am:
+install-data-am: install-opendvlogDATA install-pkgsysconfDATA
 
 install-dvi: install-dvi-am
 
@@ -1975,7 +2052,8 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-binPROGRAMS uninstall-sbinPROGRAMS
+uninstall-am: uninstall-binPROGRAMS uninstall-opendvlogDATA \
+	uninstall-pkgsysconfDATA uninstall-sbinPROGRAMS
 
 .MAKE: install-am install-strip
 
@@ -1989,13 +2067,14 @@ uninstall-am: uninstall-binPROGRAMS uninstall-sbinPROGRAMS
 	html-am info info-am install install-am install-binPROGRAMS \
 	install-data install-data-am install-dvi install-dvi-am \
 	install-exec install-exec-am install-html install-html-am \
-	install-info install-info-am install-man install-pdf \
-	install-pdf-am install-ps install-ps-am install-sbinPROGRAMS \
-	install-strip installcheck installcheck-am installdirs \
-	maintainer-clean maintainer-clean-generic mostlyclean \
-	mostlyclean-compile mostlyclean-generic pdf pdf-am ps ps-am \
-	tags tags-am uninstall uninstall-am uninstall-binPROGRAMS \
-	uninstall-sbinPROGRAMS
+	install-info install-info-am install-man install-opendvlogDATA \
+	install-pdf install-pdf-am install-pkgsysconfDATA install-ps \
+	install-ps-am install-sbinPROGRAMS install-strip installcheck \
+	installcheck-am installdirs maintainer-clean \
+	maintainer-clean-generic mostlyclean mostlyclean-compile \
+	mostlyclean-generic pdf pdf-am ps ps-am tags tags-am uninstall \
+	uninstall-am uninstall-binPROGRAMS uninstall-opendvlogDATA \
+	uninstall-pkgsysconfDATA uninstall-sbinPROGRAMS
 
 .PRECIOUS: Makefile
 

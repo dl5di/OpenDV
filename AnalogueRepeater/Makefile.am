@@ -1,3 +1,13 @@
+opendvlogdir = ${localstatedir}/log/opendv
+opendvlog_DATA = 
+
+pkgsysconfdir = ${sysconfdir}/opendv
+pkgsysconf_DATA = 
+
+DEFS += \
+	-DLOG_DIR=\"${opendvlogdir}\" \
+	-DCONF_DIR=\"${pkgsysconfdir}\"
+
 noinst_LIBRARIES = libCommon.a
 
 libCommon_a_SOURCES = \

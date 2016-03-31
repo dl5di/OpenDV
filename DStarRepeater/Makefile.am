@@ -3,10 +3,15 @@ SUBDIRS = LinuxUSB
 opendvlogdir = ${localstatedir}/log/opendv
 opendvlog_DATA = 
 
+pkgsysconfdir = ${sysconfdir}/opendv
+pkgsysconf_DATA = 
+
+pkgdatadir = ${datadir}/opendv
+
 DEFS += \
-	-DDATA_DIR=\"${datadir}\" \
+	-DDATA_DIR=\"${pkgdatadir}\" \
 	-DLOG_DIR=\"${opendvlogdir}\" \
-    -DCONF_DIR=\"${sysconfdir}\"
+	-DCONF_DIR=\"${pkgsysconfdir}\"
 
 CONTROLLER_SRCS =  Common/ArduinoController.cpp \
                    Common/DummyController.cpp \

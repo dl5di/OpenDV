@@ -26,8 +26,14 @@ const wxString LOG_BASE_NAME    = wxT("XReflector");
 
 #if !defined(__WINDOWS__)
 const wxString CONFIG_FILE_NAME = wxT("xreflector");
-const wxString LOG_DIR  = wxT("/var/log");
-const wxString CONF_DIR = wxT("/etc");
+
+#if(!defined(LOG_DIR))
+#define LOG_DIR "/var/log"
+#endif
+
+#if(!defined(CONF_DIR))
+#define CONF_DIR "/etc"
+#endif
 #endif
 
 const unsigned int MAX_REFLECTORS   = 5U;
