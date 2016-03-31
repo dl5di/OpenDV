@@ -1,0 +1,12 @@
+[Unit]
+Description=D-STAR Repeater Daemon
+After=network.target
+
+[Service]
+User=opendv
+ExecStart=/usr/sbin/dstarrepeaterd %i
+Restart=on-abort
+
+[Install]
+WantedBy=multi-user.target
+DefaultInstance=1

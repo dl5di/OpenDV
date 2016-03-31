@@ -1,0 +1,31 @@
+Source: dstarrepeater
+Section: hamradio
+Priority: optional
+Maintainer: Jeremy McDermond <nh6z@nh6z.net>
+Build-Depends: debhelper (>= 9), autotools-dev , libwxgtk3.0-dev, libasound2-dev, libusb-1.0-0-dev, wiringpi [armhf]
+Standards-Version: 3.9.6
+Homepage: https://github.com/dl5di/OpenDV
+
+Package: dstarrepeater
+Architecture: i386 amd64 armel armhf
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: D-STAR Digital Voice Repeater Software GUI Components
+  Provides an implementation of a D-STAR Digital Voice repeater in software.
+  This package contains all of the GUI components that require X-Windows to
+  run correctly including the graphical configuration utility.
+
+Package: dstarrepeaterd
+Architecture: armel armhf amd64 i386
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: D-STAR Digital Voice Repeater Software Daemon Components
+  Provides an implementation of a D-STAR Digtal Voice repeater in software.
+  This package contains the Non-GUI componets that do not require an X-Windows
+  installation to run.  This does not include the configuration utility and
+  users will have to find alternate ways of configuring the daemon.
+
+Package: opendv-usb-utils
+Architecture: armel armhf amd64 i386
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: USB Utilities for the OpenDV programs
+  Provides the USB utilities to manipulate the URI and K8055 devices for
+  OpenDV.

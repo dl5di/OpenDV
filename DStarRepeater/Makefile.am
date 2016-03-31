@@ -69,12 +69,17 @@ COMMON_SRCS = \
 	DStarRepeater/DStarRepeaterRXThread.cpp \
 	DStarRepeater/DStarRepeaterStatusData.cpp
 
+noinst_LIBRARIES = libCommon.a
+libCommon_a_SOURCES = $(COMMON_SRCS) $(CONTROLLER_SRCS)
+libCommon_a_CPPFLAGS = -ICommon $(BASE_WX_CPPFLAGS)
+
 sbin_PROGRAMS = dstarrepeaterd
-dstarrepeaterd_SOURCES = DStarRepeater/DStarRepeaterD.cpp \
-                         $(COMMON_SRCS) \
-                         $(CONTROLLER_SRCS)
-dstarrepeaterd_LDADD = $(BASE_WX_LIBS) $(LIBUSB_LIBS) $(ALSA_LIBS)
+dstarrepeaterd_SOURCES = DStarRepeater/DStarRepeaterD.cpp 
 dstarrepeaterd_CPPFLAGS = -ICommon $(BASE_WX_CPPFLAGS)
+dstarrepeaterd_LDADD = libCommon.a $(BASE_WX_LIBS) $(LIBUSB_LIBS) $(ALSA_LIBS)
+
+examplesdir = ${docdir}/examples
+examples_DATA = linux/dstarrepeater_1.example
 
 if WITH_GPIO
 COMMON_SRCS += Common/GPIOController.cpp
@@ -86,10 +91,8 @@ bin_PROGRAMS = dstarrepeater
 dstarrepeater_SOURCES = DStarRepeater/DStarRepeaterApp.cpp \
                         DStarRepeater/DStarRepeaterFrame.cpp \
                         DStarRepeater/DStarRepeaterLogger.cpp \
-                        DStarRepeater/DStarRepeaterThreadHelper.cpp \
-                        $(COMMON_SRCS) \
-                        $(CONTROLLER_SRCS)
-dstarrepeater_LDADD = $(GUI_WX_LIBS) $(LIBUSB_LIBS) $(ALSA_LIBS)
+                        DStarRepeater/DStarRepeaterThreadHelper.cpp 
+dstarrepeater_LDADD = libCommon.a $(GUI_WX_LIBS) $(LIBUSB_LIBS) $(ALSA_LIBS)
 dstarrepeater_CPPFLAGS = -ICommon $(GUI_WX_CPPFLAGS)
 
 if WITH_GPIO
@@ -123,11 +126,8 @@ dstarrepeaterconfig_SOURCES = \
 	GUICommon/CallsignTextCtrl.cpp \
 	GUICommon/MessageTextCtrl.cpp \
 	GUICommon/PortTextCtrl.cpp \
-	GUICommon/RestrictedTextCtrl.cpp \
- 	Common/SerialPortSelector.cpp \
-	Common/DStarRepeaterConfig.cpp \
-	Common/SoundCardReaderWriter.cpp
+	GUICommon/RestrictedTextCtrl.cpp
 
-dstarrepeaterconfig_LDADD = $(GUI_WX_LIBS) $(ALSA_LIBS)
+dstarrepeaterconfig_LDADD = libCommon.a $(GUI_WX_LIBS) $(ALSA_LIBS)
 dstarrepeaterconfig_CPPFLAGS = -ICommon -IGUICommon $(GUI_WX_CPPFLAGS)
 endif

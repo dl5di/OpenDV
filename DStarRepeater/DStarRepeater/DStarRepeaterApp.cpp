@@ -57,6 +57,8 @@ const wxChar*    LOGDIR_OPTION = wxT("logdir");
 const wxChar*   CONFDIR_OPTION = wxT("confdir");
 const wxChar*  AUDIODIR_OPTION = wxT("audiodir");
 
+const wxString LOG_BASE_NAME    = wxT("dstarrepeater");
+
 
 CDStarRepeaterApp::CDStarRepeaterApp() :
 wxApp(),

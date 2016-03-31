@@ -1,0 +1,7 @@
+/var/log/opendv/dstarrepeaterd.log /var/log/opendv/dstarrepeaterd_[0-9].log {
+	rotate 14
+	daily
+	compress
+	missingok
+	copytruncate
+}

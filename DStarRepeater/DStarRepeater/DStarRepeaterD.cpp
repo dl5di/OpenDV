@@ -62,6 +62,8 @@ const wxChar*   CONFDIR_OPTION = wxT("confdir");
 const wxChar*  AUDIODIR_OPTION = wxT("audiodir");
 const wxChar*    DAEMON_SWITCH = wxT("daemon");
 
+const wxString LOG_BASE_NAME    = wxT("dstarrepeaterd");
+
 static CDStarRepeaterD* m_repeater = NULL;
 
 static void handler(int signum)
