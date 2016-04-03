@@ -2,7 +2,7 @@ Source: dstarrepeater
 Section: hamradio
 Priority: optional
 Maintainer: Jeremy McDermond <nh6z@nh6z.net>
-Build-Depends: debhelper (>= 9), autotools-dev , libwxgtk3.0-dev, libasound2-dev, libusb-1.0-0-dev, wiringpi [armhf]
+Build-Depends: debhelper (>= 9), autotools-dev , libwxgtk3.0-dev, libasound2-dev, libusb-1.0-0-dev, pkg-config, wiringpi [armhf]
 Standards-Version: 3.9.6
 Homepage: https://github.com/dl5di/OpenDV
 
