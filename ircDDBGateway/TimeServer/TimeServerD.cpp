@@ -36,6 +36,8 @@ const wxChar*    LOGDIR_OPTION = wxT("logdir");
 const wxChar*   CONFDIR_OPTION = wxT("confdir");
 const wxChar*    DAEMON_SWITCH = wxT("daemon");
 
+static const wxString LOG_BASE_NAME    = "timeserverd";
+
 int main(int argc, char** argv)
 {
 	bool res = ::wxInitialize();
