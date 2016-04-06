@@ -1,0 +1,13 @@
+[Unit]
+Description=D-STAR APRS Transmit Daemon
+Wants=ircddbgatewayd.service
+After=ircddbgatewayd.service
+
+[Service]
+User=opendv
+ExecStart=/usr/sbin/aprstransmitd $i -host $APRS_SERVER -port $APRS_PORT -radius $RADIUS
+Restart=on-abort
+
+[Install]
+WantedBy=multi-user.target
+DefaultInstance=1

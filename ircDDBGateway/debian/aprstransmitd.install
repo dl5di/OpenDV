@@ -1,0 +1,2 @@
+usr/sbin/aprstransmitd
+../aprstransmitd.conf	etc/opendv
