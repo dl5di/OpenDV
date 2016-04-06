@@ -34,3 +34,9 @@ Architecture: armhf armel i386 amd64
 Depends: ${shlibs:Depends}, ${misc:Depends}, opendv-base
 Description: D-STAR Digital Voice StarNet GUI Components
  <insert long description, indented with spaces>
+
+Package: remotecontrol
+Architecture: armhf armel i386 amd64
+Depends: ${shlibs:Depends}, ${misc:Depends}, opendv-base
+Description: D-STAR Digital Voice Internet Gateway Remote Control
+  Used to control either an ircDDBGateway or a STARnet Digital Server.
