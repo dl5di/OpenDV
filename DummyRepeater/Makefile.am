@@ -65,6 +65,8 @@ dummyrepeater_SOURCES = \
 dummyrepeater_LDADD = libCommon.a $(WX_LIBS) $(LIBUSB_LIBS) $(ALSA_LIBS)
 dummyrepeater_CPPFLAGS = -ICommon $(WX_CPPFLAGS)
 
+sbin_PROGRAMS = 
+
 if WITH_GPIO
 dummyrepeater_SOURCES += Common/GPIOController.cpp
 dummyrepeater_LDADD += -lwiringPi
@@ -80,7 +82,7 @@ dvemu_LDADD = -lftd2xx
 endif
 
 if WITH_AMBESERVER
-bin_PROGRAMS += AMBEserver
+sbin_PROGRAMS += AMBEserver
 
 AMBEserver_SOURCES = DV3000/AMBEserver.c
 
@@ -88,7 +90,7 @@ init_ddir = /etc/init.d
 dist_init_d_SCRIPTS = DV3000/init.d/AMBEserver
 
 if WITH_GPIO
-bin_PROGRAMS += dv3000d
+sbin_PROGRAMS += dv3000d
 
 dv3000d_SOURCES = DV3000/dv3000d.c
 dv3000d_LDADD = -lwiringPi
@@ -99,4 +101,3 @@ AMBEserver_CPPFLAGS = -DRASPBERRY_PI
 endif
 
 endif
-
