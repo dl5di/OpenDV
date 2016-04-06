@@ -70,3 +70,10 @@ Depends: ${shlibs:Depends}, ${misc:Depends}, opendv-base
 Description: D-STAR Digital Voice Internet Gateway Time Server Daemon Components
   The Time Server is used with the ircDDB Gateway to add time announcements to
   the system.
+
+Package: ircddbgateway-tools
+Architecture: armhf armel i386 amd64
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: D-STAR Digital Voice Internet Gateway Transmit Tools
+  These tools are used to transmit by hand to APRS, D-STAR text or voice.
+
