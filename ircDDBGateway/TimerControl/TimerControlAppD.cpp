@@ -149,8 +149,13 @@ bool CTimerControlAppD::init()
 			logBaseName.Append(m_name);
 		}
 
+#if defined(__WINDOWS__)
 		if (m_logDir.IsEmpty())
 			m_logDir = wxFileName::GetHomeDir();
+#else
+		if (m_logDir.IsEmpty())
+			m_logDir = LOG_DIR;
+#endif
 
 		wxLog* log = new CLogger(m_logDir, logBaseName);
 		wxLog::SetActiveTarget(log);
