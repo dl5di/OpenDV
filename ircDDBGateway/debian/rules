@@ -31,4 +31,6 @@ override_dh_installinit:
 	dh_installinit
 	dh_installinit --name=ircddbgatewayd
 	dh_installinit --name=starnetserverd
+	dh_installinit --name=timercontrold
+	dh_installinit --name=timeserverd
 	dh_installinit --name=aprstransmitd@
