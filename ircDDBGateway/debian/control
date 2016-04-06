@@ -6,6 +6,11 @@ Build-Depends: debhelper (>= 9), autotools-dev , pkg-config, libwxgtk3.0-dev
 Standards-Version: 3.9.6
 Homepage: https://github.com/dl5di/OpenDV
 
+Package: opendv-base
+Architecture: all
+Description: D-STAR Digital Voice Base Components
+ <insert long description, indented with spaces>
+
 Package: ircddbgatewayd
 Architecture: armhf armel i386 amd64
 Depends: ${shlibs:Depends}, ${misc:Depends}, opendv-base
@@ -18,19 +23,14 @@ Depends: ${shlibs:Depends}, ${misc:Depends}, opendv-base
 Description: D-STAR Digital Voice Internet Gateway GUI Components
  <insert long description, indented with spaces>
 
-Package: opendv-base
-Architecture: all
-Description: D-STAR Digital Voice Base Components
- <insert long description, indented with spaces>
-
 Package: starnetserverd
 Architecture: armhf armel i386 amd64
-Depends: ${shlibs:Depends}, ${misc:Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends}, opendv-base
 Description: D-STAR Digital Voice StarNet Daemon Components
  <insert long description, indented with spaces>
 
 Package: starnetserver
 Architecture: armhf armel i386 amd64
-Depends: ${shlibs:Depends}, ${misc:Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends}, opendv-base
 Description: D-STAR Digital Voice StarNet GUI Components
  <insert long description, indented with spaces>
