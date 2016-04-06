@@ -22,7 +22,6 @@
 #include <wx/wx.h>
 
 const wxString APPLICATION_NAME = wxT("Time Server");
-const wxString LOG_BASE_NAME    = wxT("TimeServer");
 
 #if !defined(__WINDOWS__)
 const wxString CONFIG_FILE_NAME = wxT("timeserver");
