@@ -77,3 +77,8 @@ Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: D-STAR Digital Voice Internet Gateway Transmit Tools
   These tools are used to transmit by hand to APRS, D-STAR text or voice.
 
+Package: aprstransmitd
+Architecture: armhf armel i386 amd64
+Depends: ${shlibs:Depends}, ${misc:Depends}, opendv-base
+Description: D-STAR Digital Voice Internet Gateway APRS Tansmit Daemon
+  This daemon is used to echo APRS data into a D-STAR gateway.
