@@ -1,6 +1,6 @@
 [Unit]
 Description=D-STAR Timer Control Daemon
-Requires=ircddbgatewayd.service
+Wants=ircddbgatewayd.service
 After=ircddbgatewayd.service
 
 [Service]
