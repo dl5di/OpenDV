@@ -33,6 +33,8 @@ const wxChar* NOLOGGING_SWITCH = wxT("nolog");
 const wxChar*    LOGDIR_OPTION = wxT("logdir");
 const wxChar*   CONFDIR_OPTION = wxT("confdir");
 
+static const wxString LOG_BASE_NAME    = wxT("timercontrol");
+
 CTimerControlApp::CTimerControlApp() :
 wxApp(),
 m_name(),
