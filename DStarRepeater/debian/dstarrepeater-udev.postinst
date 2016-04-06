@@ -17,16 +17,22 @@ set -e
 # for details, see https://www.debian.org/doc/debian-policy/ or
 # the debian-policy package
 
+# same test as udev postinst...
+chrooted() {
+  if [ "$(stat -c %d/%i /)" = "$(stat -Lc %d/%i /proc/1/root 2>/dev/null)" ];
+  then
+    # the devicenumber/inode pair of / is the same as that of /sbin/init's
+    # root, so we're *not* in a chroot and hence return false.
+    return 1
+  fi
+  return 0
+}
 
 case "$1" in
     configure)
-	useradd --user-group -M --system opendv --shell /bin/false || true
-
-	#  Add the opendv user to the audio group so that it can open audio
-	#  devices when using the audio based drivers such as the Sound Card
-	#  one.
-	usermod --groups audio --append opendv || true
-	chown opendv:opendv /var/log/opendv
+	if ! chrooted ; then
+		udevadm control --reload-rules || true ;
+	fi
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)
