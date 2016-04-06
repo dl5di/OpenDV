@@ -56,3 +56,17 @@ Description: D-STAR Digital Voice Internet Gateway Timer Control Daemon Componen
   The Timer Control application and daemon are used to control the reflector
   links of the ircDDB Gateway. It allows a time schedule to be entered, so
   that access to the various reflectors can depend on the day and time.
+
+Package: timeserver
+Architecture: armhf armel i386 amd64
+Depends: ${shlibs:Depends}, ${misc:Depends}, opendv-base
+Description: D-STAR Digital Voice Internet Gateway Time Server GUI Components
+  The Time Server is used with the ircDDB Gateway to add time announcements to
+  the system.
+
+Package: timeserverd
+Architecture: armhf armel i386 amd64
+Depends: ${shlibs:Depends}, ${misc:Depends}, opendv-base
+Description: D-STAR Digital Voice Internet Gateway Time Server Daemon Components
+  The Time Server is used with the ircDDB Gateway to add time announcements to
+  the system.
