@@ -1,0 +1,84 @@
+Source: ircddbgateway
+Section: hamradio
+Priority: optional
+Maintainer: Jeremy McDermond <nh6z@nh6z.net>
+Build-Depends: debhelper (>= 9), autotools-dev , pkg-config, libwxgtk3.0-dev
+Standards-Version: 3.9.6
+Homepage: https://github.com/dl5di/OpenDV
+
+Package: opendv-base
+Architecture: all
+Description: D-STAR Digital Voice Base Components
+ <insert long description, indented with spaces>
+
+Package: ircddbgatewayd
+Architecture: armhf armel i386 amd64
+Depends: ${shlibs:Depends}, ${misc:Depends}, opendv-base
+Description: D-STAR Digital Voice Internet Gateway Daemon Components
+ <insert long description, indented with spaces>
+
+Package: ircddbgateway
+Architecture: armhf armel i386 amd64
+Depends: ${shlibs:Depends}, ${misc:Depends}, opendv-base
+Description: D-STAR Digital Voice Internet Gateway GUI Components
+ <insert long description, indented with spaces>
+
+Package: starnetserverd
+Architecture: armhf armel i386 amd64
+Depends: ${shlibs:Depends}, ${misc:Depends}, opendv-base
+Description: D-STAR Digital Voice StarNet Daemon Components
+ <insert long description, indented with spaces>
+
+Package: starnetserver
+Architecture: armhf armel i386 amd64
+Depends: ${shlibs:Depends}, ${misc:Depends}, opendv-base
+Description: D-STAR Digital Voice StarNet GUI Components
+ <insert long description, indented with spaces>
+
+Package: remotecontrol
+Architecture: armhf armel i386 amd64
+Depends: ${shlibs:Depends}, ${misc:Depends}, opendv-base
+Description: D-STAR Digital Voice Internet Gateway Remote Control
+  Used to control either an ircDDBGateway or a STARnet Digital Server.
+
+Package: timercontrol
+Architecture: armhf armel i386 amd64
+Depends: ${shlibs:Depends}, ${misc:Depends}, opendv-base
+Description: D-STAR Digital Voice Internet Gateway Timer Control GUI Components
+  The Timer Control application and daemon are used to control the reflector
+  links of the ircDDB Gateway. It allows a time schedule to be entered, so
+  that access to the various reflectors can depend on the day and time.
+
+Package: timercontrold
+Architecture: armhf armel i386 amd64
+Depends: ${shlibs:Depends}, ${misc:Depends}, opendv-base
+Description: D-STAR Digital Voice Internet Gateway Timer Control Daemon Components
+  The Timer Control application and daemon are used to control the reflector
+  links of the ircDDB Gateway. It allows a time schedule to be entered, so
+  that access to the various reflectors can depend on the day and time.
+
+Package: timeserver
+Architecture: armhf armel i386 amd64
+Depends: ${shlibs:Depends}, ${misc:Depends}, opendv-base
+Description: D-STAR Digital Voice Internet Gateway Time Server GUI Components
+  The Time Server is used with the ircDDB Gateway to add time announcements to
+  the system.
+
+Package: timeserverd
+Architecture: armhf armel i386 amd64
+Depends: ${shlibs:Depends}, ${misc:Depends}, opendv-base
+Description: D-STAR Digital Voice Internet Gateway Time Server Daemon Components
+  The Time Server is used with the ircDDB Gateway to add time announcements to
+  the system.
+
+Package: ircddbgateway-tools
+Architecture: armhf armel i386 amd64
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: D-STAR Digital Voice Internet Gateway Transmit Tools
+  These tools are used to transmit by hand to APRS, D-STAR text or voice.
+
+Package: aprstransmitd
+Architecture: armhf armel i386 amd64
+Depends: ${shlibs:Depends}, ${misc:Depends}, opendv-base
+Description: D-STAR Digital Voice Internet Gateway APRS Tansmit Daemon
+  This daemon is used to echo APRS data into a D-STAR gateway.

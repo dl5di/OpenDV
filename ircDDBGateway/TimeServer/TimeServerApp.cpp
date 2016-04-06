@@ -34,6 +34,8 @@ const wxChar*       GUI_SWITCH = wxT("gui");
 const wxChar*    LOGDIR_OPTION = wxT("logdir");
 const wxChar*   CONFDIR_OPTION = wxT("confdir");
 
+static const wxString LOG_BASE_NAME    ="timeserver";
+
 CTimeServerApp::CTimeServerApp() :
 wxApp(),
 m_name(),

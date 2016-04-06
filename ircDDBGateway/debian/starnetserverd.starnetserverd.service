@@ -1,0 +1,11 @@
+[Unit]
+Description=D-STAR Gateway Daemon
+After=network.target
+
+[Service]
+User=opendv
+ExecStart=/usr/sbin/starnetserverd
+Restart=on-abort
+
+[Install]
+WantedBy=multi-user.target

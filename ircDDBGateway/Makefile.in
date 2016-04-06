@@ -91,9 +91,9 @@ sbin_PROGRAMS = ircddbgatewayd$(EXEEXT) starnetserverd$(EXEEXT) \
 	aprstransmitd$(EXEEXT) timercontrold$(EXEEXT) \
 	timeserverd$(EXEEXT)
 bin_PROGRAMS = texttransmit$(EXEEXT) voicetransmit$(EXEEXT) \
-	$(am__EXEEXT_1)
+	aprstransmit$(EXEEXT) $(am__EXEEXT_1)
 @WITH_GUI_TRUE@am__append_1 = ircddbgateway ircddbgatewayconfig remotecontrol starnetserver \
-@WITH_GUI_TRUE@                aprstransmit timercontrol timeserver
+@WITH_GUI_TRUE@                timercontrol timeserver
 
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -215,22 +215,19 @@ libircDDB_a_OBJECTS = $(am_libircDDB_a_OBJECTS)
 @WITH_GUI_TRUE@am__EXEEXT_1 = ircddbgateway$(EXEEXT) \
 @WITH_GUI_TRUE@	ircddbgatewayconfig$(EXEEXT) \
 @WITH_GUI_TRUE@	remotecontrol$(EXEEXT) starnetserver$(EXEEXT) \
-@WITH_GUI_TRUE@	aprstransmit$(EXEEXT) timercontrol$(EXEEXT) \
-@WITH_GUI_TRUE@	timeserver$(EXEEXT)
+@WITH_GUI_TRUE@	timercontrol$(EXEEXT) timeserver$(EXEEXT)
 am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(sbindir)" \
 	"$(DESTDIR)$(opendvlogdir)" "$(DESTDIR)$(pkgdatadir)" \
 	"$(DESTDIR)$(pkgsysconfdir)"
 PROGRAMS = $(bin_PROGRAMS) $(sbin_PROGRAMS)
-am__aprstransmit_SOURCES_DIST = APRSTransmit/APRSTransmitApp.cpp \
-	APRSTransmit/APRSParser.cpp APRSTransmit/APRSTransmit.cpp
 am__objects_1 = APRSTransmit/aprstransmit-APRSParser.$(OBJEXT) \
 	APRSTransmit/aprstransmit-APRSTransmit.$(OBJEXT)
-@WITH_GUI_TRUE@am_aprstransmit_OBJECTS = APRSTransmit/aprstransmit-APRSTransmitApp.$(OBJEXT) \
-@WITH_GUI_TRUE@	$(am__objects_1)
+am_aprstransmit_OBJECTS =  \
+	APRSTransmit/aprstransmit-APRSTransmitApp.$(OBJEXT) \
+	$(am__objects_1)
 aprstransmit_OBJECTS = $(am_aprstransmit_OBJECTS)
 am__DEPENDENCIES_1 =
-@WITH_GUI_TRUE@aprstransmit_DEPENDENCIES = $(am__DEPENDENCIES_1) \
-@WITH_GUI_TRUE@	libCommon.a
+aprstransmit_DEPENDENCIES = $(am__DEPENDENCIES_1) libCommon.a
 am__objects_2 = APRSTransmit/aprstransmitd-APRSParser.$(OBJEXT) \
 	APRSTransmit/aprstransmitd-APRSTransmit.$(OBJEXT)
 am_aprstransmitd_OBJECTS =  \
@@ -454,7 +451,7 @@ SOURCES = $(libCommon_a_SOURCES) $(libGUICommon_a_SOURCES) \
 	$(timeserver_SOURCES) $(timeserverd_SOURCES) \
 	$(voicetransmit_SOURCES)
 DIST_SOURCES = $(libCommon_a_SOURCES) $(libGUICommon_a_SOURCES) \
-	$(libircDDB_a_SOURCES) $(am__aprstransmit_SOURCES_DIST) \
+	$(libircDDB_a_SOURCES) $(aprstransmit_SOURCES) \
 	$(aprstransmitd_SOURCES) $(am__ircddbgateway_SOURCES_DIST) \
 	$(am__ircddbgatewayconfig_SOURCES_DIST) \
 	$(ircddbgatewayd_SOURCES) $(am__remotecontrol_SOURCES_DIST) \
@@ -785,6 +782,12 @@ aprstransmitd_SOURCES = \
 
 aprstransmitd_LDADD = $(BASE_WX_LIBS) libCommon.a
 aprstransmitd_CPPFLAGS = -ICommon $(BASE_WX_CPPFLAGS)
+aprstransmit_SOURCES = \
+	APRSTransmit/APRSTransmitApp.cpp \
+	$(APRSTRANSMIT_COMMON)
+
+aprstransmit_LDADD = $(GUI_WX_LIBS) libCommon.a
+aprstransmit_CPPFLAGS = -ICommon $(BASE_WX_CPPFLAGS)
 timercontrold_SOURCES = \
 	TimerControl/TimerControlAppD.cpp \
 	$(TIMERCONTROL_COMMON)
@@ -893,12 +896,6 @@ pkgdata_DATA = \
 
 @WITH_GUI_TRUE@starnetserver_LDADD = $(GUI_WX_LIBS) libCommon.a libircDDB.a libGUICommon.a
 @WITH_GUI_TRUE@starnetserver_CPPFLAGS = -ICommon -IircDDB -IGUICommon $(GUI_WX_CPPFLAGS)
-@WITH_GUI_TRUE@aprstransmit_SOURCES = \
-@WITH_GUI_TRUE@	APRSTransmit/APRSTransmitApp.cpp \
-@WITH_GUI_TRUE@	$(APRSTRANSMIT_COMMON)
-
-@WITH_GUI_TRUE@aprstransmit_LDADD = $(GUI_WX_LIBS) libCommon.a
-@WITH_GUI_TRUE@aprstransmit_CPPFLAGS = -ICommon $(GUI_WX_CPPFLAGS)
 @WITH_GUI_TRUE@timercontrol_SOURCES = \
 @WITH_GUI_TRUE@	TimerControl/TimerControlApp.cpp \
 @WITH_GUI_TRUE@	TimerControl/TimerControlFrame.cpp \

@@ -47,6 +47,8 @@ const wxChar*    LOGDIR_OPTION = wxT("logdir");
 const wxChar*   CONFDIR_OPTION = wxT("confdir");
 const wxChar*    DAEMON_SWITCH = wxT("daemon");
 
+const wxString LOG_BASE_NAME    = wxT("ircddbgatewayd");
+
 static CIRCDDBGatewayAppD* m_gateway = NULL;
 
 static void handler(int signum)
@@ -108,7 +110,8 @@ int main(int argc, char** argv)
 		// We are the child from here onwards
 		::setsid();
 
-		::chdir("/");
+		if(::chdir("/") == -1)
+			::fprintf(stderr, "ircddbgatewayd: error changing directory %s\n", strerror(errno));
 
 		::umask(0);
 	}

@@ -33,6 +33,8 @@ const wxChar*    LOGDIR_OPTION = wxT("logdir");
 const wxChar*   CONFDIR_OPTION = wxT("confdir");
 const wxChar*    DAEMON_SWITCH = wxT("daemon");
 
+static const wxString LOG_BASE_NAME    = wxT("timercontrold");
+
 int main(int argc, char** argv)
 {
 	bool res = ::wxInitialize();
@@ -149,8 +151,13 @@ bool CTimerControlAppD::init()
 			logBaseName.Append(m_name);
 		}
 
+#if defined(__WINDOWS__)
 		if (m_logDir.IsEmpty())
 			m_logDir = wxFileName::GetHomeDir();
+#else
+		if (m_logDir.IsEmpty())
+			m_logDir = LOG_DIR;
+#endif
 
 		wxLog* log = new CLogger(m_logDir, logBaseName);
 		wxLog::SetActiveTarget(log);

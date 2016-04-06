@@ -23,8 +23,6 @@
 
 const wxString APPLICATION_NAME = wxT("Timer Control");
 
-const wxString LOG_BASE_NAME    = wxT("TimerControl");
-
 #if !defined(__WINDOWS__)
 const wxString CONFIG_FILE_NAME = wxT("timercontrol");
 #endif

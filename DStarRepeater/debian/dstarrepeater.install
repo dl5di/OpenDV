@@ -1,3 +1,2 @@
 usr/bin/dstarrepeater
 usr/bin/dstarrepeaterconfig
-linux/logrotate.d/dstarrepeater	etc/logrotate.d

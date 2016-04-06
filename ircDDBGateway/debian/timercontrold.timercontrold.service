@@ -1,0 +1,12 @@
+[Unit]
+Description=D-STAR Timer Control Daemon
+Wants=ircddbgatewayd.service
+After=ircddbgatewayd.service
+
+[Service]
+User=opendv
+ExecStart=/usr/sbin/timercontrold
+Restart=on-abort
+
+[Install]
+WantedBy=multi-user.target

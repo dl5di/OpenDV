@@ -129,7 +129,7 @@ libGUICommon_a_SOURCES = \
 libGUICommon_a_CPPFLAGS = -ICommon $(GUI_WX_CPPFLAGS)
 
 sbin_PROGRAMS = ircddbgatewayd starnetserverd aprstransmitd timercontrold timeserverd
-bin_PROGRAMS = texttransmit voicetransmit
+bin_PROGRAMS = texttransmit voicetransmit aprstransmit
 
 ircddbgatewayd_SOURCES = \
 	ircDDBGateway/IRCDDBGatewayAppD.cpp \
@@ -149,6 +149,12 @@ aprstransmitd_SOURCES = \
 	$(APRSTRANSMIT_COMMON)
 aprstransmitd_LDADD = $(BASE_WX_LIBS) libCommon.a
 aprstransmitd_CPPFLAGS = -ICommon $(BASE_WX_CPPFLAGS)
+
+aprstransmit_SOURCES = \
+	APRSTransmit/APRSTransmitApp.cpp \
+	$(APRSTRANSMIT_COMMON)
+aprstransmit_LDADD = $(GUI_WX_LIBS) libCommon.a
+aprstransmit_CPPFLAGS = -ICommon $(BASE_WX_CPPFLAGS)
 
 timercontrold_SOURCES = \
 	TimerControl/TimerControlAppD.cpp \
@@ -211,7 +217,7 @@ pkgdata_DATA = \
 
 if WITH_GUI
 bin_PROGRAMS += ircddbgateway ircddbgatewayconfig remotecontrol starnetserver \
-                aprstransmit timercontrol timeserver
+                timercontrol timeserver
 
 ircddbgateway_SOURCES = \
 	ircDDBGateway/IRCDDBGatewayApp.cpp \
@@ -261,12 +267,6 @@ starnetserver_SOURCES = \
 	$(STARNETSERVER_COMMON)
 starnetserver_LDADD = $(GUI_WX_LIBS) libCommon.a libircDDB.a libGUICommon.a
 starnetserver_CPPFLAGS = -ICommon -IircDDB -IGUICommon $(GUI_WX_CPPFLAGS)
-
-aprstransmit_SOURCES = \
-	APRSTransmit/APRSTransmitApp.cpp \
-	$(APRSTRANSMIT_COMMON)
-aprstransmit_LDADD = $(GUI_WX_LIBS) libCommon.a
-aprstransmit_CPPFLAGS = -ICommon $(GUI_WX_CPPFLAGS)
 
 timercontrol_SOURCES = \
 	TimerControl/TimerControlApp.cpp \

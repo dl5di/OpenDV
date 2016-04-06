@@ -33,6 +33,8 @@ const wxChar* NOLOGGING_SWITCH = wxT("nolog");
 const wxChar*    LOGDIR_OPTION = wxT("logdir");
 const wxChar*   CONFDIR_OPTION = wxT("confdir");
 
+static const wxString LOG_BASE_NAME    = wxT("timercontrol");
+
 CTimerControlApp::CTimerControlApp() :
 wxApp(),
 m_name(),
@@ -64,8 +66,13 @@ bool CTimerControlApp::OnInit()
 			logBaseName.Append(m_name);
 		}
 
+#if defined(__WINDOWS__)
 		if (m_logDir.IsEmpty())
 			m_logDir = wxFileName::GetHomeDir();
+#else
+		if (m_logDir.IsEmpty())
+			m_logDir = LOG_DIR;
+#endif
 
 		wxLog* log = new CLogger(m_logDir, logBaseName);
 		wxLog::SetActiveTarget(log);
