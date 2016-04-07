@@ -1,1 +1,4 @@
 usr/sbin/AMBEserver
+../ambeserver-ttyAMA0.conf	/etc/opendv
+../ambeserver-ttyS0.conf	/etc/opendv
+../ambeserver-ttyUSB0.conf	/etc/opendv
