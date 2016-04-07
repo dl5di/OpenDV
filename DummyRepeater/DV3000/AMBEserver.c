@@ -242,8 +242,9 @@ int processSerial(int sockFd, int serialFd)
 	ssize_t bytes, bytesLeft;
 	struct dv3k_packet packet;
 	ssize_t bytesRead;
+	int i;
 	
-	for(int i = 0; i < sizeof(struct dv3k_packet); ++i) {
+	for(i = 0; i < sizeof(struct dv3k_packet); ++i) {
 		bytesRead = read(serialFd, &packet, 1);
 		if(bytes == -1) {
 			fprintf(stderr, "Error reading from serial port: %s\n", strerror(errno));
