@@ -1,0 +1,5 @@
+dummyrepeater (20160314-1) unstable; urgency=low
+
+  * Initial release (Closes: #nnnn)  <nnnn is the bug number of your ITP>
+
+ -- Jeremy McDermond (NH6Z) <nh6z@nh6z.net>  Mon, 14 Mar 2016 14:40:56 -0700

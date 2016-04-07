@@ -1,0 +1,12 @@
+[Unit]
+Description=DV3000 Daemon
+After=network.target
+
+[Service]
+User=opendv
+EnvironmentFile=/etc/opendv/%p-%i.conf
+ExecStart=/usr/sbin/AMBEserver -p ${UDP_PORT} -i /dev/%i $AMBESERVER_FLAGS
+Restart=on-abort
+
+[Install]
+WantedBy=multi-user.target
