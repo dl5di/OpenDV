@@ -54,13 +54,6 @@ struct dv3k_packet {
 };
 #pragma pack(pop)
 
-static inline void delay(unsigned int delay) {
-	struct timespec tim, tim2;
-	tim.tv_sec = 0;
-	tim.tv_nsec = delay * 1000UL;
-	nanosleep(&tim, &tim2);
-};
-
 #define	DV3000_VERSION		"2015-07-11"
 
 #define	AMBE3000_START_BYTE	0x61
