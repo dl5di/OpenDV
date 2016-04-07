@@ -336,8 +336,11 @@ int processSocket(int sockFd, int serialFd)
 }
 
 void usage() {
-	fprintf(stderr, "Usage: AMBEserver [-d] [-n] [-p port] [-i tty] [-v] [-x]\n");
-	fprintf(stderr, "Selecting -n uses 460800 baud (new) datarate\n");
+#if defined(RASPBERRY_PI)
+	fprintf(stderr, "Usage: AMBEserver [-d] [-r] [-s speed] [-p port] [-i tty] [-v] [-x]\n");
+#else
+	fprintf(stderr, "Usage: AMBEserver [-d] [-s speed] [-p port] [-i tty] [-v] [-x]\n");
+#endif
 	exit(1);
 }
 
