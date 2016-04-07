@@ -195,7 +195,7 @@ int openSerial(char *ttyname, long baud)
 		return -1;
 	}
 	if (debug)
-		fprintf(stderr, "Wrote Reset %ld chars\n", bytesWritten);
+		fprintf(stderr, "Wrote Reset %zd chars\n", bytesWritten);
 		
 	bytesWritten = write(fd ,prodId, sizeof(prodId));
 	if(bytesWritten != sizeof(prodId)) {
@@ -206,7 +206,7 @@ int openSerial(char *ttyname, long baud)
 		return -1;
 	}
 	if (debug)
-		fprintf(stderr,"Wrote prodID %ld chars\n", bytesWritten);
+		fprintf(stderr,"Wrote prodID %zd chars\n", bytesWritten);
 		
 	return fd; 
 }
@@ -270,7 +270,7 @@ int processSerial(int sockFd, int serialFd)
 	
 	bytesLeft = ntohs(packet.header.payload_length);
     if(bytesLeft > sizeof(packet.payload)) {
-        fprintf(stderr, "Serial payload exceeds buffer size: %ld\n", bytesLeft);
+        fprintf(stderr, "Serial payload exceeds buffer size: %zd\n", bytesLeft);
         return 0;
     }
     
@@ -317,7 +317,7 @@ int processSocket(int sockFd, int serialFd)
 	}
 
 	if (bytesRead != dv3k_packet_size(packet)) {
-		fprintf(stderr, "AMBEserver: invalid length when reading from the socket, %ld=%zd", bytesRead, dv3k_packet_size(packet));
+		fprintf(stderr, "AMBEserver: invalid length when reading from the socket, %zd=%zd", bytesRead, dv3k_packet_size(packet));
 		return 1;
 	}
 
