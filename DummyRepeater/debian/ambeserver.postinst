@@ -23,12 +23,12 @@ case "$1" in
     	case "$DPKG_MAINTSCRIPT_ARCH" in
     		armhf | armel) 
     			case `cat /proc/device-tree/compatible 2> /dev/null` in
-    				brcm,bcm2710*) ${SERIAL_DEVICE} = "/dev/ttyS0";;
-    				brcm,bcm2709* | brcm,bcm2708*) ${SERIAL_DEVICE} = "/dev/ttyAMA0";;
-    				*) ${SERIAL_DEVICE} = "/dev/ttyUSB0";;
+    				brcm,bcm2710*) SERIAL_DEVICE="ttyS0";;
+    				brcm,bcm2709* | brcm,bcm2708*) SERIAL_DEVICE="ttyAMA0";;
+    				*) SERIAL_DEVICE="ttyUSB0";;
     			esac
     		;;
-    		amd64 | i386) ${SERIAL_DEVICE} = "/dev/ttyUSB0";;
+    		amd64 | i386) SERIAL_DEVICE="ttyUSB0";;
     	esac
     	
     	systemctl enable ambeserver@${SERIAL_DEVICE}
