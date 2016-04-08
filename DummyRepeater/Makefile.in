@@ -165,9 +165,9 @@ am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(sbindir)" \
 PROGRAMS = $(bin_PROGRAMS) $(sbin_PROGRAMS)
 am__AMBEserver_SOURCES_DIST = DV3000/AMBEserver.c
 @WITH_AMBESERVER_TRUE@am_AMBEserver_OBJECTS =  \
-@WITH_AMBESERVER_TRUE@	DV3000/AMBEserver-AMBEserver.$(OBJEXT)
+@WITH_AMBESERVER_TRUE@	DV3000/AMBEserver.$(OBJEXT)
 AMBEserver_OBJECTS = $(am_AMBEserver_OBJECTS)
-AMBEserver_DEPENDENCIES =
+AMBEserver_LDADD = $(LDADD)
 am__dummyrepeater_SOURCES_DIST = DummyRepeater/DummyRepeaterApp.cpp \
 	DummyRepeater/DummyRepeaterBleepSet.cpp \
 	DummyRepeater/DummyRepeaterCallsignSet.cpp \
@@ -535,8 +535,6 @@ dummyrepeater_CPPFLAGS = -ICommon $(WX_CPPFLAGS)
 @WITH_AMBESERVER_TRUE@@WITH_GPIO_TRUE@dv3000d_SOURCES = DV3000/dv3000d.c
 @WITH_AMBESERVER_TRUE@@WITH_GPIO_TRUE@dv3000d_LDADD = -lwiringPi
 @WITH_AMBESERVER_TRUE@@WITH_GPIO_TRUE@dv3000d_CPPFLAGS = -DRASPBERRY_PI
-@WITH_AMBESERVER_TRUE@@WITH_GPIO_TRUE@AMBEserver_LDADD = -lwiringPi
-@WITH_AMBESERVER_TRUE@@WITH_GPIO_TRUE@AMBEserver_CPPFLAGS = -DRASPBERRY_PI
 all: all-am
 
 .SUFFIXES:
@@ -756,7 +754,7 @@ DV3000/$(am__dirstamp):
 DV3000/$(DEPDIR)/$(am__dirstamp):
 	@$(MKDIR_P) DV3000/$(DEPDIR)
 	@: > DV3000/$(DEPDIR)/$(am__dirstamp)
-DV3000/AMBEserver-AMBEserver.$(OBJEXT): DV3000/$(am__dirstamp) \
+DV3000/AMBEserver.$(OBJEXT): DV3000/$(am__dirstamp) \
 	DV3000/$(DEPDIR)/$(am__dirstamp)
 
 AMBEserver$(EXEEXT): $(AMBEserver_OBJECTS) $(AMBEserver_DEPENDENCIES) $(EXTRA_AMBEserver_DEPENDENCIES) 
@@ -934,7 +932,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@Common/$(DEPDIR)/libCommon_a-UDPReaderWriter.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@Common/$(DEPDIR)/libCommon_a-URIUSBController.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@Common/$(DEPDIR)/libCommon_a-Utils.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@DV3000/$(DEPDIR)/AMBEserver-AMBEserver.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@DV3000/$(DEPDIR)/AMBEserver.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@DV3000/$(DEPDIR)/dv3000d-dv3000d.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@DummyRepeater/$(DEPDIR)/dummyrepeater-DummyRepeaterApp.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@DummyRepeater/$(DEPDIR)/dummyrepeater-DummyRepeaterBleepSet.Po@am__quote@
@@ -972,20 +970,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
-
-DV3000/AMBEserver-AMBEserver.o: DV3000/AMBEserver.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AMBEserver_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT DV3000/AMBEserver-AMBEserver.o -MD -MP -MF DV3000/$(DEPDIR)/AMBEserver-AMBEserver.Tpo -c -o DV3000/AMBEserver-AMBEserver.o `test -f 'DV3000/AMBEserver.c' || echo '$(srcdir)/'`DV3000/AMBEserver.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) DV3000/$(DEPDIR)/AMBEserver-AMBEserver.Tpo DV3000/$(DEPDIR)/AMBEserver-AMBEserver.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='DV3000/AMBEserver.c' object='DV3000/AMBEserver-AMBEserver.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AMBEserver_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o DV3000/AMBEserver-AMBEserver.o `test -f 'DV3000/AMBEserver.c' || echo '$(srcdir)/'`DV3000/AMBEserver.c
-
-DV3000/AMBEserver-AMBEserver.obj: DV3000/AMBEserver.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AMBEserver_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT DV3000/AMBEserver-AMBEserver.obj -MD -MP -MF DV3000/$(DEPDIR)/AMBEserver-AMBEserver.Tpo -c -o DV3000/AMBEserver-AMBEserver.obj `if test -f 'DV3000/AMBEserver.c'; then $(CYGPATH_W) 'DV3000/AMBEserver.c'; else $(CYGPATH_W) '$(srcdir)/DV3000/AMBEserver.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) DV3000/$(DEPDIR)/AMBEserver-AMBEserver.Tpo DV3000/$(DEPDIR)/AMBEserver-AMBEserver.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='DV3000/AMBEserver.c' object='DV3000/AMBEserver-AMBEserver.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AMBEserver_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o DV3000/AMBEserver-AMBEserver.obj `if test -f 'DV3000/AMBEserver.c'; then $(CYGPATH_W) 'DV3000/AMBEserver.c'; else $(CYGPATH_W) '$(srcdir)/DV3000/AMBEserver.c'; fi`
 
 DV3000/dv3000d-dv3000d.o: DV3000/dv3000d.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dv3000d_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT DV3000/dv3000d-dv3000d.o -MD -MP -MF DV3000/$(DEPDIR)/dv3000d-dv3000d.Tpo -c -o DV3000/dv3000d-dv3000d.o `test -f 'DV3000/dv3000d.c' || echo '$(srcdir)/'`DV3000/dv3000d.c

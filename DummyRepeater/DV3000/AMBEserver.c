@@ -37,10 +37,6 @@
 
 #include <netinet/in.h>
 
-#if defined(RASPBERRY_PI)
-#include <wiringPi.h>
-#endif
-
 #define dv3k_packet_size(a) (1 + sizeof((a).header) + ntohs((a).header.payload_length))
 
 #pragma pack(push, 1)
@@ -64,6 +60,9 @@ struct dv3k_packet {
 
 struct sockaddr_in sa = { 0 };
 static int debug = 0;
+
+// THIS IS A BCM PIN NUMBER, NOT A WIRINGPI PIN NUMBER!
+static const unsigned char RESET_PIN = 4;
 
 void dump(char *text, struct dv3k_packet *packet, unsigned int length)
 {
@@ -108,29 +107,68 @@ void dump(char *text, struct dv3k_packet *packet, unsigned int length)
 	
 }
 
-#if defined(RASPBERRY_PI)
-int openWiringPi(void)
+int hardwareReset(void)
 {
-        int ret = wiringPiSetup();
-        if (ret == -1) {
-                fprintf(stderr, "dv3000d: error when initialising wiringPi\n");
-                return 0;
-        }
+	int fd;
+	char fileName[MAXPATHLEN];
+	char gpioNumber[4];
+	
+	//  Export the pin for use
+	if((fd = open("/sys/class/gpio/export", O_WRONLY)) == -1) {
+		fprintf(stderr, "AMBEserver: Unable to open GPIO export interface: %s\n", strerror(errno));
+		return 0;
+	}
+	
+	sprintf(gpioNumber, "%d", RESET_PIN);
+	if(write(fd, gpioNumber, strlen(gpioNumber)) == -1) {
+		fprintf(stderr, "AMBEserver: Unable to export GPIO interface: %s\n", strerror(errno));
+		return 0;
+	}
+	close(fd);
+	
+	// XXX THIS IS UGLY
+	// XXX If we are not root, we have to wait for udevd to change the
+	// XXX permissions on the gpio interfaces for us, otherwise we'll
+	// XXX get a permission denied when trying to write the direction
+	// XXX we could start polling the thing, but that would kinda suck
+	// XXX too.  I would have to think of a better way to spin around the
+	// XXX thing to make sure we can get to it.
 
-        pinMode(7, OUTPUT);             // Power
-
-        // Reset the hardware
-        digitalWrite(7, LOW);
-        delay(20UL);
-        digitalWrite(7, HIGH);
-        delay(750UL);
-
-        if (debug)
-                fprintf(stdout, "opened the Wiring Pi library\n");
-
-        return 1;
+	usleep(50000);
+	
+	//  Put the pin in output mode
+	sprintf(fileName, "/sys/class/gpio/gpio%d/direction", RESET_PIN);
+	if((fd = open(fileName, O_WRONLY)) == -1) {
+		fprintf(stderr, "AMBEserver: Unable to open GPIO direction interface for pin %d: %s\n", RESET_PIN, strerror(errno));
+		return 0;
+	}
+	
+	if(write(fd, "out", 3) == -1) {
+		fprintf(stderr, "AMBEserver: Unable to set GPIO direction for pint %d: %s\n", RESET_PIN, strerror(errno));
+		return 0;
+	}
+	close(fd);
+	
+	//  Toggle the reset line
+	sprintf(fileName, "/sys/class/gpio/gpio%d/value", RESET_PIN);	
+	if((fd = open(fileName, O_WRONLY)) == -1) {
+		fprintf(stderr, "AMBEserver: Unable to open GPIO pin interface for pin %d: %s\n", RESET_PIN, strerror(errno));
+		return 0;
+	}
+	
+	if(write(fd, "0", 1) == -1) {
+		fprintf(stderr, "AMBEserver: Unable to reset DV3000: %s\n", strerror(errno));
+		return 0;
+	}
+	usleep(20000);
+	if(write(fd, "1", 1) == -1) {
+		fprintf(stderr, "AMBEserver: Unable to reset DV3000: %s\n", strerror(errno));
+		return 0;
+	}
+	close(fd);
+	
+	return 1;
 }
-#endif
 
 const char reset[] = { 0x61, 0x00, 0x01, 0x00, 0x33 };
 const char prodId[] = { 0x61, 0x00, 0x01, 0x00, 0x33 };
@@ -330,11 +368,7 @@ int processSocket(int sockFd, int serialFd)
 }
 
 void usage() {
-#if defined(RASPBERRY_PI)
 	fprintf(stderr, "Usage: AMBEserver [-d] [-r] [-s speed] [-p port] [-i tty] [-v] [-x]\n");
-#else
-	fprintf(stderr, "Usage: AMBEserver [-d] [-s speed] [-p port] [-i tty] [-v] [-x]\n");
-#endif
 	exit(1);
 }
 
@@ -351,16 +385,10 @@ int main(int argc, char **argv)
 	
 	int c;
 	
-#if defined(RASPBERRY_PI)
 	char reset = 0;
-#endif
 	char daemon = 0;
 
-#if defined(RASPBERRY_PI)
 	while ((c = getopt(argc, argv, "dp:s:i:vxrh")) != -1) {
-#else
-	while ((c = getopt(argc, argv, "dp:s:i:vxh")) != -1) {
-#endif
 		switch (c) {
 			case 'd':
 				daemon = 1;
@@ -390,11 +418,9 @@ int main(int argc, char **argv)
 			case 'x':
 				debug = 1;
 				break;
-#if defined(RASPBERRY_PI)
 			case 'r':
 				reset = 1;
 				break;
-#endif
 			case 'h':
 			default:
 				usage();
@@ -425,16 +451,14 @@ int main(int argc, char **argv)
 		umask(0);
 	}
 
-#if defined(RASPBERRY_PI)
 	if(reset) {
-		if (!openWiringPi()) {
+		if (!hardwareReset()) {
 			fprintf(stderr,"Unable to open WiringPi, exiting\n");
 			exit(1);
 		} else {
 			fprintf(stderr,"Reset DV3000\n");
 		}
 	}
-#endif
 
 	sockFd = openSocket(port);
 	if (sockFd < 0)

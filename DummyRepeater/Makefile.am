@@ -95,9 +95,6 @@ sbin_PROGRAMS += dv3000d
 dv3000d_SOURCES = DV3000/dv3000d.c
 dv3000d_LDADD = -lwiringPi
 dv3000d_CPPFLAGS = -DRASPBERRY_PI
-
-AMBEserver_LDADD = -lwiringPi
-AMBEserver_CPPFLAGS = -DRASPBERRY_PI
 endif
 
 endif
