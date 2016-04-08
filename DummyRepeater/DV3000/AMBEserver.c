@@ -356,7 +356,11 @@ int main(int argc, char **argv)
 #endif
 	char daemon = 0;
 
-	while ((c = getopt(argc, argv, "s:dp:i:vxh")) != -1) {
+#if defined(RASPBERRY_PI)
+	while ((c = getopt(argc, argv, "dp:s:i:vxrh")) != -1) {
+#else
+	while ((c = getopt(argc, argv, "dp:s:i:vxh")) != -1) {
+#endif
 		switch (c) {
 			case 'd':
 				daemon = 1;
