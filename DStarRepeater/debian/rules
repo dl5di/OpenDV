@@ -36,3 +36,6 @@ endif
 override_dh_installinit:
 	dh_installinit
 	dh_installinit --name=dstarrepeaterd@
+
+override_dh_installudev:
+	dh_installudev --priority=60
