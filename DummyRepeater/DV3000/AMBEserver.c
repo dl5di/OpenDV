@@ -37,6 +37,19 @@
 
 #include <netinet/in.h>
 
+#define DV3K_TYPE_CONTROL 0x00
+#define DV3K_TYPE_AMBE 0x01
+#define DV3K_TYPE_AUDIO 0x02
+
+static const unsigned char DV3K_START_BYTE   = 0x61;
+
+static const unsigned char DV3K_CONTROL_RATEP  = 0x0A;
+static const unsigned char DV3K_CONTROL_PRODID = 0x30;
+static const unsigned char DV3K_CONTROL_VERSTRING = 0x31;
+static const unsigned char DV3K_CONTROL_RESET = 0x33;
+static const unsigned char DV3K_CONTROL_READY = 0x39;
+static const unsigned char DV3K_CONTROL_CHANFMT = 0x15;
+
 #define dv3k_packet_size(a) (1 + sizeof((a).header) + ntohs((a).header.payload_length))
 
 #pragma pack(push, 1)
@@ -46,13 +59,44 @@ struct dv3k_packet {
         unsigned short payload_length;
         unsigned char packet_type;
     } header;
-    char payload[325];
+    union {
+        struct {
+            unsigned char field_id;
+            union {
+                char prodid[16];
+                char ratep[12];
+                char version[48];
+                short chanfmt;
+            } data;
+        } ctrl;
+        struct {
+            unsigned char field_id;
+            unsigned char num_samples;
+            short samples[160];
+            unsigned char cmode_field_id;
+            short cmode_value;
+        } audio;
+        struct {
+            struct {
+                unsigned char field_id;
+                unsigned char num_bits;
+                unsigned char data[9];
+            } data;
+            struct {
+                unsigned char field_id;
+                unsigned short value;
+            } cmode;
+            struct {
+                unsigned char field_id;
+                unsigned char tone;
+                unsigned char amplitude;
+            } tone;
+        } ambe;
+    } payload;
 };
 #pragma pack(pop)
 
 #define	DV3000_VERSION		"2015-07-11"
-
-#define	AMBE3000_START_BYTE	0x61
 
 #define	DEFAULT_PORT		2460
 #define DEFAULT_TTY		"/dev/ttyUSB0"
@@ -120,8 +164,9 @@ int hardwareReset(void)
 	}
 	
 	sprintf(gpioNumber, "%d", RESET_PIN);
-	if(write(fd, gpioNumber, strlen(gpioNumber)) == -1) {
+	if(write(fd, gpioNumber, strlen(gpioNumber)) == -1  && errno != EBUSY) {
 		fprintf(stderr, "AMBEserver: Unable to export GPIO interface: %s\n", strerror(errno));
+		close(fd);
 		return 0;
 	}
 	close(fd);
@@ -134,7 +179,7 @@ int hardwareReset(void)
 	// XXX too.  I would have to think of a better way to spin around the
 	// XXX thing to make sure we can get to it.
 
-	usleep(50000);
+	usleep(100000);
 	
 	//  Put the pin in output mode
 	sprintf(fileName, "/sys/class/gpio/gpio%d/direction", RESET_PIN);
@@ -145,6 +190,7 @@ int hardwareReset(void)
 	
 	if(write(fd, "out", 3) == -1) {
 		fprintf(stderr, "AMBEserver: Unable to set GPIO direction for pint %d: %s\n", RESET_PIN, strerror(errno));
+		close(fd);
 		return 0;
 	}
 	close(fd);
@@ -158,11 +204,13 @@ int hardwareReset(void)
 	
 	if(write(fd, "0", 1) == -1) {
 		fprintf(stderr, "AMBEserver: Unable to reset DV3000: %s\n", strerror(errno));
+		close(fd);
 		return 0;
 	}
 	usleep(20000);
 	if(write(fd, "1", 1) == -1) {
 		fprintf(stderr, "AMBEserver: Unable to reset DV3000: %s\n", strerror(errno));
+		close(fd);
 		return 0;
 	}
 	close(fd);
@@ -170,8 +218,137 @@ int hardwareReset(void)
 	return 1;
 }
 
-const char reset[] = { 0x61, 0x00, 0x01, 0x00, 0x33 };
-const char prodId[] = { 0x61, 0x00, 0x01, 0x00, 0x33 };
+int readSerialPacket(int fd, struct dv3k_packet *packet)
+{
+	ssize_t bytes, bytesLeft;
+	ssize_t bytesRead;
+	int i;
+	
+	for(i = 0; i < sizeof(struct dv3k_packet); ++i) {
+		bytesRead = read(fd, packet, 1);
+		if(bytes == -1) {
+			fprintf(stderr, "AMBEserver: Error reading from serial port: %s\n", strerror(errno));
+			return 0;
+		}
+		if(packet->start_byte == DV3K_START_BYTE)
+			break;
+	}
+	if(packet->start_byte != DV3K_START_BYTE) {
+		fprintf(stderr, "AMBEserver: Couldn't find start byte in serial data\n");
+		return 0;
+	}
+
+	bytesLeft = sizeof(packet->header);
+	while(bytesLeft > 0) {
+		bytes = read(fd, ((uint8_t *) &packet->header) + sizeof(packet->header) - bytesLeft, bytesLeft);
+		if(bytes == -1) {
+			fprintf(stderr, "AMBEserver: Couldn't read serial data header\n");
+			return 0;
+		}
+		bytesLeft -= (size_t) bytes;
+	}
+	
+	bytesLeft = ntohs(packet->header.payload_length);
+    if(bytesLeft > sizeof(packet->payload)) {
+        fprintf(stderr, "AMBEserver: Serial payload exceeds buffer size: %zd\n", bytesLeft);
+        return 0;
+    }
+    
+    while(bytesLeft > 0) {
+        bytes = read(fd, ((uint8_t *) &packet->payload) + (ntohs(packet->header.payload_length) - bytesLeft), bytesLeft);
+        if(bytes == -1) {
+            fprintf(stderr, "AMBEserver: Couldn't read payload: %s\n", strerror(errno));
+            return 0;
+        }
+        
+        bytesLeft -= (size_t) bytes;
+    }
+    
+    return 1;
+}
+
+static inline int checkResponse(struct dv3k_packet *responsePacket, unsigned char response)
+{
+	if(responsePacket->start_byte != DV3K_START_BYTE ||
+	   responsePacket->header.packet_type != DV3K_TYPE_CONTROL ||
+	   responsePacket->payload.ctrl.field_id != response)
+		return 0;
+		
+	return 1;
+}
+
+int initDV3K(int fd, int hwReset)
+{
+	struct dv3k_packet responsePacket;
+	char prodId[17];
+	char version[49];
+	
+	struct dv3k_packet ctrlPacket = {
+        .start_byte = DV3K_START_BYTE,
+        .header.packet_type = DV3K_TYPE_CONTROL,
+        .header.payload_length = htons(1),
+        .payload.ctrl.field_id = DV3K_CONTROL_RESET
+    };
+
+	if(hwReset == 1) {
+		if(hardwareReset() == 0)
+			return 0;
+	} else {
+		if(write(fd, &ctrlPacket, dv3k_packet_size(ctrlPacket)) == -1) {
+			fprintf(stderr, "AMBEserver: error writing reset packet: %s\n", strerror(errno));
+			return 0;
+		}
+	}
+	
+	if(readSerialPacket(fd, &responsePacket) == 0) {
+		fprintf(stderr, "AMBEserver: error receiving response to reset\n");
+		return 0;
+	}
+	
+	if(checkResponse(&responsePacket, DV3K_CONTROL_READY) == 0) {
+	   fprintf(stderr, "AMBEserver: invalid response to reset\n");
+	   return 0;
+	}
+	
+	ctrlPacket.payload.ctrl.field_id = DV3K_CONTROL_PRODID;
+	if(write(fd, &ctrlPacket, dv3k_packet_size(ctrlPacket)) == -1) {
+		fprintf(stderr, "AMBEserver: error writing product id packet: %s\n", strerror(errno));
+		return 0;
+	}
+	
+	if(readSerialPacket(fd, &responsePacket) == 0) {
+		fprintf(stderr, "AMBEserver: error receiving response to product id request\n");
+		return 0;
+	}
+	
+	if(checkResponse(&responsePacket, DV3K_CONTROL_PRODID) == 0) {
+	   fprintf(stderr, "AMBEserver: invalid response to product id query\n");
+	   dump("ProdID Response:", &responsePacket, sizeof(responsePacket));
+	   return 0;
+	}
+	strncpy(prodId, responsePacket.payload.ctrl.data.prodid, sizeof(prodId));
+	
+	ctrlPacket.payload.ctrl.field_id = DV3K_CONTROL_VERSTRING;
+	if(write(fd, &ctrlPacket, dv3k_packet_size(ctrlPacket)) == -1) {
+		fprintf(stderr, "AMBEserver: error writing version packet: %s\n", strerror(errno));
+		return 0;
+	}
+	
+	if(readSerialPacket(fd, &responsePacket) == 0) {
+		fprintf(stderr, "AMBEserver: error receiving response to version request\n");
+		return 0;
+	}
+	
+	if(checkResponse(&responsePacket, DV3K_CONTROL_VERSTRING) == 0) {
+	   fprintf(stderr, "AMBEserver: invalid response to version query\n");
+	   return 0;
+	}
+	strncpy(version, responsePacket.payload.ctrl.data.version, sizeof(version));
+	
+	fprintf(stdout, "AMBEserver: Initialized %s version %s.\n", prodId, version); 
+
+	return 1;
+}
 
 int openSerial(char *ttyname, long baud)
 {
@@ -209,12 +386,12 @@ int openSerial(char *ttyname, long baud)
 	}
 	
 	tty.c_lflag    &= ~(ECHO | ECHOE | ICANON | IEXTEN | ISIG);
-    tty.c_iflag    &= ~(BRKINT | ICRNL | INPCK | ISTRIP | IXON | IXOFF | IXANY);
-    tty.c_cflag    &= ~(CSIZE | CSTOPB | PARENB);
-    tty.c_cflag    |= CS8 | CRTSCTS;
-    tty.c_oflag    &= ~(OPOST);
-    tty.c_cc[VMIN] = 0;
-    tty.c_cc[VTIME] = 1;
+	tty.c_iflag    &= ~(BRKINT | ICRNL | INPCK | ISTRIP | IXON | IXOFF | IXANY);
+	tty.c_cflag    &= ~(CSIZE | CSTOPB | PARENB);
+	tty.c_cflag    |= CS8 | CRTSCTS;
+	tty.c_oflag    &= ~(OPOST);
+	tty.c_cc[VMIN] = 0;
+	tty.c_cc[VTIME] = 1;
 	
 	if (tcsetattr(fd, TCSANOW, &tty) != 0) {
 		fprintf(stderr, "AMBEserver: tcsetattr: %s\n", strerror(errno));
@@ -223,29 +400,7 @@ int openSerial(char *ttyname, long baud)
 
 	if (debug)
 		fprintf(stdout, "opened %s %ld\n", ttyname, baud);
-		
-	bytesWritten = write(fd, reset, sizeof(reset));
-	if(bytesWritten != sizeof(reset)) {
-		if(bytesWritten == -1)
-			fprintf(stderr, "Error writing reset sequence: %s\n", strerror(errno));
-		else
-			fprintf(stderr, "Short write on reset sequence\n");
-		return -1;
-	}
-	if (debug)
-		fprintf(stderr, "Wrote Reset %zd chars\n", bytesWritten);
-		
-	bytesWritten = write(fd ,prodId, sizeof(prodId));
-	if(bytesWritten != sizeof(prodId)) {
-		if(bytesWritten == -1)
-			fprintf(stderr, "Error writing Product ID command: %s\n", strerror(errno));
-		else
-			fprintf(stderr, "Short write on Product ID command");
-		return -1;
-	}
-	if (debug)
-		fprintf(stderr,"Wrote prodID %zd chars\n", bytesWritten);
-		
+
 	return fd; 
 }
 
@@ -277,50 +432,12 @@ int openSocket(in_port_t port)
 
 int processSerial(int sockFd, int serialFd)
 {
-	ssize_t bytes, bytesLeft;
 	struct dv3k_packet packet;
-	ssize_t bytesRead;
-	int i;
-	
-	for(i = 0; i < sizeof(struct dv3k_packet); ++i) {
-		bytesRead = read(serialFd, &packet, 1);
-		if(bytes == -1) {
-			fprintf(stderr, "Error reading from serial port: %s\n", strerror(errno));
-			return 0;
-		}
-		if(packet.start_byte == AMBE3000_START_BYTE)
-			break;
-	}
-	if(packet.start_byte != AMBE3000_START_BYTE) {
-		fprintf(stderr, "Couldn't find start byte in serial data\n");
+
+	if(readSerialPacket(serialFd, &packet) == 0) {
+		fprintf(stderr, "AMBEserver: processSerial failed to read packet\n");
 		return 0;
 	}
-
-	bytesLeft = sizeof(packet.header);
-	while(bytesLeft > 0) {
-		bytes = read(serialFd, ((uint8_t *) &packet.header) + sizeof(packet.header) - bytesLeft, bytesLeft);
-		if(bytes == -1) {
-			fprintf(stderr, "Couldn't read serial data header\n");
-			return 0;
-		}
-		bytesLeft -= (size_t) bytes;
-	}
-	
-	bytesLeft = ntohs(packet.header.payload_length);
-    if(bytesLeft > sizeof(packet.payload)) {
-        fprintf(stderr, "Serial payload exceeds buffer size: %zd\n", bytesLeft);
-        return 0;
-    }
-    
-    while(bytesLeft > 0) {
-        bytes = read(serialFd, ((uint8_t *) &packet.payload) + (ntohs(packet.header.payload_length) - bytesLeft), bytesLeft);
-        if(bytes == -1) {
-            fprintf(stderr, "Couldn't read payload: %s\n", strerror(errno));
-            return 0;
-        }
-        
-        bytesLeft -= (size_t) bytes;
-    }
 
 	if (debug)
 		dump("Serial data", &packet, dv3k_packet_size(packet));
@@ -349,7 +466,7 @@ int processSocket(int sockFd, int serialFd)
 	if (debug)
 		dump("Socket data", &packet, bytesRead);
 
-	if (packet.start_byte != AMBE3000_START_BYTE) {
+	if (packet.start_byte != DV3K_START_BYTE) {
 		fprintf(stderr, "AMBEserver: invalid start byte when reading from the socket, 0x%02X", packet.start_byte);
 		return 1;
 	}
@@ -451,23 +568,25 @@ int main(int argc, char **argv)
 		umask(0);
 	}
 
-	if(reset) {
-		if (!hardwareReset()) {
-			fprintf(stderr,"Unable to open WiringPi, exiting\n");
-			exit(1);
-		} else {
-			fprintf(stderr,"Reset DV3000\n");
-		}
-	}
+	fprintf(stdout, "AMBEserver: Starting...\n");
 
-	sockFd = openSocket(port);
-	if (sockFd < 0)
-		exit(1);
-		
 	serialFd = openSerial(dv3000tty, baud);
 	if (serialFd < 0)
 		exit(1);
 
+	fprintf(stdout, "AMBEserver: Opened serial port %s at %d bps.\n", dv3000tty, baud);
+	
+	if(initDV3K(serialFd, reset) == 0) {
+		fprintf(stderr, "AMBEserver: Could not initialize the DV3K!\n");
+		exit(1);
+	}
+	
+	sockFd = openSocket(port);
+	if (sockFd < 0)
+		exit(1);
+
+	fprintf(stdout, "AMBEserver: Listening for connections on UDP port %d.\n", port);
+		
 	topFd = (sockFd > serialFd ? sockFd : serialFd ) + 1;
 
 	for (;;) {
