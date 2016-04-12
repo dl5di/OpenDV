@@ -59,7 +59,7 @@ bool CAPRSTransmit::run()
 	if (!opened)
 		return false;
 
-	in_addr address = CUDPReaderWriter::lookup(wxT("149.202.53.0"));//wxT("127.0.0.1"));
+	in_addr address = CUDPReaderWriter::lookup(wxT("127.0.0.1"));
 
 	unsigned int id = CHeaderData::createId();
 
