@@ -574,7 +574,7 @@ int main(int argc, char **argv)
 	if (serialFd < 0)
 		exit(1);
 
-	fprintf(stdout, "AMBEserver: Opened serial port %s at %d bps.\n", dv3000tty, baud);
+	fprintf(stdout, "AMBEserver: Opened serial port %s at %ld bps.\n", dv3000tty, baud);
 	
 	if(initDV3K(serialFd, reset) == 0) {
 		fprintf(stderr, "AMBEserver: Could not initialize the DV3K!\n");
