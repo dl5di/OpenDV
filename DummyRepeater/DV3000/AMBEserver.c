@@ -505,6 +505,9 @@ int main(int argc, char **argv)
 	char reset = 0;
 	char daemon = 0;
 
+	setvbuf(stdout, NULL, _IOLBF, 0);
+	setvbuf(stderr, NULL, _IOLBF, 0);
+
 	while ((c = getopt(argc, argv, "dp:s:i:vxrh")) != -1) {
 		switch (c) {
 			case 'd':
