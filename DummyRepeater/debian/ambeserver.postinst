@@ -17,7 +17,7 @@ set -e
 # for details, see https://www.debian.org/doc/debian-policy/ or
 # the debian-policy package
 
-check_uart () {
+check_uart_speed () {
   # audio dtparam mentioned in config.txt (enabled, disabled or commented out)
   UART_PAT="^[[:space:]]*#?[[:space:]]*(init_uart_clock)[[:space:]]*=[[:space:]]*.*$"
 
@@ -36,6 +36,25 @@ check_uart () {
   echo "init_uart_clock=7372800" >> /boot/config.txt
 }
 
+check_enable_uart () {
+  # audio dtparam mentioned in config.txt (enabled, disabled or commented out)
+  UART_PAT="^[[:space:]]*#?[[:space:]]*(enable_uart)[[:space:]]*=[[:space:]]*.*$"
+
+  if [ ! -f /boot/config.txt ]; then
+    echo "config.txt not found, not on Raspberry Pi!"
+    return 0;
+  fi
+
+  if grep -q -E "$UART_PAT" /boot/config.txt; then
+    echo "Found existing enable_uart entry, not changing."
+    return 0;
+  fi
+
+  echo "Changing uart enabled in config.txt..."
+  echo "\n# Change uart enabled (added by ambeserver)" >> /boot/config.txt
+  echo "enable_uart=1" >> /boot/config.txt
+}
+
 case "$1" in
     configure)
     	case "$DPKG_MAINTSCRIPT_ARCH" in
@@ -43,10 +62,11 @@ case "$1" in
     			case `cat /proc/device-tree/compatible 2> /dev/null` in
     				brcm,bcm2710*)
 					SERIAL_DEVICE="ttyS0"
+					check_enable_uart
 					;;
     				brcm,bcm2709* | brcm,bcm2708*)
 					SERIAL_DEVICE="ttyAMA0"
-					check_uart
+					check_uart_speed
 					;;
     				*) SERIAL_DEVICE="ttyUSB0";;
     			esac
