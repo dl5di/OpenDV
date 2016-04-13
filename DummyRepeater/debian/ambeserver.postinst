@@ -17,14 +17,37 @@ set -e
 # for details, see https://www.debian.org/doc/debian-policy/ or
 # the debian-policy package
 
+check_uart () {
+  # audio dtparam mentioned in config.txt (enabled, disabled or commented out)
+  UART_PAT="^[[:space:]]*#?[[:space:]]*(init_uart_clock)[[:space:]]*=[[:space:]]*.*$"
+
+  if [ ! -f /boot/config.txt ]; then
+    echo "config.txt not found, not on Raspberry Pi!"
+    return 0;
+  fi
+
+  if grep -q -E "$UART_PAT" /boot/config.txt; then
+    echo "Found existing init_uart_clock entry, not changing."
+    return 0;
+  fi
+
+  echo "Changing initial uart clock rate in config.txt..."
+  echo "\n# Change initial uart clock rate (added by ambeserver)" >> /boot/config.txt
+  echo "init_uart_clock=7372800" >> /boot/config.txt
+}
 
 case "$1" in
     configure)
     	case "$DPKG_MAINTSCRIPT_ARCH" in
     		armhf | armel) 
     			case `cat /proc/device-tree/compatible 2> /dev/null` in
-    				brcm,bcm2710*) SERIAL_DEVICE="ttyS0";;
-    				brcm,bcm2709* | brcm,bcm2708*) SERIAL_DEVICE="ttyAMA0";;
+    				brcm,bcm2710*)
+					SERIAL_DEVICE="ttyS0"
+					;;
+    				brcm,bcm2709* | brcm,bcm2708*)
+					SERIAL_DEVICE="ttyAMA0"
+					check_uart
+					;;
     				*) SERIAL_DEVICE="ttyUSB0";;
     			esac
     		;;
