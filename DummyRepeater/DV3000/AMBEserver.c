@@ -485,7 +485,11 @@ int processSocket(int sockFd, int serialFd)
 }
 
 void usage() {
+#ifdef __CYGWIN__
+	fprintf(stderr, "Usage: AMBEserver [-d] [-r] [-s speed] [-p port] [-c comport_number] [-v] [-x]\n");
+#else
 	fprintf(stderr, "Usage: AMBEserver [-d] [-r] [-s speed] [-p port] [-i tty] [-v] [-x]\n");
+#endif
 	exit(1);
 }
 
@@ -501,6 +505,10 @@ int main(int argc, char **argv)
 	int topFd;
 	
 	int c;
+
+#ifdef __CYGWIN__
+	int commnum;
+#endif
 	
 	char reset = 0;
 	char daemon = 0;
@@ -508,7 +516,11 @@ int main(int argc, char **argv)
 	setvbuf(stdout, NULL, _IOLBF, 0);
 	setvbuf(stderr, NULL, _IOLBF, 0);
 
+#ifdef __CYGWIN__
+	while ((c = getopt(argc, argv, "dp:s:c:vxrh")) != -1) {
+#else
 	while ((c = getopt(argc, argv, "dp:s:i:vxrh")) != -1) {
+#endif
 		switch (c) {
 			case 'd':
 				daemon = 1;
@@ -529,9 +541,16 @@ int main(int argc, char **argv)
 					usage();
 				}
 				break;
+#ifdef __CYGWIN__
+			case 'c':
+				commnum = strtol(optarg, NULL, 10);
+				sprintf(dv3000tty,"/dev/ttyS%d",commnum - 1);
+				break;
+#else
 			case 'i':
 				strncpy(dv3000tty, optarg, sizeof(dv3000tty));
 				break;
+#endif
 			case 'v':
 				fprintf(stdout, "AMBEserver: version " DV3000_VERSION "\n");
 				return 0;
