@@ -88,8 +88,8 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
-bin_PROGRAMS = dummyrepeater$(EXEEXT) $(am__EXEEXT_1) $(am__EXEEXT_2) \
-	$(am__EXEEXT_3)
+bin_PROGRAMS = dummyrepeater$(EXEEXT) $(am__EXEEXT_1)
+sbin_PROGRAMS = $(am__EXEEXT_2) $(am__EXEEXT_3)
 @WITH_GPIO_TRUE@am__append_1 = Common/GPIOController.cpp
 @WITH_GPIO_TRUE@am__append_2 = -lwiringPi
 @WITH_STARDV_TRUE@am__append_3 = dvemu
@@ -158,15 +158,16 @@ am_libCommon_a_OBJECTS = Common/libCommon_a-AddressTextCtrl.$(OBJEXT) \
 	Common/libCommon_a-Utils.$(OBJEXT)
 libCommon_a_OBJECTS = $(am_libCommon_a_OBJECTS)
 @WITH_STARDV_TRUE@am__EXEEXT_1 = dvemu$(EXEEXT)
+am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(sbindir)" \
+	"$(DESTDIR)$(init_ddir)"
 @WITH_AMBESERVER_TRUE@am__EXEEXT_2 = AMBEserver$(EXEEXT)
 @WITH_AMBESERVER_TRUE@@WITH_GPIO_TRUE@am__EXEEXT_3 = dv3000d$(EXEEXT)
-am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(init_ddir)"
-PROGRAMS = $(bin_PROGRAMS)
+PROGRAMS = $(bin_PROGRAMS) $(sbin_PROGRAMS)
 am__AMBEserver_SOURCES_DIST = DV3000/AMBEserver.c
 @WITH_AMBESERVER_TRUE@am_AMBEserver_OBJECTS =  \
-@WITH_AMBESERVER_TRUE@	DV3000/AMBEserver-AMBEserver.$(OBJEXT)
+@WITH_AMBESERVER_TRUE@	DV3000/AMBEserver.$(OBJEXT)
 AMBEserver_OBJECTS = $(am_AMBEserver_OBJECTS)
-AMBEserver_DEPENDENCIES =
+AMBEserver_LDADD = $(LDADD)
 am__dummyrepeater_SOURCES_DIST = DummyRepeater/DummyRepeaterApp.cpp \
 	DummyRepeater/DummyRepeaterBleepSet.cpp \
 	DummyRepeater/DummyRepeaterCallsignSet.cpp \
@@ -534,8 +535,6 @@ dummyrepeater_CPPFLAGS = -ICommon $(WX_CPPFLAGS)
 @WITH_AMBESERVER_TRUE@@WITH_GPIO_TRUE@dv3000d_SOURCES = DV3000/dv3000d.c
 @WITH_AMBESERVER_TRUE@@WITH_GPIO_TRUE@dv3000d_LDADD = -lwiringPi
 @WITH_AMBESERVER_TRUE@@WITH_GPIO_TRUE@dv3000d_CPPFLAGS = -DRASPBERRY_PI
-@WITH_AMBESERVER_TRUE@@WITH_GPIO_TRUE@AMBEserver_LDADD = -lwiringPi
-@WITH_AMBESERVER_TRUE@@WITH_GPIO_TRUE@AMBEserver_CPPFLAGS = -DRASPBERRY_PI
 all: all-am
 
 .SUFFIXES:
@@ -707,13 +706,55 @@ uninstall-binPROGRAMS:
 
 clean-binPROGRAMS:
 	-test -z "$(bin_PROGRAMS)" || rm -f $(bin_PROGRAMS)
+install-sbinPROGRAMS: $(sbin_PROGRAMS)
+	@$(NORMAL_INSTALL)
+	@list='$(sbin_PROGRAMS)'; test -n "$(sbindir)" || list=; \
+	if test -n "$$list"; then \
+	  echo " $(MKDIR_P) '$(DESTDIR)$(sbindir)'"; \
+	  $(MKDIR_P) "$(DESTDIR)$(sbindir)" || exit 1; \
+	fi; \
+	for p in $$list; do echo "$$p $$p"; done | \
+	sed 's/$(EXEEXT)$$//' | \
+	while read p p1; do if test -f $$p \
+	  ; then echo "$$p"; echo "$$p"; else :; fi; \
+	done | \
+	sed -e 'p;s,.*/,,;n;h' \
+	    -e 's|.*|.|' \
+	    -e 'p;x;s,.*/,,;s/$(EXEEXT)$$//;$(transform);s/$$/$(EXEEXT)/' | \
+	sed 'N;N;N;s,\n, ,g' | \
+	$(AWK) 'BEGIN { files["."] = ""; dirs["."] = 1 } \
+	  { d=$$3; if (dirs[d] != 1) { print "d", d; dirs[d] = 1 } \
+	    if ($$2 == $$4) files[d] = files[d] " " $$1; \
+	    else { print "f", $$3 "/" $$4, $$1; } } \
+	  END { for (d in files) print "f", d, files[d] }' | \
+	while read type dir files; do \
+	    if test "$$dir" = .; then dir=; else dir=/$$dir; fi; \
+	    test -z "$$files" || { \
+	      echo " $(INSTALL_PROGRAM_ENV) $(INSTALL_PROGRAM) $$files '$(DESTDIR)$(sbindir)$$dir'"; \
+	      $(INSTALL_PROGRAM_ENV) $(INSTALL_PROGRAM) $$files "$(DESTDIR)$(sbindir)$$dir" || exit $$?; \
+	    } \
+	; done
+
+uninstall-sbinPROGRAMS:
+	@$(NORMAL_UNINSTALL)
+	@list='$(sbin_PROGRAMS)'; test -n "$(sbindir)" || list=; \
+	files=`for p in $$list; do echo "$$p"; done | \
+	  sed -e 'h;s,^.*/,,;s/$(EXEEXT)$$//;$(transform)' \
+	      -e 's/$$/$(EXEEXT)/' \
+	`; \
+	test -n "$$list" || exit 0; \
+	echo " ( cd '$(DESTDIR)$(sbindir)' && rm -f" $$files ")"; \
+	cd "$(DESTDIR)$(sbindir)" && rm -f $$files
+
+clean-sbinPROGRAMS:
+	-test -z "$(sbin_PROGRAMS)" || rm -f $(sbin_PROGRAMS)
 DV3000/$(am__dirstamp):
 	@$(MKDIR_P) DV3000
 	@: > DV3000/$(am__dirstamp)
 DV3000/$(DEPDIR)/$(am__dirstamp):
 	@$(MKDIR_P) DV3000/$(DEPDIR)
 	@: > DV3000/$(DEPDIR)/$(am__dirstamp)
-DV3000/AMBEserver-AMBEserver.$(OBJEXT): DV3000/$(am__dirstamp) \
+DV3000/AMBEserver.$(OBJEXT): DV3000/$(am__dirstamp) \
 	DV3000/$(DEPDIR)/$(am__dirstamp)
 
 AMBEserver$(EXEEXT): $(AMBEserver_OBJECTS) $(AMBEserver_DEPENDENCIES) $(EXTRA_AMBEserver_DEPENDENCIES) 
@@ -891,7 +932,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@Common/$(DEPDIR)/libCommon_a-UDPReaderWriter.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@Common/$(DEPDIR)/libCommon_a-URIUSBController.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@Common/$(DEPDIR)/libCommon_a-Utils.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@DV3000/$(DEPDIR)/AMBEserver-AMBEserver.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@DV3000/$(DEPDIR)/AMBEserver.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@DV3000/$(DEPDIR)/dv3000d-dv3000d.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@DummyRepeater/$(DEPDIR)/dummyrepeater-DummyRepeaterApp.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@DummyRepeater/$(DEPDIR)/dummyrepeater-DummyRepeaterBleepSet.Po@am__quote@
@@ -929,20 +970,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
-
-DV3000/AMBEserver-AMBEserver.o: DV3000/AMBEserver.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AMBEserver_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT DV3000/AMBEserver-AMBEserver.o -MD -MP -MF DV3000/$(DEPDIR)/AMBEserver-AMBEserver.Tpo -c -o DV3000/AMBEserver-AMBEserver.o `test -f 'DV3000/AMBEserver.c' || echo '$(srcdir)/'`DV3000/AMBEserver.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) DV3000/$(DEPDIR)/AMBEserver-AMBEserver.Tpo DV3000/$(DEPDIR)/AMBEserver-AMBEserver.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='DV3000/AMBEserver.c' object='DV3000/AMBEserver-AMBEserver.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AMBEserver_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o DV3000/AMBEserver-AMBEserver.o `test -f 'DV3000/AMBEserver.c' || echo '$(srcdir)/'`DV3000/AMBEserver.c
-
-DV3000/AMBEserver-AMBEserver.obj: DV3000/AMBEserver.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AMBEserver_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT DV3000/AMBEserver-AMBEserver.obj -MD -MP -MF DV3000/$(DEPDIR)/AMBEserver-AMBEserver.Tpo -c -o DV3000/AMBEserver-AMBEserver.obj `if test -f 'DV3000/AMBEserver.c'; then $(CYGPATH_W) 'DV3000/AMBEserver.c'; else $(CYGPATH_W) '$(srcdir)/DV3000/AMBEserver.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) DV3000/$(DEPDIR)/AMBEserver-AMBEserver.Tpo DV3000/$(DEPDIR)/AMBEserver-AMBEserver.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='DV3000/AMBEserver.c' object='DV3000/AMBEserver-AMBEserver.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AMBEserver_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o DV3000/AMBEserver-AMBEserver.obj `if test -f 'DV3000/AMBEserver.c'; then $(CYGPATH_W) 'DV3000/AMBEserver.c'; else $(CYGPATH_W) '$(srcdir)/DV3000/AMBEserver.c'; fi`
 
 DV3000/dv3000d-dv3000d.o: DV3000/dv3000d.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dv3000d_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT DV3000/dv3000d-dv3000d.o -MD -MP -MF DV3000/$(DEPDIR)/dv3000d-dv3000d.Tpo -c -o DV3000/dv3000d-dv3000d.o `test -f 'DV3000/dv3000d.c' || echo '$(srcdir)/'`DV3000/dv3000d.c
@@ -2040,7 +2067,7 @@ check-am: all-am
 check: check-am
 all-am: Makefile $(LIBRARIES) $(PROGRAMS) $(SCRIPTS)
 installdirs:
-	for dir in "$(DESTDIR)$(bindir)" "$(DESTDIR)$(init_ddir)"; do \
+	for dir in "$(DESTDIR)$(bindir)" "$(DESTDIR)$(sbindir)" "$(DESTDIR)$(init_ddir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
 install: install-am
@@ -2084,7 +2111,7 @@ maintainer-clean-generic:
 clean: clean-am
 
 clean-am: clean-binPROGRAMS clean-generic clean-noinstLIBRARIES \
-	mostlyclean-am
+	clean-sbinPROGRAMS mostlyclean-am
 
 distclean: distclean-am
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
@@ -2111,7 +2138,7 @@ install-dvi: install-dvi-am
 
 install-dvi-am:
 
-install-exec-am: install-binPROGRAMS
+install-exec-am: install-binPROGRAMS install-sbinPROGRAMS
 
 install-html: install-html-am
 
@@ -2152,27 +2179,29 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-binPROGRAMS uninstall-dist_init_dSCRIPTS
+uninstall-am: uninstall-binPROGRAMS uninstall-dist_init_dSCRIPTS \
+	uninstall-sbinPROGRAMS
 
 .MAKE: install-am install-strip
 
 .PHONY: CTAGS GTAGS TAGS all all-am am--refresh check check-am clean \
 	clean-binPROGRAMS clean-cscope clean-generic \
-	clean-noinstLIBRARIES cscope cscopelist-am ctags ctags-am dist \
-	dist-all dist-bzip2 dist-gzip dist-lzip dist-shar dist-tarZ \
-	dist-xz dist-zip distcheck distclean distclean-compile \
-	distclean-generic distclean-tags distcleancheck distdir \
-	distuninstallcheck dvi dvi-am html html-am info info-am \
-	install install-am install-binPROGRAMS install-data \
-	install-data-am install-dist_init_dSCRIPTS install-dvi \
-	install-dvi-am install-exec install-exec-am install-html \
-	install-html-am install-info install-info-am install-man \
-	install-pdf install-pdf-am install-ps install-ps-am \
-	install-strip installcheck installcheck-am installdirs \
-	maintainer-clean maintainer-clean-generic mostlyclean \
-	mostlyclean-compile mostlyclean-generic pdf pdf-am ps ps-am \
-	tags tags-am uninstall uninstall-am uninstall-binPROGRAMS \
-	uninstall-dist_init_dSCRIPTS
+	clean-noinstLIBRARIES clean-sbinPROGRAMS cscope cscopelist-am \
+	ctags ctags-am dist dist-all dist-bzip2 dist-gzip dist-lzip \
+	dist-shar dist-tarZ dist-xz dist-zip distcheck distclean \
+	distclean-compile distclean-generic distclean-tags \
+	distcleancheck distdir distuninstallcheck dvi dvi-am html \
+	html-am info info-am install install-am install-binPROGRAMS \
+	install-data install-data-am install-dist_init_dSCRIPTS \
+	install-dvi install-dvi-am install-exec install-exec-am \
+	install-html install-html-am install-info install-info-am \
+	install-man install-pdf install-pdf-am install-ps \
+	install-ps-am install-sbinPROGRAMS install-strip installcheck \
+	installcheck-am installdirs maintainer-clean \
+	maintainer-clean-generic mostlyclean mostlyclean-compile \
+	mostlyclean-generic pdf pdf-am ps ps-am tags tags-am uninstall \
+	uninstall-am uninstall-binPROGRAMS \
+	uninstall-dist_init_dSCRIPTS uninstall-sbinPROGRAMS
 
 .PRECIOUS: Makefile
 

@@ -31,8 +31,8 @@ Description: USB Utilities for the OpenDV programs
   OpenDV.
 
 Package: dstarrepeater-udev
-Architecture: armel armhf amd64 i386
-Depends: ${shlibs:Depends}, ${misc:Depends}
+Architecture: all
+Depends: ${misc:Depends}
 Description: D-STAR Digital Voice Repeater udev rules
   udev rules to change permissions for devices used by dstarrepeater and
   dstarrepeaterd

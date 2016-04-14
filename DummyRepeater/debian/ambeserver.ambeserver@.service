@@ -1,0 +1,17 @@
+[Unit]
+Description=DV3000 Daemon
+After=network.target serial-getty@%i.service dev-%i.device
+Conflicts=serial-getty@%i.service
+OnFailure=serial-getty@%i.service
+
+[Service]
+User=opendv
+EnvironmentFile=/etc/opendv/%p-%i.conf
+PermissionsStartOnly=true
+ExecStartPre=/bin/chgrp dialout /dev/%i
+ExecStartPre=/bin/chmod 0660 /dev/%i
+ExecStart=/usr/sbin/AMBEserver -p ${UDP_PORT} -i /dev/%i $AMBESERVER_FLAGS
+Restart=on-abort
+
+[Install]
+WantedBy=multi-user.target

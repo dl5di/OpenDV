@@ -30,12 +30,14 @@ include /usr/share/dpkg/default.mk
 ifeq ($(DEB_HOST_ARCH),$(filter $(DEB_HOST_ARCH),armhf armel))
 override_dh_auto_configure:
 	dh_auto_configure -- \
+	--with-ambeserver \
 	--with-gpio
+else
+override_dh_auto_configure:
+	dh_auto_configure -- \
+	--with-ambeserver
 endif
 
 override_dh_installinit:
 	dh_installinit
-	dh_installinit --name=dstarrepeaterd@
-
-override_dh_installudev:
-	dh_installudev --priority=60
+	dh_installinit --name=ambeserver@

@@ -26,6 +26,8 @@ case "$1" in
 	#  devices when using the audio based drivers such as the Sound Card
 	#  one.
 	usermod --groups audio --append opendv || true
+	usermod --groups dialout --append opendv || true
+	usermod --groups gpio --append opendv || true
 	chown opendv:opendv /var/log/opendv
     ;;
 
