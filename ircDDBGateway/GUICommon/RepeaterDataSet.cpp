@@ -478,7 +478,7 @@ wxString CRepeaterDataSet::getReflector() const
 
 	reflector.Append(wxT("        "));
 	reflector.Truncate(LONG_CALLSIGN_LENGTH - 1U);
-	reflector.Append(wxT('A')).Append((char)m_channel->GetCurrentSelection());
+	reflector.Append(m_channel->GetStringSelection());
 
 	return reflector;
 }
