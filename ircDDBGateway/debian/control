@@ -41,6 +41,13 @@ Depends: ${shlibs:Depends}, ${misc:Depends}, opendv-base
 Description: D-STAR Digital Voice Internet Gateway Remote Control
   Used to control either an ircDDBGateway or a STARnet Digital Server.
 
+Package: remotecontrold
+Architecture: armhf armel i386 amd64
+Depends: ${shlibs:Depends}, ${misc:Depends}, opendv-base
+Description: D-STAR Digital Voice Internet Gateway Remote Control - Command Line
+  Used to control either an ircDDBGateway or a STARnet Digital Server.
+  Command line version.
+
 Package: timercontrol
 Architecture: armhf armel i386 amd64
 Depends: ${shlibs:Depends}, ${misc:Depends}, opendv-base
