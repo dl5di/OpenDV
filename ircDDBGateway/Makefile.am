@@ -129,7 +129,7 @@ libGUICommon_a_SOURCES = \
 libGUICommon_a_CPPFLAGS = -ICommon $(GUI_WX_CPPFLAGS)
 
 sbin_PROGRAMS = ircddbgatewayd starnetserverd aprstransmitd timercontrold timeserverd
-bin_PROGRAMS = texttransmit voicetransmit aprstransmit
+bin_PROGRAMS = texttransmit voicetransmit aprstransmit remotecontrold
 
 ircddbgatewayd_SOURCES = \
 	ircDDBGateway/IRCDDBGatewayAppD.cpp \
@@ -178,6 +178,18 @@ voicetransmit_SOURCES = \
 	VoiceTransmit/VoiceStore.cpp
 voicetransmit_LDADD = $(BASE_WX_LIBS) libCommon.a
 voicetransmit_CPPFLAGS = -ICommon $(BASE_WX_CPPFLAGS)
+
+remotecontrold_SOURCES = \
+	RemoteControl/RemoteControlAppD.cpp \
+	RemoteControl/RemoteControlConfig.cpp \
+	RemoteControl/RemoteControlRemoteControlHandler.cpp \
+	RemoteControl/RemoteControlCallsignData.cpp \
+	RemoteControl/RemoteControlStarNetGroup.cpp \
+	RemoteControl/RemoteControlRepeaterData.cpp \
+	RemoteControl/RemoteControlStarNetUser.cpp \
+	RemoteControl/RemoteControlLinkData.cpp
+remotecontrold_LDADD = $(BASE_WX_LIBS) libCommon.a
+remotecontrold_CPPFLAGS = -ICommon $(BASE_WX_CPPFLAGS)
 
 pkgdata_DATA = \
 	Data/CCS_Hosts.txt \
