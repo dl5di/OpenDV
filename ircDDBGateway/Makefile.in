@@ -91,7 +91,7 @@ sbin_PROGRAMS = ircddbgatewayd$(EXEEXT) starnetserverd$(EXEEXT) \
 	aprstransmitd$(EXEEXT) timercontrold$(EXEEXT) \
 	timeserverd$(EXEEXT)
 bin_PROGRAMS = texttransmit$(EXEEXT) voicetransmit$(EXEEXT) \
-	aprstransmit$(EXEEXT) $(am__EXEEXT_1)
+	aprstransmit$(EXEEXT) remotecontrold$(EXEEXT) $(am__EXEEXT_1)
 @WITH_GUI_TRUE@am__append_1 = ircddbgateway ircddbgatewayconfig remotecontrol starnetserver \
 @WITH_GUI_TRUE@                timercontrol timeserver
 
@@ -301,6 +301,17 @@ am__remotecontrol_SOURCES_DIST = RemoteControl/RemoteControlApp.cpp \
 remotecontrol_OBJECTS = $(am_remotecontrol_OBJECTS)
 @WITH_GUI_TRUE@remotecontrol_DEPENDENCIES = $(am__DEPENDENCIES_1) \
 @WITH_GUI_TRUE@	libCommon.a libGUICommon.a
+am_remotecontrold_OBJECTS =  \
+	RemoteControl/remotecontrold-RemoteControlAppD.$(OBJEXT) \
+	RemoteControl/remotecontrold-RemoteControlConfig.$(OBJEXT) \
+	RemoteControl/remotecontrold-RemoteControlRemoteControlHandler.$(OBJEXT) \
+	RemoteControl/remotecontrold-RemoteControlCallsignData.$(OBJEXT) \
+	RemoteControl/remotecontrold-RemoteControlStarNetGroup.$(OBJEXT) \
+	RemoteControl/remotecontrold-RemoteControlRepeaterData.$(OBJEXT) \
+	RemoteControl/remotecontrold-RemoteControlStarNetUser.$(OBJEXT) \
+	RemoteControl/remotecontrold-RemoteControlLinkData.$(OBJEXT)
+remotecontrold_OBJECTS = $(am_remotecontrold_OBJECTS)
+remotecontrold_DEPENDENCIES = $(am__DEPENDENCIES_1) libCommon.a
 am__starnetserver_SOURCES_DIST = StarNetServer/StarNetServerApp.cpp \
 	StarNetServer/StarNetServerFrame.cpp \
 	StarNetServer/StarNetServerCallsignSet.cpp \
@@ -445,20 +456,21 @@ SOURCES = $(libCommon_a_SOURCES) $(libGUICommon_a_SOURCES) \
 	$(libircDDB_a_SOURCES) $(aprstransmit_SOURCES) \
 	$(aprstransmitd_SOURCES) $(ircddbgateway_SOURCES) \
 	$(ircddbgatewayconfig_SOURCES) $(ircddbgatewayd_SOURCES) \
-	$(remotecontrol_SOURCES) $(starnetserver_SOURCES) \
-	$(starnetserverd_SOURCES) $(texttransmit_SOURCES) \
-	$(timercontrol_SOURCES) $(timercontrold_SOURCES) \
-	$(timeserver_SOURCES) $(timeserverd_SOURCES) \
-	$(voicetransmit_SOURCES)
+	$(remotecontrol_SOURCES) $(remotecontrold_SOURCES) \
+	$(starnetserver_SOURCES) $(starnetserverd_SOURCES) \
+	$(texttransmit_SOURCES) $(timercontrol_SOURCES) \
+	$(timercontrold_SOURCES) $(timeserver_SOURCES) \
+	$(timeserverd_SOURCES) $(voicetransmit_SOURCES)
 DIST_SOURCES = $(libCommon_a_SOURCES) $(libGUICommon_a_SOURCES) \
 	$(libircDDB_a_SOURCES) $(aprstransmit_SOURCES) \
 	$(aprstransmitd_SOURCES) $(am__ircddbgateway_SOURCES_DIST) \
 	$(am__ircddbgatewayconfig_SOURCES_DIST) \
 	$(ircddbgatewayd_SOURCES) $(am__remotecontrol_SOURCES_DIST) \
-	$(am__starnetserver_SOURCES_DIST) $(starnetserverd_SOURCES) \
-	$(texttransmit_SOURCES) $(am__timercontrol_SOURCES_DIST) \
-	$(timercontrold_SOURCES) $(am__timeserver_SOURCES_DIST) \
-	$(timeserverd_SOURCES) $(voicetransmit_SOURCES)
+	$(remotecontrold_SOURCES) $(am__starnetserver_SOURCES_DIST) \
+	$(starnetserverd_SOURCES) $(texttransmit_SOURCES) \
+	$(am__timercontrol_SOURCES_DIST) $(timercontrold_SOURCES) \
+	$(am__timeserver_SOURCES_DIST) $(timeserverd_SOURCES) \
+	$(voicetransmit_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -811,6 +823,18 @@ voicetransmit_SOURCES = \
 
 voicetransmit_LDADD = $(BASE_WX_LIBS) libCommon.a
 voicetransmit_CPPFLAGS = -ICommon $(BASE_WX_CPPFLAGS)
+remotecontrold_SOURCES = \
+	RemoteControl/RemoteControlAppD.cpp \
+	RemoteControl/RemoteControlConfig.cpp \
+	RemoteControl/RemoteControlRemoteControlHandler.cpp \
+	RemoteControl/RemoteControlCallsignData.cpp \
+	RemoteControl/RemoteControlStarNetGroup.cpp \
+	RemoteControl/RemoteControlRepeaterData.cpp \
+	RemoteControl/RemoteControlStarNetUser.cpp \
+	RemoteControl/RemoteControlLinkData.cpp
+
+remotecontrold_LDADD = $(BASE_WX_LIBS) libCommon.a
+remotecontrold_CPPFLAGS = -ICommon $(BASE_WX_CPPFLAGS)
 pkgdata_DATA = \
 	Data/CCS_Hosts.txt \
 	Data/DCS_Hosts.txt \
@@ -1399,6 +1423,34 @@ RemoteControl/remotecontrol-RemoteControlStarNetUser.$(OBJEXT):  \
 remotecontrol$(EXEEXT): $(remotecontrol_OBJECTS) $(remotecontrol_DEPENDENCIES) $(EXTRA_remotecontrol_DEPENDENCIES) 
 	@rm -f remotecontrol$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(remotecontrol_OBJECTS) $(remotecontrol_LDADD) $(LIBS)
+RemoteControl/remotecontrold-RemoteControlAppD.$(OBJEXT):  \
+	RemoteControl/$(am__dirstamp) \
+	RemoteControl/$(DEPDIR)/$(am__dirstamp)
+RemoteControl/remotecontrold-RemoteControlConfig.$(OBJEXT):  \
+	RemoteControl/$(am__dirstamp) \
+	RemoteControl/$(DEPDIR)/$(am__dirstamp)
+RemoteControl/remotecontrold-RemoteControlRemoteControlHandler.$(OBJEXT):  \
+	RemoteControl/$(am__dirstamp) \
+	RemoteControl/$(DEPDIR)/$(am__dirstamp)
+RemoteControl/remotecontrold-RemoteControlCallsignData.$(OBJEXT):  \
+	RemoteControl/$(am__dirstamp) \
+	RemoteControl/$(DEPDIR)/$(am__dirstamp)
+RemoteControl/remotecontrold-RemoteControlStarNetGroup.$(OBJEXT):  \
+	RemoteControl/$(am__dirstamp) \
+	RemoteControl/$(DEPDIR)/$(am__dirstamp)
+RemoteControl/remotecontrold-RemoteControlRepeaterData.$(OBJEXT):  \
+	RemoteControl/$(am__dirstamp) \
+	RemoteControl/$(DEPDIR)/$(am__dirstamp)
+RemoteControl/remotecontrold-RemoteControlStarNetUser.$(OBJEXT):  \
+	RemoteControl/$(am__dirstamp) \
+	RemoteControl/$(DEPDIR)/$(am__dirstamp)
+RemoteControl/remotecontrold-RemoteControlLinkData.$(OBJEXT):  \
+	RemoteControl/$(am__dirstamp) \
+	RemoteControl/$(DEPDIR)/$(am__dirstamp)
+
+remotecontrold$(EXEEXT): $(remotecontrold_OBJECTS) $(remotecontrold_DEPENDENCIES) $(EXTRA_remotecontrold_DEPENDENCIES) 
+	@rm -f remotecontrold$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(remotecontrold_OBJECTS) $(remotecontrold_LDADD) $(LIBS)
 StarNetServer/$(am__dirstamp):
 	@$(MKDIR_P) StarNetServer
 	@: > StarNetServer/$(am__dirstamp)
@@ -1706,6 +1758,14 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@RemoteControl/$(DEPDIR)/remotecontrol-RemoteControlStarNetGroup.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@RemoteControl/$(DEPDIR)/remotecontrol-RemoteControlStarNetPanel.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@RemoteControl/$(DEPDIR)/remotecontrol-RemoteControlStarNetUser.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@RemoteControl/$(DEPDIR)/remotecontrold-RemoteControlAppD.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@RemoteControl/$(DEPDIR)/remotecontrold-RemoteControlCallsignData.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@RemoteControl/$(DEPDIR)/remotecontrold-RemoteControlConfig.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@RemoteControl/$(DEPDIR)/remotecontrold-RemoteControlLinkData.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@RemoteControl/$(DEPDIR)/remotecontrold-RemoteControlRemoteControlHandler.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@RemoteControl/$(DEPDIR)/remotecontrold-RemoteControlRepeaterData.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@RemoteControl/$(DEPDIR)/remotecontrold-RemoteControlStarNetGroup.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@RemoteControl/$(DEPDIR)/remotecontrold-RemoteControlStarNetUser.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@StarNetServer/$(DEPDIR)/starnetserver-StarNetServerApp.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@StarNetServer/$(DEPDIR)/starnetserver-StarNetServerCallsignSet.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@StarNetServer/$(DEPDIR)/starnetserver-StarNetServerConfig.Po@am__quote@
@@ -3483,6 +3543,118 @@ RemoteControl/remotecontrol-RemoteControlStarNetUser.obj: RemoteControl/RemoteCo
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='RemoteControl/RemoteControlStarNetUser.cpp' object='RemoteControl/remotecontrol-RemoteControlStarNetUser.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(remotecontrol_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RemoteControl/remotecontrol-RemoteControlStarNetUser.obj `if test -f 'RemoteControl/RemoteControlStarNetUser.cpp'; then $(CYGPATH_W) 'RemoteControl/RemoteControlStarNetUser.cpp'; else $(CYGPATH_W) '$(srcdir)/RemoteControl/RemoteControlStarNetUser.cpp'; fi`
+
+RemoteControl/remotecontrold-RemoteControlAppD.o: RemoteControl/RemoteControlAppD.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(remotecontrold_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RemoteControl/remotecontrold-RemoteControlAppD.o -MD -MP -MF RemoteControl/$(DEPDIR)/remotecontrold-RemoteControlAppD.Tpo -c -o RemoteControl/remotecontrold-RemoteControlAppD.o `test -f 'RemoteControl/RemoteControlAppD.cpp' || echo '$(srcdir)/'`RemoteControl/RemoteControlAppD.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) RemoteControl/$(DEPDIR)/remotecontrold-RemoteControlAppD.Tpo RemoteControl/$(DEPDIR)/remotecontrold-RemoteControlAppD.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='RemoteControl/RemoteControlAppD.cpp' object='RemoteControl/remotecontrold-RemoteControlAppD.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(remotecontrold_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RemoteControl/remotecontrold-RemoteControlAppD.o `test -f 'RemoteControl/RemoteControlAppD.cpp' || echo '$(srcdir)/'`RemoteControl/RemoteControlAppD.cpp
+
+RemoteControl/remotecontrold-RemoteControlAppD.obj: RemoteControl/RemoteControlAppD.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(remotecontrold_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RemoteControl/remotecontrold-RemoteControlAppD.obj -MD -MP -MF RemoteControl/$(DEPDIR)/remotecontrold-RemoteControlAppD.Tpo -c -o RemoteControl/remotecontrold-RemoteControlAppD.obj `if test -f 'RemoteControl/RemoteControlAppD.cpp'; then $(CYGPATH_W) 'RemoteControl/RemoteControlAppD.cpp'; else $(CYGPATH_W) '$(srcdir)/RemoteControl/RemoteControlAppD.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) RemoteControl/$(DEPDIR)/remotecontrold-RemoteControlAppD.Tpo RemoteControl/$(DEPDIR)/remotecontrold-RemoteControlAppD.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='RemoteControl/RemoteControlAppD.cpp' object='RemoteControl/remotecontrold-RemoteControlAppD.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(remotecontrold_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RemoteControl/remotecontrold-RemoteControlAppD.obj `if test -f 'RemoteControl/RemoteControlAppD.cpp'; then $(CYGPATH_W) 'RemoteControl/RemoteControlAppD.cpp'; else $(CYGPATH_W) '$(srcdir)/RemoteControl/RemoteControlAppD.cpp'; fi`
+
+RemoteControl/remotecontrold-RemoteControlConfig.o: RemoteControl/RemoteControlConfig.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(remotecontrold_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RemoteControl/remotecontrold-RemoteControlConfig.o -MD -MP -MF RemoteControl/$(DEPDIR)/remotecontrold-RemoteControlConfig.Tpo -c -o RemoteControl/remotecontrold-RemoteControlConfig.o `test -f 'RemoteControl/RemoteControlConfig.cpp' || echo '$(srcdir)/'`RemoteControl/RemoteControlConfig.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) RemoteControl/$(DEPDIR)/remotecontrold-RemoteControlConfig.Tpo RemoteControl/$(DEPDIR)/remotecontrold-RemoteControlConfig.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='RemoteControl/RemoteControlConfig.cpp' object='RemoteControl/remotecontrold-RemoteControlConfig.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(remotecontrold_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RemoteControl/remotecontrold-RemoteControlConfig.o `test -f 'RemoteControl/RemoteControlConfig.cpp' || echo '$(srcdir)/'`RemoteControl/RemoteControlConfig.cpp
+
+RemoteControl/remotecontrold-RemoteControlConfig.obj: RemoteControl/RemoteControlConfig.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(remotecontrold_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RemoteControl/remotecontrold-RemoteControlConfig.obj -MD -MP -MF RemoteControl/$(DEPDIR)/remotecontrold-RemoteControlConfig.Tpo -c -o RemoteControl/remotecontrold-RemoteControlConfig.obj `if test -f 'RemoteControl/RemoteControlConfig.cpp'; then $(CYGPATH_W) 'RemoteControl/RemoteControlConfig.cpp'; else $(CYGPATH_W) '$(srcdir)/RemoteControl/RemoteControlConfig.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) RemoteControl/$(DEPDIR)/remotecontrold-RemoteControlConfig.Tpo RemoteControl/$(DEPDIR)/remotecontrold-RemoteControlConfig.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='RemoteControl/RemoteControlConfig.cpp' object='RemoteControl/remotecontrold-RemoteControlConfig.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(remotecontrold_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RemoteControl/remotecontrold-RemoteControlConfig.obj `if test -f 'RemoteControl/RemoteControlConfig.cpp'; then $(CYGPATH_W) 'RemoteControl/RemoteControlConfig.cpp'; else $(CYGPATH_W) '$(srcdir)/RemoteControl/RemoteControlConfig.cpp'; fi`
+
+RemoteControl/remotecontrold-RemoteControlRemoteControlHandler.o: RemoteControl/RemoteControlRemoteControlHandler.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(remotecontrold_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RemoteControl/remotecontrold-RemoteControlRemoteControlHandler.o -MD -MP -MF RemoteControl/$(DEPDIR)/remotecontrold-RemoteControlRemoteControlHandler.Tpo -c -o RemoteControl/remotecontrold-RemoteControlRemoteControlHandler.o `test -f 'RemoteControl/RemoteControlRemoteControlHandler.cpp' || echo '$(srcdir)/'`RemoteControl/RemoteControlRemoteControlHandler.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) RemoteControl/$(DEPDIR)/remotecontrold-RemoteControlRemoteControlHandler.Tpo RemoteControl/$(DEPDIR)/remotecontrold-RemoteControlRemoteControlHandler.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='RemoteControl/RemoteControlRemoteControlHandler.cpp' object='RemoteControl/remotecontrold-RemoteControlRemoteControlHandler.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(remotecontrold_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RemoteControl/remotecontrold-RemoteControlRemoteControlHandler.o `test -f 'RemoteControl/RemoteControlRemoteControlHandler.cpp' || echo '$(srcdir)/'`RemoteControl/RemoteControlRemoteControlHandler.cpp
+
+RemoteControl/remotecontrold-RemoteControlRemoteControlHandler.obj: RemoteControl/RemoteControlRemoteControlHandler.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(remotecontrold_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RemoteControl/remotecontrold-RemoteControlRemoteControlHandler.obj -MD -MP -MF RemoteControl/$(DEPDIR)/remotecontrold-RemoteControlRemoteControlHandler.Tpo -c -o RemoteControl/remotecontrold-RemoteControlRemoteControlHandler.obj `if test -f 'RemoteControl/RemoteControlRemoteControlHandler.cpp'; then $(CYGPATH_W) 'RemoteControl/RemoteControlRemoteControlHandler.cpp'; else $(CYGPATH_W) '$(srcdir)/RemoteControl/RemoteControlRemoteControlHandler.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) RemoteControl/$(DEPDIR)/remotecontrold-RemoteControlRemoteControlHandler.Tpo RemoteControl/$(DEPDIR)/remotecontrold-RemoteControlRemoteControlHandler.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='RemoteControl/RemoteControlRemoteControlHandler.cpp' object='RemoteControl/remotecontrold-RemoteControlRemoteControlHandler.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(remotecontrold_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RemoteControl/remotecontrold-RemoteControlRemoteControlHandler.obj `if test -f 'RemoteControl/RemoteControlRemoteControlHandler.cpp'; then $(CYGPATH_W) 'RemoteControl/RemoteControlRemoteControlHandler.cpp'; else $(CYGPATH_W) '$(srcdir)/RemoteControl/RemoteControlRemoteControlHandler.cpp'; fi`
+
+RemoteControl/remotecontrold-RemoteControlCallsignData.o: RemoteControl/RemoteControlCallsignData.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(remotecontrold_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RemoteControl/remotecontrold-RemoteControlCallsignData.o -MD -MP -MF RemoteControl/$(DEPDIR)/remotecontrold-RemoteControlCallsignData.Tpo -c -o RemoteControl/remotecontrold-RemoteControlCallsignData.o `test -f 'RemoteControl/RemoteControlCallsignData.cpp' || echo '$(srcdir)/'`RemoteControl/RemoteControlCallsignData.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) RemoteControl/$(DEPDIR)/remotecontrold-RemoteControlCallsignData.Tpo RemoteControl/$(DEPDIR)/remotecontrold-RemoteControlCallsignData.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='RemoteControl/RemoteControlCallsignData.cpp' object='RemoteControl/remotecontrold-RemoteControlCallsignData.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(remotecontrold_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RemoteControl/remotecontrold-RemoteControlCallsignData.o `test -f 'RemoteControl/RemoteControlCallsignData.cpp' || echo '$(srcdir)/'`RemoteControl/RemoteControlCallsignData.cpp
+
+RemoteControl/remotecontrold-RemoteControlCallsignData.obj: RemoteControl/RemoteControlCallsignData.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(remotecontrold_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RemoteControl/remotecontrold-RemoteControlCallsignData.obj -MD -MP -MF RemoteControl/$(DEPDIR)/remotecontrold-RemoteControlCallsignData.Tpo -c -o RemoteControl/remotecontrold-RemoteControlCallsignData.obj `if test -f 'RemoteControl/RemoteControlCallsignData.cpp'; then $(CYGPATH_W) 'RemoteControl/RemoteControlCallsignData.cpp'; else $(CYGPATH_W) '$(srcdir)/RemoteControl/RemoteControlCallsignData.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) RemoteControl/$(DEPDIR)/remotecontrold-RemoteControlCallsignData.Tpo RemoteControl/$(DEPDIR)/remotecontrold-RemoteControlCallsignData.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='RemoteControl/RemoteControlCallsignData.cpp' object='RemoteControl/remotecontrold-RemoteControlCallsignData.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(remotecontrold_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RemoteControl/remotecontrold-RemoteControlCallsignData.obj `if test -f 'RemoteControl/RemoteControlCallsignData.cpp'; then $(CYGPATH_W) 'RemoteControl/RemoteControlCallsignData.cpp'; else $(CYGPATH_W) '$(srcdir)/RemoteControl/RemoteControlCallsignData.cpp'; fi`
+
+RemoteControl/remotecontrold-RemoteControlStarNetGroup.o: RemoteControl/RemoteControlStarNetGroup.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(remotecontrold_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RemoteControl/remotecontrold-RemoteControlStarNetGroup.o -MD -MP -MF RemoteControl/$(DEPDIR)/remotecontrold-RemoteControlStarNetGroup.Tpo -c -o RemoteControl/remotecontrold-RemoteControlStarNetGroup.o `test -f 'RemoteControl/RemoteControlStarNetGroup.cpp' || echo '$(srcdir)/'`RemoteControl/RemoteControlStarNetGroup.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) RemoteControl/$(DEPDIR)/remotecontrold-RemoteControlStarNetGroup.Tpo RemoteControl/$(DEPDIR)/remotecontrold-RemoteControlStarNetGroup.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='RemoteControl/RemoteControlStarNetGroup.cpp' object='RemoteControl/remotecontrold-RemoteControlStarNetGroup.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(remotecontrold_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RemoteControl/remotecontrold-RemoteControlStarNetGroup.o `test -f 'RemoteControl/RemoteControlStarNetGroup.cpp' || echo '$(srcdir)/'`RemoteControl/RemoteControlStarNetGroup.cpp
+
+RemoteControl/remotecontrold-RemoteControlStarNetGroup.obj: RemoteControl/RemoteControlStarNetGroup.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(remotecontrold_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RemoteControl/remotecontrold-RemoteControlStarNetGroup.obj -MD -MP -MF RemoteControl/$(DEPDIR)/remotecontrold-RemoteControlStarNetGroup.Tpo -c -o RemoteControl/remotecontrold-RemoteControlStarNetGroup.obj `if test -f 'RemoteControl/RemoteControlStarNetGroup.cpp'; then $(CYGPATH_W) 'RemoteControl/RemoteControlStarNetGroup.cpp'; else $(CYGPATH_W) '$(srcdir)/RemoteControl/RemoteControlStarNetGroup.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) RemoteControl/$(DEPDIR)/remotecontrold-RemoteControlStarNetGroup.Tpo RemoteControl/$(DEPDIR)/remotecontrold-RemoteControlStarNetGroup.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='RemoteControl/RemoteControlStarNetGroup.cpp' object='RemoteControl/remotecontrold-RemoteControlStarNetGroup.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(remotecontrold_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RemoteControl/remotecontrold-RemoteControlStarNetGroup.obj `if test -f 'RemoteControl/RemoteControlStarNetGroup.cpp'; then $(CYGPATH_W) 'RemoteControl/RemoteControlStarNetGroup.cpp'; else $(CYGPATH_W) '$(srcdir)/RemoteControl/RemoteControlStarNetGroup.cpp'; fi`
+
+RemoteControl/remotecontrold-RemoteControlRepeaterData.o: RemoteControl/RemoteControlRepeaterData.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(remotecontrold_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RemoteControl/remotecontrold-RemoteControlRepeaterData.o -MD -MP -MF RemoteControl/$(DEPDIR)/remotecontrold-RemoteControlRepeaterData.Tpo -c -o RemoteControl/remotecontrold-RemoteControlRepeaterData.o `test -f 'RemoteControl/RemoteControlRepeaterData.cpp' || echo '$(srcdir)/'`RemoteControl/RemoteControlRepeaterData.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) RemoteControl/$(DEPDIR)/remotecontrold-RemoteControlRepeaterData.Tpo RemoteControl/$(DEPDIR)/remotecontrold-RemoteControlRepeaterData.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='RemoteControl/RemoteControlRepeaterData.cpp' object='RemoteControl/remotecontrold-RemoteControlRepeaterData.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(remotecontrold_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RemoteControl/remotecontrold-RemoteControlRepeaterData.o `test -f 'RemoteControl/RemoteControlRepeaterData.cpp' || echo '$(srcdir)/'`RemoteControl/RemoteControlRepeaterData.cpp
+
+RemoteControl/remotecontrold-RemoteControlRepeaterData.obj: RemoteControl/RemoteControlRepeaterData.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(remotecontrold_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RemoteControl/remotecontrold-RemoteControlRepeaterData.obj -MD -MP -MF RemoteControl/$(DEPDIR)/remotecontrold-RemoteControlRepeaterData.Tpo -c -o RemoteControl/remotecontrold-RemoteControlRepeaterData.obj `if test -f 'RemoteControl/RemoteControlRepeaterData.cpp'; then $(CYGPATH_W) 'RemoteControl/RemoteControlRepeaterData.cpp'; else $(CYGPATH_W) '$(srcdir)/RemoteControl/RemoteControlRepeaterData.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) RemoteControl/$(DEPDIR)/remotecontrold-RemoteControlRepeaterData.Tpo RemoteControl/$(DEPDIR)/remotecontrold-RemoteControlRepeaterData.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='RemoteControl/RemoteControlRepeaterData.cpp' object='RemoteControl/remotecontrold-RemoteControlRepeaterData.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(remotecontrold_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RemoteControl/remotecontrold-RemoteControlRepeaterData.obj `if test -f 'RemoteControl/RemoteControlRepeaterData.cpp'; then $(CYGPATH_W) 'RemoteControl/RemoteControlRepeaterData.cpp'; else $(CYGPATH_W) '$(srcdir)/RemoteControl/RemoteControlRepeaterData.cpp'; fi`
+
+RemoteControl/remotecontrold-RemoteControlStarNetUser.o: RemoteControl/RemoteControlStarNetUser.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(remotecontrold_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RemoteControl/remotecontrold-RemoteControlStarNetUser.o -MD -MP -MF RemoteControl/$(DEPDIR)/remotecontrold-RemoteControlStarNetUser.Tpo -c -o RemoteControl/remotecontrold-RemoteControlStarNetUser.o `test -f 'RemoteControl/RemoteControlStarNetUser.cpp' || echo '$(srcdir)/'`RemoteControl/RemoteControlStarNetUser.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) RemoteControl/$(DEPDIR)/remotecontrold-RemoteControlStarNetUser.Tpo RemoteControl/$(DEPDIR)/remotecontrold-RemoteControlStarNetUser.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='RemoteControl/RemoteControlStarNetUser.cpp' object='RemoteControl/remotecontrold-RemoteControlStarNetUser.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(remotecontrold_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RemoteControl/remotecontrold-RemoteControlStarNetUser.o `test -f 'RemoteControl/RemoteControlStarNetUser.cpp' || echo '$(srcdir)/'`RemoteControl/RemoteControlStarNetUser.cpp
+
+RemoteControl/remotecontrold-RemoteControlStarNetUser.obj: RemoteControl/RemoteControlStarNetUser.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(remotecontrold_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RemoteControl/remotecontrold-RemoteControlStarNetUser.obj -MD -MP -MF RemoteControl/$(DEPDIR)/remotecontrold-RemoteControlStarNetUser.Tpo -c -o RemoteControl/remotecontrold-RemoteControlStarNetUser.obj `if test -f 'RemoteControl/RemoteControlStarNetUser.cpp'; then $(CYGPATH_W) 'RemoteControl/RemoteControlStarNetUser.cpp'; else $(CYGPATH_W) '$(srcdir)/RemoteControl/RemoteControlStarNetUser.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) RemoteControl/$(DEPDIR)/remotecontrold-RemoteControlStarNetUser.Tpo RemoteControl/$(DEPDIR)/remotecontrold-RemoteControlStarNetUser.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='RemoteControl/RemoteControlStarNetUser.cpp' object='RemoteControl/remotecontrold-RemoteControlStarNetUser.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(remotecontrold_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RemoteControl/remotecontrold-RemoteControlStarNetUser.obj `if test -f 'RemoteControl/RemoteControlStarNetUser.cpp'; then $(CYGPATH_W) 'RemoteControl/RemoteControlStarNetUser.cpp'; else $(CYGPATH_W) '$(srcdir)/RemoteControl/RemoteControlStarNetUser.cpp'; fi`
+
+RemoteControl/remotecontrold-RemoteControlLinkData.o: RemoteControl/RemoteControlLinkData.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(remotecontrold_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RemoteControl/remotecontrold-RemoteControlLinkData.o -MD -MP -MF RemoteControl/$(DEPDIR)/remotecontrold-RemoteControlLinkData.Tpo -c -o RemoteControl/remotecontrold-RemoteControlLinkData.o `test -f 'RemoteControl/RemoteControlLinkData.cpp' || echo '$(srcdir)/'`RemoteControl/RemoteControlLinkData.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) RemoteControl/$(DEPDIR)/remotecontrold-RemoteControlLinkData.Tpo RemoteControl/$(DEPDIR)/remotecontrold-RemoteControlLinkData.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='RemoteControl/RemoteControlLinkData.cpp' object='RemoteControl/remotecontrold-RemoteControlLinkData.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(remotecontrold_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RemoteControl/remotecontrold-RemoteControlLinkData.o `test -f 'RemoteControl/RemoteControlLinkData.cpp' || echo '$(srcdir)/'`RemoteControl/RemoteControlLinkData.cpp
+
+RemoteControl/remotecontrold-RemoteControlLinkData.obj: RemoteControl/RemoteControlLinkData.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(remotecontrold_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RemoteControl/remotecontrold-RemoteControlLinkData.obj -MD -MP -MF RemoteControl/$(DEPDIR)/remotecontrold-RemoteControlLinkData.Tpo -c -o RemoteControl/remotecontrold-RemoteControlLinkData.obj `if test -f 'RemoteControl/RemoteControlLinkData.cpp'; then $(CYGPATH_W) 'RemoteControl/RemoteControlLinkData.cpp'; else $(CYGPATH_W) '$(srcdir)/RemoteControl/RemoteControlLinkData.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) RemoteControl/$(DEPDIR)/remotecontrold-RemoteControlLinkData.Tpo RemoteControl/$(DEPDIR)/remotecontrold-RemoteControlLinkData.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='RemoteControl/RemoteControlLinkData.cpp' object='RemoteControl/remotecontrold-RemoteControlLinkData.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(remotecontrold_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RemoteControl/remotecontrold-RemoteControlLinkData.obj `if test -f 'RemoteControl/RemoteControlLinkData.cpp'; then $(CYGPATH_W) 'RemoteControl/RemoteControlLinkData.cpp'; else $(CYGPATH_W) '$(srcdir)/RemoteControl/RemoteControlLinkData.cpp'; fi`
 
 StarNetServer/starnetserver-StarNetServerApp.o: StarNetServer/StarNetServerApp.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(starnetserver_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT StarNetServer/starnetserver-StarNetServerApp.o -MD -MP -MF StarNetServer/$(DEPDIR)/starnetserver-StarNetServerApp.Tpo -c -o StarNetServer/starnetserver-StarNetServerApp.o `test -f 'StarNetServer/StarNetServerApp.cpp' || echo '$(srcdir)/'`StarNetServer/StarNetServerApp.cpp
