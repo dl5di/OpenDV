@@ -255,7 +255,8 @@ unsigned int CAPRSWriterThread::getAPRSPassword(wxString callsign) const
 
 	for (unsigned int i = 0U; i < len; i += 2U) {
 		hash ^= (char)callsign.GetChar(i) << 8;
-		if(i + 1 < len - 1) hash ^= (char)callsign.GetChar(i + 1);
+		if(i + 1 < len)
+			hash ^= (char)callsign.GetChar(i + 1);
 	}
 
 	return hash & 0x7FFFU;
