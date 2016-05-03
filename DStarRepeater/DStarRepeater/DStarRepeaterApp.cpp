@@ -66,13 +66,13 @@ m_gui(false),
 m_logDir(),
 m_confDir(),
 m_audioDir(),
-#if (wxUSE_GUI == 1)
-m_frame(NULL),
-#endif
 m_thread(NULL),
 m_config(NULL),
 m_checker(NULL),
-m_logChain(NULL)
+m_logChain(NULL),
+#if (wxUSE_GUI == 1)
+m_frame(NULL)
+#endif
 {
 }
 
