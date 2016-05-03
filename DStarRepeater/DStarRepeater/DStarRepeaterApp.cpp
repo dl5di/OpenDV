@@ -225,7 +225,13 @@ bool CDStarRepeaterApp::OnCmdLineParsed(wxCmdLineParser& parser)
 	if (found)
 		m_audioDir = audioDir;
 	else
+// XXX  Homedir here isn't appropriate.  I don't know if logDir is either.
+// XXX  Need to look at more code
+#if defined(__WINDOWS__)
 		m_audioDir = ::wxGetHomeDir();
+#else
+		m_audioDir = logDir;
+#endif
 
 	if (parser.GetParamCount() > 0U)
 		m_name = parser.GetParam(0U);
@@ -578,11 +584,19 @@ void CDStarRepeaterApp::createThread()
 #endif
 	wxLogInfo("Frame logging set to %d, in %s", int(logging), m_audioDir.c_str());
 
+#if defined(__WINDOWS__)
 	wxFileName wlFilename(wxFileName::GetHomeDir(), PRIMARY_WHITELIST_FILE_NAME);
+#else
+	wxFileName wlFilename(CONF_DIR, PRIMARY_WHITELIST_FILE_NAME);
+#endif
 	bool exists = wlFilename.FileExists();
 
 	if (!exists) {
+#if defined(__WINDOWS__)
 		wlFilename.Assign(wxFileName::GetHomeDir(), SECONDARY_WHITELIST_FILE_NAME);
+#else
+		wlFilename.Assign(CONF_DIR, SECONDARY_WHITELIST_FILE_NAME);
+#endif
 		exists = wlFilename.FileExists();
 	}
 
@@ -597,12 +611,19 @@ void CDStarRepeaterApp::createThread()
 			thread->setWhiteList(list);
 		}
 	}
-
+#if defined(__WINDOWS__)
 	wxFileName blFilename(wxFileName::GetHomeDir(), PRIMARY_BLACKLIST_FILE_NAME);
+#else
+		wxFileName blFilename(CONF_DIR, PRIMARY_BLACKLIST_FILE_NAME);
+#endif
 	exists = blFilename.FileExists();
 
 	if (!exists) {
+#if defined(__WINDOWS__)
 		blFilename.Assign(wxFileName::GetHomeDir(), SECONDARY_BLACKLIST_FILE_NAME);
+#else
+		blFilename.Assign(CONF_DIR, SECONDARY_BLACKLIST_FILE_NAME);
+#endif
 		exists = blFilename.FileExists();
 	}
 
@@ -617,8 +638,11 @@ void CDStarRepeaterApp::createThread()
 			thread->setBlackList(list);
 		}
 	}
-
+#if defined(__WINDOWS__)
 	wxFileName glFilename(wxFileName::GetHomeDir(), GREYLIST_FILE_NAME);
+#else
+		wxFileName glFilename(CONF_DIR, GREYLIST_FILE_NAME);
+#endif
 	exists = glFilename.FileExists();
 	if (exists) {
 		CCallsignList* list = new CCallsignList(glFilename.GetFullPath());
