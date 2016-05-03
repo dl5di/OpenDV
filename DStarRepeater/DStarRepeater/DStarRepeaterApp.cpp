@@ -50,13 +50,13 @@
 
 IMPLEMENT_APP(CDStarRepeaterApp)
 
-const wxChar*       NAME_PARAM = wxT("Repeater Name");
-const wxChar* NOLOGGING_SWITCH = wxT("nolog");
-const wxChar*       GUI_SWITCH = wxT("gui");
-const wxChar*    LOGDIR_OPTION = wxT("logdir");
-const wxChar*   CONFDIR_OPTION = wxT("confdir");
-const wxChar*  AUDIODIR_OPTION = wxT("audiodir");
-const wxString LOG_BASE_NAME    = wxT("dstarrepeater");
+const wxString NAME_PARAM = 		"Repeater Name";
+const wxString NOLOGGING_SWITCH =	"nolog";
+const wxString GUI_SWITCH = 		"gui";
+const wxString LOGDIR_OPTION =		"logdir";
+const wxString CONFDIR_OPTION =		"confdir";
+const wxString AUDIODIR_OPTION =	"audiodir";
+const wxString LOG_BASE_NAME   =	"dstarrepeater";
 
 CDStarRepeaterApp::CDStarRepeaterApp() :
 wxApp(),
@@ -90,7 +90,7 @@ bool CDStarRepeaterApp::OnInit()
 	if (!m_nolog) {
 		wxString logBaseName = LOG_BASE_NAME;
 		if (!m_name.IsEmpty()) {
-			logBaseName.Append(wxT("_"));
+			logBaseName.Append("_");
 			logBaseName.Append(m_name);
 		}
 
@@ -99,7 +99,7 @@ bool CDStarRepeaterApp::OnInit()
 			m_logDir = ::wxGetHomeDir();
 #else
 		if (m_logDir.IsEmpty())
-			m_logDir = wxT(LOG_DIR);
+			m_logDir = LOG_DIR;
 #endif
 
 		wxLog* log = new CLogger(m_logDir, logBaseName);
@@ -112,20 +112,20 @@ bool CDStarRepeaterApp::OnInit()
 
 	wxString appName;
 	if (!m_name.IsEmpty())
-		appName = APPLICATION_NAME + wxT(" ") + m_name;
+		appName = APPLICATION_NAME + " " + m_name;
 	else
 		appName = APPLICATION_NAME;
 
 #if !defined(__WINDOWS__)
-	appName.Replace(wxT(" "), wxT("_"));
-	m_checker = new wxSingleInstanceChecker(appName, wxT("/tmp"));
+	appName.Replace(" ", "_");
+	m_checker = new wxSingleInstanceChecker(appName, "/tmp");
 #else
 	m_checker = new wxSingleInstanceChecker(appName);
 #endif
 
 	bool ret = m_checker->IsAnotherRunning();
 	if (ret) {
-		wxLogError(wxT("Another copy of the D-Star Repeater is running, exiting"));
+		wxLogError("Another copy of the D-Star Repeater is running, exiting");
 		return false;
 	}
 
@@ -136,7 +136,7 @@ bool CDStarRepeaterApp::OnInit()
 	m_config = new CDStarRepeaterConfig(new wxConfig(APPLICATION_NAME), m_confDir, CONFIG_FILE_NAME, m_name);
 #else
 	if (m_confDir.IsEmpty())
-		m_confDir = wxT(CONF_DIR);
+		m_confDir = CONF_DIR;
 
 	m_config = new CDStarRepeaterConfig(m_confDir, CONFIG_FILE_NAME, m_name);
 #endif
@@ -145,10 +145,10 @@ bool CDStarRepeaterApp::OnInit()
 	m_config->getModem(type);
 
 #if (wxUSE_GUI == 1)
-	wxString frameName = APPLICATION_NAME + wxT(" (") + type + wxT(") - ");
+	wxString frameName = APPLICATION_NAME + " (" + type + ") - ";
 	if (!m_name.IsEmpty()) {
 		frameName.Append(m_name);
-		frameName.Append(wxT(" - "));
+		frameName.Append(" - ");
 	}
 	frameName.Append(VERSION);
 
@@ -165,10 +165,10 @@ bool CDStarRepeaterApp::OnInit()
 	SetTopWindow(m_frame);
 #endif
 
-	wxLogInfo(wxT("Starting ") + APPLICATION_NAME + wxT(" - ") + VERSION);
+	wxLogInfo("Starting " + APPLICATION_NAME + " - " + VERSION);
 
 	// Log the version of wxWidgets and the Operating System
-	wxLogInfo(wxT("Using wxWidgets %d.%d.%d on %s"), wxMAJOR_VERSION, wxMINOR_VERSION, wxRELEASE_NUMBER, ::wxGetOsDescription().c_str());
+	wxLogInfo("Using wxWidgets %d.%d.%d on %s", wxMAJOR_VERSION, wxMINOR_VERSION, wxRELEASE_NUMBER, ::wxGetOsDescription().c_str());
 
 	createThread();
 
@@ -179,7 +179,7 @@ int CDStarRepeaterApp::OnExit()
 {
 	m_logChain->SetLog(NULL);
 
-	wxLogInfo(APPLICATION_NAME + wxT(" is exiting"));
+	wxLogInfo(APPLICATION_NAME + " is exiting");
 
 	m_thread->kill();
 
@@ -236,7 +236,7 @@ bool CDStarRepeaterApp::OnCmdLineParsed(wxCmdLineParser& parser)
 #if defined(__WXDEBUG__)
 void CDStarRepeaterApp::OnAssertFailure(const wxChar* file, int line, const wxChar* func, const wxChar* cond, const wxChar* msg)
 {
-	wxLogFatalError(wxT("Assertion failed on line %d in file %s and function %s: %s %s"), line, file, func, cond, msg);
+	wxLogFatalError("Assertion failed on line %d in file %s and function %s: %s %s", line, file, func, cond, msg);
 }
 #endif
 
@@ -254,14 +254,14 @@ void CDStarRepeaterApp::showLog(const wxString& text)
 
 void CDStarRepeaterApp::setOutputs(bool out1, bool out2, bool out3, bool out4)
 {
-	wxLogInfo(wxT("Output 1 = %d, output 2 = %d, output 3 = %d, output 4 = %d"), int(out1), int(out2), int(out3), int(out4));
+	wxLogInfo("Output 1 = %d, output 2 = %d, output 3 = %d, output 4 = %d", int(out1), int(out2), int(out3), int(out4));
 
 	m_thread->setOutputs(out1, out2, out3, out4);
 }
 
 void CDStarRepeaterApp::setLogging(bool logging)
 {
-	wxLogInfo(wxT("Frame logging set to %d, in %s"), int(logging), m_audioDir.c_str());
+	wxLogInfo("Frame logging set to %d, in %s", int(logging), m_audioDir.c_str());
 
 	m_thread->setLogging(logging, m_audioDir);
 }
@@ -326,12 +326,12 @@ void CDStarRepeaterApp::createThread()
 	m_config->getModem(modemType);
 
 	// DVAP can only do simplex, force the mode accordingly
-	if (modemType.IsSameAs(wxT("DVAP"))) {
+	if (modemType.IsSameAs("DVAP")) {
 		if (mode == MODE_DUPLEX) {
-			wxLogInfo(wxT("DVAP: changing mode from DUPLEX to SIMPLEX"));
+			wxLogInfo("DVAP: changing mode from DUPLEX to SIMPLEX");
 			mode = MODE_SIMPLEX;
 		} else if (mode == MODE_TXANDRX) {
-			wxLogInfo(wxT("DVAP: changing mode from TX_AND_RX to RX_ONLY"));
+			wxLogInfo("DVAP: changing mode from TX_AND_RX to RX_ONLY");
 			mode = MODE_RXONLY;
 		}
 	}
@@ -353,21 +353,21 @@ void CDStarRepeaterApp::createThread()
 	}
 
 	thread->setCallsign(callsign, gateway, mode, ack, restriction, rpt1Validation, dtmfBlanking, errorReply);
-	wxLogInfo(wxT("Callsign set to \"%s\", gateway set to \"%s\", mode: %d, ack: %d, restriction: %d, RPT1 validation: %d, DTMF blanking: %d, Error reply: %d"), callsign.c_str(), gateway.c_str(), int(mode), int(ack), int(restriction), int(rpt1Validation), int(dtmfBlanking), int(errorReply));
+	wxLogInfo("Callsign set to \"%s\", gateway set to \"%s\", mode: %d, ack: %d, restriction: %d, RPT1 validation: %d, DTMF blanking: %d, Error reply: %d", callsign.c_str(), gateway.c_str(), int(mode), int(ack), int(restriction), int(rpt1Validation), int(dtmfBlanking), int(errorReply));
 
 	wxString gatewayAddress, localAddress, name;
 	unsigned int gatewayPort, localPort;
 	m_config->getNetwork(gatewayAddress, gatewayPort, localAddress, localPort, name);
-	wxLogInfo(wxT("Gateway set to %s:%u, local set to %s:%u, name set to \"%s\""), gatewayAddress.c_str(), gatewayPort, localAddress.c_str(), localPort, name.c_str());
+	wxLogInfo("Gateway set to %s:%u, local set to %s:%u, name set to \"%s\"", gatewayAddress.c_str(), gatewayPort, localAddress.c_str(), localPort, name.c_str());
 
 	if (!gatewayAddress.IsEmpty()) {
-		bool local = gatewayAddress.IsSameAs(wxT("127.0.0.1"));
+		bool local = gatewayAddress.IsSameAs("127.0.0.1");
 
 		CRepeaterProtocolHandler* handler = new CRepeaterProtocolHandler(gatewayAddress, gatewayPort, localAddress, localPort, name);
 
 		bool res = handler->open();
 		if (!res)
-			wxLogError(wxT("Cannot open the protocol handler"));
+			wxLogError("Cannot open the protocol handler");
 		else
 			thread->setProtocolHandler(handler, local);
 	}
@@ -375,7 +375,7 @@ void CDStarRepeaterApp::createThread()
 	unsigned int timeout, ackTime;
 	m_config->getTimes(timeout, ackTime);
 	thread->setTimes(timeout, ackTime);
-	wxLogInfo(wxT("Timeout set to %u secs, ack time set to %u ms"), timeout, ackTime);
+	wxLogInfo("Timeout set to %u secs, ack time set to %u ms", timeout, ackTime);
 
 	unsigned int beaconTime;
 	wxString beaconText;
@@ -385,7 +385,7 @@ void CDStarRepeaterApp::createThread()
 	if (mode == MODE_GATEWAY)
 		beaconTime = 0U;
 	thread->setBeacon(beaconTime, beaconText, beaconVoice, language);
-	wxLogInfo(wxT("Beacon set to %u mins, text set to \"%s\", voice set to %d, language set to %d"), beaconTime / 60U, beaconText.c_str(), int(beaconVoice), int(language));
+	wxLogInfo("Beacon set to %u mins, text set to \"%s\", voice set to %d, language set to %d", beaconTime / 60U, beaconText.c_str(), int(beaconVoice), int(language));
 
 	bool announcementEnabled;
 	unsigned int announcementTime;
@@ -395,32 +395,32 @@ void CDStarRepeaterApp::createThread()
 	if (mode == MODE_GATEWAY)
 		announcementEnabled = false;
 	thread->setAnnouncement(announcementEnabled, announcementTime, announcementRecordRPT1, announcementRecordRPT2, announcementDeleteRPT1, announcementDeleteRPT2);
-	wxLogInfo(wxT("Announcement enabled: %d, time: %u mins, record RPT1: \"%s\", record RPT2: \"%s\", delete RPT1: \"%s\", delete RPT2: \"%s\""), int(announcementEnabled), announcementTime / 60U, announcementRecordRPT1.c_str(), announcementRecordRPT2.c_str(), announcementDeleteRPT1.c_str(), announcementDeleteRPT2.c_str());
+	wxLogInfo("Announcement enabled: %d, time: %u mins, record RPT1: \"%s\", record RPT2: \"%s\", delete RPT1: \"%s\", delete RPT2: \"%s\"", int(announcementEnabled), announcementTime / 60U, announcementRecordRPT1.c_str(), announcementRecordRPT2.c_str(), announcementDeleteRPT1.c_str(), announcementDeleteRPT2.c_str());
 
-	wxLogInfo(wxT("Modem type set to \"%s\""), modemType.c_str());
+	wxLogInfo("Modem type set to \"%s\"", modemType.c_str());
 
 	CModem* modem = NULL;
-	if (modemType.IsSameAs(wxT("DVAP"))) {
+	if (modemType.IsSameAs("DVAP")) {
 		wxString port;
 		unsigned int frequency;
 		int power, squelch;
 		m_config->getDVAP(port, frequency, power, squelch);
-		wxLogInfo(wxT("DVAP: port: %s, frequency: %u Hz, power: %d dBm, squelch: %d dBm"), port.c_str(), frequency, power, squelch);
+		wxLogInfo("DVAP: port: %s, frequency: %u Hz, power: %d dBm, squelch: %d dBm", port.c_str(), frequency, power, squelch);
 		modem = new CDVAPController(port, frequency, power, squelch);
-	} else if (modemType.IsSameAs(wxT("DV-RPTR V1"))) {
+	} else if (modemType.IsSameAs("DV-RPTR V1")) {
 		wxString port;
 		bool rxInvert, txInvert, channel;
 		unsigned int modLevel, txDelay;
 		m_config->getDVRPTR1(port, rxInvert, txInvert, channel, modLevel, txDelay);
-		wxLogInfo(wxT("DV-RPTR V1, port: %s, RX invert: %d, TX invert: %d, channel: %s, mod level: %u%%, TX delay: %u ms"), port.c_str(), int(rxInvert), int(txInvert), channel ? wxT("B") : wxT("A"), modLevel, txDelay);
+		wxLogInfo("DV-RPTR V1, port: %s, RX invert: %d, TX invert: %d, channel: %s, mod level: %u%%, TX delay: %u ms", port.c_str(), int(rxInvert), int(txInvert), channel ? "B" : "A", modLevel, txDelay);
 		modem = new CDVRPTRV1Controller(port, wxEmptyString, rxInvert, txInvert, channel, modLevel, txDelay);
-	} else if (modemType.IsSameAs(wxT("DV-RPTR V2"))) {
+	} else if (modemType.IsSameAs("DV-RPTR V2")) {
 		CONNECTION_TYPE connType;
 		wxString usbPort, address;
 		bool txInvert;
 		unsigned int port, modLevel, txDelay;
 		m_config->getDVRPTR2(connType, usbPort, address, port, txInvert, modLevel, txDelay);
-		wxLogInfo(wxT("DV-RPTR V2, type: %d, address: %s:%u, TX invert: %d, mod level: %u%%, TX delay: %u ms"), int(connType), address.c_str(), port, int(txInvert), modLevel, txDelay);
+		wxLogInfo("DV-RPTR V2, type: %d, address: %s:%u, TX invert: %d, mod level: %u%%, TX delay: %u ms", int(connType), address.c_str(), port, int(txInvert), modLevel, txDelay);
 		switch (connType) {
 			case CT_USB:
 				modem = new CDVRPTRV2Controller(usbPort, wxEmptyString, txInvert, modLevel, mode == MODE_DUPLEX || mode == MODE_TXANDRX, callsign, txDelay);
@@ -429,13 +429,13 @@ void CDStarRepeaterApp::createThread()
 				modem = new CDVRPTRV2Controller(address, port, txInvert, modLevel, mode == MODE_DUPLEX || mode == MODE_TXANDRX, callsign, txDelay);
 				break;
 		}
-	} else if (modemType.IsSameAs(wxT("DV-RPTR V3"))) {
+	} else if (modemType.IsSameAs("DV-RPTR V3")) {
 		CONNECTION_TYPE connType;
 		wxString usbPort, address;
 		bool txInvert;
 		unsigned int port, modLevel, txDelay;
 		m_config->getDVRPTR3(connType, usbPort, address, port, txInvert, modLevel, txDelay);
-		wxLogInfo(wxT("DV-RPTR V3, type: %d, address: %s:%u, TX invert: %d, mod level: %u%%, TX delay: %u ms"), int(connType), address.c_str(), port, int(txInvert), modLevel, txDelay);
+		wxLogInfo("DV-RPTR V3, type: %d, address: %s:%u, TX invert: %d, mod level: %u%%, TX delay: %u ms", int(connType), address.c_str(), port, int(txInvert), modLevel, txDelay);
 		switch (connType) {
 			case CT_USB:
 				modem = new CDVRPTRV3Controller(usbPort, wxEmptyString, txInvert, modLevel, mode == MODE_DUPLEX || mode == MODE_TXANDRX, callsign, txDelay);
@@ -444,13 +444,13 @@ void CDStarRepeaterApp::createThread()
 				modem = new CDVRPTRV3Controller(address, port, txInvert, modLevel, mode == MODE_DUPLEX || mode == MODE_TXANDRX, callsign, txDelay);
 				break;
 		}
-	} else if (modemType.IsSameAs(wxT("DVMEGA"))) {
+	} else if (modemType.IsSameAs("DVMEGA")) {
 		wxString port;
 		DVMEGA_VARIANT variant;
 		bool rxInvert, txInvert;
 		unsigned int txDelay, rxFrequency, txFrequency, power;
 		m_config->getDVMEGA(port, variant, rxInvert, txInvert, txDelay, rxFrequency, txFrequency, power);
-		wxLogInfo(wxT("DVMEGA, port: %s, variant: %d, RX invert: %d, TX invert: %d, TX delay: %u ms, rx frequency: %u Hz, tx frequency: %u Hz, power: %u %%"), port.c_str(), int(variant), int(rxInvert), int(txInvert), txDelay, rxFrequency, txFrequency, power);
+		wxLogInfo("DVMEGA, port: %s, variant: %d, RX invert: %d, TX invert: %d, TX delay: %u ms, rx frequency: %u Hz, tx frequency: %u Hz, power: %u %%", port.c_str(), int(variant), int(rxInvert), int(txInvert), txDelay, rxFrequency, txFrequency, power);
 		switch (variant) {
 			case DVMV_MODEM:
 				modem = new CDVMegaController(port, wxEmptyString, rxInvert, txInvert, txDelay);
@@ -461,56 +461,56 @@ void CDStarRepeaterApp::createThread()
 				modem = new CDVMegaController(port, wxEmptyString, txDelay, rxFrequency, txFrequency, power);
 				break;
 			default:
-				wxLogError(wxT("Unknown DVMEGA variant - %d"), int(variant));
+				wxLogError("Unknown DVMEGA variant - %d"), int(variant);
 				break;
 		}
-	} else if (modemType.IsSameAs(wxT("GMSK Modem"))) {
+	} else if (modemType.IsSameAs("GMSK Modem")) {
 		USB_INTERFACE iface;
 		unsigned int address;
 		m_config->getGMSK(iface, address);
-		wxLogInfo(wxT("GMSK, interface: %d, address: %04X"), int(iface), address);
+		wxLogInfo("GMSK, interface: %d, address: %04X", int(iface), address);
 		modem = new CGMSKController(iface, address, mode == MODE_DUPLEX || mode == MODE_TXANDRX);
-	} else if (modemType.IsSameAs(wxT("Sound Card"))) {
+	} else if (modemType.IsSameAs("Sound Card")) {
 		wxString rxDevice, txDevice;
 		bool rxInvert, txInvert;
 		wxFloat32 rxLevel, txLevel;
 		unsigned int txDelay, txTail;
 		m_config->getSoundCard(rxDevice, txDevice, rxInvert, txInvert, rxLevel, txLevel, txDelay, txTail);
-		wxLogInfo(wxT("Sound Card, devices: %s:%s, invert: %d:%d, levels: %.2f:%.2f, tx delay: %u ms, tx tail: %u ms"), rxDevice.c_str(), txDevice.c_str(), int(rxInvert), int(txInvert), rxLevel, txLevel, txDelay, txTail);
+		wxLogInfo("Sound Card, devices: %s:%s, invert: %d:%d, levels: %.2f:%.2f, tx delay: %u ms, tx tail: %u ms", rxDevice.c_str(), txDevice.c_str(), int(rxInvert), int(txInvert), rxLevel, txLevel, txDelay, txTail);
 		modem = new CSoundCardController(rxDevice, txDevice, rxInvert, txInvert, rxLevel, txLevel, txDelay, txTail);
-	} else if (modemType.IsSameAs(wxT("MMDVM"))) {
+	} else if (modemType.IsSameAs("MMDVM")) {
 		wxString port;
 		bool rxInvert, txInvert, pttInvert;
 		unsigned int txDelay, rxLevel, txLevel;
 		m_config->getMMDVM(port, rxInvert, txInvert, pttInvert, txDelay, rxLevel, txLevel);
-		wxLogInfo(wxT("MMDVM, port: %s, RX invert: %d, TX invert: %d, PTT invert: %d, TX delay: %u ms, RX level: %u%%, TX level: %u%%"), port.c_str(), int(rxInvert), int(txInvert), int(pttInvert), txDelay, rxLevel, txLevel);
+		wxLogInfo("MMDVM, port: %s, RX invert: %d, TX invert: %d, PTT invert: %d, TX delay: %u ms, RX level: %u%%, TX level: %u%%", port.c_str(), int(rxInvert), int(txInvert), int(pttInvert), txDelay, rxLevel, txLevel);
 		modem = new CMMDVMController(port, wxEmptyString, rxInvert, txInvert, pttInvert, txDelay, rxLevel, txLevel);
-	} else if (modemType.IsSameAs(wxT("Split"))) {
+	} else if (modemType.IsSameAs("Split")) {
 		wxString localAddress;
 		unsigned int localPort;
 		wxArrayString transmitterNames, receiverNames;
 		unsigned int timeout;
 		m_config->getSplit(localAddress, localPort, transmitterNames, receiverNames, timeout);
-		wxLogInfo(wxT("Split, local: %s:%u, timeout: %u ms"), localAddress.c_str(), localPort, timeout);
+		wxLogInfo("Split, local: %s:%u, timeout: %u ms", localAddress.c_str(), localPort, timeout);
 		for (unsigned int i = 0U; i < transmitterNames.GetCount(); i++) {
 			wxString name = transmitterNames.Item(i);
 			if (!name.IsEmpty())
-				wxLogInfo(wxT("\tTX %u name: %s"), i + 1U, name.c_str());
+				wxLogInfo("\tTX %u name: %s", i + 1U, name.c_str());
 		}
 		for (unsigned int i = 0U; i < receiverNames.GetCount(); i++) {
 			wxString name = receiverNames.Item(i);
 			if (!name.IsEmpty())
-				wxLogInfo(wxT("\tRX %u name: %s"), i + 1U, name.c_str());
+				wxLogInfo("\tRX %u name: %s", i + 1U, name.c_str());
 		}
 		modem = new CSplitController(localAddress, localPort, transmitterNames, receiverNames, timeout);
 	} else {
-		wxLogError(wxT("Unknown modem type: %s"), modemType.c_str());
+		wxLogError("Unknown modem type: %s", modemType.c_str());
 	}
 
 	if (modem != NULL) {
 		bool res = modem->start();
 		if (!res)
-			wxLogError(wxT("Cannot open the D-Star modem"));
+			wxLogError("Cannot open the D-Star modem");
 		else
 			thread->setModem(modem);
 	}
@@ -519,25 +519,25 @@ void CDStarRepeaterApp::createThread()
 	unsigned int portConfig, activeHangTime;
 	bool pttInvert;
 	m_config->getController(controllerType, portConfig, pttInvert, activeHangTime);
-	wxLogInfo(wxT("Controller set to %s, config: %u, PTT invert: %d, active hang time: %u ms"), controllerType.c_str(), portConfig, int(pttInvert), activeHangTime);
+	wxLogInfo("Controller set to %s, config: %u, PTT invert: %d, active hang time: %u ms", controllerType.c_str(), portConfig, int(pttInvert), activeHangTime);
 
 	CExternalController* controller = NULL;
 
 	wxString port;
-	if (controllerType.StartsWith(wxT("Velleman K8055 - "), &port)) {
+	if (controllerType.StartsWith("Velleman K8055 - ", &port)) {
 		unsigned long num;
 		port.ToULong(&num);
 		controller = new CExternalController(new CK8055Controller(num), pttInvert);
-	} else if (controllerType.StartsWith(wxT("URI USB - "), &port)) {
+	} else if (controllerType.StartsWith("URI USB - ", &port)) {
                 unsigned long num;
                 port.ToULong(&num);
                 controller = new CExternalController(new CURIUSBController(num, true), pttInvert);
-	} else if (controllerType.StartsWith(wxT("Serial - "), &port)) {
+	} else if (controllerType.StartsWith("Serial - ", &port)) {
 		controller = new CExternalController(new CSerialLineController(port, portConfig), pttInvert);
-	} else if (controllerType.StartsWith(wxT("Arduino - "), &port)) {
+	} else if (controllerType.StartsWith("Arduino - ", &port)) {
 		controller = new CExternalController(new CArduinoController(port), pttInvert);
 #if defined(GPIO)
-	} else if (controllerType.IsSameAs(wxT("GPIO"))) {
+	} else if (controllerType.IsSameAs("GPIO")) {
 		controller = new CExternalController(new CGPIOController(portConfig), pttInvert);
 #endif
 	} else {
@@ -546,7 +546,7 @@ void CDStarRepeaterApp::createThread()
 
 	bool res = controller->open();
 	if (!res)
-		wxLogError(wxT("Cannot open the hardware interface - %s"), controllerType.c_str());
+		wxLogError("Cannot open the hardware interface - %s", controllerType.c_str());
 	else
 		thread->setController(controller, activeHangTime);
 
@@ -556,7 +556,7 @@ void CDStarRepeaterApp::createThread()
 #if (wxUSE_GUI == 1)
 	m_frame->setOutputs(out1, out2, out3, out4);
 #endif
-	wxLogInfo(wxT("Output 1 = %d, output 2 = %d, output 3 = %d, output 4 = %d"), int(out1), int(out2), int(out3), int(out4));
+	wxLogInfo("Output 1 = %d, output 2 = %d, output 3 = %d, output 4 = %d", int(out1), int(out2), int(out3), int(out4));
 
 	bool enabled;
 	wxString rpt1Callsign, rpt2Callsign;
@@ -568,7 +568,7 @@ void CDStarRepeaterApp::createThread()
 	wxString output1, output2, output3, output4;
 	m_config->getControl(enabled, rpt1Callsign, rpt2Callsign, shutdown, startup, status1, status2, status3, status4, status5, command1, command1Line, command2, command2Line, command3, command3Line, command4, command4Line, command5, command5Line, command6, command6Line, output1, output2, output3, output4);
 	thread->setControl(enabled, rpt1Callsign, rpt2Callsign, shutdown, startup, status1, status2, status3, status4, status5, command1, command1Line, command2, command2Line, command3, command3Line, command4, command4Line, command5, command5Line, command6, command6Line, output1, output2, output3, output4);
-	wxLogInfo(wxT("Control: enabled: %d, RPT1: %s, RPT2: %s, shutdown: %s, startup: %s, status1: %s, status2: %s, status3: %s, status4: %s, status5: %s, command1: %s = %s, command2: %s = %s, command3: %s = %s, command4: %s = %s, command5: %s = %s, command6: %s = %s, output1: %s, output2: %s, output3: %s, output4: %s"), enabled, rpt1Callsign.c_str(), rpt2Callsign.c_str(), shutdown.c_str(), startup.c_str(), status1.c_str(), status2.c_str(), status3.c_str(), status4.c_str(), status5.c_str(), command1.c_str(), command1Line.c_str(), command2.c_str(), command2Line.c_str(), command3.c_str(), command3Line.c_str(), command4.c_str(), command4Line.c_str(), command5.c_str(), command5Line.c_str(), command6.c_str(), command6Line.c_str(), output1.c_str(), output2.c_str(), output3.c_str(), output4.c_str());
+	wxLogInfo("Control: enabled: %d, RPT1: %s, RPT2: %s, shutdown: %s, startup: %s, status1: %s, status2: %s, status3: %s, status4: %s, status5: %s, command1: %s = %s, command2: %s = %s, command3: %s = %s, command4: %s = %s, command5: %s = %s, command6: %s = %s, output1: %s, output2: %s, output3: %s, output4: %s", enabled, rpt1Callsign.c_str(), rpt2Callsign.c_str(), shutdown.c_str(), startup.c_str(), status1.c_str(), status2.c_str(), status3.c_str(), status4.c_str(), status5.c_str(), command1.c_str(), command1Line.c_str(), command2.c_str(), command2Line.c_str(), command3.c_str(), command3Line.c_str(), command4.c_str(), command4Line.c_str(), command5.c_str(), command5Line.c_str(), command6.c_str(), command6Line.c_str(), output1.c_str(), output2.c_str(), output3.c_str(), output4.c_str());
 
 	bool logging;
 	m_config->getLogging(logging);
@@ -576,7 +576,7 @@ void CDStarRepeaterApp::createThread()
 #if (wxUSE_GUI == 1)
 	m_frame->setLogging(logging);
 #endif
-	wxLogInfo(wxT("Frame logging set to %d, in %s"), int(logging), m_audioDir.c_str());
+	wxLogInfo("Frame logging set to %d, in %s", int(logging), m_audioDir.c_str());
 
 	wxFileName wlFilename(wxFileName::GetHomeDir(), PRIMARY_WHITELIST_FILE_NAME);
 	bool exists = wlFilename.FileExists();
@@ -590,10 +590,10 @@ void CDStarRepeaterApp::createThread()
 		CCallsignList* list = new CCallsignList(wlFilename.GetFullPath());
 		bool res = list->load();
 		if (!res) {
-			wxLogError(wxT("Unable to open white list file - %s"), wlFilename.GetFullPath().c_str());
+			wxLogError("Unable to open white list file - %s", wlFilename.GetFullPath().c_str());
 			delete list;
 		} else {
-			wxLogInfo(wxT("%u callsigns loaded into the white list"), list->getCount());
+			wxLogInfo("%u callsigns loaded into the white list", list->getCount());
 			thread->setWhiteList(list);
 		}
 	}
@@ -610,10 +610,10 @@ void CDStarRepeaterApp::createThread()
 		CCallsignList* list = new CCallsignList(blFilename.GetFullPath());
 		bool res = list->load();
 		if (!res) {
-			wxLogError(wxT("Unable to open black list file - %s"), blFilename.GetFullPath().c_str());
+			wxLogError("Unable to open black list file - %s", blFilename.GetFullPath().c_str());
 			delete list;
 		} else {
-			wxLogInfo(wxT("%u callsigns loaded into the black list"), list->getCount());
+			wxLogInfo("%u callsigns loaded into the black list", list->getCount());
 			thread->setBlackList(list);
 		}
 	}
@@ -624,10 +624,10 @@ void CDStarRepeaterApp::createThread()
 		CCallsignList* list = new CCallsignList(glFilename.GetFullPath());
 		bool res = list->load();
 		if (!res) {
-			wxLogError(wxT("Unable to open grey list file - %s"), glFilename.GetFullPath().c_str());
+			wxLogError("Unable to open grey list file - %s", glFilename.GetFullPath().c_str());
 			delete list;
 		} else {
-			wxLogInfo(wxT("%u callsigns loaded into the grey list"), list->getCount());
+			wxLogInfo("%u callsigns loaded into the grey list", list->getCount());
 			thread->setGreyList(list);
 		}
 	}
