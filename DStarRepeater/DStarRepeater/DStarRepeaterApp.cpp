@@ -59,6 +59,9 @@ const wxString AUDIODIR_OPTION =	"audiodir";
 const wxString LOG_BASE_NAME   =	"dstarrepeater";
 
 CDStarRepeaterApp::CDStarRepeaterApp() :
+#if (wxUSE_GUI == 1)
+m_frame(NULL),
+#endif
 wxApp(),
 m_name(),
 m_nolog(false),
@@ -69,10 +72,7 @@ m_audioDir(),
 m_thread(NULL),
 m_config(NULL),
 m_checker(NULL),
-m_logChain(NULL),
-#if (wxUSE_GUI == 1)
-m_frame(NULL)
-#endif
+m_logChain(NULL)
 {
 }
 
