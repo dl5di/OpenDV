@@ -56,9 +56,7 @@ const wxChar*       GUI_SWITCH = wxT("gui");
 const wxChar*    LOGDIR_OPTION = wxT("logdir");
 const wxChar*   CONFDIR_OPTION = wxT("confdir");
 const wxChar*  AUDIODIR_OPTION = wxT("audiodir");
-
 const wxString LOG_BASE_NAME    = wxT("dstarrepeater");
-
 
 CDStarRepeaterApp::CDStarRepeaterApp() :
 wxApp(),
@@ -68,7 +66,9 @@ m_gui(false),
 m_logDir(),
 m_confDir(),
 m_audioDir(),
+#if (wxUSE_GUI == 1)
 m_frame(NULL),
+#endif
 m_thread(NULL),
 m_config(NULL),
 m_checker(NULL),
@@ -144,6 +144,7 @@ bool CDStarRepeaterApp::OnInit()
 	wxString type;
 	m_config->getModem(type);
 
+#if (wxUSE_GUI == 1)
 	wxString frameName = APPLICATION_NAME + wxT(" (") + type + wxT(") - ");
 	if (!m_name.IsEmpty()) {
 		frameName.Append(m_name);
@@ -162,6 +163,7 @@ bool CDStarRepeaterApp::OnInit()
 	m_frame->Show();
 
 	SetTopWindow(m_frame);
+#endif
 
 	wxLogInfo(wxT("Starting ") + APPLICATION_NAME + wxT(" - ") + VERSION);
 
@@ -245,7 +247,9 @@ CDStarRepeaterStatusData* CDStarRepeaterApp::getStatus() const
 
 void CDStarRepeaterApp::showLog(const wxString& text)
 {
+#if (wxUSE_GUI == 1)
 	m_frame->showLog(text);
+#endif
 }
 
 void CDStarRepeaterApp::setOutputs(bool out1, bool out2, bool out3, bool out4)
@@ -549,7 +553,9 @@ void CDStarRepeaterApp::createThread()
 	bool out1, out2, out3, out4;
 	m_config->getOutputs(out1, out2, out3, out4);
 	thread->setOutputs(out1, out2, out3, out4);
+#if (wxUSE_GUI == 1)
 	m_frame->setOutputs(out1, out2, out3, out4);
+#endif
 	wxLogInfo(wxT("Output 1 = %d, output 2 = %d, output 3 = %d, output 4 = %d"), int(out1), int(out2), int(out3), int(out4));
 
 	bool enabled;
@@ -567,7 +573,9 @@ void CDStarRepeaterApp::createThread()
 	bool logging;
 	m_config->getLogging(logging);
 	thread->setLogging(logging, m_audioDir);
+#if (wxUSE_GUI == 1)
 	m_frame->setLogging(logging);
+#endif
 	wxLogInfo(wxT("Frame logging set to %d, in %s"), int(logging), m_audioDir.c_str());
 
 	wxFileName wlFilename(wxFileName::GetHomeDir(), PRIMARY_WHITELIST_FILE_NAME);
