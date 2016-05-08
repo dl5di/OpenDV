@@ -95,8 +95,7 @@ int main(int argc, char** argv)
 	long radius;
 	if(!parser.Found(REPEATER_RADIUS, &radius))
 		radius = 50;
-	wxString aprsFilter = repeater.Clone();
-	aprsFilter.resize(LONG_CALLSIGN_LENGTH - 1, wxT(' '));
+	wxString aprsFilter = repeater.SubString(0, SHORT_CALLSIGN_LENGTH);
 	aprsFilter.Trim(true);
 	wxString ssid = repeater.SubString(LONG_CALLSIGN_LENGTH - 1, 1); 
 	aprsFilter << wxT("-") << ssid;
