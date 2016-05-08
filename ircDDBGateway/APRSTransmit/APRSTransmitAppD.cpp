@@ -48,7 +48,7 @@ static void handler(int signum)
 static void aprsFrameCallback(const wxString& aprsFrame)
 {
 	//wxLogMessage(wxT("Received APRS Fram : ") + aprsFrame);
-	m_aprsTransmit->m_aprsFramesQueue->addData(new wxString(aprsFrame));
+	m_aprsTransmit->m_aprsFramesQueue->addData(new wxString(aprsFrame.Clone()));
 }
 
 int main(int argc, char** argv)
@@ -95,8 +95,7 @@ int main(int argc, char** argv)
 	long radius;
 	if(!parser.Found(REPEATER_RADIUS, &radius))
 		radius = 50;
-	wxString aprsFilter(repeater);
-	aprsFilter.resize(LONG_CALLSIGN_LENGTH - 1, wxT(' '));
+	wxString aprsFilter = repeater.SubString(0, SHORT_CALLSIGN_LENGTH);
 	aprsFilter.Trim(true);
 	wxString ssid = repeater.SubString(LONG_CALLSIGN_LENGTH - 1, 1); 
 	aprsFilter << wxT("-") << ssid;
