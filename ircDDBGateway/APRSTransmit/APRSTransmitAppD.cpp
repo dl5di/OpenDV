@@ -79,8 +79,15 @@ int main(int argc, char** argv)
 	}
 
 	wxString repeater = parser.GetParam(0U);
+	if (repeater.length() != LONG_CALLSIGN_LENGTH) {
+		wxString callErrorMsg;
+		callErrorMsg << wxT("Invalid repeater call. ") << repeater << wxT("Call must be ") << LONG_CALLSIGN_LENGTH << wxT(" characters long.\n");
+		callErrorMsg << wxT("Valid example : A1ABC__B\n");
+		::fprintf(stderr, callErrorMsg.c_str());
+		::wxUninitialize();
+		return 1;
+	}
 	repeater.Replace(wxT("_"), wxT(" "));
-	repeater.resize(LONG_CALLSIGN_LENGTH, wxT(' '));
 	repeater.MakeUpper();
 	
 	long aprsPort;
