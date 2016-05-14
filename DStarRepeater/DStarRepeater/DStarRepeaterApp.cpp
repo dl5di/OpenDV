@@ -56,7 +56,11 @@ const wxString GUI_SWITCH = 		"gui";
 const wxString LOGDIR_OPTION =		"logdir";
 const wxString CONFDIR_OPTION =		"confdir";
 const wxString AUDIODIR_OPTION =	"audiodir";
+#if (wxUSE_GUI == 1)
 const wxString LOG_BASE_NAME   =	"dstarrepeater";
+#else
+const wxString LOG_BASE_NAME   =	"dstarrepeaterd";
+#endif
 
 CDStarRepeaterApp::CDStarRepeaterApp() :
 #if (wxUSE_GUI == 1)
