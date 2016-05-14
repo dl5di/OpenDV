@@ -22,7 +22,9 @@
 #include "DStarRepeaterThreadHelper.h"
 #include "DStarRepeaterStatusData.h"
 #include "DStarRepeaterConfig.h"
+#if (wxUSE_GUI == 1)
 #include "DStarRepeaterFrame.h"
+#endif
 #include "DStarRepeaterDefs.h"
 
 #include <wx/wx.h>
@@ -36,7 +38,7 @@ public:
 
 	virtual bool OnInit();
 	virtual int  OnExit();
-	
+
 	virtual void OnInitCmdLine(wxCmdLineParser& parser);
 	virtual bool OnCmdLineParsed(wxCmdLineParser& parser);
 
@@ -71,7 +73,9 @@ private:
 	wxString                    m_logDir;
 	wxString                    m_confDir;
 	wxString                    m_audioDir;
+#if (wxUSE_GUI == 1)
 	CDStarRepeaterFrame*        m_frame;
+#endif
 	CDStarRepeaterThreadHelper* m_thread;
 	CDStarRepeaterConfig*       m_config;
 	wxSingleInstanceChecker*    m_checker;

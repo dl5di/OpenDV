@@ -275,7 +275,9 @@ dstarrepeaterconfig_OBJECTS = $(am_dstarrepeaterconfig_OBJECTS)
 @WITH_GUI_TRUE@dstarrepeaterconfig_DEPENDENCIES = libCommon.a \
 @WITH_GUI_TRUE@	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
 am_dstarrepeaterd_OBJECTS =  \
-	DStarRepeater/dstarrepeaterd-DStarRepeaterD.$(OBJEXT)
+	DStarRepeater/dstarrepeaterd-DStarRepeaterApp.$(OBJEXT) \
+	DStarRepeater/dstarrepeaterd-DStarRepeaterLogger.$(OBJEXT) \
+	DStarRepeater/dstarrepeaterd-DStarRepeaterThreadHelper.$(OBJEXT)
 dstarrepeaterd_OBJECTS = $(am_dstarrepeaterd_OBJECTS)
 dstarrepeaterd_DEPENDENCIES = libCommon.a $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
@@ -596,7 +598,10 @@ COMMON_SRCS = Common/AMBEFEC.cpp Common/AnnouncementUnit.cpp \
 noinst_LIBRARIES = libCommon.a
 libCommon_a_SOURCES = $(COMMON_SRCS) $(CONTROLLER_SRCS)
 libCommon_a_CPPFLAGS = -ICommon $(BASE_WX_CPPFLAGS)
-dstarrepeaterd_SOURCES = DStarRepeater/DStarRepeaterD.cpp 
+dstarrepeaterd_SOURCES = DStarRepeater/DStarRepeaterApp.cpp \
+			DStarRepeater/DStarRepeaterLogger.cpp \
+			DStarRepeater/DStarRepeaterThreadHelper.cpp
+
 dstarrepeaterd_CPPFLAGS = -ICommon $(BASE_WX_CPPFLAGS)
 dstarrepeaterd_LDADD = libCommon.a $(BASE_WX_LIBS) $(LIBUSB_LIBS) \
 	$(ALSA_LIBS) $(am__append_2)
@@ -1000,7 +1005,13 @@ GUICommon/dstarrepeaterconfig-RestrictedTextCtrl.$(OBJEXT):  \
 dstarrepeaterconfig$(EXEEXT): $(dstarrepeaterconfig_OBJECTS) $(dstarrepeaterconfig_DEPENDENCIES) $(EXTRA_dstarrepeaterconfig_DEPENDENCIES) 
 	@rm -f dstarrepeaterconfig$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(dstarrepeaterconfig_OBJECTS) $(dstarrepeaterconfig_LDADD) $(LIBS)
-DStarRepeater/dstarrepeaterd-DStarRepeaterD.$(OBJEXT):  \
+DStarRepeater/dstarrepeaterd-DStarRepeaterApp.$(OBJEXT):  \
+	DStarRepeater/$(am__dirstamp) \
+	DStarRepeater/$(DEPDIR)/$(am__dirstamp)
+DStarRepeater/dstarrepeaterd-DStarRepeaterLogger.$(OBJEXT):  \
+	DStarRepeater/$(am__dirstamp) \
+	DStarRepeater/$(DEPDIR)/$(am__dirstamp)
+DStarRepeater/dstarrepeaterd-DStarRepeaterThreadHelper.$(OBJEXT):  \
 	DStarRepeater/$(am__dirstamp) \
 	DStarRepeater/$(DEPDIR)/$(am__dirstamp)
 
@@ -1070,7 +1081,9 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@DStarRepeater/$(DEPDIR)/dstarrepeater-DStarRepeaterFrame.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@DStarRepeater/$(DEPDIR)/dstarrepeater-DStarRepeaterLogger.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@DStarRepeater/$(DEPDIR)/dstarrepeater-DStarRepeaterThreadHelper.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@DStarRepeater/$(DEPDIR)/dstarrepeaterd-DStarRepeaterD.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@DStarRepeater/$(DEPDIR)/dstarrepeaterd-DStarRepeaterApp.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@DStarRepeater/$(DEPDIR)/dstarrepeaterd-DStarRepeaterLogger.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@DStarRepeater/$(DEPDIR)/dstarrepeaterd-DStarRepeaterThreadHelper.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@DStarRepeater/$(DEPDIR)/libCommon_a-DStarRepeaterRXThread.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@DStarRepeater/$(DEPDIR)/libCommon_a-DStarRepeaterStatusData.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@DStarRepeater/$(DEPDIR)/libCommon_a-DStarRepeaterTRXThread.Po@am__quote@
@@ -2296,19 +2309,47 @@ GUICommon/dstarrepeaterconfig-RestrictedTextCtrl.obj: GUICommon/RestrictedTextCt
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dstarrepeaterconfig_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o GUICommon/dstarrepeaterconfig-RestrictedTextCtrl.obj `if test -f 'GUICommon/RestrictedTextCtrl.cpp'; then $(CYGPATH_W) 'GUICommon/RestrictedTextCtrl.cpp'; else $(CYGPATH_W) '$(srcdir)/GUICommon/RestrictedTextCtrl.cpp'; fi`
 
-DStarRepeater/dstarrepeaterd-DStarRepeaterD.o: DStarRepeater/DStarRepeaterD.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dstarrepeaterd_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT DStarRepeater/dstarrepeaterd-DStarRepeaterD.o -MD -MP -MF DStarRepeater/$(DEPDIR)/dstarrepeaterd-DStarRepeaterD.Tpo -c -o DStarRepeater/dstarrepeaterd-DStarRepeaterD.o `test -f 'DStarRepeater/DStarRepeaterD.cpp' || echo '$(srcdir)/'`DStarRepeater/DStarRepeaterD.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) DStarRepeater/$(DEPDIR)/dstarrepeaterd-DStarRepeaterD.Tpo DStarRepeater/$(DEPDIR)/dstarrepeaterd-DStarRepeaterD.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='DStarRepeater/DStarRepeaterD.cpp' object='DStarRepeater/dstarrepeaterd-DStarRepeaterD.o' libtool=no @AMDEPBACKSLASH@
+DStarRepeater/dstarrepeaterd-DStarRepeaterApp.o: DStarRepeater/DStarRepeaterApp.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dstarrepeaterd_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT DStarRepeater/dstarrepeaterd-DStarRepeaterApp.o -MD -MP -MF DStarRepeater/$(DEPDIR)/dstarrepeaterd-DStarRepeaterApp.Tpo -c -o DStarRepeater/dstarrepeaterd-DStarRepeaterApp.o `test -f 'DStarRepeater/DStarRepeaterApp.cpp' || echo '$(srcdir)/'`DStarRepeater/DStarRepeaterApp.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) DStarRepeater/$(DEPDIR)/dstarrepeaterd-DStarRepeaterApp.Tpo DStarRepeater/$(DEPDIR)/dstarrepeaterd-DStarRepeaterApp.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='DStarRepeater/DStarRepeaterApp.cpp' object='DStarRepeater/dstarrepeaterd-DStarRepeaterApp.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dstarrepeaterd_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DStarRepeater/dstarrepeaterd-DStarRepeaterD.o `test -f 'DStarRepeater/DStarRepeaterD.cpp' || echo '$(srcdir)/'`DStarRepeater/DStarRepeaterD.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dstarrepeaterd_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DStarRepeater/dstarrepeaterd-DStarRepeaterApp.o `test -f 'DStarRepeater/DStarRepeaterApp.cpp' || echo '$(srcdir)/'`DStarRepeater/DStarRepeaterApp.cpp
 
-DStarRepeater/dstarrepeaterd-DStarRepeaterD.obj: DStarRepeater/DStarRepeaterD.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dstarrepeaterd_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT DStarRepeater/dstarrepeaterd-DStarRepeaterD.obj -MD -MP -MF DStarRepeater/$(DEPDIR)/dstarrepeaterd-DStarRepeaterD.Tpo -c -o DStarRepeater/dstarrepeaterd-DStarRepeaterD.obj `if test -f 'DStarRepeater/DStarRepeaterD.cpp'; then $(CYGPATH_W) 'DStarRepeater/DStarRepeaterD.cpp'; else $(CYGPATH_W) '$(srcdir)/DStarRepeater/DStarRepeaterD.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) DStarRepeater/$(DEPDIR)/dstarrepeaterd-DStarRepeaterD.Tpo DStarRepeater/$(DEPDIR)/dstarrepeaterd-DStarRepeaterD.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='DStarRepeater/DStarRepeaterD.cpp' object='DStarRepeater/dstarrepeaterd-DStarRepeaterD.obj' libtool=no @AMDEPBACKSLASH@
+DStarRepeater/dstarrepeaterd-DStarRepeaterApp.obj: DStarRepeater/DStarRepeaterApp.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dstarrepeaterd_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT DStarRepeater/dstarrepeaterd-DStarRepeaterApp.obj -MD -MP -MF DStarRepeater/$(DEPDIR)/dstarrepeaterd-DStarRepeaterApp.Tpo -c -o DStarRepeater/dstarrepeaterd-DStarRepeaterApp.obj `if test -f 'DStarRepeater/DStarRepeaterApp.cpp'; then $(CYGPATH_W) 'DStarRepeater/DStarRepeaterApp.cpp'; else $(CYGPATH_W) '$(srcdir)/DStarRepeater/DStarRepeaterApp.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) DStarRepeater/$(DEPDIR)/dstarrepeaterd-DStarRepeaterApp.Tpo DStarRepeater/$(DEPDIR)/dstarrepeaterd-DStarRepeaterApp.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='DStarRepeater/DStarRepeaterApp.cpp' object='DStarRepeater/dstarrepeaterd-DStarRepeaterApp.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dstarrepeaterd_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DStarRepeater/dstarrepeaterd-DStarRepeaterD.obj `if test -f 'DStarRepeater/DStarRepeaterD.cpp'; then $(CYGPATH_W) 'DStarRepeater/DStarRepeaterD.cpp'; else $(CYGPATH_W) '$(srcdir)/DStarRepeater/DStarRepeaterD.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dstarrepeaterd_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DStarRepeater/dstarrepeaterd-DStarRepeaterApp.obj `if test -f 'DStarRepeater/DStarRepeaterApp.cpp'; then $(CYGPATH_W) 'DStarRepeater/DStarRepeaterApp.cpp'; else $(CYGPATH_W) '$(srcdir)/DStarRepeater/DStarRepeaterApp.cpp'; fi`
+
+DStarRepeater/dstarrepeaterd-DStarRepeaterLogger.o: DStarRepeater/DStarRepeaterLogger.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dstarrepeaterd_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT DStarRepeater/dstarrepeaterd-DStarRepeaterLogger.o -MD -MP -MF DStarRepeater/$(DEPDIR)/dstarrepeaterd-DStarRepeaterLogger.Tpo -c -o DStarRepeater/dstarrepeaterd-DStarRepeaterLogger.o `test -f 'DStarRepeater/DStarRepeaterLogger.cpp' || echo '$(srcdir)/'`DStarRepeater/DStarRepeaterLogger.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) DStarRepeater/$(DEPDIR)/dstarrepeaterd-DStarRepeaterLogger.Tpo DStarRepeater/$(DEPDIR)/dstarrepeaterd-DStarRepeaterLogger.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='DStarRepeater/DStarRepeaterLogger.cpp' object='DStarRepeater/dstarrepeaterd-DStarRepeaterLogger.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dstarrepeaterd_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DStarRepeater/dstarrepeaterd-DStarRepeaterLogger.o `test -f 'DStarRepeater/DStarRepeaterLogger.cpp' || echo '$(srcdir)/'`DStarRepeater/DStarRepeaterLogger.cpp
+
+DStarRepeater/dstarrepeaterd-DStarRepeaterLogger.obj: DStarRepeater/DStarRepeaterLogger.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dstarrepeaterd_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT DStarRepeater/dstarrepeaterd-DStarRepeaterLogger.obj -MD -MP -MF DStarRepeater/$(DEPDIR)/dstarrepeaterd-DStarRepeaterLogger.Tpo -c -o DStarRepeater/dstarrepeaterd-DStarRepeaterLogger.obj `if test -f 'DStarRepeater/DStarRepeaterLogger.cpp'; then $(CYGPATH_W) 'DStarRepeater/DStarRepeaterLogger.cpp'; else $(CYGPATH_W) '$(srcdir)/DStarRepeater/DStarRepeaterLogger.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) DStarRepeater/$(DEPDIR)/dstarrepeaterd-DStarRepeaterLogger.Tpo DStarRepeater/$(DEPDIR)/dstarrepeaterd-DStarRepeaterLogger.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='DStarRepeater/DStarRepeaterLogger.cpp' object='DStarRepeater/dstarrepeaterd-DStarRepeaterLogger.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dstarrepeaterd_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DStarRepeater/dstarrepeaterd-DStarRepeaterLogger.obj `if test -f 'DStarRepeater/DStarRepeaterLogger.cpp'; then $(CYGPATH_W) 'DStarRepeater/DStarRepeaterLogger.cpp'; else $(CYGPATH_W) '$(srcdir)/DStarRepeater/DStarRepeaterLogger.cpp'; fi`
+
+DStarRepeater/dstarrepeaterd-DStarRepeaterThreadHelper.o: DStarRepeater/DStarRepeaterThreadHelper.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dstarrepeaterd_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT DStarRepeater/dstarrepeaterd-DStarRepeaterThreadHelper.o -MD -MP -MF DStarRepeater/$(DEPDIR)/dstarrepeaterd-DStarRepeaterThreadHelper.Tpo -c -o DStarRepeater/dstarrepeaterd-DStarRepeaterThreadHelper.o `test -f 'DStarRepeater/DStarRepeaterThreadHelper.cpp' || echo '$(srcdir)/'`DStarRepeater/DStarRepeaterThreadHelper.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) DStarRepeater/$(DEPDIR)/dstarrepeaterd-DStarRepeaterThreadHelper.Tpo DStarRepeater/$(DEPDIR)/dstarrepeaterd-DStarRepeaterThreadHelper.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='DStarRepeater/DStarRepeaterThreadHelper.cpp' object='DStarRepeater/dstarrepeaterd-DStarRepeaterThreadHelper.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dstarrepeaterd_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DStarRepeater/dstarrepeaterd-DStarRepeaterThreadHelper.o `test -f 'DStarRepeater/DStarRepeaterThreadHelper.cpp' || echo '$(srcdir)/'`DStarRepeater/DStarRepeaterThreadHelper.cpp
+
+DStarRepeater/dstarrepeaterd-DStarRepeaterThreadHelper.obj: DStarRepeater/DStarRepeaterThreadHelper.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dstarrepeaterd_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT DStarRepeater/dstarrepeaterd-DStarRepeaterThreadHelper.obj -MD -MP -MF DStarRepeater/$(DEPDIR)/dstarrepeaterd-DStarRepeaterThreadHelper.Tpo -c -o DStarRepeater/dstarrepeaterd-DStarRepeaterThreadHelper.obj `if test -f 'DStarRepeater/DStarRepeaterThreadHelper.cpp'; then $(CYGPATH_W) 'DStarRepeater/DStarRepeaterThreadHelper.cpp'; else $(CYGPATH_W) '$(srcdir)/DStarRepeater/DStarRepeaterThreadHelper.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) DStarRepeater/$(DEPDIR)/dstarrepeaterd-DStarRepeaterThreadHelper.Tpo DStarRepeater/$(DEPDIR)/dstarrepeaterd-DStarRepeaterThreadHelper.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='DStarRepeater/DStarRepeaterThreadHelper.cpp' object='DStarRepeater/dstarrepeaterd-DStarRepeaterThreadHelper.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dstarrepeaterd_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DStarRepeater/dstarrepeaterd-DStarRepeaterThreadHelper.obj `if test -f 'DStarRepeater/DStarRepeaterThreadHelper.cpp'; then $(CYGPATH_W) 'DStarRepeater/DStarRepeaterThreadHelper.cpp'; else $(CYGPATH_W) '$(srcdir)/DStarRepeater/DStarRepeaterThreadHelper.cpp'; fi`
 install-examplesDATA: $(examples_DATA)
 	@$(NORMAL_INSTALL)
 	@list='$(examples_DATA)'; test -n "$(examplesdir)" || list=; \
