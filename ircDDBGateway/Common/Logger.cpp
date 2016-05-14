@@ -20,7 +20,7 @@
 
 CLogger::CLogger(const wxString& directory, const wxString& name) :
 #if(defined(__WINDOWS__))
-m_day(0)
+m_day(0),
 #endif
 wxLog(),
 m_name(name),

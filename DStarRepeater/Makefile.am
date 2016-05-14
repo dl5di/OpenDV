@@ -74,7 +74,9 @@ libCommon_a_SOURCES = $(COMMON_SRCS) $(CONTROLLER_SRCS)
 libCommon_a_CPPFLAGS = -ICommon $(BASE_WX_CPPFLAGS)
 
 sbin_PROGRAMS = dstarrepeaterd
-dstarrepeaterd_SOURCES = DStarRepeater/DStarRepeaterD.cpp 
+dstarrepeaterd_SOURCES = DStarRepeater/DStarRepeaterApp.cpp \
+			DStarRepeater/DStarRepeaterLogger.cpp \
+			DStarRepeater/DStarRepeaterThreadHelper.cpp
 dstarrepeaterd_CPPFLAGS = -ICommon $(BASE_WX_CPPFLAGS)
 dstarrepeaterd_LDADD = libCommon.a $(BASE_WX_LIBS) $(LIBUSB_LIBS) $(ALSA_LIBS)
 

@@ -48,7 +48,7 @@ static void handler(int signum)
 static void aprsFrameCallback(const wxString& aprsFrame)
 {
 	//wxLogMessage(wxT("Received APRS Fram : ") + aprsFrame);
-	m_aprsTransmit->m_aprsFramesQueue->addData(new wxString(aprsFrame));
+	m_aprsTransmit->m_aprsFramesQueue->addData(new wxString(aprsFrame.Clone()));
 }
 
 int main(int argc, char** argv)
@@ -79,8 +79,15 @@ int main(int argc, char** argv)
 	}
 
 	wxString repeater = parser.GetParam(0U);
+	if (repeater.length() != LONG_CALLSIGN_LENGTH) {
+		wxString callErrorMsg;
+		callErrorMsg << wxT("Invalid repeater call. ") << repeater << wxT("Call must be ") << LONG_CALLSIGN_LENGTH << wxT(" characters long.\n");
+		callErrorMsg << wxT("Valid example : A1ABC__B\n");
+		::fprintf(stderr, callErrorMsg.c_str());
+		::wxUninitialize();
+		return 1;
+	}
 	repeater.Replace(wxT("_"), wxT(" "));
-	repeater.resize(LONG_CALLSIGN_LENGTH, wxT(' '));
 	repeater.MakeUpper();
 	
 	long aprsPort;
@@ -95,8 +102,7 @@ int main(int argc, char** argv)
 	long radius;
 	if(!parser.Found(REPEATER_RADIUS, &radius))
 		radius = 50;
-	wxString aprsFilter(repeater);
-	aprsFilter.resize(LONG_CALLSIGN_LENGTH - 1, wxT(' '));
+	wxString aprsFilter = repeater.SubString(0, SHORT_CALLSIGN_LENGTH);
 	aprsFilter.Trim(true);
 	wxString ssid = repeater.SubString(LONG_CALLSIGN_LENGTH - 1, 1); 
 	aprsFilter << wxT("-") << ssid;
