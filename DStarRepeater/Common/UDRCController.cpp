@@ -1,225 +1,116 @@
 /*
- *	UDRCController Copyright (C) 2016 by John Hays, K7VE
- *	based on GPIOController which is
- *	Copyright (C) 2012,2013,2015 by Jonathan Naylor, G4KLX
+ * Header here
  *
- *	This program is free software; you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; version 2 of the License.
- *
- *	This program is distributed in the hope that it will be useful,
- *	but WITHOUT ANY WARRANTY; without even the implied warranty of
- *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *	GNU General Public License for more details.
  */
+ 
+#include <wiringPi.h>
 
 #include "UDRCController.h"
-//#include <iostream>
-////using namespace std;
 
-CUDRCController::CUDRCController(unsigned int config) :
-	m_config(config), 
-	m_outp1(false), 
-	m_outp2(false), 
-	m_outp3(false), 
-	m_outp4(false), 
-	m_outp5(false), 
-	m_outp6(false), 
-	m_outp7(false), 
-	m_outp8(false) 
+#define ARRAY_SIZE(a) (sizeof((a)) / sizeof((a)[0]))
+
+//  Pin definitions
+//  These use the BCM numbering system, *NOT* physical pin numbers or WiringPi
+//  "we need to be special" pin numbering.
+static const unsigned int BASE_PIN = 22;
+static const unsigned int PTT_PIN = 26;
+static const unsigned int PKSQL_PIN = 21;
+static const unsigned int SQL_PIN = 6;
+static const unsigned int EXT1_PIN = 5;
+static const unsigned int EXT2_PIN = 3;
+static const unsigned int EXT3_PIN = 4;
+static const unsigned int EXT4_PIN = 2;
+
+static const unsigned int input_pins[] = {
+	SQL_PIN,
+	PKSQL_PIN,
+};
+
+static const unsigned int output_pins[] = {
+	BASE_PIN,
+	PTT_PIN,
+	EXT1_PIN,
+	EXT2_PIN,
+	EXT3_PIN,
+	EXT4_PIN,
+};
+
+//  XXX This is ugly, we should have a better parent class
+CUDRCController::CUDRCController(enum repeater_modes mode) :
+CExternalController(NULL, false),
+m_mode(mode)
 {
 }
 
-CUDRCController::~CUDRCController() {
-}
-
-#if !defined(GPIO)
-
-bool CUDRCController::open() {
-	return false;
-}
-
-void CUDRCController::getDigitalInputs(bool&, bool&, bool&, bool&, bool&) {
-}
-
-void CUDRCController::setDigitalOutputs(bool, bool, bool, bool, bool, bool,
-		bool, bool) {
-}
-
-void CUDRCController::close() {
-}
-
-void CUDRCController::switchMode() {
-}
-
-#else
-
-#include <wiringPi.h>
-
-// Pins
-#define BASEPIN 22
-#define PTTPIN 26
-#define PKSQLPIN 21
-#define SQLPIN 6
-#define EXT1PIN 5
-#define EXT2PIN 3
-#define EXT3PIN 4
-#define EXT4PIN 2
-
-/*
-#define BASEPIN 4
-#define PTTPIN 3
-#define PKSQLPIN 5
-#define SQLPIN 6
-#define EXT1PIN 2
-#define EXT2PIN 0
-#define EXT3PIN 22
-#define EXT4PIN 21
-*/
-void CUDRCController::switchMode() {
-
-	switch (m_config) {
-		case 1U:// AUTO/FM
-				::digitalWrite(EXT1PIN,HIGH);
-				::digitalWrite(EXT2PIN,HIGH);
-				break;
-		case 2U:// AUTO/AUTO
-				::digitalWrite(EXT1PIN,LOW);
-				::digitalWrite(EXT2PIN,LOW);
-				break;
-		case 3U:// Digital/Digital
-				::digitalWrite(EXT1PIN,HIGH);
-				::digitalWrite(EXT2PIN,LOW);
-				break;
-		case 4U:// FM/FM Fixed
-				::digitalWrite(EXT1PIN,LOW);
-				::digitalWrite(EXT2PIN,HIGH);
-				break;
-		default:// AUTO/AUTO
-				::digitalWrite(EXT1PIN,LOW);
-				::digitalWrite(EXT2PIN,LOW);
+void CUDRCController::switchMode(enum repeater_modes mode) {
+	switch(mode) {
+		case AUTO_FM:	// Auto/FM
+			::digitalWrite(EXT1_PIN, HIGH);
+			::digitalWrite(EXT2_PIN, HIGH);
+			break;
+		case DIGITAL_DIGITAL:	//  Digital/Digital
+			::digitalWrite(EXT1_PIN, HIGH);
+			::digitalWrite(EXT2_PIN, LOW);
+			break;
+		case FM_FM: //  FM/FM Fixed
+			::digitalWrite(EXT1_PIN, LOW);
+			::digitalWrite(EXT2_PIN, HIGH);
+			break;
+		case AUTO_AUTO:	//  Auto/Auto
+			::digitalWrite(EXT1_PIN, LOW);
+			::digitalWrite(EXT2_PIN, LOW);
+			break;
 	}
-	::digitalWrite(BASEPIN,HIGH); // Release Control
 }
 
 bool CUDRCController::open()
 {
-	bool ret = ::wiringPiSetup() != -1;
-	if (!ret) {
-		wxLogError(wxT("Unable to initialise wiringPi"));
+	if(::wiringPiSetupGpio() != 0) {
+		wxLogError("Unable to initialize the wiringPi library");
 		return false;
 	}
-	
-	::pinMode(PKSQLPIN, INPUT); // Tone Squelch
-	::pinMode(SQLPIN, INPUT);// Noise Squelch
 
-	// Set pull ups on the input pins
-	::pullUpDnControl(PKSQLPIN, PUD_UP);
-	::pullUpDnControl(SQLPIN, PUD_UP);
+	for(int i = 0; i < ARRAY_SIZE(input_pins); ++i) {
+		::pinMode(input_pins[i], INPUT);
+		::pullUpDnControl(input_pins[i], PUD_UP);
+	}
 
-	::pinMode(BASEPIN, OUTPUT);// Take control as external repeater controller
-	::pinMode(PTTPIN, OUTPUT);// PTT
-	::pinMode(EXT1PIN, OUTPUT);// EXT 1
-	::pinMode(EXT2PIN, OUTPUT);// EXT 2
-	::pinMode(EXT3PIN, OUTPUT);// EXT 3
-	::pinMode(EXT4PIN, OUTPUT);// EXT 4
-	::pullUpDnControl(PTTPIN, PUD_UP);
-	::pullUpDnControl(EXT1PIN, PUD_UP);
-	::pullUpDnControl(EXT2PIN, PUD_UP);
+	for(int i = 0; i < ARRAY_SIZE(output_pins); ++i) {
+		::pinMode(output_pins[i], OUTPUT);
+		::digitalWrite(output_pins[i], HIGH);
+	}
 
+	::digitalWrite(BASE_PIN, LOW);
+	switchMode(m_mode);
+	::digitalWrite(BASE_PIN, HIGH);
 
-	setDigitalOutputs(false, false, false, false, false, false, false, false); // Start in FM/FM Fixed
-	::pinMode(BASEPIN, LOW);
-	switchMode();
-	::pinMode(BASEPIN, HIGH);
 	return true;
 }
 
-void CUDRCController::getDigitalInputs(bool& inp1, bool& inp2, bool& inp3, bool& inp4, bool& inp5)
+bool CUDRCController::getDisable() const
 {
-
-	inp1 = LOW;
-
-	inp2 = LOW;
-
-	inp3 = LOW;
-
-	inp4 = LOW;
-
-	bool pksql = ::digitalRead(PKSQLPIN);
-//	if (pksql == LOW) {
-//		m_udrc_timer.Start(0);
-//	} else {
-//		if (m_udrc_timer.Time() < 200) {
-//			pksql = LOW; // if 200 ms have not 
-//				     // passed simulate a low
-//			// cerr << "simulate pksql" << endl;
-//		}
-//	}
-
-	inp5 = pksql == LOW;
+	return ::digitalRead(PKSQL_PIN) == LOW;
 }
 
-void CUDRCController::setDigitalOutputs(bool outp1, bool outp2, bool outp3, bool outp4, bool outp5, bool outp6, bool outp7, bool outp8)
+void CUDRCController::setRadioTransmit(bool value)
 {
-
-	::digitalWrite(EXT3PIN, HIGH);
-	::digitalWrite(EXT4PIN, HIGH);
-
-	if (outp1 != m_outp1) { // PTT
-		::digitalWrite(PTTPIN, outp1 ? HIGH : LOW);
-		m_outp1 = outp1;
-	}
-
-	if (outp2 != m_outp2) {
-	//	::digitalWrite(3, outp2 ? HIGH : LOW);
-		m_outp2 = outp2;
-	}
-
-	if (outp3 != m_outp3) { // Heartbeat
-	//	::digitalWrite(2, outp3 ? HIGH : LOW);
-		m_outp3 = outp3;
-	}
-
-	if (outp4 != m_outp4) { // Active (Repeater Takeover)
-		if (outp4 == HIGH) { // FM/FM Fixed
-			::digitalWrite(BASEPIN,LOW);
-			::digitalWrite(EXT1PIN,LOW);
-			::digitalWrite(EXT2PIN,HIGH);
-//			::digitalWrite(0,HIGH);
-		} else {
-			// ::digitalWrite(4,HIGH); // Release Control
-		//	usleep(150000); // 100 ms
-		//	cerr << "Sleeping 150 ms" << endl;
-			switchMode();
-		}
-		m_outp4 = outp4;
-	}
-
-	if (outp5 != m_outp5) { // EXT1
-	//	::digitalWrite(2, outp5 ? HIGH : LOW);
-		m_outp5 = outp5;
-	}
-
-	if (outp6 != m_outp6) { // EXT2
-	//	::digitalWrite(0, outp6 ? HIGH : LOW);
-		m_outp6 = outp6;
-	}
-
-	if (outp7 != m_outp7) {
-	//	::digitalWrite(22, outp7 ? HIGH : LOW);
-		m_outp7 = outp7;
-	}
-
-	if (outp8 != m_outp8) {
-	//	::digitalWrite(21, outp8 ? HIGH : LOW);
-		m_outp8 = outp8;
-	}
-
+	::digitalWrite(PTT_PIN, value ? LOW : HIGH);
 }
 
+void CUDRCController::setActive(bool value)
+{
+	if(value == HIGH) {
+		::digitalWrite(BASE_PIN, LOW);
+		switchMode(FM_FM);
+	} else {
+		switchMode(m_mode);
+		::digitalWrite(BASE_PIN, HIGH);
+	}
+}
+
+//  This needs to be overridden for now because the base class, ExternalController
+//  will try to dork around with threads that we're not using anymore.
 void CUDRCController::close()
 {
 }
 
-#endif

@@ -551,7 +551,21 @@ void CDStarRepeaterApp::createThread()
 	} else if (controllerType.IsSameAs("GPIO")) {
 		controller = new CExternalController(new CGPIOController(portConfig), pttInvert);
 	} else if (controllerType.IsSameAs(wxT("UDRC"))) {
-		controller = new CExternalController(new CUDRCController(portConfig), pttInvert);
+		switch(portConfig) {
+			case 1:
+				controller = new CUDRCController(AUTO_FM);
+				break;
+			case 3:
+				controller = new CUDRCController(DIGITAL_DIGITAL);
+				break;
+			case 4:
+				controller = new CUDRCController(FM_FM);
+				break;
+			default:
+			case 2:
+				controller = new CUDRCController(AUTO_AUTO);
+				break;
+			}
 #endif
 	} else {
 		controller = new CExternalController(new CDummyController, pttInvert);
