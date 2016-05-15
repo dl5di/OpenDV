@@ -29,7 +29,7 @@ m_out3(false),
 m_out4(false),
 m_kill(false)
 {
-	wxASSERT(controller != NULL);
+	// wxASSERT(controller != NULL);
 
 	if (m_pttInvert)
 		m_radioTX = true;
