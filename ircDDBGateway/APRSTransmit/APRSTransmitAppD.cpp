@@ -83,7 +83,7 @@ int main(int argc, char** argv)
 		wxString callErrorMsg;
 		callErrorMsg << wxT("Invalid repeater call. ") << repeater << wxT("Call must be ") << LONG_CALLSIGN_LENGTH << wxT(" characters long.\n");
 		callErrorMsg << wxT("Valid example : A1ABC__B\n");
-		::fprintf(stderr, callErrorMsg.c_str());
+		::fputs(callErrorMsg.c_str(), stderr);
 		::wxUninitialize();
 		return 1;
 	}
