@@ -2,7 +2,7 @@
  * Header here
  *
  */
- 
+
 #include <wiringPi.h>
 
 #include "UDRCController.h"
@@ -12,14 +12,14 @@
 //  Pin definitions
 //  These use the BCM numbering system, *NOT* physical pin numbers or WiringPi
 //  "we need to be special" pin numbering.
-static const unsigned int BASE_PIN = 22;
-static const unsigned int PTT_PIN = 26;
-static const unsigned int PKSQL_PIN = 21;
-static const unsigned int SQL_PIN = 6;
-static const unsigned int EXT1_PIN = 5;
-static const unsigned int EXT2_PIN = 3;
-static const unsigned int EXT3_PIN = 4;
-static const unsigned int EXT4_PIN = 2;
+static const unsigned int BASE_PIN = 6;
+static const unsigned int PTT_PIN = 12;
+static const unsigned int PKSQL_PIN = 5;
+static const unsigned int SQL_PIN = 25;
+static const unsigned int EXT1_PIN = 24;
+static const unsigned int EXT2_PIN = 22;
+static const unsigned int EXT3_PIN = 23;
+static const unsigned int EXT4_PIN = 27;
 
 static const unsigned int input_pins[] = {
 	SQL_PIN,
