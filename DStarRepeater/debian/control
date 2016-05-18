@@ -2,13 +2,13 @@ Source: dstarrepeater
 Section: hamradio
 Priority: optional
 Maintainer: Jeremy McDermond <nh6z@nh6z.net>
-Build-Depends: debhelper (>= 9), autotools-dev , libwxgtk3.0-dev, libasound2-dev, libusb-1.0-0-dev, pkg-config, wiringpi [armhf]
+Build-Depends: debhelper (>= 9), autotools-dev , libwxgtk3.0-dev, libasound2-dev, libusb-1.0-0-dev, pkg-config, wiringpi [armhf,armel]
 Standards-Version: 3.9.6
 Homepage: https://github.com/dl5di/OpenDV
 
 Package: dstarrepeater
 Architecture: i386 amd64 armel armhf
-Depends: ${shlibs:Depends}, ${misc:Depends}, dstarrepeater-udev, opendv-base
+Depends: ${shlibs:Depends}, ${misc:Depends}, dstarrepeater-udev, opendv-base, wiringpi [armhf,armel]
 Description: D-STAR Digital Voice Repeater Software GUI Components
   Provides an implementation of a D-STAR Digital Voice repeater in software.
   This package contains all of the GUI components that require X-Windows to
@@ -16,7 +16,7 @@ Description: D-STAR Digital Voice Repeater Software GUI Components
 
 Package: dstarrepeaterd
 Architecture: armel armhf amd64 i386
-Depends: ${shlibs:Depends}, ${misc:Depends}, opendv-base, dstarrepeater-udev
+Depends: ${shlibs:Depends}, ${misc:Depends}, opendv-base, dstarrepeater-udev, wiringpi [armhf,armel]
 Description: D-STAR Digital Voice Repeater Software Daemon Components
   Provides an implementation of a D-STAR Digtal Voice repeater in software.
   This package contains the Non-GUI componets that do not require an X-Windows
