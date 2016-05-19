@@ -18,6 +18,7 @@
 
 #include "DStarRepeaterStatusData.h"
 #include "DStarRepeaterTRXThread.h"
+#include "DStarRepeaterApp.h"
 #include "DVAPController.h"
 #include "DStarDefines.h"
 #include "HeaderData.h"
@@ -1914,9 +1915,11 @@ bool CDStarRepeaterTRXThread::checkControl(const CHeaderData& header)
 	} else if (m_controlStatus5.IsSameAs(header.getYourCall())) {
 		wxLogMessage(wxT("Status 5 requested by %s/%s"), header.getMyCall1().c_str(), header.getMyCall2().c_str());
 		m_status5Timer.start();
+	// XXX COMMAND LINE HANDLING HERE
 	} else if (m_controlCommand1.IsSameAs(header.getYourCall())) {
 		wxLogMessage(wxT("Command 1 requested by %s/%s"), header.getMyCall1().c_str(), header.getMyCall2().c_str());
-		command1();
+		//command1();
+		wxQueueEvent(wxTheApp, new CRemoteCommandEvent(0));
 	} else if (m_controlCommand2.IsSameAs(header.getYourCall())) {
 		wxLogMessage(wxT("Command 2 requested by %s/%s"), header.getMyCall1().c_str(), header.getMyCall2().c_str());
 		command2();
@@ -1932,6 +1935,7 @@ bool CDStarRepeaterTRXThread::checkControl(const CHeaderData& header)
 	} else if (m_controlCommand6.IsSameAs(header.getYourCall())) {
 		wxLogMessage(wxT("Command 6 requested by %s/%s"), header.getMyCall1().c_str(), header.getMyCall2().c_str());
 		command6();
+		
 	} else if (m_controlOutput1.IsSameAs(header.getYourCall())) {
 		wxLogMessage(wxT("Output 1 requested by %s/%s"), header.getMyCall1().c_str(), header.getMyCall2().c_str());
 		m_output1 = !m_output1;
