@@ -459,7 +459,8 @@ CXXDEPMODE = @CXXDEPMODE@
 CXXFLAGS = @CXXFLAGS@
 CYGPATH_W = @CYGPATH_W@
 DEFS = @DEFS@ -DDATA_DIR=\"${pkgdatadir}\" \
-	-DLOG_DIR=\"${opendvlogdir}\" -DCONF_DIR=\"${pkgsysconfdir}\"
+	-DLOG_DIR=\"${opendvlogdir}\" -DCONF_DIR=\"${pkgsysconfdir}\" \
+	-DwxUSE_CONSOLE_EVENTLOOP=1
 DEPDIR = @DEPDIR@
 ECHO_C = @ECHO_C@
 ECHO_N = @ECHO_N@

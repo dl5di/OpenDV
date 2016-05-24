@@ -11,7 +11,8 @@ pkgdatadir = ${datadir}/opendv
 DEFS += \
 	-DDATA_DIR=\"${pkgdatadir}\" \
 	-DLOG_DIR=\"${opendvlogdir}\" \
-	-DCONF_DIR=\"${pkgsysconfdir}\"
+	-DCONF_DIR=\"${pkgsysconfdir}\" \
+	-DwxUSE_CONSOLE_EVENTLOOP=1
 
 CONTROLLER_SRCS =  Common/ArduinoController.cpp \
                    Common/DummyController.cpp \
