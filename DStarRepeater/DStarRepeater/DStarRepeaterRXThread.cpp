@@ -158,10 +158,6 @@ void CDStarRepeaterRXThread::setController(CExternalController*, unsigned int)
 {
 }
 
-void CDStarRepeaterRXThread::setControl(bool, const wxString&, const wxString&, const wxString&, const wxString&, const wxString&, const wxString&, const wxString&, const wxString&, const wxString&, const wxString&, const wxString&, const wxString&, const wxString&, const wxString&, const wxString&, const wxString&, const wxString&, const wxString&, const wxString&, const wxString&, const wxString&, const wxString&, const wxString&, const wxString&, const wxString&)
-{
-}
-
 void CDStarRepeaterRXThread::setOutputs(bool, bool, bool, bool)
 {
 }
@@ -425,7 +421,7 @@ CDStarRepeaterStatusData* CDStarRepeaterRXThread::getStatus()
 					wxEmptyString, wxEmptyString, wxEmptyString, wxEmptyString, wxEmptyString, wxEmptyString);
 	else
 		status = new CDStarRepeaterStatusData(m_rxHeader->getMyCall1(), m_rxHeader->getMyCall2(),
-					m_rxHeader->getYourCall(), m_rxHeader->getRptCall1(), m_rxHeader->getRptCall2(), 
+					m_rxHeader->getYourCall(), m_rxHeader->getRptCall1(), m_rxHeader->getRptCall2(),
 					m_rxHeader->getFlag1(), m_rxHeader->getFlag2(), m_rxHeader->getFlag3(), false, m_rxState,
 					m_rptState, 0U, 0U, 0U, 0U, 0U, 0U, (errors * 100.0F) / bits, wxEmptyString, wxEmptyString,
 					wxEmptyString, wxEmptyString, wxEmptyString, wxEmptyString);

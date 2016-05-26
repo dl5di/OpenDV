@@ -1181,7 +1181,7 @@ m_splitTimeout(DEFAULT_SPLIT_TIMEOUT)
 	for (unsigned int i = 0U; i < SPLIT_RX_COUNT; i++)
 		m_splitRXNames.Add(splitRXName[i]);
 
-	delete[] splitTXName;	
+	delete[] splitTXName;
 	delete[] splitRXName;
 }
 
@@ -1298,11 +1298,13 @@ void CDStarRepeaterConfig::getControl(bool& enabled, wxString& rpt1Callsign, wxS
 	rpt2Callsign = m_controlRpt2Callsign;
 	shutdown     = m_controlShutdown;
 	startup      = m_controlStartup;
+
 	status1      = m_controlStatus1;
 	status2      = m_controlStatus2;
 	status3      = m_controlStatus3;
 	status4      = m_controlStatus4;
 	status5      = m_controlStatus5;
+
 	command1     = m_controlCommand1;
 	command1Line = m_controlCommand1Line;
 	command2     = m_controlCommand2;
@@ -1315,6 +1317,7 @@ void CDStarRepeaterConfig::getControl(bool& enabled, wxString& rpt1Callsign, wxS
 	command5Line = m_controlCommand5Line;
 	command6     = m_controlCommand6;
 	command6Line = m_controlCommand6Line;
+
 	output1      = m_controlOutput1;
 	output2      = m_controlOutput2;
 	output3      = m_controlOutput3;

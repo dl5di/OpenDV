@@ -52,8 +52,9 @@ BEGIN_EVENT_TABLE(CDStarRepeaterFrame, wxFrame)
 	EVT_MENU(Menu_View_Updates,     CDStarRepeaterFrame::onUpdates)
 	EVT_MENU(wxID_ABOUT,            CDStarRepeaterFrame::onAbout)
 
-	EVT_MENU(Menu_Action_Startup,   CDStarRepeaterFrame::onActions)
-	EVT_MENU(Menu_Action_Shutdown,  CDStarRepeaterFrame::onActions)
+	EVT_MENU(Menu_Action_Startup,   CDStarRepeaterFrame::onStatus)
+	EVT_MENU(Menu_Action_Shutdown,  CDStarRepeaterFrame::onStatus)
+
 	EVT_MENU(Menu_Action_Command1,  CDStarRepeaterFrame::onActions)
 	EVT_MENU(Menu_Action_Command2,  CDStarRepeaterFrame::onActions)
 	EVT_MENU(Menu_Action_Command3,  CDStarRepeaterFrame::onActions)
@@ -383,36 +384,44 @@ void CDStarRepeaterFrame::onClose(wxCloseEvent&)
 	Destroy();
 }
 
-void CDStarRepeaterFrame::onActions(wxCommandEvent& event)
+void CDStarRepeaterFrame::onStatus(wxCommandEvent& event)
 {
-	int id = event.GetId();
-
-	switch (id) {
+	switch (event.GetId()) {
 		case Menu_Action_Shutdown:
-			::wxGetApp().shutdown();
+			((CDStarRepeaterApp *) wxTheApp)->shutdown();
 			break;
 		case Menu_Action_Startup:
-			::wxGetApp().startup();
-			break;
-		case Menu_Action_Command1:
-			::wxGetApp().command1();
-			break;
-		case Menu_Action_Command2:
-			::wxGetApp().command2();
-			break;
-		case Menu_Action_Command3:
-			::wxGetApp().command3();
-			break;
-		case Menu_Action_Command4:
-			::wxGetApp().command4();
-			break;
-		case Menu_Action_Command5:
-			::wxGetApp().command5();
-			break;
-		case Menu_Action_Command6:
-			::wxGetApp().command6();
+			((CDStarRepeaterApp *) wxTheApp)->startup();
 			break;
 	}
+}
+
+void CDStarRepeaterFrame::onActions(wxCommandEvent& event)
+{
+	wxThreadEvent evt(wxEVT_THREAD, wxEVT_THREAD_COMMAND);
+
+	switch (event.GetId()) {
+		case Menu_Action_Command1:
+			evt.SetInt(0);
+			break;
+		case Menu_Action_Command2:
+			evt.SetInt(1);
+			break;
+		case Menu_Action_Command3:
+			evt.SetInt(2);
+			break;
+		case Menu_Action_Command4:
+			evt.SetInt(3);
+			break;
+		case Menu_Action_Command5:
+			evt.SetInt(4);
+			break;
+		case Menu_Action_Command6:
+			evt.SetInt(5);
+			break;
+	}
+
+	wxTheApp->QueueEvent(evt.Clone());
 }
 
 void CDStarRepeaterFrame::onOutputs(wxCommandEvent&)

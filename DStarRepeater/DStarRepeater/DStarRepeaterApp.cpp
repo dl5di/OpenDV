@@ -52,7 +52,11 @@
 
 IMPLEMENT_APP(CDStarRepeaterApp)
 
-wxDEFINE_EVENT(REMOTECMD_EVENT, CRemoteCommandEvent);
+wxDEFINE_EVENT(wxEVT_THREAD_COMMAND, wxThreadEvent);
+
+wxBEGIN_EVENT_TABLE(CDStarRepeaterApp, wxApp)
+	EVT_THREAD(wxEVT_THREAD_COMMAND, CDStarRepeaterApp::OnRemoteCmd)
+wxEND_EVENT_TABLE()
 
 const wxString NAME_PARAM = 		"Repeater Name";
 const wxString NOLOGGING_SWITCH =	"nolog";
@@ -178,9 +182,6 @@ bool CDStarRepeaterApp::OnInit()
 	// Log the version of wxWidgets and the Operating System
 	wxLogInfo("Using wxWidgets %d.%d.%d on %s", wxMAJOR_VERSION, wxMINOR_VERSION, wxRELEASE_NUMBER, ::wxGetOsDescription().c_str());
 
-	//  Event handling
-	Bind(REMOTECMD_EVENT, &CDStarRepeaterApp::OnRemoteCmd, this);
-
 	createThread();
 
 	return true;
@@ -289,11 +290,22 @@ void CDStarRepeaterApp::setPosition(int x, int y)
 	m_config->write();
 }
 
-void CDStarRepeaterApp::OnRemoteCmd(CRemoteCommandEvent& event)
+void CDStarRepeaterApp::OnRemoteCmd(wxThreadEvent& event)
 {
-	int cmdIndex = event.getIndex();
-	wxLogInfo("Request to execute %s", m_commandLine[cmdIndex].c_str());
-	//  wxShell(m_commandLine[cmdIndex]);
+	wxLogMessage("Request to execute command %s (%d)",
+		m_commandLine[event.GetInt()], event.GetInt());
+	// XXX sanity check the command line here.
+	wxShell(m_commandLine[event.GetInt()]);
+}
+
+void CDStarRepeaterApp::startup()
+{
+	m_thread->startup();
+}
+
+void CDStarRepeaterApp::shutdown()
+{
+	m_thread->shutdown();
 }
 
 void CDStarRepeaterApp::createThread()
@@ -561,12 +573,23 @@ void CDStarRepeaterApp::createThread()
 	bool enabled;
 	wxString rpt1Callsign, rpt2Callsign;
 	wxString shutdown, startup;
-	wxString status[5];
-	wxString command[6];
-	wxString output[4];
+
+	//  XXX Initialization should be temporary until we get them coming
+	//  from m_config->getControl
+	wxArrayString status;
+	status.Add("", 5);
+	wxArrayString command;
+	command.Add("", 6);
+	wxArrayString output;
+	output.Add("", 4);
+
 	m_config->getControl(enabled, rpt1Callsign, rpt2Callsign, shutdown, startup, status[0], status[1], status[2], status[3], status[4], command[0], m_commandLine[0], command[1], m_commandLine[1], command[2], m_commandLine[2], command[3], m_commandLine[3], command[4], m_commandLine[4], command[5], m_commandLine[5], output[0], output[1], output[2], output[3]);
-	thread->setControl(enabled, rpt1Callsign, rpt2Callsign, shutdown, startup, status[0], status[1], status[2], status[3], status[4], command[0], m_commandLine[0], command[1], m_commandLine[1], command[2], m_commandLine[2], command[3], m_commandLine[3], command[4], m_commandLine[4], command[5], m_commandLine[5], output[0], output[1], output[2], output[3]);
+
+	thread->setControl(enabled, rpt1Callsign, rpt2Callsign, shutdown,
+		startup, command, status, output);
+
 	wxLogInfo(wxT("Control: enabled: %d, RPT1: %s, RPT2: %s, shutdown: %s, startup: %s, status1: %s, status2: %s, status3: %s, status4: %s, status5: %s, command1: %s = %s, command2: %s = %s, command3: %s = %s, command4: %s = %s, command5: %s = %s, command6: %s = %s, output1: %s, output2: %s, output3: %s, output4: %s"), enabled, rpt1Callsign.c_str(), rpt2Callsign.c_str(), shutdown.c_str(), startup.c_str(), status[0].c_str(), status[1].c_str(), status[2].c_str(), status[3].c_str(), status[4].c_str(), command[0].c_str(), m_commandLine[0].c_str(), command[1].c_str(), m_commandLine[1].c_str(), command[2].c_str(), m_commandLine[2].c_str(), command[3].c_str(), m_commandLine[3].c_str(), command[4].c_str(), m_commandLine[4].c_str(), command[5].c_str(), m_commandLine[5].c_str(), output[0].c_str(), output[1].c_str(), output[2].c_str(), output[3].c_str());
+
 	bool logging;
 	m_config->getLogging(logging);
 	thread->setLogging(logging, m_audioDir);
@@ -650,19 +673,4 @@ void CDStarRepeaterApp::createThread()
 	// Convert the worker class into a thread
 	m_thread = new CDStarRepeaterThreadHelper(thread);
 	m_thread->start();
-}
-
-CRemoteCommandEvent::CRemoteCommandEvent(int index):
-m_index(index)
-{
-}
-
-int CRemoteCommandEvent::getIndex() const
-{
-	return m_index;
-}
-
-wxEvent * CRemoteCommandEvent::Clone() const
-{ 
-	return new CRemoteCommandEvent(*this); 
 }

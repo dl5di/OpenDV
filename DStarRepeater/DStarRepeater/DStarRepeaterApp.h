@@ -30,21 +30,9 @@
 #endif
 #include "DStarRepeaterDefs.h"
 
-class CRemoteCommandEvent: public wxEvent {
-public:
-	CRemoteCommandEvent(int index);
-	
-	int getIndex() const;
-	
-	virtual wxEvent *Clone() const;
-	
-private:
-	const int m_index;
-};
-wxDECLARE_EVENT(REMOTECMD_EVENT, CRemoteCommandEvent);
+wxDECLARE_EVENT(wxEVT_THREAD_COMMAND, wxThreadEvent);
 
 class CDStarRepeaterApp : public wxApp {
-
 public:
 	CDStarRepeaterApp();
 	virtual ~CDStarRepeaterApp();
@@ -70,17 +58,20 @@ public:
 
 	virtual void setPosition(int x, int y);
 
-	void OnRemoteCmd(CRemoteCommandEvent& event);
+	void startup();
+	void shutdown();
+
 private:
+#if (wxUSE_GUI == 1)
+	CDStarRepeaterFrame*        m_frame;
+#endif
+
 	wxString                    m_name;
 	bool                        m_nolog;
 	bool                        m_gui;
 	wxString                    m_logDir;
 	wxString                    m_confDir;
 	wxString                    m_audioDir;
-#if (wxUSE_GUI == 1)
-	CDStarRepeaterFrame*        m_frame;
-#endif
 	CDStarRepeaterThreadHelper* m_thread;
 	CDStarRepeaterConfig*       m_config;
 	wxSingleInstanceChecker*    m_checker;
@@ -88,6 +79,10 @@ private:
 	wxString					m_commandLine[6];
 
 	void createThread();
+
+	void OnRemoteCmd(wxThreadEvent& event);
+
+	wxDECLARE_EVENT_TABLE();
 };
 
 DECLARE_APP(CDStarRepeaterApp)

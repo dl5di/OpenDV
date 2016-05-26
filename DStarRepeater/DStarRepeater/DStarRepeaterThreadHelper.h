@@ -42,13 +42,6 @@ public:
 	virtual void shutdown();
 	virtual void startup();
 
-	virtual void command1();
-	virtual void command2();
-	virtual void command3();
-	virtual void command4();
-	virtual void command5();
-	virtual void command6();
-
 	virtual CDStarRepeaterStatusData* getStatus();
 
 private:

@@ -62,11 +62,6 @@ m_timeoutTimer(1000U, 180U),		// 180s
 m_watchdogTimer(1000U, NETWORK_TIMEOUT),
 m_pollTimer(1000U, 60U),			// 60s
 m_ackTimer(1000U, 0U, 500U),		// 0.5s
-m_status1Timer(1000U, 3U),			// 3s
-m_status2Timer(1000U, 3U),			// 3s
-m_status3Timer(1000U, 3U),			// 3s
-m_status4Timer(1000U, 3U),			// 3s
-m_status5Timer(1000U, 3U),			// 3s
 m_beaconTimer(1000U, 600U),			// 10 mins
 m_announcementTimer(1000U, 0U),		// not running
 m_statusTimer(1000U, 0U, 100U),		// 100ms
@@ -95,31 +90,6 @@ m_controlRPT1(),
 m_controlRPT2(),
 m_controlShutdown(),
 m_controlStartup(),
-m_controlStatus1(),
-m_controlStatus2(),
-m_controlStatus3(),
-m_controlStatus4(),
-m_controlStatus5(),
-m_controlCommand1(),
-m_controlCommand1Line(),
-m_controlCommand2(),
-m_controlCommand2Line(),
-m_controlCommand3(),
-m_controlCommand3Line(),
-m_controlCommand4(),
-m_controlCommand4Line(),
-m_controlCommand5(),
-m_controlCommand5Line(),
-m_controlCommand6(),
-m_controlCommand6Line(),
-m_controlOutput1(),
-m_controlOutput2(),
-m_controlOutput3(),
-m_controlOutput4(),
-m_output1(false),
-m_output2(false),
-m_output3(false),
-m_output4(false),
 m_activeHangTimer(1000U),
 m_shutdown(false),
 m_disable(false),
@@ -136,11 +106,6 @@ m_ackText(),
 m_tempAckText(),
 m_linkStatus(LS_NONE),
 m_reflector(),
-m_status1Text(),
-m_status2Text(),
-m_status3Text(),
-m_status4Text(),
-m_status5Text(),
 m_regEx(wxT("^[A-Z0-9]{1}[A-Z0-9]{0,1}[0-9]{1,2}[A-Z]{1,4} {0,4}[ A-Z]{1}$")),
 m_headerTime(),
 m_packetTime(),
@@ -155,6 +120,11 @@ m_blanking(true),
 m_recording(false),
 m_deleting(false)
 {
+	for(int i = 0; i < 5; ++i)
+		m_statusAnnounceTimer[i] = CTimer(1000U, 3U);
+
+	m_statusText.Add("", 5);
+
 	m_networkQueue = new COutputQueue*[NETWORK_QUEUE_COUNT];
 	for (unsigned int i = 0U; i < NETWORK_QUEUE_COUNT; i++)
 		m_networkQueue[i] = new COutputQueue((DV_FRAME_LENGTH_BYTES + 2U) * 200U, NETWORK_RUN_FRAME_COUNT);		// 4s worth of data);
@@ -248,39 +218,13 @@ void CDStarRepeaterTRXThread::run()
 				m_announcementTimer.start();
 			}
 
-			// Send the status 1 message after a few seconds
-			if (m_status1Timer.isRunning() && m_status1Timer.hasExpired()) {
-				m_status1Timer.stop();
-				if (m_rptState == DSRS_LISTENING)
-					transmitUserStatus(0U);
-			}
-
-			// Send the status 2 message after a few seconds
-			if (m_status2Timer.isRunning() && m_status2Timer.hasExpired()) {
-				m_status2Timer.stop();
-				if (m_rptState == DSRS_LISTENING)
-					transmitUserStatus(1U);
-			}
-
-			// Send the status 3 message after a few seconds
-			if (m_status3Timer.isRunning() && m_status3Timer.hasExpired()) {
-				m_status3Timer.stop();
-				if (m_rptState == DSRS_LISTENING)
-					transmitUserStatus(2U);
-			}
-
-			// Send the status 4 message after a few seconds
-			if (m_status4Timer.isRunning() && m_status4Timer.hasExpired()) {
-				m_status4Timer.stop();
-				if (m_rptState == DSRS_LISTENING)
-					transmitUserStatus(3U);
-			}
-
-			// Send the status 5 message after a few seconds
-			if (m_status5Timer.isRunning() && m_status5Timer.hasExpired()) {
-				m_status5Timer.stop();
-				if (m_rptState == DSRS_LISTENING)
-					transmitUserStatus(4U);
+			for(int i = 0; i < 5; ++ i) {
+				if(m_statusAnnounceTimer[i].isRunning() &&
+				   m_statusAnnounceTimer[i].hasExpired()) {
+				   	m_statusAnnounceTimer[i].stop();
+				   	if(m_rptState == DSRS_LISTENING)
+				   		transmitUserStatus(i);
+				}
 			}
 
 			// Clock the heartbeat output every one second
@@ -478,74 +422,48 @@ void CDStarRepeaterTRXThread::setController(CExternalController* controller, uns
 	m_activeHangTimer.setTimeout(activeHangTime);
 }
 
-void CDStarRepeaterTRXThread::setControl(bool enabled, const wxString& rpt1Callsign, const wxString& rpt2Callsign, const wxString& shutdown, const wxString& startup, const wxString& status1, const wxString& status2, const wxString& status3, const wxString& status4, const wxString& status5, const wxString& command1, const wxString& command1Line, const wxString& command2, const wxString& command2Line, const wxString& command3, const wxString& command3Line, const wxString& command4, const wxString& command4Line, const wxString& command5, const wxString& command5Line, const wxString& command6, const wxString& command6Line, const wxString& output1, const wxString& output2, const wxString& output3, const wxString& output4)
+void CDStarRepeaterTRXThread::setControl(bool enabled,
+	const wxString& rpt1Callsign, const wxString& rpt2Callsign,
+	const wxString& shutdown,const wxString& startup,
+	const wxArrayString& command, const wxArrayString& status,
+	const wxArrayString& outputs)
 {
 	m_controlEnabled      = enabled;
+
 	m_controlRPT1         = rpt1Callsign;
 	m_controlRPT2         = rpt2Callsign;
+
 	m_controlShutdown     = shutdown;
 	m_controlStartup      = startup;
-	m_controlStatus1      = status1;
-	m_controlStatus2      = status2;
-	m_controlStatus3      = status3;
-	m_controlStatus4      = status4;
-	m_controlStatus5      = status5;
-	m_controlCommand1     = command1;
-	m_controlCommand1Line = command1Line;
-	m_controlCommand2     = command2;
-	m_controlCommand2Line = command2Line;
-	m_controlCommand3     = command3;
-	m_controlCommand3Line = command3Line;
-	m_controlCommand4     = command4;
-	m_controlCommand4Line = command4Line;
-	m_controlCommand5     = command5;
-	m_controlCommand5Line = command5Line;
-	m_controlCommand6     = command6;
-	m_controlCommand6Line = command6Line;
-	m_controlOutput1      = output1;
-	m_controlOutput2      = output2;
-	m_controlOutput3      = output3;
-	m_controlOutput4      = output4;
+
+	m_controlStatus 	= status;
+	m_controlCommand	= command;
+	m_controlOutput		= outputs;
+
+	for(int i = 0; i < m_controlCommand.GetCount(); ++i) {
+		m_controlCommand[i].Append(' ', LONG_CALLSIGN_LENGTH);
+		m_controlCommand[i].Truncate(LONG_CALLSIGN_LENGTH);
+	}
+
+	for(int i = 0; i < m_controlStatus.GetCount(); ++i) {
+		m_controlStatus[i].Append(' ', LONG_CALLSIGN_LENGTH);
+		m_controlStatus[i].Truncate(LONG_CALLSIGN_LENGTH);
+	}
+
+	for(int i = 0; i < m_controlOutput.GetCount(); ++i) {
+		m_controlOutput[i].Append(' ', LONG_CALLSIGN_LENGTH);
+		m_controlOutput[i].Truncate(LONG_CALLSIGN_LENGTH);
+	}
 
 	m_controlRPT1.Append(wxT(' '), LONG_CALLSIGN_LENGTH);
 	m_controlRPT2.Append(wxT(' '), LONG_CALLSIGN_LENGTH);
 	m_controlShutdown.Append(wxT(' '), LONG_CALLSIGN_LENGTH);
 	m_controlStartup.Append(wxT(' '), LONG_CALLSIGN_LENGTH);
-	m_controlStatus1.Append(wxT(' '), LONG_CALLSIGN_LENGTH);
-	m_controlStatus2.Append(wxT(' '), LONG_CALLSIGN_LENGTH);
-	m_controlStatus3.Append(wxT(' '), LONG_CALLSIGN_LENGTH);
-	m_controlStatus4.Append(wxT(' '), LONG_CALLSIGN_LENGTH);
-	m_controlStatus5.Append(wxT(' '), LONG_CALLSIGN_LENGTH);
-	m_controlCommand1.Append(wxT(' '), LONG_CALLSIGN_LENGTH);
-	m_controlCommand2.Append(wxT(' '), LONG_CALLSIGN_LENGTH);
-	m_controlCommand3.Append(wxT(' '), LONG_CALLSIGN_LENGTH);
-	m_controlCommand4.Append(wxT(' '), LONG_CALLSIGN_LENGTH);
-	m_controlCommand5.Append(wxT(' '), LONG_CALLSIGN_LENGTH);
-	m_controlCommand6.Append(wxT(' '), LONG_CALLSIGN_LENGTH);
-	m_controlOutput1.Append(wxT(' '), LONG_CALLSIGN_LENGTH);
-	m_controlOutput2.Append(wxT(' '), LONG_CALLSIGN_LENGTH);
-	m_controlOutput3.Append(wxT(' '), LONG_CALLSIGN_LENGTH);
-	m_controlOutput4.Append(wxT(' '), LONG_CALLSIGN_LENGTH);
 
 	m_controlRPT1.Truncate(LONG_CALLSIGN_LENGTH);
 	m_controlRPT2.Truncate(LONG_CALLSIGN_LENGTH);
 	m_controlShutdown.Truncate(LONG_CALLSIGN_LENGTH);
 	m_controlStartup.Truncate(LONG_CALLSIGN_LENGTH);
-	m_controlStatus1.Truncate(LONG_CALLSIGN_LENGTH);
-	m_controlStatus2.Truncate(LONG_CALLSIGN_LENGTH);
-	m_controlStatus3.Truncate(LONG_CALLSIGN_LENGTH);
-	m_controlStatus4.Truncate(LONG_CALLSIGN_LENGTH);
-	m_controlStatus5.Truncate(LONG_CALLSIGN_LENGTH);
-	m_controlCommand1.Truncate(LONG_CALLSIGN_LENGTH);
-	m_controlCommand2.Truncate(LONG_CALLSIGN_LENGTH);
-	m_controlCommand3.Truncate(LONG_CALLSIGN_LENGTH);
-	m_controlCommand4.Truncate(LONG_CALLSIGN_LENGTH);
-	m_controlCommand5.Truncate(LONG_CALLSIGN_LENGTH);
-	m_controlCommand6.Truncate(LONG_CALLSIGN_LENGTH);
-	m_controlOutput1.Truncate(LONG_CALLSIGN_LENGTH);
-	m_controlOutput2.Truncate(LONG_CALLSIGN_LENGTH);
-	m_controlOutput3.Truncate(LONG_CALLSIGN_LENGTH);
-	m_controlOutput4.Truncate(LONG_CALLSIGN_LENGTH);
 }
 
 void CDStarRepeaterTRXThread::setOutputs(bool out1, bool out2, bool out3, bool out4)
@@ -553,15 +471,15 @@ void CDStarRepeaterTRXThread::setOutputs(bool out1, bool out2, bool out3, bool o
 	if (m_controller == NULL)
 		return;
 
-	m_output1 = out1;
-	m_output2 = out2;
-	m_output3 = out3;
-	m_output4 = out4;
+	m_output[0] = out1;
+	m_output[1] = out2;
+	m_output[2] = out3;
+	m_output[3] = out4;
 
-	m_controller->setOutput1(m_output1);
-	m_controller->setOutput2(m_output2);
-	m_controller->setOutput3(m_output3);
-	m_controller->setOutput4(m_output4);
+	m_controller->setOutput1(m_output[0]);
+	m_controller->setOutput2(m_output[1]);
+	m_controller->setOutput3(m_output[2]);
+	m_controller->setOutput4(m_output[3]);
 }
 
 void CDStarRepeaterTRXThread::setLogging(bool logging, const wxString& dir)
@@ -769,25 +687,25 @@ void CDStarRepeaterTRXThread::receiveNetwork()
 			m_protocolHandler->readTempText(m_tempAckText);
 			wxLogMessage(wxT("Temporary slow data set to \"%s\""), m_tempAckText.c_str());
 		} else if (type == NETWORK_STATUS1) {		// Status 1 data text
-			m_status1Text = m_protocolHandler->readStatus1();
-			m_status1Encoder.setTextData(m_status1Text);
-			wxLogMessage(wxT("Status 1 data set to \"%s\""), m_status1Text.c_str());
+			m_statusText[0] = m_protocolHandler->readStatus1();
+			m_status1Encoder.setTextData(m_statusText[0]);
+			wxLogMessage(wxT("Status 1 data set to \"%s\""), m_statusText[0].c_str());
 		} else if (type == NETWORK_STATUS2) {		// Status 2 data text
-			m_status2Text = m_protocolHandler->readStatus2();
-			m_status2Encoder.setTextData(m_status2Text);
-			wxLogMessage(wxT("Status 2 data set to \"%s\""), m_status2Text.c_str());
+			m_statusText[1] = m_protocolHandler->readStatus2();
+			m_status2Encoder.setTextData(m_statusText[1]);
+			wxLogMessage(wxT("Status 2 data set to \"%s\""), m_statusText[1].c_str());
 		} else if (type == NETWORK_STATUS3) {		// Status 3 data text
-			m_status3Text = m_protocolHandler->readStatus3();
-			m_status3Encoder.setTextData(m_status3Text);
-			wxLogMessage(wxT("Status 3 data set to \"%s\""), m_status3Text.c_str());
+			m_statusText[2] = m_protocolHandler->readStatus3();
+			m_status3Encoder.setTextData(m_statusText[2]);
+			wxLogMessage(wxT("Status 3 data set to \"%s\""), m_statusText[2].c_str());
 		} else if (type == NETWORK_STATUS4) {		// Status 4 data text
-			m_status4Text = m_protocolHandler->readStatus4();
-			m_status4Encoder.setTextData(m_status4Text);
-			wxLogMessage(wxT("Status 4 data set to \"%s\""), m_status4Text.c_str());
+			m_statusText[3] = m_protocolHandler->readStatus4();
+			m_status4Encoder.setTextData(m_statusText[3]);
+			wxLogMessage(wxT("Status 4 data set to \"%s\""), m_statusText[3].c_str());
 		} else if (type == NETWORK_STATUS5) {		// Status 5 data text
-			m_status5Text = m_protocolHandler->readStatus5();
-			m_status5Encoder.setTextData(m_status5Text);
-			wxLogMessage(wxT("Status 5 data set to \"%s\""), m_status5Text.c_str());
+			m_statusText[4] = m_protocolHandler->readStatus5();
+			m_status5Encoder.setTextData(m_statusText[4]);
+			wxLogMessage(wxT("Status 5 data set to \"%s\""), m_statusText[4].c_str());
 		}
 	}
 
@@ -1777,8 +1695,8 @@ CDStarRepeaterStatusData* CDStarRepeaterTRXThread::getStatus()
 		status = new CDStarRepeaterStatusData(wxEmptyString, wxEmptyString, wxEmptyString, wxEmptyString,
 					wxEmptyString, 0x00, 0x00, 0x00, m_tx, m_rxState, m_rptState, m_timeoutTimer.getTimer(),
 					m_timeoutTimer.getTimeout(), m_beaconTimer.getTimer(), m_beaconTimer.getTimeout(), 0.0F,
-					m_announcementTimer.getTimer(), m_announcementTimer.getTimeout(), m_ackText, m_status1Text,
-					m_status2Text, m_status3Text, m_status4Text, m_status5Text);
+					m_announcementTimer.getTimer(), m_announcementTimer.getTimeout(), m_ackText, m_statusText[0],
+					m_statusText[1], m_statusText[2], m_statusText[3], m_statusText[4]);
 	} else if (m_rptState == DSRS_NETWORK) {
 		float loss = 0.0F;
 		if (m_packetCount != 0U)
@@ -1789,7 +1707,7 @@ CDStarRepeaterStatusData* CDStarRepeaterTRXThread::getStatus()
 					m_rxHeader->getFlag1(), m_rxHeader->getFlag2(), m_rxHeader->getFlag3(), m_tx, m_rxState,
 					m_rptState, m_timeoutTimer.getTimer(), m_timeoutTimer.getTimeout(), m_beaconTimer.getTimer(),
 					m_beaconTimer.getTimeout(), m_announcementTimer.getTimer(), m_announcementTimer.getTimeout(),
-					loss * 100.0F, m_ackText, m_status1Text, m_status2Text, m_status3Text, m_status4Text, m_status5Text);
+					loss * 100.0F, m_ackText, m_statusText[0], m_statusText[1], m_statusText[2], m_statusText[3], m_statusText[4]);
 	} else {
 		float   bits = float(m_ambeBits - m_lastAMBEBits);
 		float errors = float(m_ambeErrors - m_lastAMBEErrors);
@@ -1804,8 +1722,8 @@ CDStarRepeaterStatusData* CDStarRepeaterTRXThread::getStatus()
 					m_rxHeader->getFlag1(), m_rxHeader->getFlag2(), m_rxHeader->getFlag3(), m_tx, m_rxState,
 					m_rptState, m_timeoutTimer.getTimer(), m_timeoutTimer.getTimeout(), m_beaconTimer.getTimer(),
 					m_beaconTimer.getTimeout(), m_announcementTimer.getTimer(), m_announcementTimer.getTimeout(),
-					(errors * 100.0F) / bits, m_ackText, m_status1Text, m_status2Text, m_status3Text, m_status4Text,
-					m_status5Text);
+					(errors * 100.0F) / bits, m_ackText, m_statusText[0], m_statusText[1], m_statusText[2], m_statusText[3],
+					m_statusText[4]);
 	}
 
 	if (m_type.IsSameAs(wxT("DVAP")) && m_modem != NULL) {
@@ -1825,11 +1743,10 @@ void CDStarRepeaterTRXThread::clock(unsigned int ms)
 	m_watchdogTimer.clock(ms);
 	m_activeHangTimer.clock(ms);
 	m_ackTimer.clock(ms);
-	m_status1Timer.clock(ms);
-	m_status2Timer.clock(ms);
-	m_status3Timer.clock(ms);
-	m_status4Timer.clock(ms);
-	m_status5Timer.clock(ms);
+
+	for(int i = 0; i < 5; ++i)
+		m_statusAnnounceTimer[i].clock(ms);
+
 	m_beaconTimer.clock(ms);
 	m_announcementTimer.clock(ms);
 	m_statusTimer.clock(ms);
@@ -1850,42 +1767,6 @@ void CDStarRepeaterTRXThread::startup()
 	m_shutdown = false;
 }
 
-void CDStarRepeaterTRXThread::command1()
-{
-	if (!m_controlCommand1Line.IsEmpty())
-		::wxShell(m_controlCommand1Line);
-}
-
-void CDStarRepeaterTRXThread::command2()
-{
-	if (!m_controlCommand2Line.IsEmpty())
-		::wxShell(m_controlCommand2Line);
-}
-
-void CDStarRepeaterTRXThread::command3()
-{
-	if (!m_controlCommand3Line.IsEmpty())
-		::wxShell(m_controlCommand3Line);
-}
-
-void CDStarRepeaterTRXThread::command4()
-{
-	if (!m_controlCommand4Line.IsEmpty())
-		::wxShell(m_controlCommand4Line);
-}
-
-void CDStarRepeaterTRXThread::command5()
-{
-	if (!m_controlCommand5Line.IsEmpty())
-		::wxShell(m_controlCommand5Line);
-}
-
-void CDStarRepeaterTRXThread::command6()
-{
-	if (!m_controlCommand6Line.IsEmpty())
-		::wxShell(m_controlCommand6Line);
-}
-
 bool CDStarRepeaterTRXThread::checkControl(const CHeaderData& header)
 {
 	if (!m_controlEnabled)
@@ -1894,64 +1775,48 @@ bool CDStarRepeaterTRXThread::checkControl(const CHeaderData& header)
 	if (!m_controlRPT1.IsSameAs(header.getRptCall1()) || !m_controlRPT2.IsSameAs(header.getRptCall2()))
 		return false;
 
+	for(int i = 0; i < m_controlCommand.GetCount(); ++i) {
+		if(m_controlCommand[i].IsSameAs(header.getYourCall())) {
+			wxThreadEvent evt(wxEVT_THREAD, wxEVT_THREAD_COMMAND);
+			evt.SetInt(i);
+			wxTheApp->QueueEvent(evt.Clone());
+			wxLogMessage("Command %d requested by %s/%s", i, header.getMyCall1().c_str(), header.getMyCall2().c_str());
+			return true;
+		}
+	}
+
+	for(int i = 0; i < m_controlStatus.GetCount(); ++i) {
+		if(m_controlStatus[i].IsSameAs(header.getYourCall())) {
+			wxLogMessage(wxT("Status %d requested by %s/%s"),
+				i, header.getMyCall1().c_str(),
+				header.getMyCall2().c_str());
+			m_statusAnnounceTimer[i].start();
+			return true;
+		}
+	}
+
+	for(int i = 0; i < m_controlOutput.GetCount(); ++i) {
+		if(m_controlOutput[i].IsSameAs(header.getYourCall())) {
+			wxLogMessage(wxT("Output %d requested by %s/%s"), i,
+				header.getMyCall1().c_str(),
+				header.getMyCall2().c_str());
+			m_output[i] = !m_output[i];
+
+			//  XXX These should be fixed in the controller code!
+			m_controller->setOutput1(m_output[0]);
+			m_controller->setOutput2(m_output[1]);
+			m_controller->setOutput3(m_output[2]);
+			m_controller->setOutput4(m_output[3]);
+			return true;
+		}
+	}
+
 	if (m_controlShutdown.IsSameAs(header.getYourCall())) {
 		wxLogMessage(wxT("Shutdown requested by %s/%s"), header.getMyCall1().c_str(), header.getMyCall2().c_str());
 		shutdown();
 	} else if (m_controlStartup.IsSameAs(header.getYourCall())) {
 		wxLogMessage(wxT("Startup requested by %s/%s"), header.getMyCall1().c_str(), header.getMyCall2().c_str());
 		startup();
-	} else if (m_controlStatus1.IsSameAs(header.getYourCall())) {
-		wxLogMessage(wxT("Status 1 requested by %s/%s"), header.getMyCall1().c_str(), header.getMyCall2().c_str());
-		m_status1Timer.start();
-	} else if (m_controlStatus2.IsSameAs(header.getYourCall())) {
-		wxLogMessage(wxT("Status 2 requested by %s/%s"), header.getMyCall1().c_str(), header.getMyCall2().c_str());
-		m_status2Timer.start();
-	} else if (m_controlStatus3.IsSameAs(header.getYourCall())) {
-		wxLogMessage(wxT("Status 3 requested by %s/%s"), header.getMyCall1().c_str(), header.getMyCall2().c_str());
-		m_status3Timer.start();
-	} else if (m_controlStatus4.IsSameAs(header.getYourCall())) {
-		wxLogMessage(wxT("Status 4 requested by %s/%s"), header.getMyCall1().c_str(), header.getMyCall2().c_str());
-		m_status4Timer.start();
-	} else if (m_controlStatus5.IsSameAs(header.getYourCall())) {
-		wxLogMessage(wxT("Status 5 requested by %s/%s"), header.getMyCall1().c_str(), header.getMyCall2().c_str());
-		m_status5Timer.start();
-	// XXX COMMAND LINE HANDLING HERE
-	} else if (m_controlCommand1.IsSameAs(header.getYourCall())) {
-		wxLogMessage(wxT("Command 1 requested by %s/%s"), header.getMyCall1().c_str(), header.getMyCall2().c_str());
-		//command1();
-		wxQueueEvent(wxTheApp, new CRemoteCommandEvent(0));
-	} else if (m_controlCommand2.IsSameAs(header.getYourCall())) {
-		wxLogMessage(wxT("Command 2 requested by %s/%s"), header.getMyCall1().c_str(), header.getMyCall2().c_str());
-		command2();
-	} else if (m_controlCommand3.IsSameAs(header.getYourCall())) {
-		wxLogMessage(wxT("Command 3 requested by %s/%s"), header.getMyCall1().c_str(), header.getMyCall2().c_str());
-		command3();
-	} else if (m_controlCommand4.IsSameAs(header.getYourCall())) {
-		wxLogMessage(wxT("Command 4 requested by %s/%s"), header.getMyCall1().c_str(), header.getMyCall2().c_str());
-		command4();
-	} else if (m_controlCommand5.IsSameAs(header.getYourCall())) {
-		wxLogMessage(wxT("Command 5 requested by %s/%s"), header.getMyCall1().c_str(), header.getMyCall2().c_str());
-		command5();
-	} else if (m_controlCommand6.IsSameAs(header.getYourCall())) {
-		wxLogMessage(wxT("Command 6 requested by %s/%s"), header.getMyCall1().c_str(), header.getMyCall2().c_str());
-		command6();
-		
-	} else if (m_controlOutput1.IsSameAs(header.getYourCall())) {
-		wxLogMessage(wxT("Output 1 requested by %s/%s"), header.getMyCall1().c_str(), header.getMyCall2().c_str());
-		m_output1 = !m_output1;
-		m_controller->setOutput1(m_output1);
-	} else if (m_controlOutput2.IsSameAs(header.getYourCall())) {
-		wxLogMessage(wxT("Output 2 requested by %s/%s"), header.getMyCall1().c_str(), header.getMyCall2().c_str());
-		m_output2 = !m_output2;
-		m_controller->setOutput2(m_output2);
-	} else if (m_controlOutput3.IsSameAs(header.getYourCall())) {
-		wxLogMessage(wxT("Output 3 requested by %s/%s"), header.getMyCall1().c_str(), header.getMyCall2().c_str());
-		m_output3 = !m_output3;
-		m_controller->setOutput3(m_output3);
-	} else if (m_controlOutput4.IsSameAs(header.getYourCall())) {
-		wxLogMessage(wxT("Output 4 requested by %s/%s"), header.getMyCall1().c_str(), header.getMyCall2().c_str());
-		m_output4 = !m_output4;
-		m_controller->setOutput4(m_output4);
 	} else {
 		wxLogMessage(wxT("Invalid command of %s sent by %s/%s"), header.getYourCall().c_str(), header.getMyCall1().c_str(), header.getMyCall2().c_str());
 	}

@@ -85,48 +85,6 @@ void CDStarRepeaterThreadHelper::startup()
 	m_thread->startup();
 }
 
-void CDStarRepeaterThreadHelper::command1()
-{
-	wxASSERT(m_thread != NULL);
-
-	m_thread->command1();
-}
-
-void CDStarRepeaterThreadHelper::command2()
-{
-	wxASSERT(m_thread != NULL);
-
-	m_thread->command2();
-}
-
-void CDStarRepeaterThreadHelper::command3()
-{
-	wxASSERT(m_thread != NULL);
-
-	m_thread->command3();
-}
-
-void CDStarRepeaterThreadHelper::command4()
-{
-	wxASSERT(m_thread != NULL);
-
-	m_thread->command4();
-}
-
-void CDStarRepeaterThreadHelper::command5()
-{
-	wxASSERT(m_thread != NULL);
-
-	m_thread->command5();
-}
-
-void CDStarRepeaterThreadHelper::command6()
-{
-	wxASSERT(m_thread != NULL);
-
-	m_thread->command6();
-}
-
 CDStarRepeaterStatusData* CDStarRepeaterThreadHelper::getStatus()
 {
 	wxASSERT(m_thread != NULL);
