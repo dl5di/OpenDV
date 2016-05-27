@@ -266,7 +266,8 @@ CDStarRepeaterStatusData* CDStarRepeaterApp::getStatus() const
 void CDStarRepeaterApp::showLog(const wxString& text)
 {
 #if (wxUSE_GUI == 1)
-	m_frame->showLog(text);
+	if(m_frame)
+		m_frame->showLog(text);
 #endif
 }
 
