@@ -201,9 +201,9 @@ bool CDStarRepeaterApp::OnInit()
 
 int CDStarRepeaterApp::OnExit()
 {
-	m_logChain->SetLog(NULL);
-
 	wxLogInfo(APPLICATION_NAME + " is exiting");
+
+	m_logChain->SetLog(NULL);
 
 	m_thread->kill();
 
