@@ -34,15 +34,20 @@ enum FRAME_TYPE {
 	FRAME_END
 };
 
-class IDStarRepeaterThread {
+class IDStarRepeaterThread : public wxThread {
 public:
+	IDStarRepeaterThread();
+
 	virtual ~IDStarRepeaterThread() = 0;
 
 	virtual void setCallsign(const wxString& callsign, const wxString& gateway, DSTAR_MODE mode, ACK_TYPE ack, bool restriction, bool rpt1Validation, bool dtmfBlanking, bool errorReply) = 0;
+
 	virtual void setProtocolHandler(CRepeaterProtocolHandler* handler, bool local) = 0;
 	virtual void setModem(CModem* modem) = 0;
 	virtual void setController(CExternalController* controller, unsigned int activeHangTime) = 0;
+
 	virtual void setTimes(unsigned int timeout, unsigned int ackTime) = 0;
+
 	virtual void setBeacon(unsigned int time, const wxString& text, bool voice, TEXT_LANG language) = 0;
 	virtual void setAnnouncement(bool enabled, unsigned int time, const wxString& recordRPT1, const wxString& recordRPT2, const wxString& deleteRPT1, const wxString& deleteRPT2) = 0;
 	virtual void setControl(bool enabled, const wxString& rpt1Callsign,
@@ -52,6 +57,7 @@ public:
 	) { };
 	virtual void setOutputs(bool out1, bool out2, bool out3, bool out4) = 0;
 	virtual void setLogging(bool logging, const wxString& dir) = 0;
+
 	virtual void setWhiteList(CCallsignList* list) = 0;
 	virtual void setBlackList(CCallsignList* list) = 0;
 	virtual void setGreyList(CCallsignList* list) = 0;
@@ -61,7 +67,6 @@ public:
 
 	virtual CDStarRepeaterStatusData* getStatus() = 0;
 
-	virtual void run() = 0;
 	virtual void kill() = 0;
 
 private:

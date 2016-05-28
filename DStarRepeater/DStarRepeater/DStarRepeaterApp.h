@@ -22,7 +22,7 @@
 #include <wx/wx.h>
 #include <wx/snglinst.h>
 
-#include "DStarRepeaterThreadHelper.h"
+#include "DStarRepeaterThread.h"
 #include "DStarRepeaterStatusData.h"
 #include "DStarRepeaterConfig.h"
 #if (wxUSE_GUI == 1)
@@ -72,7 +72,7 @@ private:
 	wxString                    m_logDir;
 	wxString                    m_confDir;
 	wxString                    m_audioDir;
-	CDStarRepeaterThreadHelper* m_thread;
+	IDStarRepeaterThread*       m_thread;
 	CDStarRepeaterConfig*       m_config;
 	wxSingleInstanceChecker*    m_checker;
 	wxLogChain*                 m_logChain;

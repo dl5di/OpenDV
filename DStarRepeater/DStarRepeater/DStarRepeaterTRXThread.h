@@ -70,7 +70,8 @@ public:
 
 	virtual CDStarRepeaterStatusData* getStatus();
 
-	virtual void run();
+	virtual void *Entry();
+
 	virtual void kill();
 
 	virtual void transmitBeaconHeader();

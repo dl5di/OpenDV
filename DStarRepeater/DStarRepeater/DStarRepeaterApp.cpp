@@ -345,23 +345,23 @@ void CDStarRepeaterApp::createThread()
 		}
 	}
 
-	IDStarRepeaterThread* thread = NULL;
+	//  XXX This should be m_thread eventually.
 	switch (mode) {
 		case MODE_RXONLY:
-			thread = new CDStarRepeaterRXThread(modemType);
+			m_thread = new CDStarRepeaterRXThread(modemType);
 			break;
 		case MODE_TXONLY:
-			thread = new CDStarRepeaterTXThread(modemType);
+			m_thread = new CDStarRepeaterTXThread(modemType);
 			break;
 		case MODE_TXANDRX:
-			thread = new CDStarRepeaterTXRXThread(modemType);
+			m_thread = new CDStarRepeaterTXRXThread(modemType);
 			break;
 		default:
-			thread = new CDStarRepeaterTRXThread(modemType);
+			m_thread = new CDStarRepeaterTRXThread(modemType);
 			break;
 	}
 
-	thread->setCallsign(callsign, gateway, mode, ack, restriction, rpt1Validation, dtmfBlanking, errorReply);
+	m_thread->setCallsign(callsign, gateway, mode, ack, restriction, rpt1Validation, dtmfBlanking, errorReply);
 	wxLogInfo("Callsign set to \"%s\", gateway set to \"%s\", mode: %d, ack: %d, restriction: %d, RPT1 validation: %d, DTMF blanking: %d, Error reply: %d", callsign.c_str(), gateway.c_str(), int(mode), int(ack), int(restriction), int(rpt1Validation), int(dtmfBlanking), int(errorReply));
 
 	wxString gatewayAddress, localAddress, name;
@@ -378,12 +378,12 @@ void CDStarRepeaterApp::createThread()
 		if (!res)
 			wxLogError("Cannot open the protocol handler");
 		else
-			thread->setProtocolHandler(handler, local);
+			m_thread->setProtocolHandler(handler, local);
 	}
 
 	unsigned int timeout, ackTime;
 	m_config->getTimes(timeout, ackTime);
-	thread->setTimes(timeout, ackTime);
+	m_thread->setTimes(timeout, ackTime);
 	wxLogInfo("Timeout set to %u secs, ack time set to %u ms", timeout, ackTime);
 
 	unsigned int beaconTime;
@@ -393,7 +393,7 @@ void CDStarRepeaterApp::createThread()
 	m_config->getBeacon(beaconTime, beaconText, beaconVoice, language);
 	if (mode == MODE_GATEWAY)
 		beaconTime = 0U;
-	thread->setBeacon(beaconTime, beaconText, beaconVoice, language);
+	m_thread->setBeacon(beaconTime, beaconText, beaconVoice, language);
 	wxLogInfo("Beacon set to %u mins, text set to \"%s\", voice set to %d, language set to %d", beaconTime / 60U, beaconText.c_str(), int(beaconVoice), int(language));
 
 	bool announcementEnabled;
@@ -403,7 +403,7 @@ void CDStarRepeaterApp::createThread()
 	m_config->getAnnouncement(announcementEnabled, announcementTime, announcementRecordRPT1, announcementRecordRPT2, announcementDeleteRPT1, announcementDeleteRPT2);
 	if (mode == MODE_GATEWAY)
 		announcementEnabled = false;
-	thread->setAnnouncement(announcementEnabled, announcementTime, announcementRecordRPT1, announcementRecordRPT2, announcementDeleteRPT1, announcementDeleteRPT2);
+	m_thread->setAnnouncement(announcementEnabled, announcementTime, announcementRecordRPT1, announcementRecordRPT2, announcementDeleteRPT1, announcementDeleteRPT2);
 	wxLogInfo("Announcement enabled: %d, time: %u mins, record RPT1: \"%s\", record RPT2: \"%s\", delete RPT1: \"%s\", delete RPT2: \"%s\"", int(announcementEnabled), announcementTime / 60U, announcementRecordRPT1.c_str(), announcementRecordRPT2.c_str(), announcementDeleteRPT1.c_str(), announcementDeleteRPT2.c_str());
 
 	wxLogInfo("Modem type set to \"%s\"", modemType.c_str());
@@ -521,7 +521,7 @@ void CDStarRepeaterApp::createThread()
 		if (!res)
 			wxLogError("Cannot open the D-Star modem");
 		else
-			thread->setModem(modem);
+			m_thread->setModem(modem);
 	}
 
 	wxString controllerType;
@@ -573,11 +573,11 @@ void CDStarRepeaterApp::createThread()
 	if (!res)
 		wxLogError("Cannot open the hardware interface - %s", controllerType.c_str());
 	else
-		thread->setController(controller, activeHangTime);
+		m_thread->setController(controller, activeHangTime);
 
 	bool out1, out2, out3, out4;
 	m_config->getOutputs(out1, out2, out3, out4);
-	thread->setOutputs(out1, out2, out3, out4);
+	m_thread->setOutputs(out1, out2, out3, out4);
 #if (wxUSE_GUI == 1)
 	m_frame->setOutputs(out1, out2, out3, out4);
 #endif
@@ -598,14 +598,14 @@ void CDStarRepeaterApp::createThread()
 
 	m_config->getControl(enabled, rpt1Callsign, rpt2Callsign, shutdown, startup, status[0], status[1], status[2], status[3], status[4], command[0], m_commandLine[0], command[1], m_commandLine[1], command[2], m_commandLine[2], command[3], m_commandLine[3], command[4], m_commandLine[4], command[5], m_commandLine[5], output[0], output[1], output[2], output[3]);
 
-	thread->setControl(enabled, rpt1Callsign, rpt2Callsign, shutdown,
+	m_thread->setControl(enabled, rpt1Callsign, rpt2Callsign, shutdown,
 		startup, command, status, output);
 
 	wxLogInfo(wxT("Control: enabled: %d, RPT1: %s, RPT2: %s, shutdown: %s, startup: %s, status1: %s, status2: %s, status3: %s, status4: %s, status5: %s, command1: %s = %s, command2: %s = %s, command3: %s = %s, command4: %s = %s, command5: %s = %s, command6: %s = %s, output1: %s, output2: %s, output3: %s, output4: %s"), enabled, rpt1Callsign.c_str(), rpt2Callsign.c_str(), shutdown.c_str(), startup.c_str(), status[0].c_str(), status[1].c_str(), status[2].c_str(), status[3].c_str(), status[4].c_str(), command[0].c_str(), m_commandLine[0].c_str(), command[1].c_str(), m_commandLine[1].c_str(), command[2].c_str(), m_commandLine[2].c_str(), command[3].c_str(), m_commandLine[3].c_str(), command[4].c_str(), m_commandLine[4].c_str(), command[5].c_str(), m_commandLine[5].c_str(), output[0].c_str(), output[1].c_str(), output[2].c_str(), output[3].c_str());
 
 	bool logging;
 	m_config->getLogging(logging);
-	thread->setLogging(logging, m_audioDir);
+	m_thread->setLogging(logging, m_audioDir);
 #if (wxUSE_GUI == 1)
 	m_frame->setLogging(logging);
 #endif
@@ -635,7 +635,7 @@ void CDStarRepeaterApp::createThread()
 			delete list;
 		} else {
 			wxLogInfo("%u callsigns loaded into the white list", list->getCount());
-			thread->setWhiteList(list);
+			m_thread->setWhiteList(list);
 		}
 	}
 #if defined(__WINDOWS__)
@@ -662,7 +662,7 @@ void CDStarRepeaterApp::createThread()
 			delete list;
 		} else {
 			wxLogInfo("%u callsigns loaded into the black list", list->getCount());
-			thread->setBlackList(list);
+			m_thread->setBlackList(list);
 		}
 	}
 #if defined(__WINDOWS__)
@@ -679,11 +679,11 @@ void CDStarRepeaterApp::createThread()
 			delete list;
 		} else {
 			wxLogInfo("%u callsigns loaded into the grey list", list->getCount());
-			thread->setGreyList(list);
+			m_thread->setGreyList(list);
 		}
 	}
 
-	// Convert the worker class into a thread
-	m_thread = new CDStarRepeaterThreadHelper(thread);
-	m_thread->start();
+	m_thread->Create();
+	m_thread->SetPriority(wxPRIORITY_MAX);
+	m_thread->Run();
 }

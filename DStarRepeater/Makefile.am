@@ -76,8 +76,7 @@ libCommon_a_CPPFLAGS = -ICommon $(BASE_WX_CPPFLAGS)
 
 sbin_PROGRAMS = dstarrepeaterd
 dstarrepeaterd_SOURCES = DStarRepeater/DStarRepeaterApp.cpp \
-			DStarRepeater/DStarRepeaterLogger.cpp \
-			DStarRepeater/DStarRepeaterThreadHelper.cpp
+			DStarRepeater/DStarRepeaterLogger.cpp
 dstarrepeaterd_CPPFLAGS = -ICommon $(BASE_WX_CPPFLAGS)
 dstarrepeaterd_LDADD = libCommon.a $(BASE_WX_LIBS) $(LIBUSB_LIBS) $(ALSA_LIBS)
 
@@ -93,8 +92,7 @@ if WITH_GUI
 bin_PROGRAMS = dstarrepeater
 dstarrepeater_SOURCES = DStarRepeater/DStarRepeaterApp.cpp \
                         DStarRepeater/DStarRepeaterFrame.cpp \
-                        DStarRepeater/DStarRepeaterLogger.cpp \
-                        DStarRepeater/DStarRepeaterThreadHelper.cpp 
+                        DStarRepeater/DStarRepeaterLogger.cpp
 dstarrepeater_LDADD = libCommon.a $(GUI_WX_LIBS) $(LIBUSB_LIBS) $(ALSA_LIBS)
 dstarrepeater_CPPFLAGS = -ICommon $(GUI_WX_CPPFLAGS)
 

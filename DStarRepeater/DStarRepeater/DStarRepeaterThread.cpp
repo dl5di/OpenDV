@@ -13,6 +13,11 @@
 
 #include "DStarRepeaterThread.h"
 
+IDStarRepeaterThread::IDStarRepeaterThread():
+wxThread(wxTHREAD_JOINABLE)
+{
+}
+
 IDStarRepeaterThread::~IDStarRepeaterThread()
 {
 }

@@ -144,14 +144,14 @@ CDStarRepeaterTRXThread::~CDStarRepeaterTRXThread()
 	delete   m_rxHeader;
 }
 
-void CDStarRepeaterTRXThread::run()
+void *CDStarRepeaterTRXThread::Entry()
 {
 	// Wait here until we have the essentials to run
 	while (!m_killed && (m_modem == NULL || m_controller == NULL || m_rptCallsign.IsEmpty() || m_rptCallsign.IsSameAs(wxT("        "))))
 		::wxMilliSleep(500UL);		// 1/2 sec
 
 	if (m_killed)
-		return;
+		return NULL;
 
 	m_stopped = false;
 
@@ -332,6 +332,8 @@ void CDStarRepeaterTRXThread::run()
 		m_protocolHandler->close();
 		delete m_protocolHandler;
 	}
+
+	return NULL;
 }
 
 void CDStarRepeaterTRXThread::kill()
@@ -1703,7 +1705,7 @@ CDStarRepeaterStatusData* CDStarRepeaterTRXThread::getStatus()
 			loss = float(m_packetSilence) / float(m_packetCount);
 
 		status = new CDStarRepeaterStatusData(m_rxHeader->getMyCall1(), m_rxHeader->getMyCall2(),
-					m_rxHeader->getYourCall(), m_rxHeader->getRptCall1(), m_rxHeader->getRptCall2(), 
+					m_rxHeader->getYourCall(), m_rxHeader->getRptCall1(), m_rxHeader->getRptCall2(),
 					m_rxHeader->getFlag1(), m_rxHeader->getFlag2(), m_rxHeader->getFlag3(), m_tx, m_rxState,
 					m_rptState, m_timeoutTimer.getTimer(), m_timeoutTimer.getTimeout(), m_beaconTimer.getTimer(),
 					m_beaconTimer.getTimeout(), m_announcementTimer.getTimer(), m_announcementTimer.getTimeout(),
@@ -1718,7 +1720,7 @@ CDStarRepeaterStatusData* CDStarRepeaterTRXThread::getStatus()
 		m_lastAMBEErrors = m_ambeErrors;
 
 		status = new CDStarRepeaterStatusData(m_rxHeader->getMyCall1(), m_rxHeader->getMyCall2(),
-					m_rxHeader->getYourCall(), m_rxHeader->getRptCall1(), m_rxHeader->getRptCall2(), 
+					m_rxHeader->getYourCall(), m_rxHeader->getRptCall1(), m_rxHeader->getRptCall2(),
 					m_rxHeader->getFlag1(), m_rxHeader->getFlag2(), m_rxHeader->getFlag3(), m_tx, m_rxState,
 					m_rptState, m_timeoutTimer.getTimer(), m_timeoutTimer.getTimeout(), m_beaconTimer.getTimer(),
 					m_beaconTimer.getTimeout(), m_announcementTimer.getTimer(), m_announcementTimer.getTimeout(),

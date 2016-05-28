@@ -74,14 +74,14 @@ CDStarRepeaterTXThread::~CDStarRepeaterTXThread()
 	delete   m_txHeader;
 }
 
-void CDStarRepeaterTXThread::run()
+void *CDStarRepeaterTXThread::Entry()
 {
 	// Wait here until we have the essentials to run
 	while (!m_killed && (m_modem == NULL  || m_protocolHandler == NULL || m_rptCallsign.IsEmpty() || m_rptCallsign.IsSameAs(wxT("        "))))
 		::wxMilliSleep(500UL);		// 1/2 sec
 
 	if (m_killed)
-		return;
+		return NULL;
 
 	m_stopped = false;
 
@@ -154,6 +154,8 @@ void CDStarRepeaterTXThread::run()
 
 	m_protocolHandler->close();
 	delete m_protocolHandler;
+
+	return NULL;
 }
 
 void CDStarRepeaterTXThread::kill()

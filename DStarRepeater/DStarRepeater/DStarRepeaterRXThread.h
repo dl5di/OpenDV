@@ -58,8 +58,9 @@ public:
 
 	virtual CDStarRepeaterStatusData* getStatus();
 
-	virtual void run();
 	virtual void kill();
+
+	virtual void *Entry();
 
 private:
 	wxString                   m_type;
