@@ -15,7 +15,9 @@
  *   along with this program; if not, write to the Free Software
  *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
- 
+
+#include <stdexcept>
+
 #include <wx/cmdline.h>
 #include <wx/filename.h>
 #include <wx/event.h>
@@ -114,8 +116,13 @@ bool CDStarRepeaterApp::OnInit()
 			m_logDir = LOG_DIR;
 #endif
 
-		wxLog* log = new CLogger(m_logDir, logBaseName);
-		wxLog::SetActiveTarget(log);
+		try {
+			CLogger* log = new CLogger(m_logDir, logBaseName);
+			wxLog::SetActiveTarget(log);
+		} catch ( const std::runtime_error& e ) {
+			wxLog::SetActiveTarget(new wxLogStderr());
+			wxLogError("Could not open log file, logging to stderr");
+		}
 	} else {
 		new wxLogNull;
 	}
