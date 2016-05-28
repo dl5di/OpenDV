@@ -16,9 +16,11 @@
  *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include "DStarRepeaterConfig.h"
+#include <stdexcept>
 
 #include <wx/textfile.h>
+
+#include "DStarRepeaterConfig.h"
 
 const wxString  KEY_CALLSIGN           = wxT("callsign");
 const wxString  KEY_GATEWAY            = wxT("gateway");
@@ -696,7 +698,7 @@ CDStarRepeaterConfig::~CDStarRepeaterConfig()
 
 #else
 
-CDStarRepeaterConfig::CDStarRepeaterConfig(const wxString& dir, const wxString& configName, const wxString& name) :
+CDStarRepeaterConfig::CDStarRepeaterConfig(const wxString& dir, const wxString& configName, const wxString& name, const bool mustExist) :
 m_fileName(),
 m_callsign(DEFAULT_CALLSIGN),
 m_gateway(DEFAULT_GATEWAY),
@@ -826,15 +828,14 @@ m_splitTimeout(DEFAULT_SPLIT_TIMEOUT)
 
 	wxTextFile file(m_fileName.GetFullPath());
 
-	bool exists = file.Exists();
-	if (!exists)
-		return;
+	if (!file.Exists())
+		if(mustExist)
+			throw std::runtime_error("Configuration file does not exist");
+		else
+			return;
 
-	bool ret = file.Open();
-	if (!ret) {
-		wxLogError(wxT("Cannot open the config file - %s"), m_fileName.GetFullPath().c_str());
-		return;
-	}
+	if (!file.Open())
+		throw std::runtime_error("Cannot open the configuration file");
 
 	wxString* splitTXName = new wxString[SPLIT_TX_COUNT];
 	wxString* splitRXName = new wxString[SPLIT_RX_COUNT];

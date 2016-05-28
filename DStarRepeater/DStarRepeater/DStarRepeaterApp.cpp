@@ -157,7 +157,12 @@ bool CDStarRepeaterApp::OnInit()
 	if (m_confDir.IsEmpty())
 		m_confDir = CONF_DIR;
 
-	m_config = new CDStarRepeaterConfig(m_confDir, CONFIG_FILE_NAME, m_name);
+	try {
+		m_config = new CDStarRepeaterConfig(m_confDir, CONFIG_FILE_NAME, m_name, true);
+	} catch( std::runtime_error& e ) {
+		wxLogError("Could not open configuration file");
+		return false;
+	}
 #endif
 
 	wxString type;
