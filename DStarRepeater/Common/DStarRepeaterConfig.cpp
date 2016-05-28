@@ -844,9 +844,9 @@ m_splitTimeout(DEFAULT_SPLIT_TIMEOUT)
 	unsigned long temp2;
 	double temp3;
 
-	wxString str = file.GetFirstLine();
-
-	while (!file.Eof()) {
+	for (wxString str = file.GetFirstLine();
+	     !file.Eof();
+	     str = file.GetNextLine())  {
 		if (str.GetChar(0U) == wxT('#')) {
 			str = file.GetNextLine();
 			continue;
@@ -1170,8 +1170,6 @@ m_splitTimeout(DEFAULT_SPLIT_TIMEOUT)
 					splitRXName[i] = val;
 			}
 		}
-
-		str = file.GetNextLine();
 	}
 
 	file.Close();
