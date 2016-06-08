@@ -559,13 +559,18 @@ void CDStarRepeaterApp::createThread()
 			case 4:
 				controller = new CUDRCController(FM_FM);
 				break;
+			case 5:
+				controller = new CUDRCController(HOTSPOT);
+				break;
 			default:
 			case 2:
 				controller = new CUDRCController(AUTO_AUTO);
 				break;
+
 			}
 #endif
 	} else {
+		wxLogError("Unrecognized controller %s, using dummy controller", controllerType);
 		controller = new CExternalController(new CDummyController, pttInvert);
 	}
 

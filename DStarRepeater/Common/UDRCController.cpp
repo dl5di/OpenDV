@@ -28,7 +28,6 @@ static const unsigned int input_pins[] = {
 
 static const unsigned int output_pins[] = {
 	BASE_PIN,
-	PTT_PIN,
 	EXT1_PIN,
 	EXT2_PIN,
 	EXT3_PIN,
@@ -43,6 +42,10 @@ m_mode(mode)
 }
 
 void CUDRCController::switchMode(enum repeater_modes mode) {
+
+	if(mode == HOTSPOT)
+		return;
+
 	switch(mode) {
 		case AUTO_FM:	// Auto/FM
 			::digitalWrite(EXT1_PIN, HIGH);
@@ -70,35 +73,54 @@ bool CUDRCController::open()
 		return false;
 	}
 
-	for(int i = 0; i < ARRAY_SIZE(input_pins); ++i) {
-		::pinMode(input_pins[i], INPUT);
-		::pullUpDnControl(input_pins[i], PUD_UP);
-	}
+	::pinMode(PTT_PIN, OUTPUT);
 
-	for(int i = 0; i < ARRAY_SIZE(output_pins); ++i) {
-		::pinMode(output_pins[i], OUTPUT);
-		::digitalWrite(output_pins[i], HIGH);
-	}
+	if(m_mode != HOTSPOT) {
+		for(int i = 0; i < ARRAY_SIZE(input_pins); ++i) {
+			::pinMode(input_pins[i], INPUT);
+			::pullUpDnControl(input_pins[i], PUD_UP);
+		}
 
-	::digitalWrite(BASE_PIN, LOW);
-	switchMode(m_mode);
-	::digitalWrite(BASE_PIN, HIGH);
+		for(int i = 0; i < ARRAY_SIZE(output_pins); ++i) {
+			::pinMode(output_pins[i], OUTPUT);
+			::digitalWrite(output_pins[i], HIGH);
+		}
+
+		::digitalWrite(PTT_PIN, HIGH);
+
+		::digitalWrite(BASE_PIN, LOW);
+		switchMode(m_mode);
+		::digitalWrite(BASE_PIN, HIGH);
+	} else {
+		::digitalWrite(PTT_PIN, LOW);
+	}
 
 	return true;
 }
 
 bool CUDRCController::getDisable() const
 {
+	if(m_mode == HOTSPOT)
+		return false;
+
 	return ::digitalRead(PKSQL_PIN) == LOW;
 }
 
 void CUDRCController::setRadioTransmit(bool value)
 {
+	//  If we're in hotspot mode, we're using the miniDIN connector that is
+	//  reversed from the normal sense of PTT.
+	if(m_mode == HOTSPOT)
+		value = !value;
+
 	::digitalWrite(PTT_PIN, value ? LOW : HIGH);
 }
 
 void CUDRCController::setActive(bool value)
 {
+	if(m_mode == HOTSPOT)
+		return;
+
 	if(value == HIGH) {
 		::digitalWrite(BASE_PIN, LOW);
 		switchMode(FM_FM);

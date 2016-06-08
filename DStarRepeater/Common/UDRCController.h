@@ -4,6 +4,7 @@
 #include "ExternalController.h"
 
 enum repeater_modes {
+	HOTSPOT = 0,
 	AUTO_FM = 1,
 	DIGITAL_DIGITAL = 3,
 	FM_FM = 4,
@@ -24,7 +25,7 @@ public:
 
 private:
 	const enum repeater_modes m_mode;
-	
+
 	void switchMode(enum repeater_modes mode);
 };
 
