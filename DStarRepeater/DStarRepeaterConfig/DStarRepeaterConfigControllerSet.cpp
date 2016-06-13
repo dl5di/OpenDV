@@ -81,10 +81,11 @@ m_time(NULL)
 	sizer->Add(configLabel, 0, wxALL | wxALIGN_LEFT, BORDER_SIZE);
 
 	m_config = new wxChoice(this, -1, wxDefaultPosition, wxSize(CONTROL_WIDTH3, -1));
-	m_config->Append(wxT("1"));
-	m_config->Append(wxT("2"));
-	m_config->Append(wxT("3"));
-	m_config->Append(wxT("4"));
+	m_config->Append("1");
+	m_config->Append("2");
+	m_config->Append("3");
+	m_config->Append("4");
+	m_config->Append("5");
 	sizer->Add(m_config, 0, wxALL | wxALIGN_LEFT, BORDER_SIZE);
 	m_config->SetSelection(config - 1);
 
