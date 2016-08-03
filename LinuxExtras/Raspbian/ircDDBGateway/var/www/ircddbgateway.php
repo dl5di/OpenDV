@@ -18,6 +18,7 @@
 	$col[0] = "#f0f0f0";
 	$col[1] = "#f0f0a0";
 ?>
+	<!DOCTYPE html>
 
 	<html xmlns="http://www.w3.org/1999/xhtml"xmlns:v="urn:schemas-microsoft-com:vml">
 	<head>
