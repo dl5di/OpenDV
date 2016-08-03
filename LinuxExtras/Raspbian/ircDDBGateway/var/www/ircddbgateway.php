@@ -227,13 +227,13 @@
 					$linkDir = $linx[5][0];
 				$ci++;
 				if($ci > 1) { $ci = 0; }
-				print "<tr bgcolor=\"$col[$ci]\">";
-				print "<td align=left>$linkRptr</td>";
-				print "<td>$linkRem</td>";
-				print "<td>CCS</td>";
-				print "<td>$linkDir</td>";
-				print "<td>$linkDate</td>";
-				print "</tr>";
+				print "\t\t<tr bgcolor=\"$col[$ci]\">\n";
+				print "\t\t\t<td align=left>$linkRptr</td>\n";
+				print "\t\t\t<td>$linkRem</td>\n";
+				print "\t\t\t<td>CCS</td>\n";
+				print "\t\t\t<td>$linkDir</td>\n";
+				print "\t\t\t<td>$linkDate</td>\n";
+				print "\t\t</tr>\n";
 				}
 			}
 			fclose($linkLog);
