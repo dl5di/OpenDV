@@ -5,12 +5,12 @@
 	$configs = array();
 
 	if ($configfile = fopen($gatewayConfigPath,'r')) {
-        while ($line = fgets($configfile)) {
-                list($key,$value) = split("=",$line);
-                $value = trim(str_replace('"','',$value));
-                if ($key != 'ircddbPassword' && strlen($value) > 0)
-                $configs[$key] = $value;
-        }
+		while ($line = fgets($configfile)) {
+			list($key,$value) = split("=",$line);
+			$value = trim(str_replace('"','',$value));
+			if ($key != 'ircddbPassword' && strlen($value) > 0)
+				$configs[$key] = $value;
+		}
 	}
 	$progname = basename($_SERVER['SCRIPT_FILENAME'],".php");
 	$rev="20131011";
@@ -38,19 +38,19 @@
 	<body>
 <?php
 	// calculate size of included repeater table
-    $nummod = 1;
-    for($i = 1;$i < 5; $i++){
+	$nummod = 1;
+	for($i = 1;$i < 5; $i++){
 		$param="repeaterBand" . $i;
 		if(isset($configs[$param])) { $nummod++; }
-    }	
-    $tabh = ($nummod - 1) * 36 + 230;
+	}	
+	$tabh = ($nummod - 1) * 36 + 230;
 
-    print "<iframe src=\"http://status.ircddb.net/lhhead.php?call=$MYCALL\" frameborder=\"0\" marginwidth=\"0\" marginheight=\"0\" width=\"100%\" height=\"$tabh\" scrolling=\"no\"></iframe>\n";
+	print "<iframe src=\"http://status.ircddb.net/lhhead.php?call=$MYCALL\" frameborder=\"0\" marginwidth=\"0\" marginheight=\"0\" width=\"100%\" height=\"$tabh\" scrolling=\"no\"></iframe>\n";
 ?>
-    <br><font size=+1><b>Configuration</b></font><br>
-		<font size=-1>
-    <table BORDER=0 BGCOLOR=white>
-			<tr bgcolor=black>
+	<br><font size=+1><b>Configuration</b></font><br>
+	<font size=-1>
+	<table BORDER=0 BGCOLOR=white>
+		<tr bgcolor=black>
 			<th width=130><a class="tooltip" href="#"><font color=white><center><b>ircDDB-Net</b></center></font><span><b>ircDDB-Net</b></span></a></th>
 			<th width=90><a class="tooltip" href="#"><font color=white><center><b>APRS-Host</b></center></font><span><b>APRS-Host</b></span></a></th>
 			<th width=40><a class="tooltip" href="#"><font color=white><center><b>CCS</b></center></font><span><b>Actual status</b>- green: enabled<br>- red: disabled</span></a></th>
@@ -65,7 +65,7 @@
 		</tr>
 		<tr bgcolor="#f0f0a0">
 <?php
-			print "<td>$configs[ircddbHostname]</td>\n";
+	print "<td>$configs[ircddbHostname]</td>\n";
 			if($configs['aprsEnabled'] == 1){ print "<td align=center width=40>$configs[aprsHostname]</td>"; } else { print "<td align=center width=40><img src=\"images/20red.png\"></td>";}
 			if($configs['ccsEnabled'] == 1){print "<td align=center width=40><img src=\"images/20green.png\"></td>"; } else { print "<td align=center width=40><img src=\"images/20red.png\"></td>"; }
 			if($configs['dcsEnabled'] == 1){print "<td align=center width=40><img src=\"images/20green.png\"></td>"; } else { print "<td align=center width=40><img src=\"images/20red.png\"></td>"; }
@@ -78,13 +78,13 @@
 			if($configs['logEnabled'] == 1){print "<td align=center width=40><img src=\"images/20green.png\"></td>"; } else { print "<td align=center width=40><img src=\"images/20red.png\"></td>"; }
 ?>
 		</tr>
-    </table>
-    </font>
-    <p>
-    <font size=+1><b>Reflector Links</b></font>
-    </p>
-		<font size=-1>
-    <table BORDER=0 BGCOLOR=white>
+	</table>
+	</font>
+	<p>
+	<font size=+1><b>Reflector Links</b></font>
+	</p>
+	<font size=-1>
+	<table BORDER=0 BGCOLOR=white>
 		<tr bgcolor=black>
 			<th width=70><a class=tooltip href="#"><font color=white><center><b>Repeater</b></center></font><span><b>Callsign of connected repeater</b></span></a></th>
 			<th width=80><a class=tooltip href="#"><font color=white><center><b>Default</b></center></font><span><b>Default Link Destination</b></span></a></th>
@@ -197,19 +197,19 @@
 		}
     }
 ?>
-    </table>
-    </font>
-    <p>
-    <font size=+1><b>CCS Connects</b></font>
-    </p>
-		<font size=-1>
-    <table BORDER=0 BGCOLOR=white>
+	</table>
+	</font>
+	<p>
+	<font size=+1><b>CCS Connects</b></font>
+	</p>
+	<font size=-1>
+	<table BORDER=0 BGCOLOR=white>
 		<tr bgcolor=black>
-		<th width=70><a class=tooltip href="#"><font color=white><center><b>Repeater</b></center></font><span><b>Callsign of connected repeater</b></span></a></th>
-		<th width=80><a class=tooltip href="#"><font color=white><center><b>Linked to</b></center></font><span><b>Actual link status</b></span></a></th>
-		<th width=60><a class=tooltip href="#"><font color=white><center><b>Protocol</b></center></font><span><b>Protocol</b></span></a></th>
-		<th width=80><a class=tooltip href="#"><font color=white><center><b>Direction</b></center></font><span><b>Direction</b>incoming or outgoing</span></a></th>
-		<th width=130><a class=tooltip href="#"><font color=white><center><b>Last Change (UTC)</b></center></font><span><b>Timestamp of last change</b>UTC</span></a></th>
+			<th width=70><a class=tooltip href="#"><font color=white><center><b>Repeater</b></center></font><span><b>Callsign of connected repeater</b></span></a></th>
+			<th width=80><a class=tooltip href="#"><font color=white><center><b>Linked to</b></center></font><span><b>Actual link status</b></span></a></th>
+			<th width=60><a class=tooltip href="#"><font color=white><center><b>Protocol</b></center></font><span><b>Protocol</b></span></a></th>
+			<th width=80><a class=tooltip href="#"><font color=white><center><b>Direction</b></center></font><span><b>Direction</b>incoming or outgoing</span></a></th>
+			<th width=130><a class=tooltip href="#"><font color=white><center><b>Last Change (UTC)</b></center></font><span><b>Timestamp of last change</b>UTC</span></a></th>
 		</tr>
 
 <?php
@@ -250,11 +250,11 @@
 		</tr>    
 	</table>
 	</font>
-    <p>
-    <font size=+1><b>Dongle Connects</b></font>
-    </p>
-		<font size=-1>
-    <table BORDER=0 BGCOLOR=white>
+	<p>
+	<font size=+1><b>Dongle Connects</b></font>
+	</p>
+	<font size=-1>
+	<table BORDER=0 BGCOLOR=white>
 		<tr bgcolor=black>
 			<th width=70><a class=tooltip href="#"><font color=white><center><b>Repeater</b></center></font><span><b>Callsign of local repeater</b></span></a></th>
 			<th width=80><a class=tooltip href="#"><font color=white><center><b>Linked to</b></center></font><span><b>Callsign of Destination</b></span></a></th>
