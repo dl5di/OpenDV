@@ -107,21 +107,21 @@
 		if((isset($configs[$param])) && strlen($configs[$param]) == 1) {
 			$ci++;
 			if($ci > 1) { $ci = 0; }
-			print "<tr bgcolor=\"$col[$ci]\">";
+			print "\t\t<tr bgcolor=\"$col[$ci]\">";
 			$tr = 1;
 			$module = $configs[$param];
 			$rcall = sprintf("%-7.7s%-1.1s",$MYCALL,$module);
 			$param="repeaterCall" . $i;
 			if(isset($configs[$param])) { $rptrcall=sprintf("%-7.7s%-1.1s",$configs[$param],$module); } else { $rptrcall = $rcall;}
-			print "<td>$rptrcall</td>";
+			print "\t\t\t<td>$rptrcall</td>\n";
 			$param="reflector" . $i;
-			if(isset($configs[$param])) { print "<td>$configs[$param]</td>"; } else { print "<td>&nbsp;</td>";}
+			if(isset($configs[$param])) { print "\t\t\t<td>$configs[$param]</td>\n"; } else { print "\t\t\t<td>&nbsp;</td>\n";}
 			$param="atStartup" . $i;
-			if($configs[$param] == 1){print "<td align=center width=40><img src=\"images/20green.png\"></td>"; } else { print "<td align=center width=40><img src=\"images/20red.png\"></td>"; }
+			if($configs[$param] == 1){print "\t\t\t<td align=center width=40><img src=\"images/20green.png\"></td>\n"; } else { print "\t\t\t<td align=center width=40><img src=\"images/20red.png\"></td>\n"; }
 			$param="reconnect" . $i;
 			if(isset($configs[$param])) { $t = $configs[$param]; } else { $t = 0; }
 			if($t > 12){ $t = 12; }
-			print "<td>$tot[$t]</td>";
+			print "\t\t\t<td>$tot[$t]</td>\n";
 			$j=0;
 			if ($linkLog = fopen($linkLogPath,'r')) {
 				while ($linkLine = fgets($linkLog)) {
@@ -143,12 +143,12 @@
 						$linkRptr = $linx[4][0];
 						$linkRefl = $linx[5][0];
 						if($linkRptr == $rptrcall){
-							print "<td align=center width=40>$statimg</td>";
-							print "<td>$linkRefl</td>";
-							print "<td>$protocol</td>";
-							print "<td>Outgoing</td>";
-							print "<td>$linkDate</td>";
-							print "</tr>";
+							print "\t\t\t<td align=center width=40>$statimg</td>\n";
+							print "\t\t\t<td>$linkRefl</td>\n";
+							print "\t\t\t<td>$protocol</td>\n";
+							print "\t\t\t<td>Outgoing</td>\n";
+							print "\t\t\t<td>$linkDate</td>\n";
+							print "\t\t</tr>";
 							$tr = 0;
 						}
 					}
