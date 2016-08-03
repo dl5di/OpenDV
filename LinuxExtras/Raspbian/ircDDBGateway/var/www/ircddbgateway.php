@@ -45,7 +45,7 @@
 	}	
 	$tabh = ($nummod - 1) * 36 + 230;
 
-	print "<iframe src=\"http://status.ircddb.net/lhhead.php?call=$MYCALL\" frameborder=\"0\" marginwidth=\"0\" marginheight=\"0\" width=\"100%\" height=\"$tabh\" scrolling=\"no\"></iframe>\n";
+	print "\t<iframe src=\"http://status.ircddb.net/lhhead.php?call=$MYCALL\" frameborder=\"0\" marginwidth=\"0\" marginheight=\"0\" width=\"100%\" height=\"$tabh\" scrolling=\"no\"></iframe>\n";
 ?>
 	<br><font size=+1><b>Configuration</b></font><br>
 	<font size=-1>
