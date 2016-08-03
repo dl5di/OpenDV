@@ -300,8 +300,8 @@
 			print "\t\t\t<td>&nbsp;</td>\n";
 			print "\t\t\t<td>&nbsp;</td>\n";
 		print "\t\t</tr>\n";    
-    print "\t</table>\n";
-    print "\t</font>\n";
+		print "\t</table>\n";
+		print "\t</font>\n";
 
     include_once("dhcpleases.php");
 
@@ -317,9 +317,9 @@
 		include_once("dashboard_stn.php");
     }
 
-    print "\t<iframe src=\"http://status.ircddb.net/lhmain.php?call=$MYCALL\" frameborder=\"0\" marginwidth=\"0\" marginheight=\"0\" width=\"100%\" height=\"750\" scrolling=\"no\"></iframe>\n";
-    print "\t<br>\n";
-    print "\t<font size=1>Rev:$rev &copy;2012-2013 Hans-J. Barthen DL5DI</font>\n";
+		print "\t<iframe src=\"http://status.ircddb.net/lhmain.php?call=$MYCALL\" frameborder=\"0\" marginwidth=\"0\" marginheight=\"0\" width=\"100%\" height=\"750\" scrolling=\"no\"></iframe>\n";
+		print "\t<br>\n";
+		print "\t<font size=1>Rev:$rev &copy;2012-2013 Hans-J. Barthen DL5DI</font>\n";
 ?>
 
-</body>
+	</body>
