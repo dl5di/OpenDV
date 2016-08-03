@@ -80,8 +80,8 @@
 		</tr>
     </table>
     <p>
-
     <font size=+1><b>Reflector Links</b></font>
+    </p>
     <table BORDER=0 BGCOLOR=white>
 		<font size=-1>
 		<tr bgcolor=black>
@@ -197,8 +197,9 @@
     }
 ?>
     </table>
-    <p>    
+    <p>
     <font size=+1><b>CCS Connects</b></font>
+    </p>
     <table BORDER=0 BGCOLOR=white>
 		<font size=-1>
 		<tr bgcolor=black>
@@ -246,8 +247,9 @@
 			<td>&nbsp;</td>
 		</tr>    
 	</table>
-    <p>    
+    <p>
     <font size=+1><b>Dongle Connects</b></font>
+    </p>
     <table BORDER=0 BGCOLOR=white>
 		<font size=-1>
 		<tr bgcolor=black>
