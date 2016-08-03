@@ -27,7 +27,7 @@
 		<meta name="language" content="English">
 		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 		<?php
-		echo "<meta name=\"GENERATOR\" content=\"$progname $rev\">";
+		echo "<meta name=\"GENERATOR\" content=\"$progname $rev\">\n";
 		?>
 		<meta name="Author" content="Hans-J. Barthen (DL5DI)">
 		<meta name="Description" content="ircDDBGateway Dashboard">
