@@ -48,8 +48,8 @@
     print "<iframe src=\"http://status.ircddb.net/lhhead.php?call=$MYCALL\" frameborder=\"0\" marginwidth=\"0\" marginheight=\"0\" width=\"100%\" height=\"$tabh\" scrolling=\"no\"></iframe>\n";
 ?>
     <br><font size=+1><b>Configuration</b></font><br>
-    <table BORDER=0 BGCOLOR=white>
 		<font size=-1>
+    <table BORDER=0 BGCOLOR=white>
 			<tr bgcolor=black>
 			<th width=130><a class="tooltip" href="#"><font color=white><center><b>ircDDB-Net</b></center></font><span><b>ircDDB-Net</b></span></a></th>
 			<th width=90><a class="tooltip" href="#"><font color=white><center><b>APRS-Host</b></center></font><span><b>APRS-Host</b></span></a></th>
@@ -79,11 +79,12 @@
 ?>
 		</tr>
     </table>
+    </font>
     <p>
     <font size=+1><b>Reflector Links</b></font>
     </p>
-    <table BORDER=0 BGCOLOR=white>
 		<font size=-1>
+    <table BORDER=0 BGCOLOR=white>
 		<tr bgcolor=black>
 			<th width=70><a class=tooltip href="#"><font color=white><center><b>Repeater</b></center></font><span><b>Callsign of connected repeater</b></span></a></th>
 			<th width=80><a class=tooltip href="#"><font color=white><center><b>Default</b></center></font><span><b>Default Link Destination</b></span></a></th>
@@ -197,11 +198,12 @@
     }
 ?>
     </table>
+    </font>
     <p>
     <font size=+1><b>CCS Connects</b></font>
     </p>
-    <table BORDER=0 BGCOLOR=white>
 		<font size=-1>
+    <table BORDER=0 BGCOLOR=white>
 		<tr bgcolor=black>
 		<th width=70><a class=tooltip href="#"><font color=white><center><b>Repeater</b></center></font><span><b>Callsign of connected repeater</b></span></a></th>
 		<th width=80><a class=tooltip href="#"><font color=white><center><b>Linked to</b></center></font><span><b>Actual link status</b></span></a></th>
@@ -247,11 +249,12 @@
 			<td>&nbsp;</td>
 		</tr>    
 	</table>
+	</font>
     <p>
     <font size=+1><b>Dongle Connects</b></font>
     </p>
-    <table BORDER=0 BGCOLOR=white>
 		<font size=-1>
+    <table BORDER=0 BGCOLOR=white>
 		<tr bgcolor=black>
 			<th width=70><a class=tooltip href="#"><font color=white><center><b>Repeater</b></center></font><span><b>Callsign of local repeater</b></span></a></th>
 			<th width=80><a class=tooltip href="#"><font color=white><center><b>Linked to</b></center></font><span><b>Callsign of Destination</b></span></a></th>
@@ -298,6 +301,7 @@
 			print "<td>&nbsp;</td>";
 		print "</tr>";    
     print "</table>";
+    print "</font>";
 
     include_once("dhcpleases.php");
 
