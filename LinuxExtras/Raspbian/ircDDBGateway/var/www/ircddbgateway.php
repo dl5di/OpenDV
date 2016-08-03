@@ -274,32 +274,32 @@
 				if(preg_match_all('/^(.{19}).*(D[A-Za-z]*).*Type: ([A-Za-z]*).*User: (.{6,8}).*Dir: (.*)$/',$linkLine,$linx) > 0){
 					$ci++;
 					if($ci > 1) { $ci = 0; }
-					print "<tr bgcolor=\"$col[$ci]\">";
+					print "\t\t<tr bgcolor=\"$col[$ci]\">\n";
 						$linkDate = $linx[1][0];
 						$protocol = $linx[2][0];
 						$linkType = $linx[3][0];
 						$linkRptr = $linx[4][0];
 						$linkRefl = "";
 						$linkDir = $linx[5][0];
-						print "<td>$linkRptr</td>";
-						print "<td>$linkRefl</td>";
-						print "<td>$protocol</td>";
-						print "<td>$linkDir</td>";
-						print "<td>$linkDate</td>";
-					print "</tr>";
+						print "\t\t\t<td>$linkRptr</td>\n";
+						print "\t\t\t<td>$linkRefl</td>\n";
+						print "\t\t\t<td>$protocol</td>\n";
+						print "\t\t\t<td>$linkDir</td>\n";
+						print "\t\t\t<td>$linkDate</td>\n";
+					print "\t\t</tr>\n";
 				}
 			}
 			fclose($linkLog);
 		}
 		$ci++;
 		if($ci > 1) { $ci = 0; }
-		print "<tr bgcolor=\"$col[$ci]\">";
-			print "<td>&nbsp;</td>";
-			print "<td>&nbsp;</td>";
-			print "<td>&nbsp;</td>";
-			print "<td>&nbsp;</td>";
-			print "<td>&nbsp;</td>";
-		print "</tr>";    
+		print "\t\t<tr bgcolor=\"$col[$ci]\">\n";
+			print "\t\t\t<td>&nbsp;</td>\n";
+			print "\t\t\t<td>&nbsp;</td>\n";
+			print "\t\t\t<td>&nbsp;</td>\n";
+			print "\t\t\t<td>&nbsp;</td>\n";
+			print "\t\t\t<td>&nbsp;</td>\n";
+		print "\t\t</tr>\n";    
     print "</table>";
     print "</font>";
 
