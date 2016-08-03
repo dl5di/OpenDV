@@ -65,17 +65,17 @@
 		</tr>
 		<tr bgcolor="#f0f0a0">
 <?php
-	print "<td>$configs[ircddbHostname]</td>\n";
-			if($configs['aprsEnabled'] == 1){ print "<td align=center width=40>$configs[aprsHostname]</td>"; } else { print "<td align=center width=40><img src=\"images/20red.png\"></td>";}
-			if($configs['ccsEnabled'] == 1){print "<td align=center width=40><img src=\"images/20green.png\"></td>"; } else { print "<td align=center width=40><img src=\"images/20red.png\"></td>"; }
-			if($configs['dcsEnabled'] == 1){print "<td align=center width=40><img src=\"images/20green.png\"></td>"; } else { print "<td align=center width=40><img src=\"images/20red.png\"></td>"; }
-			if($configs['dextraEnabled'] == 1){print "<td align=center width=40><img src=\"images/20green.png\"></td>"; } else { print "<td align=center width=40><img src=\"images/20red.png\"></td>"; }
-			if($configs['dplusEnabled'] == 1){print "<td align=center width=40><img src=\"images/20green.png\"></td>"; } else { print "<td align=center width=40><img src=\"images/20red.png\"></td>"; }
-			if($configs['dratsEnabled'] == 1){print "<td align=center width=40><img src=\"images/20green.png\"></td>"; } else { print "<td align=center width=40><img src=\"images/20red.png\"></td>"; }
-			if($configs['infoEnabled'] == 1){print "<td align=center width=40><img src=\"images/20green.png\"></td>"; } else { print "<td align=center width=40><img src=\"images/20red.png\"></td>"; }
-			if($configs['ircddbEnabled'] == 1){print "<td align=center width=40><img src=\"images/20green.png\"></td>"; } else { print "<td align=center width=40><img src=\"images/20red.png\"></td>"; }
-			if($configs['echoEnabled'] == 1){print "<td align=center width=40><img src=\"images/20green.png\"></td>"; } else { print "<td align=center width=40><img src=\"images/20red.png\"></td>"; }
-			if($configs['logEnabled'] == 1){print "<td align=center width=40><img src=\"images/20green.png\"></td>"; } else { print "<td align=center width=40><img src=\"images/20red.png\"></td>"; }
+	print "\t<td>$configs[ircddbHostname]</td>\n";
+			if($configs['aprsEnabled'] == 1){ print "\t<td align=center width=40>$configs[aprsHostname]</td>\n"; } else { print "\t<td align=center width=40><img src=\"images/20red.png\"></td>\n";}
+			if($configs['ccsEnabled'] == 1){print "\t<td align=center width=40><img src=\"images/20green.png\"></td>\n"; } else { print "\t<td align=center width=40><img src=\"images/20red.png\"></td>\n"; }
+			if($configs['dcsEnabled'] == 1){print "\t<td align=center width=40><img src=\"images/20green.png\"></td>\n"; } else { print "\t<td align=center width=40><img src=\"images/20red.png\"></td>\n"; }
+			if($configs['dextraEnabled'] == 1){print "\t<td align=center width=40><img src=\"images/20green.png\"></td>\n"; } else { print "\t<td align=center width=40><img src=\"images/20red.png\"></td>\n"; }
+			if($configs['dplusEnabled'] == 1){print "\t<td align=center width=40><img src=\"images/20green.png\"></td>\n"; } else { print "\t<td align=center width=40><img src=\"images/20red.png\"></td>\n"; }
+			if($configs['dratsEnabled'] == 1){print "\t<td align=center width=40><img src=\"images/20green.png\"></td>\n"; } else { print "\t<td align=center width=40><img src=\"images/20red.png\"></td>\n"; }
+			if($configs['infoEnabled'] == 1){print "\t<td align=center width=40><img src=\"images/20green.png\"></td>\n"; } else { print "\t<td align=center width=40><img src=\"images/20red.png\"></td>\n"; }
+			if($configs['ircddbEnabled'] == 1){print "\t<td align=center width=40><img src=\"images/20green.png\"></td>\n"; } else { print "\t<td align=center width=40><img src=\"images/20red.png\"></td>\n"; }
+			if($configs['echoEnabled'] == 1){print "\t<td align=center width=40><img src=\"images/20green.png\"></td>\n"; } else { print "\t<td align=center width=40><img src=\"images/20red.png\"></td>\n"; }
+			if($configs['logEnabled'] == 1){print "\t<td align=center width=40><img src=\"images/20green.png\"></td>\n"; } else { print "\t<td align=center width=40><img src=\"images/20red.png\"></td>\n"; }
 ?>
 		</tr>
 	</table>
