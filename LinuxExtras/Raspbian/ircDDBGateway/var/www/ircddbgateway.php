@@ -107,7 +107,7 @@
 		if((isset($configs[$param])) && strlen($configs[$param]) == 1) {
 			$ci++;
 			if($ci > 1) { $ci = 0; }
-			print "\t\t<tr bgcolor=\"$col[$ci]\">";
+			print "\t\t<tr bgcolor=\"$col[$ci]\">\n";
 			$tr = 1;
 			$module = $configs[$param];
 			$rcall = sprintf("%-7.7s%-1.1s",$MYCALL,$module);
@@ -148,7 +148,7 @@
 							print "\t\t\t<td>$protocol</td>\n";
 							print "\t\t\t<td>Outgoing</td>\n";
 							print "\t\t\t<td>$linkDate</td>\n";
-							print "\t\t</tr>";
+							print "\t\t</tr>\n";
 							$tr = 0;
 						}
 					}
