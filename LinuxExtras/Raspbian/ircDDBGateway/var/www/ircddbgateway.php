@@ -31,7 +31,7 @@
 		<meta name="Author" content="Hans-J. Barthen (DL5DI)">
 		<meta name="Description" content="ircDDBGateway Dashboard">
 		<meta name="KeyWords" content="Hamradio,ircDDBGateway,D-Star,ircDDB,DL5DI">
-		<title>ircDDB LastHeard<?php echo "$MYCALL" ?></title>
+		<title>ircDDB LastHeard <?php echo "$MYCALL" ?></title>
 		<LINK REL="stylesheet" type="text/css" href="css/ircddb.css">
 	</head>
 	<body>
@@ -66,15 +66,15 @@
 <?php
 			print "<td>$configs[ircddbHostname]</td>\n";
 			if($configs['aprsEnabled'] == 1){ print "<td align=center width=40>$configs[aprsHostname]</td>"; } else { print "<td align=center width=40><img src=\"images/20red.png\"></td>";}
-			if($configs['ccsEnabled'] == 1){print "<td align=center width=40><img src=\"images/20green.png\"</td>"; } else { print "<td align=center width=40><img src=\"images/20red.png\"</td>"; }
-			if($configs['dcsEnabled'] == 1){print "<td align=center width=40><img src=\"images/20green.png\"</td>"; } else { print "<td align=center width=40><img src=\"images/20red.png\"</td>"; }
-			if($configs['dextraEnabled'] == 1){print "<td align=center width=40><img src=\"images/20green.png\"</td>"; } else { print "<td align=center width=40><img src=\"images/20red.png\"</td>"; }
-			if($configs['dplusEnabled'] == 1){print "<td align=center width=40><img src=\"images/20green.png\"</td>"; } else { print "<td align=center width=40><img src=\"images/20red.png\"</td>"; }
-			if($configs['dratsEnabled'] == 1){print "<td align=center width=40><img src=\"images/20green.png\"</td>"; } else { print "<td align=center width=40><img src=\"images/20red.png\"</td>"; }
-			if($configs['infoEnabled'] == 1){print "<td align=center width=40><img src=\"images/20green.png\"</td>"; } else { print "<td align=center width=40><img src=\"images/20red.png\"</td>"; }
-			if($configs['ircddbEnabled'] == 1){print "<td align=center width=40><img src=\"images/20green.png\"</td>"; } else { print "<td align=center width=40><img src=\"images/20red.png\"</td>"; }
-			if($configs['echoEnabled'] == 1){print "<td align=center width=40><img src=\"images/20green.png\"</td>"; } else { print "<td align=center width=40><img src=\"images/20red.png\"</td>"; }
-			if($configs['logEnabled'] == 1){print "<td align=center width=40><img src=\"images/20green.png\"</td>"; } else { print "<td align=center width=40><img src=\"images/20red.png\"</td>"; }
+			if($configs['ccsEnabled'] == 1){print "<td align=center width=40><img src=\"images/20green.png\"></td>"; } else { print "<td align=center width=40><img src=\"images/20red.png\"></td>"; }
+			if($configs['dcsEnabled'] == 1){print "<td align=center width=40><img src=\"images/20green.png\"></td>"; } else { print "<td align=center width=40><img src=\"images/20red.png\"></td>"; }
+			if($configs['dextraEnabled'] == 1){print "<td align=center width=40><img src=\"images/20green.png\"></td>"; } else { print "<td align=center width=40><img src=\"images/20red.png\"></td>"; }
+			if($configs['dplusEnabled'] == 1){print "<td align=center width=40><img src=\"images/20green.png\"></td>"; } else { print "<td align=center width=40><img src=\"images/20red.png\"></td>"; }
+			if($configs['dratsEnabled'] == 1){print "<td align=center width=40><img src=\"images/20green.png\"></td>"; } else { print "<td align=center width=40><img src=\"images/20red.png\"></td>"; }
+			if($configs['infoEnabled'] == 1){print "<td align=center width=40><img src=\"images/20green.png\"></td>"; } else { print "<td align=center width=40><img src=\"images/20red.png\"></td>"; }
+			if($configs['ircddbEnabled'] == 1){print "<td align=center width=40><img src=\"images/20green.png\"></td>"; } else { print "<td align=center width=40><img src=\"images/20red.png\"></td>"; }
+			if($configs['echoEnabled'] == 1){print "<td align=center width=40><img src=\"images/20green.png\"></td>"; } else { print "<td align=center width=40><img src=\"images/20red.png\"></td>"; }
+			if($configs['logEnabled'] == 1){print "<td align=center width=40><img src=\"images/20green.png\"></td>"; } else { print "<td align=center width=40><img src=\"images/20red.png\"></td>"; }
 ?>
 		</tr>
     </table>
@@ -115,7 +115,7 @@
 			$param="reflector" . $i;
 			if(isset($configs[$param])) { print "<td>$configs[$param]</td>"; } else { print "<td>&nbsp;</td>";}
 			$param="atStartup" . $i;
-			if($configs[$param] == 1){print "<td align=center width=40><img src=\"images/20green.png\"</td>"; } else { print "<td align=center width=40><img src=\"images/20red.png\"</td>"; }
+			if($configs[$param] == 1){print "<td align=center width=40><img src=\"images/20green.png\"></td>"; } else { print "<td align=center width=40><img src=\"images/20red.png\"></td>"; }
 			$param="reconnect" . $i;
 			if(isset($configs[$param])) { $t = $configs[$param]; } else { $t = 0; }
 			if($t > 12){ $t = 12; }
