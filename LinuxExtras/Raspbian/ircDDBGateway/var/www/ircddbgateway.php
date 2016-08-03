@@ -240,7 +240,7 @@
 		}
 		$ci++;
 		if($ci > 1) { $ci = 0; }
-		print "<tr bgcolor=\"$col[$ci]\">";
+		print "\t\t<tr bgcolor=\"$col[$ci]\">\n";
 ?>
 			<td>&nbsp;</td>
 			<td>&nbsp;</td>
