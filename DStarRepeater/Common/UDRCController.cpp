@@ -206,5 +206,10 @@ void CUDRCController::setActive(bool value)
 //  will try to dork around with threads that we're not using anymore.
 void CUDRCController::close()
 {
+	if(m_mode == HOTSPOT) {
+		::digitalWrite(m_pttPin, LOW);
+	} else {
+		::digitalWrite(m_pttPin, HIGH);
+	}
 }
 
