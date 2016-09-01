@@ -25,6 +25,7 @@ public:
 
 private:
 	const enum repeater_modes m_mode;
+	int m_pttPin;
 
 	void switchMode(enum repeater_modes mode);
 };
