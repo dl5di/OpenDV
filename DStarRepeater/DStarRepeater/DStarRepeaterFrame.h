@@ -35,6 +35,7 @@ public:
 	virtual void onUpdates(wxCommandEvent& event);
 	virtual void onAbout(wxCommandEvent& event);
 	virtual void onClose(wxCloseEvent& event);
+	virtual void onStatus(wxCommandEvent& event);
 	virtual void onActions(wxCommandEvent& event);
 	virtual void onOutputs(wxCommandEvent& event);
 	virtual void onLog(wxEvent& event);

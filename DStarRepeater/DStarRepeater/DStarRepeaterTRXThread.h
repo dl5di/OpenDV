@@ -52,7 +52,13 @@ public:
 	virtual void setTimes(unsigned int timeout, unsigned int ackTime);
 	virtual void setBeacon(unsigned int time, const wxString& text, bool voice, TEXT_LANG language);
 	virtual void setAnnouncement(bool enabled, unsigned int time, const wxString& recordRPT1, const wxString& recordRPT2, const wxString& deleteRPT1, const wxString& deleteRPT2);
-	virtual void setControl(bool enabled, const wxString& rpt1Callsign, const wxString& rpt2Callsign, const wxString& shutdown, const wxString& startup, const wxString& status1, const wxString& status2, const wxString& status3, const wxString& status4, const wxString& status5, const wxString& command1, const wxString& command1Line, const wxString& command2, const wxString& command2Line, const wxString& command3, const wxString& command3Line, const wxString& command4, const wxString& command4Line, const wxString& command5, const wxString& command5Line, const wxString& command6, const wxString& command6Line, const wxString& output1, const wxString& output2, const wxString& output3, const wxString& output4);
+
+	virtual void setControl(bool enabled, const wxString& rpt1Callsign,
+		const wxString& rpt2Callsign, const wxString& shutdown,
+		const wxString& startup, const wxArrayString& command,
+		const wxArrayString& status, const wxArrayString& outputs
+	);
+
 	virtual void setOutputs(bool out1, bool out2, bool out3, bool out4);
 	virtual void setLogging(bool logging, const wxString& dir);
 	virtual void setWhiteList(CCallsignList* list);
@@ -62,16 +68,10 @@ public:
 	virtual void shutdown();
 	virtual void startup();
 
-	virtual void command1();
-	virtual void command2();
-	virtual void command3();
-	virtual void command4();
-	virtual void command5();
-	virtual void command6();
-
 	virtual CDStarRepeaterStatusData* getStatus();
 
-	virtual void run();
+	virtual void *Entry();
+
 	virtual void kill();
 
 	virtual void transmitBeaconHeader();
@@ -107,14 +107,14 @@ private:
 	CTimer                     m_watchdogTimer;
 	CTimer                     m_pollTimer;
 	CTimer                     m_ackTimer;
-	CTimer                     m_status1Timer;
-	CTimer                     m_status2Timer;
-	CTimer                     m_status3Timer;
-	CTimer                     m_status4Timer;
-	CTimer                     m_status5Timer;
+
+	CTimer                     m_statusAnnounceTimer[5];
+
 	CTimer                     m_beaconTimer;
 	CTimer                     m_announcementTimer;
+
 	CTimer                     m_statusTimer;
+
 	CTimer                     m_heartbeatTimer;
 	DSTAR_RPT_STATE            m_rptState;
 	DSTAR_RX_STATE             m_rxState;
@@ -122,11 +122,17 @@ private:
 	CSlowDataEncoder           m_ackEncoder;
 	CSlowDataEncoder           m_linkEncoder;
 	CSlowDataEncoder           m_headerEncoder;
+
+	// XXX ARRAY!
 	CSlowDataEncoder           m_status1Encoder;
 	CSlowDataEncoder           m_status2Encoder;
 	CSlowDataEncoder           m_status3Encoder;
 	CSlowDataEncoder           m_status4Encoder;
 	CSlowDataEncoder           m_status5Encoder;
+
+	// XXX ARRAY!
+	wxArrayString		   m_statusText;
+
 	bool                       m_tx;
 	unsigned int               m_space;
 	bool                       m_killed;
@@ -140,31 +146,14 @@ private:
 	wxString                   m_controlRPT2;
 	wxString                   m_controlShutdown;
 	wxString                   m_controlStartup;
-	wxString                   m_controlStatus1;
-	wxString                   m_controlStatus2;
-	wxString                   m_controlStatus3;
-	wxString                   m_controlStatus4;
-	wxString                   m_controlStatus5;
-	wxString                   m_controlCommand1;
-	wxString                   m_controlCommand1Line;
-	wxString                   m_controlCommand2;
-	wxString                   m_controlCommand2Line;
-	wxString                   m_controlCommand3;
-	wxString                   m_controlCommand3Line;
-	wxString                   m_controlCommand4;
-	wxString                   m_controlCommand4Line;
-	wxString                   m_controlCommand5;
-	wxString                   m_controlCommand5Line;
-	wxString                   m_controlCommand6;
-	wxString                   m_controlCommand6Line;
-	wxString                   m_controlOutput1;
-	wxString                   m_controlOutput2;
-	wxString                   m_controlOutput3;
-	wxString                   m_controlOutput4;
-	bool                       m_output1;
-	bool                       m_output2;
-	bool                       m_output3;
-	bool                       m_output4;
+
+	wxArrayString              m_controlStatus;
+	wxArrayString              m_controlCommand;
+
+	wxArrayString		   m_controlOutput;
+
+	bool			   m_output[4];
+
 	CTimer                     m_activeHangTimer;
 	bool                       m_shutdown;
 	bool                       m_disable;
@@ -181,11 +170,7 @@ private:
 	wxString                   m_tempAckText;
 	LINK_STATUS                m_linkStatus;
 	wxString                   m_reflector;
-	wxString                   m_status1Text;
-	wxString                   m_status2Text;
-	wxString                   m_status3Text;
-	wxString                   m_status4Text;
-	wxString                   m_status5Text;
+
 	wxRegEx                    m_regEx;
 	wxStopWatch                m_headerTime;
 	wxStopWatch                m_packetTime;

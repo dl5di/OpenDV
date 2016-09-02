@@ -74,14 +74,14 @@ CDStarRepeaterTXThread::~CDStarRepeaterTXThread()
 	delete   m_txHeader;
 }
 
-void CDStarRepeaterTXThread::run()
+void *CDStarRepeaterTXThread::Entry()
 {
 	// Wait here until we have the essentials to run
 	while (!m_killed && (m_modem == NULL  || m_protocolHandler == NULL || m_rptCallsign.IsEmpty() || m_rptCallsign.IsSameAs(wxT("        "))))
 		::wxMilliSleep(500UL);		// 1/2 sec
 
 	if (m_killed)
-		return;
+		return NULL;
 
 	m_stopped = false;
 
@@ -154,6 +154,8 @@ void CDStarRepeaterTXThread::run()
 
 	m_protocolHandler->close();
 	delete m_protocolHandler;
+
+	return NULL;
 }
 
 void CDStarRepeaterTXThread::kill()
@@ -202,10 +204,6 @@ void CDStarRepeaterTXThread::setAnnouncement(bool, unsigned int, const wxString&
 }
 
 void CDStarRepeaterTXThread::setController(CExternalController*, unsigned int)
-{
-}
-
-void CDStarRepeaterTXThread::setControl(bool, const wxString&, const wxString&, const wxString&, const wxString&, const wxString&, const wxString&, const wxString&, const wxString&, const wxString&, const wxString&, const wxString&, const wxString&, const wxString&, const wxString&, const wxString&, const wxString&, const wxString&, const wxString&, const wxString&, const wxString&, const wxString&, const wxString&, const wxString&, const wxString&, const wxString&)
 {
 }
 
@@ -488,7 +486,7 @@ CDStarRepeaterStatusData* CDStarRepeaterTXThread::getStatus()
 				wxEmptyString, wxEmptyString, wxEmptyString, wxEmptyString, wxEmptyString, wxEmptyString);
 	else
 		return new CDStarRepeaterStatusData(m_txHeader->getMyCall1(), m_txHeader->getMyCall2(),
-				m_txHeader->getYourCall(), m_txHeader->getRptCall1(), m_txHeader->getRptCall2(), 
+				m_txHeader->getYourCall(), m_txHeader->getRptCall1(), m_txHeader->getRptCall2(),
 				m_txHeader->getFlag1(), m_txHeader->getFlag2(), m_txHeader->getFlag3(), m_tx, DSRXS_LISTENING,
 				m_state, 0U, 0U, 0U, 0U, 0U, 0U, loss * 100.0F, wxEmptyString, wxEmptyString, wxEmptyString, wxEmptyString,
 				wxEmptyString, wxEmptyString);

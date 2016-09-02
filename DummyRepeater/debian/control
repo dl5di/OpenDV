@@ -2,13 +2,13 @@ Source: dummyrepeater
 Section: hamradio
 Priority: optional
 Maintainer: Jeremy McDermond <nh6z@nh6z.net>
-Build-Depends: debhelper (>= 9), autotools-dev , libwxgtk3.0-dev, libasound2-dev, libusb-1.0-0-dev, wiringpi [armhf]
+Build-Depends: debhelper (>= 9), autotools-dev , libwxgtk3.0-dev, libasound2-dev, libusb-1.0-0-dev, wiringpi [armhf armel]
 Standards-Version: 3.9.6
 Homepage: https://github.com/dl5di/OpenDV
 
 Package: dummyrepeater
 Architecture: i386 amd64 armel armhf
-Depends: ${shlibs:Depends}, ${misc:Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends}, wiringpi [armhf armel]
 Description: D-STAR Digital Voice Local Repeater
   Provides an implementation of a D-STAR Digital Voice repeater in software.
   This package contains all of the GUI components that require X-Windows to

@@ -19,7 +19,10 @@
 #ifndef	DStarRepeaterApp_H
 #define	DStarRepeaterApp_H
 
-#include "DStarRepeaterThreadHelper.h"
+#include <wx/wx.h>
+#include <wx/snglinst.h>
+
+#include "DStarRepeaterThread.h"
 #include "DStarRepeaterStatusData.h"
 #include "DStarRepeaterConfig.h"
 #if (wxUSE_GUI == 1)
@@ -27,11 +30,9 @@
 #endif
 #include "DStarRepeaterDefs.h"
 
-#include <wx/wx.h>
-#include <wx/snglinst.h>
+wxDECLARE_EVENT(wxEVT_THREAD_COMMAND, wxThreadEvent);
 
 class CDStarRepeaterApp : public wxApp {
-
 public:
 	CDStarRepeaterApp();
 	virtual ~CDStarRepeaterApp();
@@ -57,31 +58,31 @@ public:
 
 	virtual void setPosition(int x, int y);
 
-	virtual void shutdown();
-	virtual void startup();
-	virtual void command1();
-	virtual void command2();
-	virtual void command3();
-	virtual void command4();
-	virtual void command5();
-	virtual void command6();
+	void startup();
+	void shutdown();
 
 private:
+#if (wxUSE_GUI == 1)
+	CDStarRepeaterFrame*        m_frame;
+#endif
+
 	wxString                    m_name;
 	bool                        m_nolog;
 	bool                        m_gui;
 	wxString                    m_logDir;
 	wxString                    m_confDir;
 	wxString                    m_audioDir;
-#if (wxUSE_GUI == 1)
-	CDStarRepeaterFrame*        m_frame;
-#endif
-	CDStarRepeaterThreadHelper* m_thread;
+	IDStarRepeaterThread*       m_thread;
 	CDStarRepeaterConfig*       m_config;
 	wxSingleInstanceChecker*    m_checker;
 	wxLogChain*                 m_logChain;
+	wxString					m_commandLine[6];
 
 	void createThread();
+
+	void OnRemoteCmd(wxThreadEvent& event);
+
+	wxDECLARE_EVENT_TABLE();
 };
 
 DECLARE_APP(CDStarRepeaterApp)

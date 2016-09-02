@@ -11,7 +11,8 @@ pkgdatadir = ${datadir}/opendv
 DEFS += \
 	-DDATA_DIR=\"${pkgdatadir}\" \
 	-DLOG_DIR=\"${opendvlogdir}\" \
-	-DCONF_DIR=\"${pkgsysconfdir}\"
+	-DCONF_DIR=\"${pkgsysconfdir}\" \
+	-DwxUSE_CONSOLE_EVENTLOOP=1
 
 CONTROLLER_SRCS =  Common/ArduinoController.cpp \
                    Common/DummyController.cpp \
@@ -75,8 +76,7 @@ libCommon_a_CPPFLAGS = -ICommon $(BASE_WX_CPPFLAGS)
 
 sbin_PROGRAMS = dstarrepeaterd
 dstarrepeaterd_SOURCES = DStarRepeater/DStarRepeaterApp.cpp \
-			DStarRepeater/DStarRepeaterLogger.cpp \
-			DStarRepeater/DStarRepeaterThreadHelper.cpp
+			DStarRepeater/DStarRepeaterLogger.cpp
 dstarrepeaterd_CPPFLAGS = -ICommon $(BASE_WX_CPPFLAGS)
 dstarrepeaterd_LDADD = libCommon.a $(BASE_WX_LIBS) $(LIBUSB_LIBS) $(ALSA_LIBS)
 
@@ -84,7 +84,7 @@ examplesdir = ${docdir}/examples
 examples_DATA = linux/dstarrepeater_1.example
 
 if WITH_GPIO
-COMMON_SRCS += Common/GPIOController.cpp
+COMMON_SRCS += Common/GPIOController.cpp Common/UDRCController.cpp
 dstarrepeaterd_LDADD += -lwiringPi
 endif
 
@@ -92,8 +92,7 @@ if WITH_GUI
 bin_PROGRAMS = dstarrepeater
 dstarrepeater_SOURCES = DStarRepeater/DStarRepeaterApp.cpp \
                         DStarRepeater/DStarRepeaterFrame.cpp \
-                        DStarRepeater/DStarRepeaterLogger.cpp \
-                        DStarRepeater/DStarRepeaterThreadHelper.cpp 
+                        DStarRepeater/DStarRepeaterLogger.cpp
 dstarrepeater_LDADD = libCommon.a $(GUI_WX_LIBS) $(LIBUSB_LIBS) $(ALSA_LIBS)
 dstarrepeater_CPPFLAGS = -ICommon $(GUI_WX_CPPFLAGS)
 

@@ -60,14 +60,14 @@ CDStarRepeaterRXThread::~CDStarRepeaterRXThread()
 	delete  m_rxHeader;
 }
 
-void CDStarRepeaterRXThread::run()
+void *CDStarRepeaterRXThread::Entry()
 {
 	// Wait here until we have the essentials to run
 	while (!m_killed && (m_modem == NULL  || m_protocolHandler == NULL))
 		::wxMilliSleep(500UL);		// 1/2 sec
 
 	if (m_killed)
-		return;
+		return NULL;
 
 	m_registerTimer.start(10U);
 
@@ -117,6 +117,8 @@ void CDStarRepeaterRXThread::run()
 
 	m_protocolHandler->close();
 	delete m_protocolHandler;
+
+	return NULL;
 }
 
 void CDStarRepeaterRXThread::kill()
@@ -155,10 +157,6 @@ void CDStarRepeaterRXThread::setAnnouncement(bool, unsigned int, const wxString&
 }
 
 void CDStarRepeaterRXThread::setController(CExternalController*, unsigned int)
-{
-}
-
-void CDStarRepeaterRXThread::setControl(bool, const wxString&, const wxString&, const wxString&, const wxString&, const wxString&, const wxString&, const wxString&, const wxString&, const wxString&, const wxString&, const wxString&, const wxString&, const wxString&, const wxString&, const wxString&, const wxString&, const wxString&, const wxString&, const wxString&, const wxString&, const wxString&, const wxString&, const wxString&, const wxString&, const wxString&)
 {
 }
 
@@ -425,7 +423,7 @@ CDStarRepeaterStatusData* CDStarRepeaterRXThread::getStatus()
 					wxEmptyString, wxEmptyString, wxEmptyString, wxEmptyString, wxEmptyString, wxEmptyString);
 	else
 		status = new CDStarRepeaterStatusData(m_rxHeader->getMyCall1(), m_rxHeader->getMyCall2(),
-					m_rxHeader->getYourCall(), m_rxHeader->getRptCall1(), m_rxHeader->getRptCall2(), 
+					m_rxHeader->getYourCall(), m_rxHeader->getRptCall1(), m_rxHeader->getRptCall2(),
 					m_rxHeader->getFlag1(), m_rxHeader->getFlag2(), m_rxHeader->getFlag3(), false, m_rxState,
 					m_rptState, 0U, 0U, 0U, 0U, 0U, 0U, (errors * 100.0F) / bits, wxEmptyString, wxEmptyString,
 					wxEmptyString, wxEmptyString, wxEmptyString, wxEmptyString);

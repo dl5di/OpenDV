@@ -16,9 +16,11 @@
  *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include "DStarRepeaterConfig.h"
+#include <stdexcept>
 
 #include <wx/textfile.h>
+
+#include "DStarRepeaterConfig.h"
 
 const wxString  KEY_CALLSIGN           = wxT("callsign");
 const wxString  KEY_GATEWAY            = wxT("gateway");
@@ -696,7 +698,7 @@ CDStarRepeaterConfig::~CDStarRepeaterConfig()
 
 #else
 
-CDStarRepeaterConfig::CDStarRepeaterConfig(const wxString& dir, const wxString& configName, const wxString& name) :
+CDStarRepeaterConfig::CDStarRepeaterConfig(const wxString& dir, const wxString& configName, const wxString& name, const bool mustExist) :
 m_fileName(),
 m_callsign(DEFAULT_CALLSIGN),
 m_gateway(DEFAULT_GATEWAY),
@@ -826,15 +828,14 @@ m_splitTimeout(DEFAULT_SPLIT_TIMEOUT)
 
 	wxTextFile file(m_fileName.GetFullPath());
 
-	bool exists = file.Exists();
-	if (!exists)
-		return;
+	if (!file.Exists())
+		if(mustExist)
+			throw std::runtime_error("Configuration file does not exist");
+		else
+			return;
 
-	bool ret = file.Open();
-	if (!ret) {
-		wxLogError(wxT("Cannot open the config file - %s"), m_fileName.GetFullPath().c_str());
-		return;
-	}
+	if (!file.Open())
+		throw std::runtime_error("Cannot open the configuration file");
 
 	wxString* splitTXName = new wxString[SPLIT_TX_COUNT];
 	wxString* splitRXName = new wxString[SPLIT_RX_COUNT];
@@ -843,9 +844,9 @@ m_splitTimeout(DEFAULT_SPLIT_TIMEOUT)
 	unsigned long temp2;
 	double temp3;
 
-	wxString str = file.GetFirstLine();
-
-	while (!file.Eof()) {
+	for (wxString str = file.GetFirstLine();
+	     !file.Eof();
+	     str = file.GetNextLine())  {
 		if (str.GetChar(0U) == wxT('#')) {
 			str = file.GetNextLine();
 			continue;
@@ -1169,8 +1170,6 @@ m_splitTimeout(DEFAULT_SPLIT_TIMEOUT)
 					splitRXName[i] = val;
 			}
 		}
-
-		str = file.GetNextLine();
 	}
 
 	file.Close();
@@ -1181,7 +1180,7 @@ m_splitTimeout(DEFAULT_SPLIT_TIMEOUT)
 	for (unsigned int i = 0U; i < SPLIT_RX_COUNT; i++)
 		m_splitRXNames.Add(splitRXName[i]);
 
-	delete[] splitTXName;	
+	delete[] splitTXName;
 	delete[] splitRXName;
 }
 
@@ -1298,11 +1297,13 @@ void CDStarRepeaterConfig::getControl(bool& enabled, wxString& rpt1Callsign, wxS
 	rpt2Callsign = m_controlRpt2Callsign;
 	shutdown     = m_controlShutdown;
 	startup      = m_controlStartup;
+
 	status1      = m_controlStatus1;
 	status2      = m_controlStatus2;
 	status3      = m_controlStatus3;
 	status4      = m_controlStatus4;
 	status5      = m_controlStatus5;
+
 	command1     = m_controlCommand1;
 	command1Line = m_controlCommand1Line;
 	command2     = m_controlCommand2;
@@ -1315,6 +1316,7 @@ void CDStarRepeaterConfig::getControl(bool& enabled, wxString& rpt1Callsign, wxS
 	command5Line = m_controlCommand5Line;
 	command6     = m_controlCommand6;
 	command6Line = m_controlCommand6Line;
+
 	output1      = m_controlOutput1;
 	output2      = m_controlOutput2;
 	output3      = m_controlOutput3;

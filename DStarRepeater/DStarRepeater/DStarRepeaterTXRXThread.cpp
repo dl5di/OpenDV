@@ -94,14 +94,14 @@ CDStarRepeaterTXRXThread::~CDStarRepeaterTXRXThread()
 	delete   m_txHeader;
 }
 
-void CDStarRepeaterTXRXThread::run()
+void *CDStarRepeaterTXRXThread::Entry()
 {
 	// Wait here until we have the essentials to run
 	while (!m_killed && (m_modem == NULL  || m_controller == NULL || m_protocolHandler == NULL || m_rptCallsign.IsEmpty() || m_rptCallsign.IsSameAs(wxT("        "))))
 		::wxMilliSleep(500UL);		// 1/2 sec
 
 	if (m_killed)
-		return;
+		return NULL;
 
 	m_controller->setActive(false);
 	m_controller->setRadioTransmit(false);
@@ -213,6 +213,8 @@ void CDStarRepeaterTXRXThread::run()
 
 	m_protocolHandler->close();
 	delete m_protocolHandler;
+
+	return NULL;
 }
 
 void CDStarRepeaterTXRXThread::kill()
@@ -266,10 +268,6 @@ void CDStarRepeaterTXRXThread::setController(CExternalController* controller, un
 
 	m_controller = controller;
 	m_activeHangTimer.setTimeout(activeHangTime);
-}
-
-void CDStarRepeaterTXRXThread::setControl(bool, const wxString&, const wxString&, const wxString&, const wxString&, const wxString&, const wxString&, const wxString&, const wxString&, const wxString&, const wxString&, const wxString&, const wxString&, const wxString&, const wxString&, const wxString&, const wxString&, const wxString&, const wxString&, const wxString&, const wxString&, const wxString&, const wxString&, const wxString&, const wxString&, const wxString&)
-{
 }
 
 void CDStarRepeaterTXRXThread::setOutputs(bool, bool, bool, bool)
@@ -827,7 +825,7 @@ CDStarRepeaterStatusData* CDStarRepeaterTXRXThread::getStatus()
 					wxEmptyString, wxEmptyString, wxEmptyString, wxEmptyString, wxEmptyString, wxEmptyString);
 	else
 		status = new CDStarRepeaterStatusData(m_rxHeader->getMyCall1(), m_rxHeader->getMyCall2(),
-					m_rxHeader->getYourCall(), m_rxHeader->getRptCall1(), m_rxHeader->getRptCall2(), 
+					m_rxHeader->getYourCall(), m_rxHeader->getRptCall1(), m_rxHeader->getRptCall2(),
 					m_rxHeader->getFlag1(), m_rxHeader->getFlag2(), m_rxHeader->getFlag3(), m_tx, m_rxState,
 					m_rptState, 0U, 0U, 0U, 0U, 0U, 0U, (errors * 100.0F) / bits, wxEmptyString, wxEmptyString,
 					wxEmptyString, wxEmptyString, wxEmptyString, wxEmptyString);
