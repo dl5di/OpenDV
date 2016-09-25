@@ -6,7 +6,7 @@ After=ircddbgatewayd.service
 [Service]
 User=opendv
 EnvironmentFile=/etc/opendv/aprstransmitd.conf
-ExecStart=/usr/sbin/aprstransmitd $REPEATER -host $APRS_SERVER -port $APRS_PORT -filter ${FILTER}
+ExecStart=/usr/sbin/aprstransmitd $i -host $APRS_SERVER -port $APRS_PORT -filter ${FILTER}
 Restart=on-abort
 
 [Install]
