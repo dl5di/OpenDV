@@ -35,7 +35,7 @@
 const wxChar* REPEATER_PARAM   = wxT("Repeater");
 const wxChar* APRS_HOST        = wxT("host");
 const wxChar* APRS_PORT        = wxT("port");
-const wxChar* REPEATER_RADIUS  = wxT("radius");
+const wxChar* APRS_FILTER      = wxT("filter");
 const wxChar* DAEMON_SWITCH    = wxT("daemon");
 
 static CAPRSTransmitAppD* m_aprsTransmit = NULL;
@@ -47,7 +47,7 @@ static void handler(int signum)
 
 static void aprsFrameCallback(const wxString& aprsFrame)
 {
-	//wxLogMessage(wxT("Received APRS Fram : ") + aprsFrame);
+	//wxLogMessage(wxT("Received APRS Frame : ") + aprsFrame);
 	m_aprsTransmit->m_aprsFramesQueue->addData(new wxString(aprsFrame.Clone()));
 }
 
@@ -63,7 +63,7 @@ int main(int argc, char** argv)
 	parser.AddParam(REPEATER_PARAM, wxCMD_LINE_VAL_STRING, wxCMD_LINE_PARAM_OPTIONAL);
 	parser.AddOption(APRS_HOST, wxEmptyString, wxEmptyString, wxCMD_LINE_VAL_STRING, wxCMD_LINE_PARAM_OPTIONAL);
 	parser.AddOption(APRS_PORT, wxEmptyString, wxEmptyString, wxCMD_LINE_VAL_NUMBER, wxCMD_LINE_PARAM_OPTIONAL);
-	parser.AddOption(REPEATER_RADIUS, wxEmptyString, wxEmptyString, wxCMD_LINE_VAL_NUMBER, wxCMD_LINE_PARAM_OPTIONAL);
+	parser.AddOption(APRS_FILTER, wxEmptyString, wxEmptyString, wxCMD_LINE_VAL_STRING, wxCMD_LINE_PARAM_OPTIONAL);
 	parser.AddSwitch(DAEMON_SWITCH, wxEmptyString, wxEmptyString, wxCMD_LINE_PARAM_OPTIONAL);
 
 	int cmd = parser.Parse();
@@ -73,7 +73,7 @@ int main(int argc, char** argv)
 	}
 
 	if (parser.GetParamCount() < 1U) {
-		::fprintf(stderr, "aprstransmitd: invalid command line usage: aprstransmitd <repeater> [-host <aprs_server>] [-port <aprs_port>] [-radius <radius_around_repeater_in_km>] [-daemon] exiting\n");
+		::fprintf(stderr, "aprstransmitd: invalid command line usage: aprstransmitd <repeater> [-host <aprs_server>] [-port <aprs_port>] [-filter <aprsis_filter1>[;<aprsis_filter2]] [-daemon] exiting\n");
 		::wxUninitialize();
 		return 1;
 	}
@@ -99,15 +99,13 @@ int main(int argc, char** argv)
 		aprsHost = wxT("rotate.aprs2.net");
 	}
 
-	long radius;
-	if(!parser.Found(REPEATER_RADIUS, &radius))
-		radius = 50;
-	wxString aprsFilter = repeater.SubString(0, SHORT_CALLSIGN_LENGTH);
-	aprsFilter.Trim(true);
-	wxString ssid = repeater.SubString(LONG_CALLSIGN_LENGTH - 1, 1); 
-	aprsFilter << wxT("-") << ssid;
-	aprsFilter.Prepend(wxT("f/"));
-	aprsFilter << wxT("/") << radius;
+	wxString aprsFilter;
+	if(!parser.Found(APRS_FILTER, &aprsFilter)) {
+		/* no filter specified on command line,
+		build one which will tell the APRS server to pass
+		us all stations 50km around our repeater */
+		aprsFilter = wxT("m/50");
+	}
 
 	bool daemon = parser.Found(DAEMON_SWITCH);
 
@@ -222,7 +220,7 @@ void CAPRSTransmitAppD::run()
 	if(m_run) return;
 
 	m_aprsFramesQueue = new CRingBuffer<wxString*>(30U);
-	m_aprsThread = new CAPRSWriterThread(m_repeater, wxT("0.0.0.0"), m_aprsHost, m_aprsPort, m_aprsFilter, wxT("APRSTransmit 1.0"));
+	m_aprsThread = new CAPRSWriterThread(m_repeater, wxT("0.0.0.0"), m_aprsHost, m_aprsPort, m_aprsFilter, wxT("APRSTransmit 1.1"));
 	m_aprsThread->setReadAPRSCallback(aprsFrameCallback);
 	m_aprsThread->start();
 	
@@ -243,7 +241,6 @@ void CAPRSTransmitAppD::run()
 
 	cleanup();
 }
-
 
 
 void CAPRSTransmitAppD::cleanup()

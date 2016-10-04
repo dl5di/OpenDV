@@ -125,8 +125,7 @@ bool CAPRSParser::Parse(const wxString& aprsFrame, CAPRSPacket& packet)
 		case '`' :
 			{
 				//Packet is of MicE type
-				//Icom radios do not support MicE so ignore for now;
-				//TODO? Add converion to icom supported packet format ?
+				//Icom radios do not support MicE so convert
 				if(parse_aprs_mice(packet)){
 					wxLogMessage(wxT("Got MicE format, converting to Icom supported"));
 					convertToIcomCompatible(packet);
@@ -340,7 +339,7 @@ bool CAPRSParser::parse_aprs_mice(CAPRSPacket& packet)
 	int posambiguity = 0;
 	int i;
 	
-	//code below is just to map wxWidgets stuff to originaal APRX pointer based logic.
+	//code below is just to map wxWidgets stuff to original APRX pointer based logic.
 	char* body = new char[packet.Body().length()];
 	for (unsigned int i = 0U; i < packet.Body().length(); i++)
 		body[i] = packet.Body().GetChar(i);

@@ -102,7 +102,6 @@ bool CAPRSTransmit::run()
 		// Insert sync bytes when the sequence number is zero, slow data otherwise
 		if (out == 0U) {
 			::memcpy(buffer + VOICE_FRAME_LENGTH_BYTES, DATA_SYNC_BYTES, DATA_FRAME_LENGTH_BYTES);
-			//encoder.sync();
 		} else {
 			encoder.getInterleavedData(buffer + VOICE_FRAME_LENGTH_BYTES);		
 			dataOut++;
