@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2011-2015 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2011-2016 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -685,7 +685,10 @@ void CDStarRepeaterTXRXThread::processRadioFrame(unsigned char* data, FRAME_TYPE
 	// Only regenerate the AMBE on received radio data
 	unsigned int errors = 0U;
 	if (type != FRAME_END) {
-		errors = m_ambe.count(data);
+		// Data packets have no AMBE FEC
+		if (!m_rxHeader->isDataPacket())
+			errors = m_ambe.count(data);
+
 		m_ambeErrors += errors;
 		m_ambeBits   += 48U;		// Only count the bits with FEC added
 	}
@@ -752,7 +755,9 @@ unsigned int CDStarRepeaterTXRXThread::processNetworkFrame(unsigned char* data, 
 			::memcpy(buffer, NULL_FRAME_DATA_BYTES, DV_FRAME_LENGTH_BYTES);
 		} else {
 			::memcpy(buffer, m_lastData, DV_FRAME_LENGTH_BYTES);
-			m_ambe.regenerate(buffer);
+			// Data packets have no AMBE FEC
+			if (!m_txHeader->isDataPacket())
+				m_ambe.regenerate(buffer);
 		}
 
 		if (m_networkSeqNo == 0U)
@@ -776,7 +781,9 @@ unsigned int CDStarRepeaterTXRXThread::processNetworkFrame(unsigned char* data, 
 	if (m_networkSeqNo >= 21U)
 		m_networkSeqNo = 0U;
 
-	m_ambe.regenerate(data);
+	// Data packets have no AMBE FEC
+	if (!m_txHeader->isDataPacket())
+		m_ambe.regenerate(data);
 
 	m_networkQueue[m_writeNum]->addData(data, DV_FRAME_LENGTH_BYTES, false);
 

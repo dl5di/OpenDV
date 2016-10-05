@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2011-2015 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2011-2016 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -426,7 +426,9 @@ unsigned int CDStarRepeaterTXThread::processNetworkFrame(unsigned char* data, un
 			::memcpy(buffer, NULL_FRAME_DATA_BYTES, DV_FRAME_LENGTH_BYTES);
 		} else {
 			::memcpy(buffer, m_lastData, DV_FRAME_LENGTH_BYTES);
-			m_ambe.regenerate(buffer);
+			// Data packets have no AMBE FEC
+			if (!m_txHeader->isDataPacket())
+				m_ambe.regenerate(buffer);
 		}
 
 		if (m_networkSeqNo == 0U)
@@ -450,7 +452,9 @@ unsigned int CDStarRepeaterTXThread::processNetworkFrame(unsigned char* data, un
 	if (m_networkSeqNo >= 21U)
 		m_networkSeqNo = 0U;
 
-	m_ambe.regenerate(data);
+	// Data packets have no AMBE FEC
+	if (!m_txHeader->isDataPacket())
+		m_ambe.regenerate(data);
 
 	m_networkQueue[m_writeNum]->addData(data, DV_FRAME_LENGTH_BYTES, false);
 

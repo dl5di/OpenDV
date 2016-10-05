@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2011-2015 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2011-2016 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -377,7 +377,10 @@ void CDStarRepeaterRXThread::processRadioFrame(unsigned char* data, FRAME_TYPE t
 	// Only regenerate the AMBE on received radio data
 	unsigned int errors = 0U;
 	if (type != FRAME_END) {
-		errors = m_ambe.count(data);
+		// Data packets have no AMBE FEC
+		if (!m_rxHeader->isDataPacket())
+			errors = m_ambe.count(data);
+
 		m_ambeErrors += errors;
 		m_ambeBits   += 48U;		// Only count the bits with FEC added
 	}
