@@ -11,7 +11,7 @@ DCS001  dcs001.xreflector.net
 DCS002  dcs002.xreflector.net 
 DCS003  dcs003.xreflector.net 
 DCS004  dcs004.xreflector.net 
-DCS005  dcs005.xreflector.net 
+DCS005  ircddb.org.uk
 DCS006  dcs006.xreflector.net 
 DCS007  dcs007.xreflector.net 
 DCS008  dcs008.xreflector.net 
