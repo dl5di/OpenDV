@@ -557,7 +557,7 @@ void CStarNetServerApp::createThread()
 	getIrcDDB(hostname, username, password);
 	wxLogInfo(wxT("ircDDB host set to %s, username set to %s"), hostname.c_str(), username.c_str());
 
-	if (!hostname.IsEmpty() && !username.IsEmpty() && !password.IsEmpty()) {
+	if (!hostname.IsEmpty() && !username.IsEmpty()) {
 #if defined(__WINDOWS__)
 		CIRCDDB* ircDDB = new CIRCDDBClient(hostname, 9007U, username, password, wxT("win_") + LOG_BASE_NAME + wxT("-") + VERSION, address); 
 #else
