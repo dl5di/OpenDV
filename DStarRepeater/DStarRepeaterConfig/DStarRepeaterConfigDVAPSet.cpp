@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2011-2015 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2011-2016 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -52,10 +52,16 @@ m_squelch(NULL)
 	sizer->Add(bandLabel, 0, wxALL | wxALIGN_LEFT, BORDER_SIZE);
 
 	m_band = new wxChoice(this, -1, wxDefaultPosition, wxSize(CONTROL_WIDTH, -1));
-	m_band->Append(wxT("2m"));
-	m_band->Append(wxT("70cms"));
+	m_band->Append(wxT("144 MHz"));
+	m_band->Append(wxT("220 MHz"));
+	m_band->Append(wxT("430 MHz"));
 	sizer->Add(m_band, 0, wxALL | wxALIGN_LEFT, BORDER_SIZE);
-	m_band->SetSelection(frequency > 400000000U ? 1 : 0);
+	if (frequency > 400000000U)
+		m_band->SetSelection(2);
+	else if (frequency > 200000000U)
+		m_band->SetSelection(1);
+	else
+		m_band->SetSelection(0);
 
 	wxStaticText* freqLabel = new wxStaticText(this, -1, _("Frequency (Hz)"));
 	sizer->Add(freqLabel, 0, wxALL | wxALIGN_LEFT, BORDER_SIZE);
@@ -112,6 +118,14 @@ bool CDStarRepeaterConfigDVAPSet::Validate()
 			break;
 
 		case 1:
+			if (freq < 220000000U || freq > 225000000U) {
+				wxMessageDialog dialog(this, _("The Frequency is out of range"), _("DVAP Modem Error"), wxICON_ERROR);
+				dialog.ShowModal();
+				return false;
+			}
+			break;
+
+		case 2:
 			if (freq < 420000000U || freq > 450000000U) {
 				wxMessageDialog dialog(this, _("The Frequency is out of range"), _("DVAP Modem Error"), wxICON_ERROR);
 				dialog.ShowModal();

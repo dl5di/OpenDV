@@ -1,5 +1,5 @@
 /*
- *   Copyright (C) 2011-2014 by Jonathan Naylor G4KLX
+ *   Copyright (C) 2011-2014,2016 by Jonathan Naylor G4KLX
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -147,6 +147,7 @@ m_dvapIndex(0U)
 {
 	wxASSERT(!port.IsEmpty());
 	wxASSERT((frequency >= 144000000U && frequency <= 148000000U) ||
+			 (frequency >= 220000000U && frequency <= 225000000U) ||
 			 (frequency >= 420000000U && frequency <= 450000000U));
 	wxASSERT(power >= -12 && power <= 10);
 	wxASSERT(squelch >= -128 && squelch <= -45);
