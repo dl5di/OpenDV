@@ -58,6 +58,7 @@ public:
 	virtual void setDExtra(bool enabled, unsigned int maxDongles);
 	virtual void setDPlus(bool enabled, unsigned int maxDongles, const wxString& login);
 	virtual void setDCS(bool enabled);
+	virtual void setXLX(bool enabled, const wxString& xlxHostFileUrl);
 	virtual void setCCS(bool enabled, const wxString& host);
 	virtual void setLog(bool enabled);
 	virtual void setAPRSWriter(CAPRSWriter* writer);
@@ -101,6 +102,8 @@ private:
 	unsigned int              m_dplusMaxDongles;
 	wxString                  m_dplusLogin;
 	bool                      m_dcsEnabled;
+	bool			  m_xlxEnabled;
+	wxString		  m_xlxHostsFileUrl;
 	bool                      m_ccsEnabled;
 	wxString                  m_ccsHost;
 	bool                      m_infoEnabled;
@@ -140,6 +143,8 @@ private:
 	void loadDExtraReflectors(const wxString& fileName);
 	void loadDPlusReflectors(const wxString& fileName);
 	void loadDCSReflectors(const wxString& fileName);
+	void loadXLXReflectors();
+	bool downloadXLXReflectorList(wxString& xlxHostsFileName);
 
 	void writeStatus();
 
