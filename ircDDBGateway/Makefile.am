@@ -116,6 +116,7 @@ libGUICommon_a_SOURCES = \
 	GUICommon/AddressTextCtrl.cpp \
 	GUICommon/CallsignTextCtrl.cpp \
 	GUICommon/DCSSet.cpp \
+	GUICommon/XLXSet.cpp \
 	GUICommon/DescriptionTextCtrl.cpp \
 	GUICommon/DExtraSet.cpp \
 	GUICommon/DPlusSet.cpp \
@@ -135,7 +136,7 @@ ircddbgatewayd_SOURCES = \
 	ircDDBGateway/IRCDDBGatewayAppD.cpp \
 	ircDDBGateway/IRCDDBGatewayStatusData.cpp \
 	ircDDBGateway/IRCDDBGatewayThread.cpp
-ircddbgatewayd_LDADD = $(BASE_WX_LIBS) libCommon.a libircDDB.a
+ircddbgatewayd_LDADD = $(BASE_WX_LIBS) -lwx_baseu_net-3.0 libCommon.a libircDDB.a
 ircddbgatewayd_CPPFLAGS = -ICommon -IircDDB $(BASE_WX_CPPFLAGS)
 
 starnetserverd_SOURCES = \

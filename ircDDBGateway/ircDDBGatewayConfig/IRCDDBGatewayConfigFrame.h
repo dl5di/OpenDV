@@ -31,6 +31,7 @@
 #include "DPlusSet.h"
 #include "DPRSSet.h"
 #include "DCSSet.h"
+#include "XLXSet.h"
 #include "Defs.h"
 
 #include <wx/wx.h>
@@ -64,6 +65,7 @@ private:
 	CDExtraSet*                           m_dextra;
 	CDPlusSet*                            m_dplus;
 	CDCSSet*                              m_dcs;
+	CXLXSet*			      m_xlx;
 	CStarNetSet*                          m_starNet1;
 	CStarNetSet*                          m_starNet2;
 	CStarNetSet*                          m_starNet3;

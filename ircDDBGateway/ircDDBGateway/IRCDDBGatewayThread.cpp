@@ -43,6 +43,9 @@
 #include <wx/filename.h>
 #include <wx/textfile.h>
 #include <wx/ffile.h>
+#include <wx/url.h>
+#include <wx/sstream.h>
+#include <wx/wfstream.h>
 
 #if defined(__WINDOWS__)
 #include "Inaddr.h"
@@ -79,6 +82,8 @@ m_dplusEnabled(false),
 m_dplusMaxDongles(0U),
 m_dplusLogin(),
 m_dcsEnabled(true),
+m_xlxEnabled(true),
+m_xlxHostsFileUrl(),
 m_ccsEnabled(true),
 m_ccsHost(),
 m_infoEnabled(true),
@@ -569,6 +574,12 @@ void CIRCDDBGatewayThread::setDPlus(bool enabled, unsigned int maxDongles, const
 void CIRCDDBGatewayThread::setDCS(bool enabled)
 {
 	m_dcsEnabled = enabled;
+}
+
+void CIRCDDBGatewayThread::setXLX(bool enabled, const wxString& xlxHostsFileUrl)
+{
+	m_xlxEnabled 	 = enabled;
+	m_xlxHostsFileUrl = xlxHostsFileUrl;
 }
 
 void CIRCDDBGatewayThread::setCCS(bool enabled, const wxString& host)
@@ -1137,6 +1148,10 @@ void CIRCDDBGatewayThread::loadReflectors()
 		if (fileName.IsFileReadable())
 			loadDCSReflectors(fileName.GetFullPath());
 	}
+
+	if(m_xlxEnabled) {
+		loadXLXReflectors();
+	}
 }
 
 void CIRCDDBGatewayThread::loadDExtraReflectors(const wxString& fileName)
@@ -1230,6 +1245,78 @@ void CIRCDDBGatewayThread::loadDCSReflectors(const wxString& fileName)
 	}
 
 	wxLogMessage(wxT("Loaded %u of %u DCS reflectors from %s"), count, hostFile.getCount(), fileName.c_str());
+}
+
+void CIRCDDBGatewayThread::loadXLXReflectors()
+{
+	wxString fileName;
+	if(!downloadXLXReflectorList(fileName)) {
+		wxLogError(wxT("Dowload of XLX hosts file failed"));
+		return;
+	}
+	
+	unsigned int count = 0U;
+
+	CHostFile hostFile(fileName, false);
+	for (unsigned int i = 0U; i < hostFile.getCount(); i++) {
+		wxString reflector = hostFile.getName(i);
+		in_addr address    = CUDPReaderWriter::lookup(hostFile.getAddress(i));
+		bool lock          = hostFile.getLock(i);
+
+		if (address.s_addr != INADDR_NONE) {
+			unsigned char* ucp = (unsigned char*)&address;
+
+			wxString addrText;
+			addrText.Printf(wxT("%u.%u.%u.%u"), ucp[0U] & 0xFFU, ucp[1U] & 0xFFU, ucp[2U] & 0xFFU, ucp[3U] & 0xFFU);
+
+			if (lock)
+				wxLogMessage(wxT("Locking %s to %s"), reflector.c_str(), addrText.c_str());
+
+			reflector.Append(wxT("        "));
+			reflector.Truncate(LONG_CALLSIGN_LENGTH - 1U);
+			reflector.Append(wxT("G"));
+
+			if(m_dcsEnabled && reflector.StartsWith(wxT("DCS")))
+				m_cache.updateGateway(reflector, addrText, DP_DCS, lock, true);
+			else if(m_dextraEnabled && reflector.StartsWith(wxT("XRF")))
+				m_cache.updateGateway(reflector, addrText, DP_DEXTRA, lock, true);
+
+			count++;
+		}
+	}
+
+	wxLogMessage(wxT("Loaded %u of %u XLX reflectors from %s"), count, hostFile.getCount(), m_xlxHostsFileUrl.c_str());
+}
+
+bool CIRCDDBGatewayThread::downloadXLXReflectorList(wxString& xlxHostsFileName)
+{
+	wxLogMessage(wxT("Downloading XLX reflector list from %s"), m_xlxHostsFileUrl.c_str());
+	wxURL url(m_xlxHostsFileUrl);
+	if(url.GetError() != wxURL_NOERR) {
+		wxLogError(wxT("Not a valid URL %s"), m_xlxHostsFileUrl.c_str());
+		return false;
+	}
+	
+	wxInputStream *in = url.GetInputStream();
+
+	if(!in || !in->IsOk()) {
+		wxLogError(wxT("Failed to download XLX reflector list"));
+		if(in) delete in;
+		return false;
+	}
+	
+	xlxHostsFileName = wxFileName::CreateTempFileName(wxT("XLX_Hosts_"));
+	wxFileOutputStream tempFileStream(xlxHostsFileName);
+	if(!tempFileStream.IsOk()) {
+		wxLogError(wxT("Failed to create temporary file %s"), xlxHostsFileName);
+		delete in;
+		return false;
+	}
+		
+	tempFileStream.Write(*in);	
+	delete in;
+
+	return true;
 }
 	
 void CIRCDDBGatewayThread::writeStatus()

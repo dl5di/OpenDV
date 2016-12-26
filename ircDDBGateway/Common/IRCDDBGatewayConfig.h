@@ -70,6 +70,9 @@ public:
 
 	void getDCS(bool& dcsEnabled, bool& ccsEnabled, wxString& ccsHost) const;
 	void setDCS(bool dcsEnabled, bool ccsEnabled, const wxString& ccsHost);
+	
+	void getXLX(bool& xlxEnabled, wxString& xlxHostsFileUrl);
+	void setXLX(bool xlxEnabled, wxString xlxHostsFileUrl);
 
 #if defined(DEXTRA_LINK) || defined(DCS_LINK)
 	void getStarNet1(wxString& band, wxString& callsign, wxString& logoff, wxString& info, wxString& permanent, unsigned int& userTimeout, unsigned int& groupTimeout, STARNET_CALLSIGN_SWITCH& callsignSwitch, bool& txMsgSwitch, wxString& reflector) const;
@@ -239,6 +242,8 @@ private:
 	bool          m_dcsEnabled;
 	bool          m_ccsEnabled;
 	wxString      m_ccsHost;
+	bool	      m_xlxEnabled;
+	wxString      m_xlxHostsFileUrl;
 	wxString      m_starNet1Band;
 	wxString      m_starNet1Callsign;
 	wxString      m_starNet1Logoff;

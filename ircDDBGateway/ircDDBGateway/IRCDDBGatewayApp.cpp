@@ -834,6 +834,11 @@ void CIRCDDBGatewayApp::createThread()
 	wxString ccsHost;
 	m_config->getDCS(dcsEnabled, ccsEnabled, ccsHost);
 	wxLogInfo(wxT("DCS enabled: %d, CCS enabled: %d, server: %s"), int(dcsEnabled), int(ccsEnabled), ccsHost.c_str());
+	
+	bool xlxEnabled;
+	wxString xlxHostsFileUrl;
+	m_config->getXLX(xlxEnabled, xlxHostsFileUrl);
+	wxLogInfo(wxT("XLX enabled: %d, Hosts file url: %s"), int(xlxEnabled), xlxHostsFileUrl.c_str());
 
 	if (repeaterBand1.Len() > 1U || repeaterBand2.Len() > 1U ||
 		repeaterBand3.Len() > 1U || repeaterBand4.Len() > 1U) {
@@ -903,6 +908,7 @@ void CIRCDDBGatewayApp::createThread()
 	thread->setDExtra(dextraEnabled, dextraMaxDongles);
 	thread->setDCS(dcsEnabled);
 	thread->setCCS(ccsEnabled, ccsHost);
+	thread->setXLX(xlxEnabled, xlxHostsFileUrl);
 	thread->setInfoEnabled(infoEnabled);
 	thread->setEchoEnabled(echoEnabled);
 	thread->setDTMFEnabled(dtmfEnabled);

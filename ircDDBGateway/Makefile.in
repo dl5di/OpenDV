@@ -188,6 +188,7 @@ am_libGUICommon_a_OBJECTS =  \
 	GUICommon/libGUICommon_a-AddressTextCtrl.$(OBJEXT) \
 	GUICommon/libGUICommon_a-CallsignTextCtrl.$(OBJEXT) \
 	GUICommon/libGUICommon_a-DCSSet.$(OBJEXT) \
+	GUICommon/libGUICommon_a-XLXSet.$(OBJEXT) \
 	GUICommon/libGUICommon_a-DescriptionTextCtrl.$(OBJEXT) \
 	GUICommon/libGUICommon_a-DExtraSet.$(OBJEXT) \
 	GUICommon/libGUICommon_a-DPlusSet.$(OBJEXT) \
@@ -763,6 +764,7 @@ libGUICommon_a_SOURCES = \
 	GUICommon/AddressTextCtrl.cpp \
 	GUICommon/CallsignTextCtrl.cpp \
 	GUICommon/DCSSet.cpp \
+	GUICommon/XLXSet.cpp \
 	GUICommon/DescriptionTextCtrl.cpp \
 	GUICommon/DExtraSet.cpp \
 	GUICommon/DPlusSet.cpp \
@@ -780,7 +782,7 @@ ircddbgatewayd_SOURCES = \
 	ircDDBGateway/IRCDDBGatewayStatusData.cpp \
 	ircDDBGateway/IRCDDBGatewayThread.cpp
 
-ircddbgatewayd_LDADD = $(BASE_WX_LIBS) libCommon.a libircDDB.a
+ircddbgatewayd_LDADD = $(BASE_WX_LIBS) -lwx_baseu_net-3.0 libCommon.a libircDDB.a
 ircddbgatewayd_CPPFLAGS = -ICommon -IircDDB $(BASE_WX_CPPFLAGS)
 starnetserverd_SOURCES = \
 	StarNetServer/StarNetServerAppD.cpp \
@@ -1135,6 +1137,8 @@ GUICommon/libGUICommon_a-AddressTextCtrl.$(OBJEXT):  \
 GUICommon/libGUICommon_a-CallsignTextCtrl.$(OBJEXT):  \
 	GUICommon/$(am__dirstamp) GUICommon/$(DEPDIR)/$(am__dirstamp)
 GUICommon/libGUICommon_a-DCSSet.$(OBJEXT): GUICommon/$(am__dirstamp) \
+	GUICommon/$(DEPDIR)/$(am__dirstamp)
+GUICommon/libGUICommon_a-XLXSet.$(OBJEXT): GUICommon/$(am__dirstamp) \
 	GUICommon/$(DEPDIR)/$(am__dirstamp)
 GUICommon/libGUICommon_a-DescriptionTextCtrl.$(OBJEXT):  \
 	GUICommon/$(am__dirstamp) GUICommon/$(DEPDIR)/$(am__dirstamp)
@@ -1735,6 +1739,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@GUICommon/$(DEPDIR)/libGUICommon_a-AddressTextCtrl.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@GUICommon/$(DEPDIR)/libGUICommon_a-CallsignTextCtrl.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@GUICommon/$(DEPDIR)/libGUICommon_a-DCSSet.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@GUICommon/$(DEPDIR)/libGUICommon_a-XLXSet.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@GUICommon/$(DEPDIR)/libGUICommon_a-DExtraSet.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@GUICommon/$(DEPDIR)/libGUICommon_a-DPRSSet.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@GUICommon/$(DEPDIR)/libGUICommon_a-DPlusSet.Po@am__quote@
@@ -2801,6 +2806,20 @@ GUICommon/libGUICommon_a-DCSSet.obj: GUICommon/DCSSet.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='GUICommon/DCSSet.cpp' object='GUICommon/libGUICommon_a-DCSSet.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libGUICommon_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o GUICommon/libGUICommon_a-DCSSet.obj `if test -f 'GUICommon/DCSSet.cpp'; then $(CYGPATH_W) 'GUICommon/DCSSet.cpp'; else $(CYGPATH_W) '$(srcdir)/GUICommon/DCSSet.cpp'; fi`
+
+GUICommon/libGUICommon_a-XLXSet.o: GUICommon/XLXSet.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libGUICommon_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT GUICommon/libGUICommon_a-XLXSet.o -MD -MP -MF GUICommon/$(DEPDIR)/libGUICommon_a-XLXSet.Tpo -c -o GUICommon/libGUICommon_a-XLXSet.o `test -f 'GUICommon/XLXSet.cpp' || echo '$(srcdir)/'`GUICommon/XLXSet.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) GUICommon/$(DEPDIR)/libGUICommon_a-XLXSet.Tpo GUICommon/$(DEPDIR)/libGUICommon_a-XLXSet.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='GUICommon/XLXSet.cpp' object='GUICommon/libGUICommon_a-XLXSet.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libGUICommon_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o GUICommon/libGUICommon_a-XLXSet.o `test -f 'GUICommon/XLXSet.cpp' || echo '$(srcdir)/'`GUICommon/XLXSet.cpp
+
+GUICommon/libGUICommon_a-XLXSet.obj: GUICommon/XLXSet.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libGUICommon_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT GUICommon/libGUICommon_a-XLXSet.obj -MD -MP -MF GUICommon/$(DEPDIR)/libGUICommon_a-XLXSet.Tpo -c -o GUICommon/libGUICommon_a-XLXSet.obj `if test -f 'GUICommon/XLXSet.cpp'; then $(CYGPATH_W) 'GUICommon/XLXSet.cpp'; else $(CYGPATH_W) '$(srcdir)/GUICommon/XLXSet.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) GUICommon/$(DEPDIR)/libGUICommon_a-XLXSet.Tpo GUICommon/$(DEPDIR)/libGUICommon_a-XLXSet.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='GUICommon/XLXSet.cpp' object='GUICommon/libGUICommon_a-XLXSet.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libGUICommon_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o GUICommon/libGUICommon_a-XLXSet.obj `if test -f 'GUICommon/XLXSet.cpp'; then $(CYGPATH_W) 'GUICommon/XLXSet.cpp'; else $(CYGPATH_W) '$(srcdir)/GUICommon/XLXSet.cpp'; fi`
 
 GUICommon/libGUICommon_a-DescriptionTextCtrl.o: GUICommon/DescriptionTextCtrl.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libGUICommon_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT GUICommon/libGUICommon_a-DescriptionTextCtrl.o -MD -MP -MF GUICommon/$(DEPDIR)/libGUICommon_a-DescriptionTextCtrl.Tpo -c -o GUICommon/libGUICommon_a-DescriptionTextCtrl.o `test -f 'GUICommon/DescriptionTextCtrl.cpp' || echo '$(srcdir)/'`GUICommon/DescriptionTextCtrl.cpp
