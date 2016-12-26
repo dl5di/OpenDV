@@ -58,6 +58,7 @@ m_dprs(NULL),
 m_dextra(NULL),
 m_dplus(NULL),
 m_dcs(NULL),
+m_xlx(NULL),
 m_starNet1(NULL),
 m_starNet2(NULL),
 m_starNet3(NULL),
@@ -100,6 +101,10 @@ m_miscellaneous(NULL)
 	bool dcsEnabled, ccsEnabled;
 	wxString ccsHost;
 	m_config->getDCS(dcsEnabled, ccsEnabled, ccsHost);
+	
+	bool xlxEnabled;
+	wxString xlxHostsFileUrl;
+	m_config->getXLX(xlxEnabled, xlxHostsFileUrl);
 
 	GATEWAY_TYPE gatewayType;
 	wxString gatewayCallsign, gatewayAddress, icomAddress, hbAddress, description1, description2, url;
@@ -204,6 +209,9 @@ m_miscellaneous(NULL)
 
 	m_dcs = new CDCSSet(noteBook, -1, APPLICATION_NAME, dcsEnabled, ccsEnabled, ccsHost);
 	noteBook->AddPage(m_dcs, _("DCS and CCS"), false);
+	
+	m_xlx = new CXLXSet(noteBook, -1, APPLICATION_NAME, xlxEnabled, xlxHostsFileUrl);
+	noteBook->AddPage(m_xlx, _("XLX Hosts File URL"), false);
 
 #if defined(DEXTRA_LINK) || defined(DCS_LINK)
 	wxString starNetBand1, starNetCallsign1, starNetLogoff1, starNetInfo1, starNetLink1, starNetPermanent1;
@@ -360,7 +368,7 @@ void CIRCDDBGatewayConfigFrame::onSave(wxCommandEvent&)
 	if (!m_gateway->Validate() || !m_repeaterData1->Validate() || !m_repeaterInfo1->Validate() || !m_repeaterData2->Validate() ||
 		!m_repeaterInfo2->Validate() || !m_repeaterData3->Validate() || !m_repeaterInfo3->Validate() || !m_repeaterData4->Validate() ||
 		!m_repeaterInfo4->Validate() ||
-		!m_ircDDB->Validate() || !m_ircDDB2->Validate() || !m_ircDDB3->Validate() || !m_ircDDB4->Validate() || !m_dprs->Validate() || !m_dplus->Validate() || !m_dcs->Validate() ||
+		!m_ircDDB->Validate() || !m_ircDDB2->Validate() || !m_ircDDB3->Validate() || !m_ircDDB4->Validate() || !m_dprs->Validate() || !m_dplus->Validate() || !m_dcs->Validate() || !m_xlx->Validate() ||
 		!m_starNet1->Validate() || !m_starNet2->Validate() || !m_starNet3->Validate() || !m_starNet4->Validate() ||
 		!m_starNet5->Validate() || !m_remote->Validate() || !m_miscellaneous->Validate())
 		return;
@@ -505,6 +513,10 @@ void CIRCDDBGatewayConfigFrame::onSave(wxCommandEvent&)
 	bool ccsEnabled  = m_dcs->getCCSEnabled();
 	wxString ccsHost = m_dcs->getCCSHost();
 	m_config->setDCS(dcsEnabled, ccsEnabled, ccsHost);
+	
+	bool xlxEnabled  = m_xlx->getXLXEnabled();
+	wxString xlxHostsFileUrl = m_xlx->getXLXHostsFileUrl();
+	m_config->setXLX(xlxEnabled, xlxHostsFileUrl);
 
 	wxString starNetBand1             = m_starNet1->getBand();
 	wxString starNetCallsign1         = m_starNet1->getCallsign();

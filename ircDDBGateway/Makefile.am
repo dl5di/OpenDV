@@ -116,6 +116,7 @@ libGUICommon_a_SOURCES = \
 	GUICommon/AddressTextCtrl.cpp \
 	GUICommon/CallsignTextCtrl.cpp \
 	GUICommon/DCSSet.cpp \
+	GUICommon/XLXSet.cpp \
 	GUICommon/DescriptionTextCtrl.cpp \
 	GUICommon/DExtraSet.cpp \
 	GUICommon/DPlusSet.cpp \
