@@ -1297,7 +1297,6 @@ bool CIRCDDBGatewayThread::downloadXLXReflectorList(wxString& xlxHostsFileName)
 		return false;
 	}
 	
-	wxInputStream * inputStream = url.GetInputStream();
 	wxInputStream *in = url.GetInputStream();
 
 	if(!in || !in->IsOk()) {
@@ -1308,7 +1307,13 @@ bool CIRCDDBGatewayThread::downloadXLXReflectorList(wxString& xlxHostsFileName)
 	
 	xlxHostsFileName = wxFileName::CreateTempFileName(wxT("XLX_Hosts_"));
 	wxFileOutputStream tempFileStream(xlxHostsFileName);
-	in->Read(tempFileStream);
+	if(!tempFileStream.IsOk()) {
+		wxLogError(wxT("Failed to create temporary file %s"), xlxHostsFileName);
+		delete in;
+		return false;
+	}
+		
+	tempFileStream.Write(*in);	
 	delete in;
 
 	return true;
