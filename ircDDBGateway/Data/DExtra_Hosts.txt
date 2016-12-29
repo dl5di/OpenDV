@@ -159,6 +159,7 @@ XRF850	xrf850.xrfmaster.net
 XRF851	xrf851.rsdt.de 
 XRF860	xrf.njpaasterisk.org
 XRF870	103.18.207.114 
+XRF886	xrf886.metropit.net
 XRF888	37.187.0.15
 XRF901	xrf901.dyndns.org
 XRF902	xrf902.dyndns.org
