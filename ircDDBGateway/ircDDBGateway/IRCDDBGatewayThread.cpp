@@ -43,9 +43,9 @@
 #include <wx/filename.h>
 #include <wx/textfile.h>
 #include <wx/ffile.h>
-#include <wx/url.h>
 #include <wx/sstream.h>
 #include <wx/wfstream.h>
+
 
 #if defined(__WINDOWS__)
 #include "Inaddr.h"
@@ -83,7 +83,7 @@ m_dplusMaxDongles(0U),
 m_dplusLogin(),
 m_dcsEnabled(true),
 m_xlxEnabled(true),
-m_xlxHostsFileUrl(),
+m_xlxHostsFileName(),
 m_ccsEnabled(true),
 m_ccsHost(),
 m_infoEnabled(true),
@@ -576,10 +576,10 @@ void CIRCDDBGatewayThread::setDCS(bool enabled)
 	m_dcsEnabled = enabled;
 }
 
-void CIRCDDBGatewayThread::setXLX(bool enabled, const wxString& xlxHostsFileUrl)
+void CIRCDDBGatewayThread::setXLX(bool enabled, const wxString& xlxHostsFileName)
 {
 	m_xlxEnabled 	 = enabled;
-	m_xlxHostsFileUrl = xlxHostsFileUrl;
+	m_xlxHostsFileName = xlxHostsFileName;
 }
 
 void CIRCDDBGatewayThread::setCCS(bool enabled, const wxString& host)
@@ -1249,15 +1249,8 @@ void CIRCDDBGatewayThread::loadDCSReflectors(const wxString& fileName)
 
 void CIRCDDBGatewayThread::loadXLXReflectors()
 {
-	wxString fileName;
-	if(!downloadXLXReflectorList(fileName)) {
-		wxLogError(wxT("Dowload of XLX hosts file failed"));
-		return;
-	}
-	
 	unsigned int count = 0U;
-
-	CHostFile hostFile(fileName, false);
+	CHostFile hostFile = CHostFile(m_xlxHostsFileName, true);
 	for (unsigned int i = 0U; i < hostFile.getCount(); i++) {
 		wxString reflector = hostFile.getName(i);
 		in_addr address    = CUDPReaderWriter::lookup(hostFile.getAddress(i));
@@ -1285,40 +1278,9 @@ void CIRCDDBGatewayThread::loadXLXReflectors()
 		}
 	}
 
-	wxLogMessage(wxT("Loaded %u of %u XLX reflectors from %s"), count, hostFile.getCount(), m_xlxHostsFileUrl.c_str());
+	wxLogMessage(wxT("Loaded %u of %u XLX reflectors from %s"), count, hostFile.getCount(), m_xlxHostsFileName.c_str());
 }
 
-bool CIRCDDBGatewayThread::downloadXLXReflectorList(wxString& xlxHostsFileName)
-{
-	wxLogMessage(wxT("Downloading XLX reflector list from %s"), m_xlxHostsFileUrl.c_str());
-	wxURL url(m_xlxHostsFileUrl);
-	if(url.GetError() != wxURL_NOERR) {
-		wxLogError(wxT("Not a valid URL %s"), m_xlxHostsFileUrl.c_str());
-		return false;
-	}
-	
-	wxInputStream *in = url.GetInputStream();
-
-	if(!in || !in->IsOk()) {
-		wxLogError(wxT("Failed to download XLX reflector list"));
-		if(in) delete in;
-		return false;
-	}
-	
-	xlxHostsFileName = wxFileName::CreateTempFileName(wxT("XLX_Hosts_"));
-	wxFileOutputStream tempFileStream(xlxHostsFileName);
-	if(!tempFileStream.IsOk()) {
-		wxLogError(wxT("Failed to create temporary file %s"), xlxHostsFileName);
-		delete in;
-		return false;
-	}
-		
-	tempFileStream.Write(*in);	
-	delete in;
-
-	return true;
-}
-	
 void CIRCDDBGatewayThread::writeStatus()
 {
 	wxString fullName = LINKS_BASE_NAME;

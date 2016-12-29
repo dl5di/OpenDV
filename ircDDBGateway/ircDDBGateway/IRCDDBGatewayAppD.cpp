@@ -30,6 +30,7 @@
 #include "IRCDDBClient.h"
 #include "IRCDDBMultiClient.h"
 #include "Utils.h"
+#include "XLXHostsFileDownloader.h"
 
 #include <wx/cmdline.h>
 #include <wx/wfstream.h>
@@ -896,7 +897,7 @@ bool CIRCDDBGatewayAppD::createThread()
 	m_thread->setDExtra(dextraEnabled, dextraMaxDongles);
 	m_thread->setDCS(dcsEnabled);
 	m_thread->setCCS(ccsEnabled, ccsHost);
-	m_thread->setXLX(xlxEnabled, xlxHostsFileUrl);
+	m_thread->setXLX(xlxEnabled, xlxEnabled ? CXLXHostsFileDownloader::Download(xlxHostsFileUrl): wxString(wxEmptyString));
 	m_thread->setInfoEnabled(infoEnabled);
 	m_thread->setEchoEnabled(echoEnabled);
 	m_thread->setDTMFEnabled(dtmfEnabled);
