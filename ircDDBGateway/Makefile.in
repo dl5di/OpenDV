@@ -155,6 +155,7 @@ am_libCommon_a_OBJECTS = Common/libCommon_a-AMBEData.$(OBJEXT) \
 	Common/libCommon_a-HeaderLogger.$(OBJEXT) \
 	Common/libCommon_a-HeardData.$(OBJEXT) \
 	Common/libCommon_a-HostFile.$(OBJEXT) \
+	Common/libCommon_a-XLXHostsFileDownloader.$(OBJEXT) \
 	Common/libCommon_a-IcomRepeaterProtocolHandler.$(OBJEXT) \
 	Common/libCommon_a-IRCDDBGatewayConfig.$(OBJEXT) \
 	Common/libCommon_a-LogEvent.$(OBJEXT) \
@@ -719,6 +720,7 @@ libCommon_a_SOURCES = \
 	Common/HeaderLogger.cpp \
 	Common/HeardData.cpp \
 	Common/HostFile.cpp \
+	Common/XLXHostsFileDownloader.cpp \
 	Common/IcomRepeaterProtocolHandler.cpp \
 	Common/IRCDDBGatewayConfig.cpp \
 	Common/LogEvent.cpp \
@@ -1068,6 +1070,8 @@ Common/libCommon_a-HeaderLogger.$(OBJEXT): Common/$(am__dirstamp) \
 Common/libCommon_a-HeardData.$(OBJEXT): Common/$(am__dirstamp) \
 	Common/$(DEPDIR)/$(am__dirstamp)
 Common/libCommon_a-HostFile.$(OBJEXT): Common/$(am__dirstamp) \
+	Common/$(DEPDIR)/$(am__dirstamp)
+Common/libCommon_a-XLXHostsFileDownloader.$(OBJEXT): Common/$(am__dirstamp) \
 	Common/$(DEPDIR)/$(am__dirstamp)
 Common/libCommon_a-IcomRepeaterProtocolHandler.$(OBJEXT):  \
 	Common/$(am__dirstamp) Common/$(DEPDIR)/$(am__dirstamp)
@@ -1710,6 +1714,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@Common/$(DEPDIR)/libCommon_a-HeaderLogger.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@Common/$(DEPDIR)/libCommon_a-HeardData.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@Common/$(DEPDIR)/libCommon_a-HostFile.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@Common/$(DEPDIR)/libCommon_a-XLXHostsFileDownloader.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@Common/$(DEPDIR)/libCommon_a-IRCDDBGatewayConfig.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@Common/$(DEPDIR)/libCommon_a-IcomRepeaterProtocolHandler.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@Common/$(DEPDIR)/libCommon_a-LogEvent.Po@am__quote@
@@ -2400,6 +2405,20 @@ Common/libCommon_a-HostFile.obj: Common/HostFile.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='Common/HostFile.cpp' object='Common/libCommon_a-HostFile.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libCommon_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o Common/libCommon_a-HostFile.obj `if test -f 'Common/HostFile.cpp'; then $(CYGPATH_W) 'Common/HostFile.cpp'; else $(CYGPATH_W) '$(srcdir)/Common/HostFile.cpp'; fi`
+
+Common/libCommon_a-XLXHostsFileDownloader.o: Common/XLXHostsFileDownloader.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libCommon_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT Common/libCommon_a-XLXHostsFileDownloader.o -MD -MP -MF Common/$(DEPDIR)/libCommon_a-XLXHostsFileDownloader.Tpo -c -o Common/libCommon_a-XLXHostsFileDownloader.o `test -f 'Common/XLXHostsFileDownloader.cpp' || echo '$(srcdir)/'`Common/XLXHostsFileDownloader.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) Common/$(DEPDIR)/libCommon_a-XLXHostsFileDownloader.Tpo Common/$(DEPDIR)/libCommon_a-XLXHostsFileDownloader.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='Common/XLXHostsFileDownloader.cpp' object='Common/libCommon_a-XLXHostsFileDownloader.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libCommon_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o Common/libCommon_a-XLXHostsFileDownloader.o `test -f 'Common/XLXHostsFileDownloader.cpp' || echo '$(srcdir)/'`Common/XLXHostsFileDownloader.cpp
+
+Common/libCommon_a-XLXHostsFileDownloader.obj: Common/XLXHostsFileDownloader.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libCommon_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT Common/libCommon_a-XLXHostsFileDownloader.obj -MD -MP -MF Common/$(DEPDIR)/libCommon_a-XLXHostsFileDownloader.Tpo -c -o Common/libCommon_a-XLXHostsFileDownloader.obj `if test -f 'Common/XLXHostsFileDownloader.cpp'; then $(CYGPATH_W) 'Common/XLXHostsFileDownloader.cpp'; else $(CYGPATH_W) '$(srcdir)/Common/XLXHostsFileDownloader.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) Common/$(DEPDIR)/libCommon_a-XLXHostsFileDownloader.Tpo Common/$(DEPDIR)/libCommon_a-XLXHostsFileDownloader.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='Common/XLXHostsFileDownloader.cpp' object='Common/libCommon_a-XLXHostsFileDownloader.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libCommon_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o Common/libCommon_a-XLXHostsFileDownloader.obj `if test -f 'Common/XLXHostsFileDownloader.cpp'; then $(CYGPATH_W) 'Common/XLXHostsFileDownloader.cpp'; else $(CYGPATH_W) '$(srcdir)/Common/XLXHostsFileDownloader.cpp'; fi`
 
 Common/libCommon_a-IcomRepeaterProtocolHandler.o: Common/IcomRepeaterProtocolHandler.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libCommon_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT Common/libCommon_a-IcomRepeaterProtocolHandler.o -MD -MP -MF Common/$(DEPDIR)/libCommon_a-IcomRepeaterProtocolHandler.Tpo -c -o Common/libCommon_a-IcomRepeaterProtocolHandler.o `test -f 'Common/IcomRepeaterProtocolHandler.cpp' || echo '$(srcdir)/'`Common/IcomRepeaterProtocolHandler.cpp

@@ -71,6 +71,7 @@ libCommon_a_SOURCES = \
 	Common/HeaderLogger.cpp \
 	Common/HeardData.cpp \
 	Common/HostFile.cpp \
+	Common/XLXHostsFileDownloader.cpp \
 	Common/IcomRepeaterProtocolHandler.cpp \
 	Common/IRCDDBGatewayConfig.cpp \
 	Common/LogEvent.cpp \
