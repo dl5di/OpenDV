@@ -1,14 +1,7 @@
-# DPlus_Hosts.txt
-#
-# The format of this file is the name of the reflector/gateway followed by its
-# IP address.
-#
-
 #>>Downloaded from W6KD host file server
-#>>Last updated 18 JUN 2016 by W6KD
+#>>Last updated 17 NOV 2016 by W6KD
 #>>Request changes on this server's lists by posting at 
 #>>http://xrefl.boards.net/board/2/directory-changes-forum
-
 REF001	ref001.dstargateway.org 
 REF002	ref002.dstargateway.org 
 REF003	ref003.dstargateway.org 
@@ -84,9 +77,9 @@ REF072	ref072.dstargateway.org
 #REF073	ref073.dstargateway.org 
 #REF074	ref074.dstargateway.org 
 REF075	ref075.dstargateway.org 
-#REF076	ref076.dstargateway.org 
-#REF077	ref077.dstargateway.org 
-#REF078	ref078.dstargateway.org 
+REF076	ref076.dstargateway.org 
+REF077	ref077.dstargateway.org 
+REF078	ref078.dstargateway.org 
 #REF079	ref079.dstargateway.org 
 #REF080	ref080.dstargateway.org 
 #REF081	ref081.dstargateway.org 
