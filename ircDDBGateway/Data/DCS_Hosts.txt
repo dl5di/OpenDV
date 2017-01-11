@@ -1,17 +1,11 @@
-# DCS_Hosts.txt
-#
-# The format of this file is the name of the reflector followed by its
-# IP address.
-#
-
 #>>Downloaded from W6KD host file server
-#>>Last updated 18 JUN 2016 by W6KD
+#>>Last updated 17 NOV 2016 by W6KD
 
 DCS001  dcs001.xreflector.net 
 DCS002  dcs002.xreflector.net 
 DCS003  dcs003.xreflector.net 
 DCS004  dcs004.xreflector.net 
-DCS005  ircddb.org.uk
+DCS005  www.bm-dmr.uk 
 DCS006  dcs006.xreflector.net 
 DCS007  dcs007.xreflector.net 
 DCS008  dcs008.xreflector.net 
