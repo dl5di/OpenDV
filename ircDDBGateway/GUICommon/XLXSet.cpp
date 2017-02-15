@@ -89,7 +89,7 @@ bool CXLXSet::Validate()
 	if (n == wxNOT_FOUND)
 		return false;
 		
-	int n = m_xlxOverrideLocal->GetCurrentSelection();
+	n = m_xlxOverrideLocal->GetCurrentSelection();
 	if (n == wxNOT_FOUND)
 		return false;
 
@@ -123,9 +123,12 @@ bool CXLXSet::getXLXEnabled() const
 wxString CXLXSet::getXLXHostsFileUrl() const
 {
 	wxString value = m_xlxHostsFileUrl->GetValue();
-	wxURL url(value);
-	if (url.GetError() == wxURL_NOERR)
-		return value;
+	
+	
+	// TODO F4FXL try to figure out why below symbols are not found under ubuntu
+	//wxURL url(value);
+	//if (url.GetError() == wxURL_NOERR)
+	//	return value;
 		
 	return wxEmptyString;
 }
