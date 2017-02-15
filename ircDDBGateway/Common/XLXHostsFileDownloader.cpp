@@ -17,12 +17,28 @@
  */
  
 #include "XLXHostsFileDownloader.h"
+#ifdef XLX_USE_WGET
+#include <wx/utils.h> 
+#else
 #include <wx/protocol/http.h>
+#endif
 #include <wx/filename.h>
  
 /* wxHTTP randomly crashes when called on a worker thread, this must be called from main thread ! */
 wxString CXLXHostsFileDownloader::Download(const wxString & xlxHostsFileURL)
 {
+#ifdef XLX_USE_WGET
+	wxString xlxHostsFileName = wxFileName::CreateTempFileName(_T("XLX_Hosts_"));
+	wxString commandLine = _T("wget -q -O ") + xlxHostsFileName + _T(" ") + xlxHostsFileURL;
+	bool execResult = wxShell(commandLine);
+	
+	if(!execResult) {
+		wxLogError(_T("Unable do download XLX host file, make sure wget is installed"));
+		return wxEmptyString;
+	}
+	
+	return xlxHostsFileName;
+#else
 	wxHTTP http;
 	http.SetNotify(false);
 	http.SetFlags(wxSOCKET_WAITALL);
@@ -83,4 +99,5 @@ wxString CXLXHostsFileDownloader::Download(const wxString & xlxHostsFileURL)
 	if(in) wxDELETE(in);
 
 	return wxEmptyString;
+#endif
 }
