@@ -20,7 +20,8 @@
 #include "XLXSet.h"
 #include "Defs.h"
 
-#include <wx/url.h>
+// TODO F4FXL try to figure out why below symbols are not found under ubuntu
+//#include <wx/url.h>
 
 const unsigned int CONTROL_WIDTH = 130U;
 
@@ -87,11 +88,16 @@ bool CXLXSet::Validate()
 	int n = m_xlxEnabled->GetCurrentSelection();
 	if (n == wxNOT_FOUND)
 		return false;
+		
+	int n = m_xlxOverrideLocal->GetCurrentSelection();
+	if (n == wxNOT_FOUND)
+		return false;
 
-	wxString value = m_xlxHostsFileUrl->GetValue();
+	// TODO F4FXL try to figure out why below symbols are not found under ubuntu
+	/*wxString value = m_xlxHostsFileUrl->GetValue();
 	wxURL url(value);
 	if (url.GetError() != wxURL_NOERR)
-		return false;
+		return false;*/
 
 	return true;
 }
