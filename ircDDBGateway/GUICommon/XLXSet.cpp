@@ -33,10 +33,11 @@ BEGIN_EVENT_TABLE(CXLXSet, wxPanel)
 END_EVENT_TABLE()
 
 
-CXLXSet::CXLXSet(wxWindow* parent, int id, const wxString& title, bool xlxEnabled, const wxString& xlxHostsFileUrl) :
+CXLXSet::CXLXSet(wxWindow* parent, int id, const wxString& title, bool xlxEnabled, bool xlxOverrideLocal, const wxString& xlxHostsFileUrl) :
 wxPanel(parent, id),
 m_title(title),
 m_xlxEnabled(NULL),
+m_xlxOverrideLocal(NULL),
 m_xlxHostsFileUrl(NULL)
 {
 	wxFlexGridSizer* sizer = new wxFlexGridSizer(2);
@@ -49,6 +50,15 @@ m_xlxHostsFileUrl(NULL)
 	m_xlxEnabled->Append(_("Enabled"));
 	sizer->Add(m_xlxEnabled, 0, wxALL | wxALIGN_LEFT, BORDER_SIZE);
 	m_xlxEnabled->SetSelection(xlxEnabled ? 1 : 0);
+	
+	wxStaticText* xlxOverrideLocalLabel = new wxStaticText(this, -1, _("Override local hosts files"));
+	sizer->Add(xlxOverrideLocalLabel, 0, wxALL | wxALIGN_RIGHT, BORDER_SIZE);
+	
+	m_xlxOverrideLocal = new wxChoice(this, CHOICE_ENABLED, wxDefaultPosition, wxSize(CONTROL_WIDTH, -1));
+	m_xlxOverrideLocal->Append(_("No"));
+	m_xlxOverrideLocal->Append(_("Yes"));
+	sizer->Add(m_xlxOverrideLocal, 0, wxALL | wxALIGN_LEFT, BORDER_SIZE);
+	m_xlxOverrideLocal->SetSelection(xlxOverrideLocal ? 1 : 0);
 
 	wxStaticText* xlxHostsFileUrlLabel = new wxStaticText(this, -1, _("Hosts file URL"));
 	sizer->Add(xlxHostsFileUrlLabel, 0, wxALL | wxALIGN_RIGHT, BORDER_SIZE);
@@ -84,6 +94,15 @@ bool CXLXSet::Validate()
 		return false;
 
 	return true;
+}
+
+bool CXLXSet::getXLXOverrideLocal() const
+{
+	int c = m_xlxEnabled->GetCurrentSelection();
+	if (c == wxNOT_FOUND)
+		return false;
+
+	return c == 1;
 }
 
 bool CXLXSet::getXLXEnabled() const
