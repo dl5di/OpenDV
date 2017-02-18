@@ -837,9 +837,10 @@ void CIRCDDBGatewayApp::createThread()
 	wxLogInfo(wxT("DCS enabled: %d, CCS enabled: %d, server: %s"), int(dcsEnabled), int(ccsEnabled), ccsHost.c_str());
 	
 	bool xlxEnabled;
+	bool xlxOverrideLocal;
 	wxString xlxHostsFileUrl;
-	m_config->getXLX(xlxEnabled, xlxHostsFileUrl);
-	wxLogInfo(wxT("XLX enabled: %d, Hosts file url: %s"), int(xlxEnabled), xlxHostsFileUrl.c_str());
+	m_config->getXLX(xlxEnabled, xlxOverrideLocal, xlxHostsFileUrl);
+	wxLogInfo(wxT("XLX enabled: %d, Override Local %d, Hosts file url: %s"), int(xlxEnabled), int(xlxOverrideLocal), xlxHostsFileUrl.c_str());
 
 	if (repeaterBand1.Len() > 1U || repeaterBand2.Len() > 1U ||
 		repeaterBand3.Len() > 1U || repeaterBand4.Len() > 1U) {
@@ -909,7 +910,7 @@ void CIRCDDBGatewayApp::createThread()
 	thread->setDExtra(dextraEnabled, dextraMaxDongles);
 	thread->setDCS(dcsEnabled);
 	thread->setCCS(ccsEnabled, ccsHost);
-	thread->setXLX(xlxEnabled, xlxEnabled ? CXLXHostsFileDownloader::Download(xlxHostsFileUrl) : wxString(wxEmptyString));
+	thread->setXLX(xlxEnabled, xlxOverrideLocal, xlxEnabled ? CXLXHostsFileDownloader::Download(xlxHostsFileUrl) : wxString(wxEmptyString));
 	thread->setInfoEnabled(infoEnabled);
 	thread->setEchoEnabled(echoEnabled);
 	thread->setDTMFEnabled(dtmfEnabled);

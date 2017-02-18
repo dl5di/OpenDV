@@ -19,7 +19,7 @@
 
 #ifndef XLXHostsFileDownloader_H
 #define XLXHostsFileDownloader_H
-
+#define XLX_USE_WGET
 #include <wx/wx.h>
 
 class CXLXHostsFileDownloader {
