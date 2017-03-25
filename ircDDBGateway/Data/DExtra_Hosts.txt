@@ -120,7 +120,7 @@ XRF387	195.130.59.77
 XRF390	xrf390.aotnet.it
 XRF398	104.167.117.71
 XRF400	xrf400.no-ip.org
-XRF404	163.172.140.188
+XRF404	xlx.bendiksverden.net
 XRF413	xlx413.xrefl.net
 XRF420	kc9qen.com
 XRF423	4ix.hacktic.de
