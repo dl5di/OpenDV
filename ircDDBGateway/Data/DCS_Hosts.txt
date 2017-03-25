@@ -53,5 +53,6 @@ DCS314	xlx314.xrefl.net
 DCS315	xlx315.xrefl.net
 DCS316	xlx316.xrefl.net
 DCS357	xlx357.w6kd.com
+DCS404  xlx.bendiksverden.net
 DCS610	dcs610.vkradio.com
 DCS850	xrf850.xrfmaster.net
