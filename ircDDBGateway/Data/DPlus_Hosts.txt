@@ -106,4 +106,5 @@ REF212	xlx212.dstar.club
 REF308	xlx308.w6kd.com
 REF313	xlx313.xrefl.net
 REF357	xlx357.w6kd.com
+REF404  xlx.bendiksverden.net
 REF850	xrf850.xrfmaster.net
