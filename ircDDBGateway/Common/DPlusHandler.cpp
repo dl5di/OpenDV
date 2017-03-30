@@ -42,9 +42,9 @@ CCallsignList*             CDPlusHandler::m_blackList = NULL;
 
 
 CDPlusHandler::CDPlusHandler(IReflectorCallback* handler, const wxString& repeater, const wxString& reflector, CDPlusProtocolHandler* protoHandler, const in_addr& address, unsigned int port) :
-m_repeater(repeater.Clone()),
-m_callsign(m_dplusLogin.Clone()),
-m_reflector(reflector.Clone()),
+m_repeater(wxString(repeater.c_str())),
+m_callsign(wxString(m_dplusLogin.c_str())),
+m_reflector(wxString(reflector.c_str())),
 m_handler(protoHandler),
 m_yourAddress(address),
 m_yourPort(port),

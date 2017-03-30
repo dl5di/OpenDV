@@ -38,8 +38,8 @@ CCallsignList*              CDExtraHandler::m_blackList = NULL;
 
 
 CDExtraHandler::CDExtraHandler(IReflectorCallback* handler, const wxString& reflector, const wxString& repeater, CDExtraProtocolHandler* protoHandler, const in_addr& address, unsigned int port, DIRECTION direction) :
-m_reflector(reflector.Clone()),
-m_repeater(repeater.Clone()),
+m_reflector(wxString(reflector.c_str())),
+m_repeater(wxString(repeater.c_str())),
 m_handler(protoHandler),
 m_yourAddress(address),
 m_yourPort(port),
@@ -75,7 +75,7 @@ m_header(NULL)
 }
 
 CDExtraHandler::CDExtraHandler(CDExtraProtocolHandler* protoHandler, const wxString& reflector, const in_addr& address, unsigned int port, DIRECTION direction) :
-m_reflector(reflector.Clone()),
+m_reflector(wxString(reflector.c_str())),
 m_repeater(),
 m_handler(protoHandler),
 m_yourAddress(address),
@@ -131,7 +131,7 @@ void CDExtraHandler::initialise(unsigned int maxReflectors)
 
 void CDExtraHandler::setCallsign(const wxString& callsign)
 {
-	m_callsign = callsign.Clone();//clone makes deep copy of string, this adds thread safety to our code !
+	m_callsign = wxString(callsign.c_str());//clone makes deep copy of string, this adds thread safety to our code !
 	m_callsign.resize(LONG_CALLSIGN_LENGTH, ' ');
 	m_callsign.SetChar(LONG_CALLSIGN_LENGTH - 1U, wxT(' '));
 }
