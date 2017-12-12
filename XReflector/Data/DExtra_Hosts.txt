@@ -133,6 +133,7 @@ XRF978	74.104.179.159
 XRF987	xrf987.metro-uhf.org
 XRF988	46.105.27.191
 XRF989	xrf989.bbhill.net
+XRF995  xlx995.ddns.net
 XRFWDX	xrfwdx.ham-radio-op.net
 9A0DZG	213.147.105.121 
 AH2G	206.212.249.68 
