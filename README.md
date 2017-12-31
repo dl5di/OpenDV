@@ -7,8 +7,10 @@ See the orginal documentation https://github.com/dl5di/OpenDV/tree/master/Docume
 Updated documentation is additionally here https://github.com/dl5di/OpenDV/wiki
 
 ##How-to Build Code
-OpenDV project is build with WX3 Widgets see more details at
-https://github.com/dl5di/OpenDV/wiki/ircDDB-Gateway-Installation
+If you prefer to build debian packages see below.
+OpenDV project is build with WX3 Widgets.
+Install prerequisites :
+    sudo apt install git build-essential automake debhelper libwxgtk3.0-dev libasound2-dev libusb-1.0-0-dev wiringpi fakeroot
 
     ./configure
     make
@@ -24,6 +26,34 @@ Specific to DStarRepeater and DummyRepeater
     --with-stardv        flag to compile the Star*DV adapter in the STARDV directory
     --with-ambeserver    flag that compiles AMBEserver in the DV3000 directory.
 
+##Build installable debian packages
+    cd ~
+    git clone https://github.com/dl5di/OpenDV.git
+###ircDDBGateway
+    cd ~/OpenDV/ircDDBGateway 
+    dpkg-buildpackage -b -uc -j2
+
+###dstarrepeater
+    cd ~/OpenDV/DStarRepeater 
+    dpkg-buildpackage -b -uc -j2
+
+##Install packages
+    cd ~/OpenDV/
+    sudo dpkg -i opendv-base*.deb
+    sudo dpkg -i ircddbgateway*.deb
+    sudo dpkg -i dstarrepeater*.deb
+
+##Enable daemons
+    sudo systemctl enable ircddbgatewayd
+    sudo systemctl enable dstarrepeaterd@1
+If you have more than one repeater 
+    sudo systemctl enable dstarrepeaterd@1
+
+##Configuration and log files location
+###Configuration files
+	/etc/opendv/
+###Log files
+	/var/log/opendv/
 
 ##Support
 
