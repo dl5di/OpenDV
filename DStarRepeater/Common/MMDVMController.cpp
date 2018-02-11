@@ -468,11 +468,11 @@ bool CMMDVMController::readStatus()
 
 bool CMMDVMController::setConfig()
 {
-	unsigned char buffer[20U];
+	unsigned char buffer[25U];
 
 	buffer[0U] = MMDVM_FRAME_START;
 
-	buffer[1U] = 16U;
+	buffer[1U] = 19U;
 
 	buffer[2U] = MMDVM_SET_CONFIG;
 
@@ -503,11 +503,16 @@ bool CMMDVMController::setConfig()
 	buffer[13U] = (m_txLevel * 255U) / 100U;
 	buffer[14U] = (m_txLevel * 255U) / 100U;
 	buffer[15U] = (m_txLevel * 255U) / 100U;
+	
+	buffer[16U] = 128U;
+	buffer[17U] = 128U;
 
-	// CUtils::dump(wxT("Written"), buffer, 16U);
+	buffer[18U] = (m_txLevel * 255U) / 100U;
 
-	int ret = m_serial.write(buffer, 16U);
-	if (ret != 16)
+	// CUtils::dump(wxT("Written"), buffer, 19U);
+
+	int ret = m_serial.write(buffer, 19U);
+	if (ret != 19U)
 		return false;
 
 	unsigned int count = 0U;
