@@ -124,7 +124,7 @@ do_stop()
     	    sleep 15
 	fi                    
 
-	start-stop-daemon --stop --quiet --retry=TERM/30/KILL/5 --pidfile $PIDFILE --name $NAME
+	start-stop-daemon --stop --quiet --retry=TERM/30/KILL/5 --pidfile $PIDFILE --name $DAEMON_NAME
 	RETVAL="$?"
 	[ "$RETVAL" = 2 ] && return 2
 
@@ -153,7 +153,7 @@ do_reload() {
 	# restarting (for example, when it is sent a SIGHUP),
 	# then implement that here.
 	#
-	start-stop-daemon --stop --signal 1 --quiet --pidfile $PIDFILE --name $NAME
+	start-stop-daemon --stop --signal 1 --quiet --pidfile $PIDFILE --name $DAEMON_NAME
 	return 0
 }
 
