@@ -234,11 +234,11 @@ const unsigned int DEFAULT_REPEATER_PORT1        = 20011U;
 const unsigned int DEFAULT_REPEATER_PORT2        = 20012U;
 const unsigned int DEFAULT_REPEATER_PORT3        = 20013U;
 const unsigned int DEFAULT_REPEATER_PORT4        = 20014U;
-const bool         DEFAULT_IRCDDB_ENABLED        = true;
+const bool         DEFAULT_IRCDDB_ENABLED        = false;
 const wxString     DEFAULT_IRCDDB_HOSTNAME       = wxT("group1-irc.ircddb.net");
 const wxString     DEFAULT_IRCDDB_USERNAME       = wxEmptyString;
 const wxString     DEFAULT_IRCDDB_PASSWORD       = wxEmptyString;
-const bool         DEFAULT_IRCDDB_ENABLED2		 = true;
+const bool         DEFAULT_IRCDDB_ENABLED2       = false;
 const wxString     DEFAULT_IRCDDB_HOSTNAME2		 = wxT("rr.openquad.net");
 const wxString     DEFAULT_IRCDDB_USERNAME2		 = wxEmptyString;
 const wxString     DEFAULT_IRCDDB_PASSWORD2		 = wxEmptyString;
@@ -706,20 +706,20 @@ m_y(DEFAULT_WINDOW_Y)
 	m_config->Read(m_name + KEY_IRCDDB_USERNAME, &m_ircddbUsername, DEFAULT_IRCDDB_USERNAME);
 	m_config->Read(m_name + KEY_IRCDDB_PASSWORD, &m_ircddbPassword, DEFAULT_IRCDDB_PASSWORD);
 
-	m_config->Read(m_name + KEY_IRCDDB_ENABLED2, &m_ircddbEnabled, DEFAULT_IRCDDB_ENABLED2);
-	m_config->Read(m_name + KEY_IRCDDB_HOSTNAME2, &m_ircddbHostname, DEFAULT_IRCDDB_HOSTNAME2);
-	m_config->Read(m_name + KEY_IRCDDB_USERNAME2, &m_ircddbUsername, DEFAULT_IRCDDB_USERNAME2);
-	m_config->Read(m_name + KEY_IRCDDB_PASSWORD2, &m_ircddbPassword, DEFAULT_IRCDDB_PASSWORD2);
+	m_config->Read(m_name + KEY_IRCDDB_ENABLED2, &m_ircddbEnabled2, DEFAULT_IRCDDB_ENABLED2);
+	m_config->Read(m_name + KEY_IRCDDB_HOSTNAME2, &m_ircddbHostname2, DEFAULT_IRCDDB_HOSTNAME2);
+	m_config->Read(m_name + KEY_IRCDDB_USERNAME2, &m_ircddbUsername2, DEFAULT_IRCDDB_USERNAME2);
+	m_config->Read(m_name + KEY_IRCDDB_PASSWORD2, &m_ircddbPassword2, DEFAULT_IRCDDB_PASSWORD2);
 
-	m_config->Read(m_name + KEY_IRCDDB_ENABLED3, &m_ircddbEnabled, DEFAULT_IRCDDB_ENABLED3);
-	m_config->Read(m_name + KEY_IRCDDB_HOSTNAME3, &m_ircddbHostname, DEFAULT_IRCDDB_HOSTNAME3);
-	m_config->Read(m_name + KEY_IRCDDB_USERNAME3, &m_ircddbUsername, DEFAULT_IRCDDB_USERNAME3);
-	m_config->Read(m_name + KEY_IRCDDB_PASSWORD3, &m_ircddbPassword, DEFAULT_IRCDDB_PASSWORD3);
+	m_config->Read(m_name + KEY_IRCDDB_ENABLED3, &m_ircddbEnabled3, DEFAULT_IRCDDB_ENABLED3);
+	m_config->Read(m_name + KEY_IRCDDB_HOSTNAME3, &m_ircddbHostname3, DEFAULT_IRCDDB_HOSTNAME3);
+	m_config->Read(m_name + KEY_IRCDDB_USERNAME3, &m_ircddbUsername3, DEFAULT_IRCDDB_USERNAME3);
+	m_config->Read(m_name + KEY_IRCDDB_PASSWORD3, &m_ircddbPassword3, DEFAULT_IRCDDB_PASSWORD3);
 
-	m_config->Read(m_name + KEY_IRCDDB_ENABLED4, &m_ircddbEnabled, DEFAULT_IRCDDB_ENABLED4);
-	m_config->Read(m_name + KEY_IRCDDB_HOSTNAME4, &m_ircddbHostname, DEFAULT_IRCDDB_HOSTNAME4);
-	m_config->Read(m_name + KEY_IRCDDB_USERNAME4, &m_ircddbUsername, DEFAULT_IRCDDB_USERNAME4);
-	m_config->Read(m_name + KEY_IRCDDB_PASSWORD4, &m_ircddbPassword, DEFAULT_IRCDDB_PASSWORD4);
+	m_config->Read(m_name + KEY_IRCDDB_ENABLED4, &m_ircddbEnabled4, DEFAULT_IRCDDB_ENABLED4);
+	m_config->Read(m_name + KEY_IRCDDB_HOSTNAME4, &m_ircddbHostname4, DEFAULT_IRCDDB_HOSTNAME4);
+	m_config->Read(m_name + KEY_IRCDDB_USERNAME4, &m_ircddbUsername4, DEFAULT_IRCDDB_USERNAME4);
+	m_config->Read(m_name + KEY_IRCDDB_PASSWORD4, &m_ircddbPassword4, DEFAULT_IRCDDB_PASSWORD4);
 
 	m_config->Read(m_name + KEY_APRS_ENABLED, &m_aprsEnabled, DEFAULT_APRS_ENABLED);
 
