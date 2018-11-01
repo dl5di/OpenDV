@@ -728,6 +728,7 @@ void CIRCDDBGatewayThread::processIrcDDB()
 					if (!address.IsEmpty()) {
 						wxLogMessage(wxT("USER: %s %s %s %s"), user.c_str(), repeater.c_str(), gateway.c_str(), address.c_str());
 						m_cache.updateUser(user, repeater, gateway, address, timestamp, DP_DEXTRA, false, false);
+						m_g2Handler->PunchUDPHole(address);
 					} else {
 						wxLogMessage(wxT("USER: %s NOT FOUND"), user.c_str());
 					}
@@ -744,6 +745,7 @@ void CIRCDDBGatewayThread::processIrcDDB()
 					if (!address.IsEmpty()) {
 						wxLogMessage(wxT("REPEATER: %s %s %s"), repeater.c_str(), gateway.c_str(), address.c_str());
 						m_cache.updateRepeater(repeater, gateway, address, DP_DEXTRA, false, false);
+						m_g2Handler->PunchUDPHole(address);
 					} else {
 						wxLogMessage(wxT("REPEATER: %s NOT FOUND"), repeater.c_str());
 					}
@@ -761,6 +763,7 @@ void CIRCDDBGatewayThread::processIrcDDB()
 					if (!address.IsEmpty()) {
 						wxLogMessage(wxT("GATEWAY: %s %s"), gateway.c_str(), address.c_str());
 						m_cache.updateGateway(gateway, address, DP_DEXTRA, false, false);
+						m_g2Handler->PunchUDPHole(address);
 					} else {
 						wxLogMessage(wxT("GATEWAY: %s NOT FOUND"), gateway.c_str());
 					}

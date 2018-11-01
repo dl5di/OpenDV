@@ -144,6 +144,18 @@ CAMBEData* CG2ProtocolHandler::readAMBE()
 	return data;
 }
 
+void CG2ProtocolHandler::PunchUDPHole(const wxString& address)
+{
+	unsigned char buffer[1];
+	::memset(buffer, 0, 1);
+	
+	in_addr addr = CUDPReaderWriter::lookup(address);
+
+	//wxLogError(wxT("Punching hole to %s"), address.mb_str());
+
+	m_socket.write(buffer, 1, addr, G2_DV_PORT);
+}
+
 void CG2ProtocolHandler::close()
 {
 	m_socket.close();
