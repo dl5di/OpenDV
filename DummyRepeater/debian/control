@@ -16,6 +16,6 @@ Description: D-STAR Digital Voice Local Repeater
 
 Package: ambeserver
 Architecture: i386 amd64 armel armhf
-Depends: ${shlibs:Depends}, ${misc:Depends}, opendv-base
+Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: D-STAR Digital Voice DV3000 Daemon
   Provides a UDP interface to DV3000 devices
