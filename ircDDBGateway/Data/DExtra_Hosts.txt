@@ -95,6 +95,7 @@ XRF232	xrf232.tms-it.net
 XRF248	xrf248.dyndns.org 
 XRF250	xrf250.dstar.su
 XRF255	xrf255.reflector.up4dar.de
+XRF260	xrf260.radiocult.su
 XRF262	xrf262.reflector.up4dar.de
 XRF264	52.2.131.118
 XRF270	xrf270.reflector.up4dar.de
